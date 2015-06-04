@@ -19,19 +19,26 @@ The approach proposed here is a little different, even though it stays compliant
 Until the final release (scheduled June 30th 1PM GMT), sample instances will be launched for the StateOfTheMap FR, US, and other innovation/map related events. The links below references those endpoints.  
 @Community: We are grateful for any feedback you might have on either the frontend or the mobile apps. Go crazy and let us know!
 
-http://brest-osm.designmyapp.mobi
+http://brest-osm.designmyapp.mobi  
+http://nyc-osm.designmyapp.mobi  
 
 ### Feedback / Issue tracking
 Please use this github project as a feedback, feature request or issue tracker.  
 You can use the following tags to help us: [Bug], [Mobile], [Web], [Feature], [Feedback]  
 
 ### Twitter
-You can also reach us on Twitter: 
-@loicortola  (Technical)
-@olduv  (Legal)
+You can also reach us on Twitter:  
+@LoicOrtola  (Technical)  
+@Olduv  (Legal)  
 @DesignMyApp   
 
 ### Changelog
+
+[0.2.0]:  
+ - Bugfixes
+ - Now supporting POI deletion
+ - Implemented POI Type filters
+ - Implemented level differentiators
 
 [0.1.0]:  
  - Bugfixes
