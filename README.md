@@ -1,5 +1,12 @@
 ## OpenStreetMap Contributor App Feature & Issue tracker
 
+![Notes on Map](/images/note.png)|
+![Filters Drawer](/images/drawer.jpg)|
+![Menu](/images/menu.png)
+
+![Ways edition](/images/ways.png)|
+![Changeset Commit](/images/changeset.jpg)| 
+![POI Creation](/images/note_discussion.jpg) 
 ### About the App
 The Openstreetmap Contributor app allows anyone to contribute to OSM. It enables those-who-know to easily manage a group of newbies as the contribution process is intuitive and easy.  
 Bring your MapParties to a whole new level!  
@@ -32,6 +39,17 @@ You can also reach us on Twitter:
 @DesignMyApp   
 
 ### Changelog
+
+[1.1.1]:
+ - Fixed POI Deletion Bug
+ - Minor Bugfixes
+
+[1.1.0]:
+ - Floating menu if only few POI Types are present  
+ - Implemented Ways edit support
+ - Improvements of the vector render engine  
+ - Manual Sync is more detailed
+ - Bugfixes
 
 [1.0.0]:
  - Changesets can now be pushed together manually  
