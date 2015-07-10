@@ -16,15 +16,14 @@ The approach proposed here is a little different, even though it stays compliant
  4 - Give it to your team, play, and start mapping!  
 
 ### Beta instances
-Until the final release (scheduled June 30th 1PM GMT), sample instances will be launched for the StateOfTheMap FR, US, and other innovation/map related events. The links below references those endpoints.  
+To ensure better performance, the service is available only in some areas. You can request for a new area to be added by submitting an issue on this repository.
 @Community: We are grateful for any feedback you might have on either the frontend or the mobile apps. Go crazy and let us know!
 
-http://brest-osm.designmyapp.mobi  
-http://nyc-osm.designmyapp.mobi  
+http://osm.designmyapp.mobi
 
 ### Feedback / Issue tracking
 Please use this github project as a feedback, feature request or issue tracker.  
-You can use the following tags to help us: [Bug], [Mobile], [Web], [Feature], [Feedback]  
+You can use the following tags to help us: [Bug], [Mobile], [Web], [Feature], [Feedback], [Area]  
 
 ### Twitter
 You can also reach us on Twitter:  
@@ -33,6 +32,16 @@ You can also reach us on Twitter:
 @DesignMyApp   
 
 ### Changelog
+
+[1.0.0]:
+ - Changesets can now be pushed together manually  
+ - Notes and comments are now supported  
+ - Implemented Filters for notes (Open/Closed)  
+ - Improvements of the vector render engine  
+ - Drawer layout improvements  
+ - New Splashscreen  
+ - About page  
+ - Bugfixes
 
 [0.2.0]:  
  - Bugfixes
