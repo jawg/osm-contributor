@@ -1,12 +1,8 @@
 ## OpenStreetMap Contributor App Feature & Issue tracker
 
-![Notes on Map](/images/note.png)|
-![Filters Drawer](/images/drawer.jpg)|
+![Filters Drawer](/images/drawer.jpg)
 ![Menu](/images/menu.png)
 
-![Ways edition](/images/ways.png)|
-![Changeset Commit](/images/changeset.jpg)| 
-![POI Creation](/images/note_discussion.jpg) 
 ### About the App
 The Openstreetmap Contributor app allows anyone to contribute to OSM. It enables those-who-know to easily manage a group of newbies as the contribution process is intuitive and easy.  
 Bring your MapParties to a whole new level!  
@@ -81,3 +77,11 @@ You can also reach us on Twitter:
  - Edit POI position
  - Autocompletion
  - Material Design
+
+
+
+### More Screenshots
+![Notes on Map](/images/note.png)|
+![Ways edition](/images/ways.png)
+![Changeset Commit](/images/changeset.jpg)| 
+![POI Creation](/images/note_discussion.jpg) 
