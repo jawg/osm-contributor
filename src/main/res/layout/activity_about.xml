@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="io.mapsquare.osmcontributor.about.AboutActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <include layout="@layout/toolbar_layout"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:shadowRadius="2"
+            android:text="@string/template_name"
+            android:textColor="@color/colorPrimary"
+            android:textSize="40sp"/>
+
+        <TextView
+            android:id="@+id/mapsquare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"/>
+
+        <ImageView
+            android:id="@+id/splash_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/splash"/>
+
+        <TextView
+            android:id="@+id/contribute_to"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:drawableEnd="@drawable/logo_osm"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/logo_osm"
+            android:gravity="center"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/edited_by"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:drawableEnd="@drawable/logo_ebusiness"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/logo_ebusiness"
+            android:gravity="center"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/powered_by"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/logo_dma"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/logo_dma"
+            android:gravity="center"
+            android:textSize="14sp"/>
+
+        <Button
+            android:id="@+id/licenses_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginTop="10dp"
+            android:text="@string/licenses_title"/>
+    </LinearLayout>
+</ScrollView>

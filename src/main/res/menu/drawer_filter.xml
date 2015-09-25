@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/drawer_filter_notes_menu"
+        android:title="@string/filter_notes">
+        <menu>
+            <group
+                android:id="@+id/drawer_filter_notes_group"
+                android:checkableBehavior="all">
+                <item
+                    android:id="@+id/display_open_notes_item"
+                    android:icon="@drawable/open_book"
+                    android:title="@string/filter_note_open"/>
+                <item
+                    android:id="@+id/display_closed_notes_item"
+                    android:icon="@drawable/closed_book"
+                    android:title="@string/filter_note_closed"/>
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/filter_pois">
+        <menu>
+            <group
+                android:id="@+id/drawer_filter_pois_group"
+                android:checkableBehavior="all">
+                <item
+                    android:id="@+id/select_all_item"
+                    android:title="@string/filter_poi_all"/>
+            </group>
+        </menu>
+    </item>
+
+</menu>

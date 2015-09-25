@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="16dp"
+    tools:context="io.mapsquare.osmcontributor.login.SplashScreenActivity">
+
+    <TextView
+        android:id="@+id/splash_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:shadowRadius="2"
+        android:text="@string/name"
+        android:textColor="@color/colorPrimary"
+        android:textSize="40sp"/>
+
+    <TextView
+        android:id="@+id/mapsquare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/splash_title"
+        android:layout_centerHorizontal="true"
+        android:textSize="24sp"/>
+
+    <ImageView
+        android:id="@+id/splash_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mapsquare"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/splash"/>
+
+
+    <TextView
+        android:id="@+id/sync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/splash_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:shadowRadius="2"
+        android:text="@string/splash_screen_message"
+        android:textColor="@color/theme_grey"
+        android:textSize="18sp"/>
+
+
+    <ProgressBar
+        android:id="@+id/ProgressBar01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sync"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        android:indeterminate="true"
+        android:indeterminateDrawable="@xml/progress"/>
+
+    <TextView
+        android:id="@+id/edited_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/powered_by"
+        android:layout_centerHorizontal="true"
+        android:drawableEnd="@drawable/logo_ebusiness"
+        android:drawablePadding="5dp"
+        android:drawableRight="@drawable/logo_ebusiness"
+        android:gravity="center"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/powered_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:drawableEnd="@drawable/logo_dma"
+        android:drawablePadding="5dp"
+        android:drawableRight="@drawable/logo_dma"
+        android:gravity="center"
+        android:textSize="14sp"/>
+</RelativeLayout>

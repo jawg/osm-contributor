@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:application="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.mapbox.mapboxsdk.views.MapView
+        android:id="@+id/mapview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"/>
+
+    <RelativeLayout
+        android:id="@+id/progressbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:id="@+id/poi_type_spinner_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:visibility="gone">
+
+        <Spinner
+            android:id="@+id/poi_type_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:padding="15dp"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/addressView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/poi_type_spinner_wrapper"
+        android:layout_margin="10dp"
+        android:background="@android:drawable/dialog_holo_light_frame"
+        android:padding="15dp"
+        android:visibility="invisible"/>
+
+    <io.mapsquare.osmcontributor.map.vectorial.LevelBar
+        android:id="@+id/level_bar"
+        style="@android:style/Widget.Holo.SeekBar"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="-80dp"
+        android:layout_marginStart="-80dp"
+        android:layout_marginTop="50dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:rotation="270"
+        android:splitTrack="false"
+        android:visibility="invisible"/>
+
+    <ImageButton
+        android:id="@+id/pin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="#00000000"
+        android:clickable="false"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/hand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:paddingTop="130dp"
+        android:src="@drawable/hand_tuto"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:text="@string/osm_copyright"/>
+
+    <RelativeLayout
+        android:id="@+id/note_detail_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <fragment
+            android:id="@+id/note_info_panel"
+            android:name="io.mapsquare.osmcontributor.map.NoteDetailFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/poi_detail_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <fragment
+            android:id="@+id/poi_info_panel"
+            android:name="io.mapsquare.osmcontributor.map.PoiDetailFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
+
+
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/edit_way_elemnt_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:visibility="gone"
+        application:fab_colorNormal="@color/material_blue_500"
+        application:fab_colorPressed="@color/material_blue_grey_800"
+        application:fab_icon="@drawable/move_poi"/>
+
+    <RelativeLayout
+        android:id="@+id/floating_btn_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/fab_margin">
+
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:id="@+id/add_poi_few_values"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/localisation"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:visibility="gone"
+            application:fab_addButtonColorNormal="@color/material_blue_500"
+            application:fab_addButtonColorPressed="@color/material_blue_grey_800"
+            application:fab_addButtonPlusIconColor="@color/white"
+            application:fab_labelStyle="@style/menu_labels_style"
+            application:fab_labelsPosition="left"
+            application:fab_menu_type="plus"
+            application:fab_plusIconColor="@color/white"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_poi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/localisation"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            application:fab_colorNormal="@color/material_blue_500"
+            application:fab_colorPressed="@color/material_blue_500"
+            application:fab_colorRipple="@color/material_blue_grey_800"
+            application:fab_icon="@drawable/plus"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/localisation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            application:fab_colorNormal="@color/floating_ab_normal"
+            application:fab_colorPressed="@color/floating_ab_pressed"
+            application:fab_colorRipple="@color/floating_ab_ripple"
+            application:fab_icon="@drawable/gps"/>
+    </RelativeLayout>
+
+</RelativeLayout>

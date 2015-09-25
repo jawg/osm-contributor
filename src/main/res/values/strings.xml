@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<resources>
+
+    <string name="name" translatable="false">Osm Contributor</string>
+    <string name="title_activity_edit_poi">EditPoiActivity</string>
+    <string name="location_not_found">Couldn\'t find your location</string>
+
+    <!-- EDITION -->
+    <string name="addValueDialogTitle">Change value for : \"%1$s\"</string>
+    <string name="addValueDialogAdd">Change</string>
+    <string name="addValueDialogCancel">Cancel</string>
+    <string name="title_activity_pick_value" translatable="false">PickValueActivity</string>
+    <string name="uncompleted_fields">There are uncompleted fields</string>
+    <string name="quit_edition_title">Quit edition</string>
+    <string name="quit_edition_message">Do you really want to discard your changes ?</string>
+    <string name="quit_edition_positive_btn">Yes</string>
+    <string name="quit_edition_negative_btn">Cancel</string>
+    <string name="no_values_yet">No values yet</string>
+    <string name="creation_title">Creation</string>
+    <string name="edition_title">Edition</string>
+    <string name="required">Required</string>
+    <string name="optional">Optional</string>
+
+    <!-- Map -->
+    <string name="no_poi_name">This POI doesn\'t have a name</string>
+    <string name="edit_position">Change position</string>
+    <string name="edit_poi">Edit Poi</string>
+    <string name="update_done">%1$s Poi(s) updated on OSM</string>
+    <string name="delete_done">%1$s Poi(s) deleted on OSM</string>
+    <string name="noderef_moved">%1$s point(s) updated on OSM, refresh the map in few minutes to see your changes</string>
+    <string name="add_done">%1$s Poi(s) added on OSM</string>
+    <string name="couldnt_connect_retrofit">Couldn\’t add/update. Check your login/password in your preferences.</string>
+    <string name="couldnt_create_node">There was an error during creation, your changes have been reverted.</string>
+    <string name="couldnt_update_node">There was an error during the update, your changes have been reverted.</string>
+    <string name="couldnt_download_retrofit">Couldn\’t download POIs. Check your connectivity.</string>
+    <string name="couldnt_upload_retrofit">Couldn\’t upload POIs. Check your connectivity.</string>
+    <string name="edit_poi_position">Change Poi position</string>
+    <string name="edit_way_title">Edit way</string>
+    <string name="edit_noderef_position_title">Edit position</string>
+    <string name="poi_creation">POI Creation</string>
+    <string name="delete_poi">Delete Poi</string>
+    <string name="delete_poi_title">Delete Poi</string>
+    <string name="delete_poi_confirm_message">Do you really want to delete this poi?</string>
+    <string name="delete_poi_positive_btn">Delete</string>
+    <string name="delete_poi_negative_btn">Cancel</string>
+    <string name="point_modification_forbidden">This version doesn\'t allowed points modification</string>
+    <string name="licenses_title">Licenses</string>
+    <string name="osm_copyright">© OpenStreetMap contributors</string>
+    <string name="zoom_to_edit">This area is too large to load, please zoom more.</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_login">Login</string>
+    <string name="prompt_password">Password</string>
+    <string name="splash_screen_message">Initialization in progress&#8230;</string>
+    <string name="splash_screen_edited_by" translatable="false"><![CDATA[Edited by <font color=\"#1565C0\">eBusiness Information</font>]]></string>
+    <string name="splash_screen_powered_by" translatable="false"><![CDATA[Powered by <font color=\"#1565C0\">DesignMyApp</font>]]></string>
+    <string name="mapsquare" translatable="false"><![CDATA[By map<font color=\"#2099fd\">square</font>]]></string>
+
+    <!-- Preferences -->
+    <string name="title_activity_my_preferences">Parameters</string>
+    <string name="summary_login">Please provide a login</string>
+    <string name="summary_password">Please provide a password</string>
+    <string name="error_login">Couldn’t connect with these credentials. Are you sure you have editing rights?</string>
+    <string name="valid_login">Successfully connected</string>
+
+    <!-- Shared preferences -->
+    <string name="shared_prefs_login" translatable="false">SHARED_PREFS_LOGIN</string>
+    <string name="shared_prefs_password" translatable="false">SHARED_PREFS_PASSWORD</string>
+    <string name="shared_prefs_login_title_key" translatable="false">SHARED_PREFS_LOGIN_TITLE</string>
+    <string name="shared_prefs_sync_title_key" translatable="false">SHARED_PREFS_SYNC_TITLE_KEY</string>
+    <string name="shared_prefs_sync_key" translatable="false">SHARED_PREFS_SYNC_KEY</string>
+    <string name="shared_prefs_server_key" translatable="false">SHARED_PREFS_SERVER_KEY</string>
+    <string name="shared_prefs_login_title">Connection</string>
+    <string name="shared_prefs_sync_title">Synchronisation</string>
+    <string name="shared_prefs_sync_manual">Manual synchronization</string>
+    <string name="shared_prefs_server">OSM Server</string>
+
+    <!-- Tuto -->
+    <string name="tuto_title_press_create">Poi creation</string>
+    <string name="tuto_title_confirm">Validate your changes</string>
+    <string name="tuto_title_cancel">Cancel your changes</string>
+    <string name="tuto_text_press_create">Click here to add a new point</string>
+    <string name="tuto_text_choose_type">Choose the type of Poi you want to add</string>
+    <string name="tuto_text_swipe_for_position">Swipe the map to set the position of your new point</string>
+    <string name="tuto_text_confirm_position_creation">Click to confirm the position, any return will discard your creation.</string>
+    <string name="tuto_text_cancel_creation">This button or the back one will discard your changes. Nothing will be sent to OSM.</string>
+    <string name="tuto_text_confirm_creation">Click to finalize your creation or edition, your changes will be sent to OSM.</string>
+    <string name="replay_tuto">Replay tutorial</string>
+
+    <!-- note -->
+    <string name="Note">Note</string>
+    <string name="comment_text_hint">Enter a comment</string>
+    <string name="comment_label">Comment</string>
+    <string name="action_label">Action</string>
+    <string name="quit_note_title">Quit comment edition</string>
+    <string name="quit_note_message">Do you really want to discard your changes ?</string>
+    <string name="quit_note_positive_btn">Yes</string>
+    <string name="quit_note_negative_btn">Cancel</string>
+    <string name="comment_text_cant_be_null">The comment text cant\'t be null</string>
+    <string name="comment_synchronizing">Please wait for synchronization to finish.</string>
+    <string name="save_note">Save</string>
+    <string name="synchronizing">Synchronizing…</string>
+    <string name="note_already_closed">Note was already closed</string>
+    <string name="title_activity_note">Note</string>
+    <string name="note">Note</string>
+    <string name="title_note">Note (%s)</string>
+    <string name="title_creation_note">Note</string>
+    <string name="create_note">Create</string>
+    <string name="cancel">Cancel</string>
+    <string name="note_spinner_element">Note</string>
+
+    <!-- Filter drawer -->
+    <string name="filters">Filters</string>
+    <string name="filter_notes">Notes</string>
+    <string name="filter_note_open">Open</string>
+    <string name="filter_note_closed">Closed</string>
+    <string name="filter_pois">POIs</string>
+    <string name="filter_poi_all">All</string>
+
+    <!-- Synchronization -->
+    <string name="comment_changeset" translatable="false">adding/updating/deleting POIs</string>
+    <string name="sync_now">Sync now</string>
+    <string name="title_activity_upload">Manual upload</string>
+    <string name="couldnt_sync_connectivity">Couldn\’t upload POIs. Check your connectivity.</string>
+
+    <!--Update-->
+    <string name="update_title">Add a comment to you changes :</string>
+    <string name="need_a_comment">The comment can\'t be empty</string>
+    <string name="nothing_to_update">You don\'t have anything to update</string>
+    <string name="created">Created</string>
+    <string name="deleted">Deleted</string>
+    <string name="updated">Updated</string>
+
+    <!--About-->
+    <string name="title_activity_about">About us</string>
+    <string name="about_title">About</string>
+    <string name="template_name" translatable="false">OSM Contributor</string>
+    <string name="contribute_to" translatable="false"><![CDATA[All data contributed to <font color=\"#1565C0\">OpenStreetMap</font>]]></string>
+    <string name="mapsquare_url" translatable="false">http://mapsquare.io</string>
+    <string name="osm_dma_url" translatable="false">https://osm.designmyapp.mobi/</string>
+    <string name="osm_url" translatable="false">https://wiki.openstreetmap.org/wiki/Main_Page</string>
+    <string name="ebiz_url" translatable="false">http://www.ebusinessinformation.fr/</string>
+    <string name="dma_url" translatable="false">https://concept.designmyapp.mobi/</string>
+
+    <!--edit way-->
+    <string name="edit_way">Edit way</string>
+
+    <!-- POI types/tags -->
+    <string name="manage_poi_types">Manage Poi types</string>
+    <string name="manage_poi_tags">Manage Poi tags</string>
+    <string name="tag_number">%1$s tags</string>
+    <string name="new_poi_type">New type</string>
+    <string name="new_poi_tag">New tag</string>
+    <string name="edit_poi_type">Edit type</string>
+    <string name="edit_poi_tag">Edit tag</string>
+    <string name="poi_type_name_hint">name</string>
+    <string name="poi_tag_key_hint">key</string>
+    <string name="poi_tag_value_hint">value</string>
+    <string name="poi_tag_mandatory">Mandatory</string>
+
+    <!-- Snackbar -->
+    <string name="item_removed">\"%1$s\" was removed</string>
+    <string name="undo">Undo</string>
+
+</resources>

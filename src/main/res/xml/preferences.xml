@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="@string/shared_prefs_sync_title_key"
+        android:title="@string/shared_prefs_sync_title">
+
+        <CheckBoxPreference
+            android:key="@string/shared_prefs_sync_key"
+            android:title="@string/shared_prefs_sync_manual"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/shared_prefs_login_title_key"
+        android:title="@string/shared_prefs_login_title">
+
+        <EditTextPreference
+            android:inputType="textNoSuggestions"
+            android:key="@string/shared_prefs_login"
+            android:summary="@string/summary_login"
+            android:title="@string/prompt_login"/>
+
+        <EditTextPreference
+            android:inputType="textPassword"
+            android:key="@string/shared_prefs_password"
+            android:summary="@string/summary_password"
+            android:title="@string/prompt_password"/>
+
+        <Preference
+            android:inputType="none"
+            android:key="@string/shared_prefs_server_key"
+            android:summary="@string/summary_login"
+            android:title="@string/shared_prefs_server"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

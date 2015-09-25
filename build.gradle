@@ -1,0 +1,274 @@
+ext {
+    appVersion = "1.2.0-SNAPSHOT"
+
+    crashlyticsVersion = '1.+'
+
+    androidSupportVersion = '23.0.1'
+    playServicesVersion = '7.8.0'
+
+    daggerVersion = '2.0'
+    leakCanaryVersion = '1.3.1'
+    butterknifeVersion = '6.1.0'
+    eventbusVersion = '2.4.0'
+    javaxAnnotationVersion = '10.0-b28'
+    timberVersion = '2.7.1'
+    ormliteVersion = '4.48'
+    jodatimeVersion = '2.7'
+    mapboxVersion = '0.7.4'
+    retrofitVersion = '1.9.0'
+    okhttpVersion = '2.3.0'
+    simplexmlRetrofitVersion = '1.1'
+    simplexmlVersion = '2.7.1'
+    floatingactionbuttonVersion = '1.3.0'
+    dbinspectorVersion = '3.1.0'
+    showcaseviewVersion = '5.0.0'
+    licensesdialogVersion = '1.7.0'
+    advrecyclerviewVersion = '0.7.4'
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url 'http://download.crashlytics.com/maven' }
+        flatDir {
+            dirs 'lib'
+        }
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:1.3.0"
+        classpath "com.crashlytics.tools.gradle:crashlytics-gradle:1.+"
+        classpath "com.neenbedankt.gradle.plugins:android-apt:1.4"
+
+        // this plugin is provided as a jar as atm there is no relase with android support
+        classpath "nl.javadude.gradle.plugins:license-gradle-plugin:0.11.1-SNAPSHOT"
+
+        // BEGIN Dependencies of license-gradle-plugin
+        classpath "org.codehaus.plexus:plexus-utils:2.0.5"
+        classpath "com.mycila.xmltool:xmltool:3.3"
+        // Using compile instead of groovy, so that it goes into the pom
+        classpath('com.mycila.maven-license-plugin:maven-license-plugin:1.10.b1') {
+            exclude group: 'org.apache.maven', module: 'maven-plugin-api'
+            exclude group: 'org.apache.maven', module: 'maven-project'
+        }
+        // END Dependencies of license-gradle-plugin
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url 'http://download.crashlytics.com/maven' }
+    flatDir {
+        dirs 'lib'
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'crashlytics'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'checkstyle'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "22.0.1"
+
+    useLibrary 'org.apache.http.legacy'
+
+    defaultConfig {
+        applicationId "io.mapsquare.osmcontributor"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 3
+        versionName appVersion
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        store {
+            buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.store"'
+            buildConfigField "int", "DEFAULT_ZOOM", "16"
+            buildConfigField "int", "ZOOM_VECTORIAL", "20"
+            buildConfigField "double", "CENTER_LAT", "48.858370"
+            buildConfigField "double", "CENTER_LNG", "2.294481"
+            buildConfigField "String", "MAP_URL", '"http://tile.openstreetmap.org/{z}/{x}/{y}.png"'
+            buildConfigField "String", "BASE_OSM_URL", osmUrl()
+            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass-api.de/api/interpreter"'
+        }
+        template {
+            buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.template"'
+        }
+        poi_storage {
+            buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.poistorage"'
+        }
+    }
+}
+
+configurations {
+    compile.exclude module: 'stax'
+    compile.exclude module: 'stax-api'
+    compile.exclude module: 'xpp3'
+}
+
+dependencies {
+    compile project(':fab')
+    compile project(':navdrawer')
+    compile "com.google.android.gms:play-services-analytics:$playServicesVersion"
+    compile "com.android.support:appcompat-v7:$androidSupportVersion"
+    // Dependency injection
+    compile "com.google.dagger:dagger:$daggerVersion"
+    apt "com.google.dagger:dagger-compiler:$daggerVersion"
+    // required for part of the generated code
+    provided "org.glassfish:javax.annotation:$javaxAnnotationVersion"
+    // core
+    compile "com.jakewharton:butterknife:$butterknifeVersion"
+    compile "com.jakewharton.timber:timber:$timberVersion"
+    compile "de.greenrobot:eventbus:$eventbusVersion"
+    compile "com.j256.ormlite:ormlite-android:$ormliteVersion"
+    compile "joda-time:joda-time:$jodatimeVersion"
+    debugCompile "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
+    debugCompile "im.dino:dbinspector:$dbinspectorVersion@aar"
+    compile "com.crashlytics.android:crashlytics:$crashlyticsVersion"
+    // network
+    compile "com.squareup.retrofit:retrofit:$retrofitVersion"
+    compile "com.squareup.okhttp:okhttp:$okhttpVersion"
+    compile "com.mobprofs:retrofit-simplexmlconverter:$simplexmlRetrofitVersion"
+    compile "org.simpleframework:simple-xml:$simplexmlVersion"
+    // UI libraries
+    compile "com.melnykov:floatingactionbutton:$floatingactionbuttonVersion"
+    compile "com.android.support:cardview-v7:$androidSupportVersion"
+    compile "com.android.support:recyclerview-v7:$androidSupportVersion"
+    compile "com.android.support:design:$androidSupportVersion"
+    compile "com.github.amlcurran.showcaseview:library:$showcaseviewVersion"
+    compile("com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion@aar") { transitive = true }
+    compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"
+    compile("com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:$advrecyclerviewVersion@aar") {
+        transitive = true
+    }
+    // tests
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'org.easytesting:fest-assert-core:2.0M10'
+    testCompile('org.robolectric:robolectric:2.4') {
+        exclude group: 'commons-logging'
+        exclude group: 'org.apache.httpcomponents'
+    }
+    testCompile 'org.xerial:sqlite-jdbc:3.8.10.1'
+    testCompile 'commons-io:commons-io:1.3.2'
+    //
+}
+
+def osmUrl() {
+    def osmUrl = project.getProperties().get("osmUrl")
+    return osmUrl != null ? '"' + osmUrl + '"' : '"http://api06.dev.openstreetmap.org/api/0.6"'
+}
+
+checkstyle {
+    configFile project.file('checkstyle.xml')
+    showViolations true
+}
+
+task checkstyle(type: Checkstyle) {
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+    exclude '**/R.java'
+    exclude '**/BuildConfig.java'
+
+    configFile project.file('checkstyle.xml')
+
+    // empty classpath
+    classpath = files()
+}
+
+preBuild.dependsOn('checkstyle')
+
+apply plugin: 'com.github.hierynomus.license'
+license {
+    header = file("LICENSE-HEADER")
+    strictCheck = true
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    ext.name = 'eBusiness Information'
+    ext.program = 'OSM Contributor'
+}
+preBuild.dependsOn('licenseFormat')
+
+
+["template", "poi_storage"].each { flavor ->
+    def name = flavor.capitalize()
+    def apktooldOutDir = "build/intermediates/apktoold$name"
+
+    /**
+     * Run apktool -d on generated apk to prepare templating
+     */
+    task "apktoold$name"(type: Exec, dependsOn: "assemble$name") {
+        def inputFile = "build/outputs/apk/osm-contributor-${flavor}-release-unsigned.apk"
+        inputs.file(inputFile)
+        outputs.dir(apktooldOutDir)
+        commandLine 'apktool', 'd', '-s', '-f', '-o', apktooldOutDir, inputFile
+    }
+
+    def buildTemplateOutDir = "build/intermediates/dmatemplate$name"
+
+    /**
+     * tokenize dma template
+     */
+    task "buildTemplate$name"(type: Copy, dependsOn: "apktoold$name") {
+        inputs.dir(apktooldOutDir)
+        outputs.dir(buildTemplateOutDir)
+        /**
+         * function replacing resources of a given type and matching the given names to tokens
+         */
+        def tokenize = { String input, String type, String... names ->
+            names.inject(input, { work, token ->
+                work.replaceAll("<${type} name=\"${token}\">.*</${type}>", "<${type} name=\"${token}\">\\\${${token}}</${type}>")
+            })
+        }
+        from(apktooldOutDir) {
+            eachFile {
+                if (it.getName().equals('AndroidManifest.xml')) {
+                    filter {
+                        line -> line.replaceAll("<manifest(.*)package=\".*?\"(.*)>", "<manifest\$1package=\"\\\${applicationPackage}\"\$2>")
+                    }
+                }
+                if (it.getPath().endsWith('res/values/strings.xml')) {
+                    filter {
+                        line ->
+                            if (flavor.equals("template")) {
+                                tokenize(line, "string",
+                                        "name", "centerLat", "centerLng",
+                                        "login", "password", "mapUrl",
+                                        "baseOsmApiUrl", "baseOverpassUrl", "zoomVectorial",
+                                        "northBound", "eastBound", "southBound", "westBound")
+                            } else {
+                                tokenize(line, "string",
+                                        "name", "centerLat", "centerLng",
+                                        "mapUrl",
+                                        "baseApiUrl", "zoomVectorial",
+                                        "northBound", "eastBound", "southBound", "westBound")
+                            }
+                    }
+                }
+                if (it.getPath().endsWith('res/values/bools.xml')) {
+                    filter {
+                        line -> tokenize(line, "bool", "pointsModification", "pointsAddition", 'hasBounds')
+                    }
+                }
+            }
+        }
+        into(buildTemplateOutDir)
+    }
+
+    /**
+     * zip dma template
+     */
+    task "template$name"(type: Zip, dependsOn: "buildTemplate$name") {
+        from(buildTemplateOutDir)
+        classifier flavor
+    }
+
+}

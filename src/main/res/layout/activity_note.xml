@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="io.mapsquare.osmcontributor.note.NoteActivity">
+
+    <include layout="@layout/toolbar_layout"/>
+
+    <ListView
+        android:id="@+id/comments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/add_comment"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:listSelector="@android:color/transparent"/>
+
+    <LinearLayout
+        android:id="@+id/add_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <!--focusable and focusableInTouchMode are a trick so the keyboard won't open at the activity start-->
+        <RelativeLayout
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/theme_grey"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:columnCount="3"
+            android:rowCount="2">
+
+            <TextView
+                android:layout_gravity="center_vertical"
+                android:labelFor="@+id/comment_edit_text"
+                android:maxLines="5"
+                android:padding="8dp"
+                android:text="@string/comment_label"
+                android:textColor="@color/background_material_dark"/>
+
+            <EditText
+                android:id="@+id/comment_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:layout_gravity="fill_horizontal|center_vertical"
+                android:hint="@string/comment_text_hint"
+                android:maxLength="1000"
+                android:maxLines="5"
+                android:nextFocusLeft="@id/comment_edit_text"
+                android:nextFocusUp="@id/comment_edit_text"/>
+
+            <TextView
+                android:layout_gravity="center_vertical"
+                android:labelFor="@+id/action_spinner"
+                android:padding="8dp"
+                android:text="@string/action_label"
+                android:textColor="@color/background_material_dark"/>
+
+            <Spinner
+                android:id="@+id/action_spinner"
+                android:layout_height="match_parent"
+                android:layout_gravity="fill_horizontal|center_vertical"/>
+
+            <Button
+                android:id="@+id/send_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_gravity="end|center_vertical"
+                android:layout_margin="10dp"
+                android:layout_row="1"
+                android:background="@drawable/save_button"
+                android:text="@string/save_note"
+                android:textColor="@color/white"/>
+
+        </GridLayout>
+    </LinearLayout>
+</RelativeLayout>

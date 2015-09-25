@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<resources>
+
+    <string name="defaultZoom" translatable="false">18</string>
+    <string name="zoomVectorial" translatable="false">20</string>
+
+    <string name="centerLat" translatable="false">48.858370</string>
+    <string name="centerLng" translatable="false">2.294481</string>
+
+    <string name="northBound" translatable="false">48,8610021955755</string>
+    <string name="eastBound" translatable="false">2,30796575546265</string>
+    <string name="southBound" translatable="false">48,8504841156124</string>
+    <string name="westBound" translatable="false">2,28740930557251</string>
+
+    <string name="mapUrl" translatable="false">http://tile.openstreetmap.org/{z}/{x}/{y}.png</string>
+    <string name="baseApiUrl" translatable="false">http://url</string>
+
+</resources>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<notices>
+    <notice>
+        <name>Butter Knife</name>
+        <url>http://jakewharton.github.io/butterknife/</url>
+        <copyright>Copyright 2013 Jake Wharton</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Crashlytics</name>
+        <url>https://try.crashlytics.com/</url>
+        <copyright>Copyright 2014 Crashlytics</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Dagger</name>
+        <url>https://github.com/google/dagger</url>
+        <copyright>Copyright 2012 Square, Inc. Copyright 2012 Google, Inc.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>EventBus</name>
+        <url>https://github.com/greenrobot/EventBus</url>
+        <copyright/>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>FloatingActionButton</name>
+        <url>https://github.com/makovkastar/FloatingActionButton</url>
+        <copyright>Copyright 2014 Oleksandr Melnykov</copyright>
+        <license>MIT License</license>
+    </notice>
+    <notice>
+        <name>FloatingActionButton</name>
+        <url>https://github.com/futuresimple/android-floating-action-button</url>
+        <copyright>Copyright 2014 Jerzy Chalupski</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Joda Time</name>
+        <url>http://www.joda.org/joda-time/</url>
+        <copyright>Copyright 2002-2015 joda.org</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>LicensesDialog</name>
+        <url>https://psdev.de/LicensesDialog/</url>
+        <copyright>Copyright 2013 Philip Schiffer</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Mapbox</name>
+        <url>https://www.mapbox.com/mapbox-android-sdk/</url>
+        <copyright/>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>OkHttp</name>
+        <url>http://square.github.io/okhttp/</url>
+        <copyright>Copyright 2014 Square, Inc.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>OrmLite</name>
+        <url>http://ormlite.com/</url>
+        <copyright>Copyright Gray Watson</copyright>
+        <license>ISC License</license>
+    </notice>
+    <notice>
+        <name>Retrofit</name>
+        <url>http://square.github.io/retrofit/</url>
+        <copyright>Copyright 2013 Square, Inc.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>ShowcaseView</name>
+        <url>https://github.com/amlcurran/ShowcaseView</url>
+        <copyright>Copyright 2012-2014 Alex Curran</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Timber</name>
+        <url>https://github.com/JakeWharton/timber</url>
+        <copyright>Copyright 2013 Jake Wharton</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+</notices>

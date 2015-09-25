@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<resources>
+
+    <!-- Localisation floating button-->
+    <color name="floating_ab_normal">#fff5f5f5</color>
+    <color name="floating_ab_pressed">#ffececec</color>
+    <color name="floating_ab_ripple">#ffb0b0b0</color>
+
+    <!--text-->
+    <color name="active_text">#424242</color>
+    <color name="disable_text">#9E9E9E</color>
+
+    <color name="theme_grey">#ff999999</color>
+    <color name="material_amber_800">#ffff8f00</color>
+    <color name="material_amber_900">#ffff6f00</color>
+
+    <color name="material_green_500">#4CAF50</color>
+    <color name="material_green_700">#388E3C</color>
+
+    <!-- Drag/Swipe list -->
+    <color name="list_divider">#e5e5e5</color>
+    <color name="list_item_bg">#ffffffff</color>
+    <color name="list_swipe_bg">#32ff4a4a</color>
+
+</resources>

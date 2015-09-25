@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/dialog_vertical_margin"
+    android:paddingLeft="@dimen/dialog_horizontal_margin"
+    android:paddingRight="@dimen/dialog_horizontal_margin"
+    android:paddingTop="@dimen/dialog_vertical_margin">
+
+    <EditText
+        android:id="@+id/poi_tag_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:hint="@string/poi_tag_key_hint"
+        android:inputType="textNoSuggestions"/>
+
+    <EditText
+        android:id="@+id/poi_tag_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:hint="@string/poi_tag_value_hint"
+        android:inputType="textNoSuggestions"/>
+
+    <CheckBox
+        android:id="@+id/poi_tag_mandatory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/poi_tag_mandatory"/>
+</LinearLayout>

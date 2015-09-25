@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32"
+   height="32"
+   id="svg4183"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="Nouveau document 23">
+  <defs
+     id="defs4185" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="15.839192"
+     inkscape:cx="4.4442907"
+     inkscape:cy="11.959464"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1176"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata4188">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1020.3622)">
+    <path
+       style="color:#000000;fill:none;stroke:#000000;stroke-width:0.99582422;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="m 11.106136,1032.0323 14.398581,0 c 0.950751,0 1.923058,-0.2524 1.772038,0.5225 l -1.466555,7.525 c -0.151021,0.7748 -0.652562,0.9226 -1.603301,0.919 l -11.859372,-0.044 c -0.950739,-0.01 -1.508653,-0.2799 -1.659728,-1.0537 l -1.4095817,-7.2184 c -0.151056,-0.7737 0.8771687,-0.6496 1.8279187,-0.6496 z"
+       id="rect4191"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cssssssssc" />
+    <rect
+       style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.25;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect4712"
+       width="1.0367048"
+       height="4.4624805"
+       x="-242.11432"
+       y="1030.6371"
+       ry="0.36919802"
+       transform="matrix(0.99284272,-0.11942918,0.24082181,0.97056935,0,0)" />
+    <rect
+       style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.25;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect4712-1"
+       width="1.0255537"
+       height="5.0757613"
+       x="-960.24017"
+       y="255.24214"
+       ry="0.41993707"
+       transform="matrix(0.241975,-0.97028248,0.92574351,0.37815202,0,0)" />
+    <path
+       sodipodi:type="arc"
+       style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.25;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="path4732"
+       sodipodi:cx="8.4600277"
+       sodipodi:cy="28.338198"
+       sodipodi:rx="2.2728431"
+       sodipodi:ry="2.2728431"
+       d="m 10.732871,28.338198 a 2.2728431,2.2728431 0 1 1 -4.5456864,0 2.2728431,2.2728431 0 1 1 4.5456864,0 z"
+       transform="translate(4.1037447,1015.8796)" />
+    <path
+       sodipodi:type="arc"
+       style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.25;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="path4732-6"
+       sodipodi:cx="8.4600277"
+       sodipodi:cy="28.338198"
+       sodipodi:rx="2.2728431"
+       sodipodi:ry="2.2728431"
+       d="m 10.732871,28.338198 a 2.2728431,2.2728431 0 1 1 -4.5456864,0 2.2728431,2.2728431 0 1 1 4.5456864,0 z"
+       transform="translate(15.404826,1015.9427)" />
+  </g>
+</svg>

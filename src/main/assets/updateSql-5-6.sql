@@ -1,0 +1,1 @@
+alter table poi_type add column BACKEND_ID varchar;

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    package="io.mapsquare.osmcontributor"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CONNECTIVITY_CHANGE"/>
+
+    <application
+        android:name=".OsmTemplateApplication"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/icon"
+        android:label="@string/name"
+        android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/gms_version"
+            tools:replace="android:value"/>
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="fa5f6bab15b8638cbf45357060825fcdcb6e0050"/>
+
+        <activity
+            android:name=".login.SplashScreenActivity"
+            android:label="@string/name"
+            android:noHistory="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".map.MapActivity"
+            android:label="@string/name"/>
+        <activity
+            android:name=".edition.EditPoiActivity"
+            android:label="@string/title_activity_edit_poi"/>
+        <activity
+            android:name=".edition.PickValueActivity"
+            android:label="@string/title_activity_pick_value"/>
+        <activity
+            android:name=".preferences.MyPreferencesActivity"
+            android:label="@string/title_activity_my_preferences"/>
+        <activity
+            android:name=".type.TypeListActivity"
+            android:label="@string/manage_poi_types"/>
+        <activity
+            android:name=".note.NoteActivity"
+            android:label="@string/title_activity_note"/>
+        <activity
+            android:name=".upload.UploadActivity"
+            android:label="@string/title_activity_upload"/>
+        <activity
+            android:name=".about.AboutActivity"
+            android:label="@string/title_activity_about"/>
+
+        <service
+            android:name=".sync.download.SyncDownloadService"
+            android:exported="false"/>
+        <service
+            android:name=".sync.upload.SyncUploadService"
+            android:exported="false"/>
+
+        <receiver android:name=".sync.download.SyncDownloadBroadcastReceiver"/>
+
+        <receiver
+            android:name=".sync.ConnectionReceiver"
+            class="io.mapsquare.osmcontributor.sync.ConnectionReceiver">
+            <intent-filter android:priority="100">
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

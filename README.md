@@ -1,11 +1,12 @@
-## OpenStreetMap Contributor App Feature & Issue tracker
+## OpenStreetMap Contributor Mapping Tool
 
 ![Filters Drawer](/images/drawer.jpg)
 ![Menu](/images/menu.png)
 
 ### About the App
 The Openstreetmap Contributor app allows anyone to contribute to OSM. It enables those-who-know to easily manage a group of newbies as the contribution process is intuitive and easy.  
-Bring your MapParties to a whole new level!  
+The App comes in three flavours: store (for the Android Store version), poi-storage (for MapSquare POI Databases), and template (for the osm.mapsquare.io tool for Mapping parties).
+Bring your MapParties to a whole new level!
 
 ### How it works
 For years, we have been using apps that do everything. For OSM, it means: add any node/way, edit, delete, comment, tag...
@@ -19,14 +20,13 @@ The approach proposed here is a little different, even though it stays compliant
  4 - Give it to your team, play, and start mapping!  
 
 ### Beta instances
-To ensure better performance, the service is available only in some areas. You can request for a new area to be added by submitting an issue on this repository.
 @Community: We are grateful for any feedback you might have on either the frontend or the mobile apps. Go crazy and let us know!
 
-http://osm.designmyapp.mobi
+http://osm.mapsquare.io
 
 ### Feedback / Issue tracking
 Please use this github project as a feedback, feature request or issue tracker.  
-You can use the following tags to help us: [Bug], [Mobile], [Web], [Feature], [Feedback], [Area]  
+You can use the following tags to help us: [Bug], [Mobile], [Web], [Feature], [Feedback]
 
 ### Twitter
 You can also reach us on Twitter:  
@@ -35,6 +35,18 @@ You can also reach us on Twitter:
 @DesignMyApp   
 
 ### Changelog
+
+[1.2.0]:
+ - Three flavours: store, template, poi-storage
+ - Support on/off POI tag type
+ - French translation
+ - Javadoc
+ - Refactor, preparation for OpenSourcing
+ - Manual management of PoiTypes
+ - Implemented second right drawer for filters
+ - Updated Copyrights
+ - Bugfixes
+ - **OpenSource RELEASE**
 
 [1.1.1]:
  - Fixed POI Deletion Bug
@@ -85,3 +97,13 @@ You can also reach us on Twitter:
 ![Ways edition](/images/ways.png)
 ![Changeset Commit](/images/changeset.jpg)| 
 ![POI Creation](/images/note_discussion.jpg) 
+
+### Contributors
+This app is actively developed by  
+fredszaq  
+sdesprez  
+nicolasfavier  
+tonymanou  
+loicortola  
+
+We welcome any contributors with issues / pull requests.

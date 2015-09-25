@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/sync"
+        android:checkableBehavior="none"
+        android:visible="false">
+        <item
+            android:id="@+id/auto_sync"
+            android:icon="@android:drawable/ic_popup_sync"
+            android:title="@string/sync_now"/>
+    </group>
+
+    <group
+        android:id="@+id/drawer_options_group"
+        android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/edit_way"
+            android:title="@string/edit_way"
+            android:visible="false"/>
+
+        <item
+            android:id="@+id/manage_poi_types"
+            android:title="@string/manage_poi_types"
+            android:visible="true"/>
+
+        <item
+            android:id="@+id/replay_tuto_menu"
+            android:title="@string/replay_tuto"
+            android:visible="false"/>
+
+        <item
+            android:id="@+id/preferences_menu"
+            android:title="@string/title_activity_my_preferences"/>
+
+        <item
+            android:id="@+id/about_menu"
+            android:title="@string/about_title"/>
+    </group>
+</menu>

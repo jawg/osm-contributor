@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<resources>
+
+    <string name="title_activity_edit_poi">Edition de poi</string>
+    <string name="location_not_found">Impossible de trouver votre position</string>
+
+    <!-- EDITION -->
+    <string name="addValueDialogTitle">Modifier la valeur de : \"%1$s\"</string>
+    <string name="addValueDialogAdd">Modifier</string>
+    <string name="addValueDialogCancel">Annuler</string>
+    <string name="uncompleted_fields">Certains champs ne sont pas remplies</string>
+    <string name="quit_edition_title">Quitter l\'édition</string>
+    <string name="quit_edition_message">Etes-vous sûr de vouloir abandonner vos modifications?</string>
+    <string name="quit_edition_positive_btn">Oui</string>
+    <string name="quit_edition_negative_btn">Annuler</string>
+    <string name="no_values_yet">Pas encore de valeur</string>
+    <string name="creation_title">Création</string>
+    <string name="edition_title">Edition</string>
+    <string name="required">Obligatoire</string>
+    <string name="optional">Facultatif</string>
+
+    <!-- Map -->
+    <string name="no_poi_name">Ce poi n\'a pas de nom</string>
+    <string name="edit_position">Changer la position</string>
+    <string name="edit_poi">Editer le poi</string>
+    <string name="update_done">%1$s Poi(s) mis à jour sur OSM</string>
+    <string name="delete_done">%1$s Poi(s) supprimé(s) sur OSM</string>
+    <string name="noderef_moved">%1$s point(s) mis à jour sur OSM, rafraichissez votre carte dans quelques minutes pour voir vos modifications.</string>
+    <string name="add_done">%1$s Poi(s) ajouté(s) à OSM</string>
+    <string name="couldnt_connect_retrofit">Echec de l\'ajout/mise à jour. Veuillez vérifier vos identifiants OSM.</string>
+    <string name="couldnt_create_node">Une erreure s\'est produite durant la création, vos modifications ont été annulées.</string>
+    <string name="couldnt_update_node">Une erreure s\'est produite durant la mise à jour, vos modifications ont été annulées.</string>
+    <string name="couldnt_download_retrofit">Impossible de récupérer les POIs. Vérifiez votre connexion.</string>
+    <string name="couldnt_upload_retrofit">Impossible d\'uploader vos POIs. Vérifiez votre connexion.</string>
+    <string name="edit_poi_position">Modification de position</string>
+    <string name="edit_way_title">Edition de chemins</string>
+    <string name="edit_noderef_position_title">Edition de position</string>
+    <string name="poi_creation">Création de poi</string>
+    <string name="delete_poi">Supprimer le poi</string>
+    <string name="delete_poi_title">Suppression de poi</string>
+    <string name="delete_poi_confirm_message">Voulez-vous vraiment supprimer ce poi?</string>
+    <string name="delete_poi_positive_btn">Supprimer</string>
+    <string name="delete_poi_negative_btn">Annuler</string>
+    <string name="point_modification_forbidden">Cette version ne permet pas la modification de points</string>
+    <string name="licenses_title">Licences</string>
+    <string name="osm_copyright">© OpenStreetMap contributors</string>
+    <string name="zoom_to_edit">Cette zone est trop grande. Veuillez zoomer plus.</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_login">Identifiant</string>
+    <string name="prompt_password">Mot de passe</string>
+    <string name="splash_screen_message">Initialisation en cours&#8230;</string>
+
+    <!-- Preferences -->
+    <string name="title_activity_my_preferences">Paramètres</string>
+    <string name="summary_login">Veuillez saisir votre identifiant OSM</string>
+    <string name="summary_password">Veuillez saisir votre mot de passe</string>
+    <string name="error_login">Impossible de se connecter avec ces identifiants. Etes-vous sûr d\'avoir les droits d\'édition?</string>
+    <string name="valid_login">Connexion réussie</string>
+
+    <!-- Shared preferences -->
+    <string name="shared_prefs_login_title">Connexion</string>
+    <string name="shared_prefs_sync_title">Synchronisation</string>
+    <string name="shared_prefs_sync_manual">Synchronisation manuelle</string>
+    <string name="shared_prefs_server">Serveur OSM</string>
+
+    <!-- Tuto -->
+    <string name="tuto_title_press_create">Création de poi</string>
+    <string name="tuto_title_confirm">Validez vos modifications</string>
+    <string name="tuto_title_cancel">Annulez vos modifications</string>
+    <string name="tuto_text_press_create">Cliquez ici pour ajouter un nouveau point</string>
+    <string name="tuto_text_choose_type">Choisissez le type du Poi que vous souhaitez ajouter</string>
+    <string name="tuto_text_swipe_for_position">Faites bouger la carte afin de positionner votre poi.</string>
+    <string name="tuto_text_confirm_position_creation">Cliquez pour confirmer la position, tout retour annulera votre création.</string>
+    <string name="tuto_text_cancel_creation">Ce Bouton ou le bouton de retour annuleront vos modifications. Rien ne sera envoyé à OSM.</string>
+    <string name="tuto_text_confirm_creation">Cliquez pour finaliser la création ou l\'édition, vos modifications seront envoyées à OSM.</string>
+    <string name="replay_tuto">Rejouer le tutoriel</string>
+
+    <!-- note -->
+    <string name="Note">Note</string>
+    <string name="comment_text_hint">Entrez un commentaire</string>
+    <string name="comment_label">Commentaire</string>
+    <string name="action_label">Action</string>
+    <string name="quit_note_title">Quitter l\'édition de commentaires</string>
+    <string name="quit_note_message">Etes-vous sûr de vouloir abandonner vos modifications?</string>
+    <string name="quit_note_positive_btn">Oui</string>
+    <string name="quit_note_negative_btn">annuler</string>
+    <string name="comment_text_cant_be_null">Veuillez saisir un commentaire</string>
+    <string name="comment_synchronizing">Veuillez attendre que la synchronisation soit finie.</string>
+    <string name="save_note">Envoyer</string>
+    <string name="synchronizing">Synchronisation en cours&#8230;</string>
+    <string name="note_already_closed">La note est déjà fermé</string>
+    <string name="title_activity_note">Note</string>
+    <string name="note">Note</string>
+    <string name="title_note">Note (%s)</string>
+    <string name="title_creation_note">Note</string>
+    <string name="create_note">Créer</string>
+    <string name="cancel">Annuler</string>
+    <string name="note_spinner_element">Note</string>
+
+    <!-- Filter drawer -->
+    <string name="filters">Filtres</string>
+    <string name="filter_notes">Notes</string>
+    <string name="filter_note_open">Ouverte</string>
+    <string name="filter_note_closed">Fermée</string>
+    <string name="filter_pois">POIs</string>
+    <string name="filter_poi_all">Tous</string>
+
+    <!-- Synchronization -->
+    <string name="sync_now">Synchroniser</string>
+    <string name="title_activity_upload">Upload manuel</string>
+    <string name="couldnt_sync_connectivity">Impossible d\'envoyer vos modifications. Vérifiez votre connexion</string>
+
+    <!--Update-->
+    <string name="update_title">Ajouter un commentaire à vos modifications</string>
+    <string name="need_a_comment">Le commentaire ne peut pas être vide</string>
+    <string name="nothing_to_update">Vous n\'avez rien à mettre à jour</string>
+    <string name="created">Créé</string>
+    <string name="deleted">Supprimé</string>
+    <string name="updated">Modifié</string>
+
+    <!--About-->
+    <string name="title_activity_about">A propos de nous</string>
+    <string name="about_title">A propos</string>
+
+    <!--edit way-->
+    <string name="edit_way">Editer les chemins</string>
+
+    <!-- POI types/tags -->
+    <string name="manage_poi_types">Gérer les types de Poi</string>
+    <string name="manage_poi_tags">Gérer les tags de Poi</string>
+    <string name="tag_number">%1$s tags</string>
+    <string name="new_poi_type">Nouveau type</string>
+    <string name="new_poi_tag">Nouveau tag</string>
+    <string name="edit_poi_type">Modifier le type</string>
+    <string name="edit_poi_tag">Modifier le tag</string>
+    <string name="poi_type_name_hint">nom</string>
+    <string name="poi_tag_key_hint">clé</string>
+    <string name="poi_tag_value_hint">valeur</string>
+    <string name="poi_tag_mandatory">Obligatoire</string>
+
+    <!-- Snackbar -->
+    <string name="item_removed">\"%1$s\" a été supprimé</string>
+    <string name="undo">Annuler</string>
+
+</resources>
