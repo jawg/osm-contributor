@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,12 +73,15 @@ public class GeoJSONFileManager {
 
 
     public void init() {
+        Reader reader = null;
         try {
             Timber.d("GeoJSONFileManager init");
-            Gson gson = new Gson();
-            Reader reader = new InputStreamReader(application.getAssets().open("vectorialfiles.json"));
-            fileDescriptors = gson.fromJson(reader, (new TypeToken<List<GeoJSONFileDescriptor>>() {
-            }).getType());
+            if (Arrays.asList(application.getAssets().list("")).contains(VECTORIAL_FILES)) {
+                Gson gson = new Gson();
+                reader = new InputStreamReader(application.getAssets().open(VECTORIAL_FILES));
+                fileDescriptors = gson.fromJson(reader, (new TypeToken<List<GeoJSONFileDescriptor>>() {
+                }).getType());
+            }
         } catch (IOException e) {
             Timber.e(e, "Failed to initialize GeoJSONFilesManager");
             throw new RuntimeException(e);
