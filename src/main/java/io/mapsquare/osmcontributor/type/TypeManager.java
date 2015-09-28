@@ -22,6 +22,7 @@ import android.support.design.widget.Snackbar;
 import android.view.View.OnClickListener;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.R;
@@ -36,6 +37,8 @@ import io.mapsquare.osmcontributor.type.event.PoiTypeCreatedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTypeDeletedEvent;
 import timber.log.Timber;
 
+
+@Singleton
 public class TypeManager {
 
     private EventBus bus;
