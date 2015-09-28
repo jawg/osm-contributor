@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 
+import io.mapsquare.osmcontributor.utils.CloseableUtils;
 import retrofit.converter.ConversionException;
 import retrofit.mime.MimeUtil;
 import retrofit.mime.TypedInput;
@@ -75,23 +76,20 @@ public class XMLConverter extends SimpleXmlConverter {
             } catch (IOException e) {
                 Timber.e(e, "Exception while reading XML");
             } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        Timber.e(e, "Failed to close reader");
-                    }
-                }
+                CloseableUtils.closeQuietly(reader);
             }
 
             return sb.toString();
         }
 
+        InputStreamReader isr = null;
         try {
-            InputStreamReader isr = new InputStreamReader(body.in(), charset);
+            isr = new InputStreamReader(body.in(), charset);
             return serializer.read((Class<?>) type, isr);
         } catch (Exception e) {
             throw new ConversionException(e);
+        } finally {
+            CloseableUtils.closeQuietly(isr);
         }
     }
 

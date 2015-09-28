@@ -42,6 +42,7 @@ import io.mapsquare.osmcontributor.sync.converter.PoiConverter;
 import io.mapsquare.osmcontributor.sync.converter.PoiTypeConverter;
 import io.mapsquare.osmcontributor.sync.dto.dma.PoiTypesDto;
 import io.mapsquare.osmcontributor.sync.dto.osm.OsmDto;
+import io.mapsquare.osmcontributor.utils.CloseableUtils;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
 
@@ -119,13 +120,7 @@ public class PoiAssetLoader {
             Timber.e(e, "Error while loading POI Types from assets");
             throw new RuntimeException(e);
         } finally {
-            // TODO get a close quietly method
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (Exception ignored) {
-                }
-            }
+            CloseableUtils.closeQuietly(reader);
         }
     }
 

@@ -34,6 +34,7 @@ import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.map.events.AddressFoundEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseFindAddressEvent;
 import io.mapsquare.osmcontributor.utils.EventCountDownTimer;
+import timber.log.Timber;
 
 @Singleton
 public class Geocoder {
@@ -78,7 +79,7 @@ public class Geocoder {
             JSONObject reader = new JSONObject(responseBody);
             return reader.optString("display_name");
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
+            Timber.e(e, "Failed to parse response");
         }
         return "";
     }

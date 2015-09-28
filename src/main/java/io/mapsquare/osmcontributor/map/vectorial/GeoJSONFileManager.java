@@ -46,6 +46,7 @@ import io.mapsquare.osmcontributor.map.events.GeoJSONInitializedEvent;
 import io.mapsquare.osmcontributor.map.events.InitGeoJSONEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadVectorialTileEvent;
 import io.mapsquare.osmcontributor.map.events.VectorialTilesLoadedEvent;
+import io.mapsquare.osmcontributor.utils.CloseableUtils;
 import timber.log.Timber;
 
 
@@ -53,6 +54,7 @@ import timber.log.Timber;
 public class GeoJSONFileManager {
 
     private List<GeoJSONFileDescriptor> fileDescriptors = new ArrayList<>();
+    private static final String VECTORIAL_FILES = "vectorialfiles.json";
 
     Application application;
     EventBus eventBus;
@@ -85,6 +87,8 @@ public class GeoJSONFileManager {
         } catch (IOException e) {
             Timber.e(e, "Failed to initialize GeoJSONFilesManager");
             throw new RuntimeException(e);
+        } finally {
+            CloseableUtils.closeQuietly(reader);
         }
     }
 

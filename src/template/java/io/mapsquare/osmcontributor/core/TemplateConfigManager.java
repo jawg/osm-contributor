@@ -32,6 +32,7 @@ import javax.inject.Singleton;
 
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.utils.Box;
+import io.mapsquare.osmcontributor.utils.CloseableUtils;
 
 @Singleton
 public class TemplateConfigManager implements ConfigManager {
@@ -69,11 +70,14 @@ public class TemplateConfigManager implements ConfigManager {
     @Deprecated
     private TemplateConfig getTemplateConfig() {
         if (templateConfig == null) {
+            InputStreamReader reader = null;
             try {
-                InputStreamReader reader = new InputStreamReader(application.getAssets().open("poitypes.json"));
+                reader = new InputStreamReader(application.getAssets().open("poitypes.json"));
                 templateConfig = new Gson().fromJson(reader, TemplateConfig.class);
             } catch (IOException e) {
                 throw new RuntimeException("Error while loading poitypes.json", e);
+            } finally {
+                CloseableUtils.closeQuietly(reader);
             }
         }
         return templateConfig;
