@@ -47,7 +47,6 @@ import io.mapsquare.osmcontributor.sync.events.ConnectedEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadNoteEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadWayEvent;
-import io.mapsquare.osmcontributor.sync.events.SyncFinishDownloadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.error.ConnectionLostEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNodeErrorEvent;
@@ -56,7 +55,6 @@ import io.mapsquare.osmcontributor.sync.events.error.SyncNewNodeErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.upload.SyncUploadService;
 import io.mapsquare.osmcontributor.utils.Box;
-import io.mapsquare.osmcontributor.utils.EventCountDownTimer;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
 
@@ -80,7 +78,6 @@ public class SyncManager {
     SyncWayManager syncWayManager;
     SyncNoteManager syncNoteManager;
     private static boolean hasInternet = false;
-    private static boolean firstPoiLoad = true;
 
 
     @Inject
@@ -95,7 +92,6 @@ public class SyncManager {
         this.syncNoteManager = syncNoteManager;
     }
 
-    EventCountDownTimer resetPoiSyncTimer = new EventCountDownTimer(30000, 30000);
 
     // ********************************
     // ************ Events ************
@@ -107,11 +103,11 @@ public class SyncManager {
     }
 
     public void onEventAsync(SyncDownloadPoiEvent event) {
-        syncDownloadPoiWithTimer(event);
+        syncDownloadPoiBox(event.getBox(), event.isWithDate());
     }
 
     public void onEventAsync(SyncDownloadNoteEvent event) {
-        syncNoteManager.syncDownloadNotesWithTimer(event);
+        syncNoteManager.syncDownloadNotesInBox(event.getBox());
     }
 
     public void onEventAsync(SyncDownloadWayEvent event) {
@@ -185,8 +181,6 @@ public class SyncManager {
      * Download from backend the list of Poi contained in the box.
      * Update the database with the obtained list.
      * <p/>
-     * Send a {@link io.mapsquare.osmcontributor.sync.events.SyncFinishDownloadPoiEvent} the ids of the obtained POIs.
-     * <p/>
      * Send a {@link io.mapsquare.osmcontributor.core.events.PoisLoadedEvent} containing the POIs in the box who are in the database.
      *
      * @param box      The Box to synchronize with the database.
@@ -199,18 +193,12 @@ public class SyncManager {
         }
 
         List<Poi> pois = backend.getPoisInBox(box, withDate);
-        SyncFinishDownloadPoiEvent syncFinishDownloadPoiEvent = new SyncFinishDownloadPoiEvent();
         if (pois.size() > 0) {
             Timber.d("Updating %d nodes", pois.size());
             poiManager.mergeFromOsmPois(pois);
-
-            for (Poi poi : pois) {
-                syncFinishDownloadPoiEvent.getDownloadedNodesIds().add(poi.getBackendId());
-            }
         } else {
             Timber.d("No new node found in the area");
         }
-        bus.postSticky(syncFinishDownloadPoiEvent);
         bus.post(new PoisLoadedEvent(box, poiManager.queryForAllInRect(box)));
     }
 
@@ -293,26 +281,6 @@ public class SyncManager {
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), ALARM_DOWNLOAD_TIME, alarmDownloadPendingIntent);
 
         bus.postSticky(new SyncAlarmInitializedEvent());
-    }
-
-    /**
-     * Execute the {@link #syncDownloadPoiBox(Box, boolean)} with a delay from a timer.
-     * Reset the timer if a new call to function is made.
-     *
-     * @param event Event containing the box to synchronize.
-     */
-    // FIXME: firstPoiLoad always at true and the events and timer handling is strange.
-    private void syncDownloadPoiWithTimer(SyncDownloadPoiEvent event) {
-        if (bus.getStickyEvent(SyncFinishDownloadPoiEvent.class) != null || firstPoiLoad) {
-            bus.removeStickyEvent(SyncFinishDownloadPoiEvent.class);
-            firstPoiLoad = true;
-            syncDownloadPoiBox(event.getBox(), event.isWithDate());
-        } else {
-            Timber.d("Waiting for previous sync to finish before starting a new one. If it takes too long, post a SyncFinishDownloadEvent anyway");
-            resetPoiSyncTimer.cancel();
-            resetPoiSyncTimer.setStickyEvent(new SyncFinishDownloadPoiEvent());
-            resetPoiSyncTimer.start();
-        }
     }
 
     /**

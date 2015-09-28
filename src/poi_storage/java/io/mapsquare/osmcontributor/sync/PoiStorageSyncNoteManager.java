@@ -18,7 +18,6 @@
  */
 package io.mapsquare.osmcontributor.sync;
 
-import io.mapsquare.osmcontributor.sync.events.SyncDownloadNoteEvent;
 import io.mapsquare.osmcontributor.utils.Box;
 
 /**
@@ -35,16 +34,6 @@ public class PoiStorageSyncNoteManager implements SyncNoteManager {
      */
     @Override
     public void syncDownloadNotesInBox(Box box) {
-
-    }
-
-    /**
-     * Empty implementation.
-     * <p/>
-     * {@inheritDoc}
-     */
-    @Override
-    public void syncDownloadNotesWithTimer(SyncDownloadNoteEvent event) {
 
     }
 

@@ -30,15 +30,12 @@ import io.mapsquare.osmcontributor.note.NoteManager;
 import io.mapsquare.osmcontributor.sync.converter.NoteConverter;
 import io.mapsquare.osmcontributor.sync.dto.osm.NoteDto;
 import io.mapsquare.osmcontributor.sync.dto.osm.OsmDto;
-import io.mapsquare.osmcontributor.sync.events.SyncDownloadNoteEvent;
-import io.mapsquare.osmcontributor.sync.events.SyncFinishDownloadNoteEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadNote;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNoteErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncDownloadRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadNoteRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.rest.OsmRestClient;
 import io.mapsquare.osmcontributor.utils.Box;
-import io.mapsquare.osmcontributor.utils.EventCountDownTimer;
 import retrofit.RetrofitError;
 import timber.log.Timber;
 
@@ -54,9 +51,6 @@ public class OSMSyncNoteManager implements SyncNoteManager {
     NoteConverter noteConverter;
     CommentDao commentDao;
     NoteDao noteDao;
-
-    private static boolean firstNoteLoad = true;
-    EventCountDownTimer resetNoteSyncTimer = new EventCountDownTimer(30000, 30000);
 
     public OSMSyncNoteManager(OSMProxy osmProxy, OsmRestClient osmRestClient, EventBus bus, NoteManager noteManager, NoteConverter noteConverter, CommentDao commentDao, NoteDao noteDao) {
         this.osmProxy = osmProxy;
@@ -81,19 +75,12 @@ public class OSMSyncNoteManager implements SyncNoteManager {
 
                 OsmDto osmDto = osmRestClient.getNotes(strBox);
 
-                SyncFinishDownloadNoteEvent syncFinishDownloadNoteEvent = new SyncFinishDownloadNoteEvent();
-
                 if (osmDto != null && osmDto.getNoteDtoList() != null && osmDto.getNoteDtoList().size() > 0) {
                     Timber.d("Updating %d note(s)", osmDto.getNoteDtoList().size());
                     locallyUpdateNotes(osmDto);
-                    for (NoteDto noteDto : osmDto.getNoteDtoList()) {
-                        syncFinishDownloadNoteEvent.getDownloadedNotesIds().add(noteDto.getId());
-                    }
                 } else {
                     Timber.d("No new note found in the area");
                 }
-                //for the timer
-                bus.postSticky(syncFinishDownloadNoteEvent);
                 //to notify the app that notes have been loaded
                 bus.post(new NotesLoadedEvent(box, noteManager.queryForAllInRect(box)));
                 return null;
@@ -116,27 +103,6 @@ public class OSMSyncNoteManager implements SyncNoteManager {
         List<Note> notes = noteConverter.convertNoteDtosToNotes(noteDtoList);
 
         noteManager.mergeFromOsmNotes(notes);
-    }
-
-    /**
-     * Execute the {@link #syncDownloadNotesInBox(Box)} with a delay from a timer.
-     * Reset the timer if a new call to function is made.
-     *
-     * @param event Event containing the box to synchronize.
-     */
-    @Override
-    // FIXME: Event handling is strange.
-    public void syncDownloadNotesWithTimer(SyncDownloadNoteEvent event) {
-        if (bus.getStickyEvent(SyncFinishDownloadNoteEvent.class) != null || firstNoteLoad) {
-            firstNoteLoad = false;
-            bus.removeStickyEvent(SyncFinishDownloadNoteEvent.class);
-            syncDownloadNotesInBox(event.getBox());
-        } else {
-            Timber.d("Waiting for previous note sync to finish before starting a new one. If it takes too long, post a SyncFinishDownloadEvent anyway");
-            resetNoteSyncTimer.cancel();
-            resetNoteSyncTimer.setStickyEvent(new SyncFinishDownloadNoteEvent());
-            resetNoteSyncTimer.start();
-        }
     }
 
     /**

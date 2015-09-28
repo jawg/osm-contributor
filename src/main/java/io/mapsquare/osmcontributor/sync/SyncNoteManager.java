@@ -18,7 +18,6 @@
  */
 package io.mapsquare.osmcontributor.sync;
 
-import io.mapsquare.osmcontributor.sync.events.SyncDownloadNoteEvent;
 import io.mapsquare.osmcontributor.utils.Box;
 
 /**
@@ -30,21 +29,11 @@ public interface SyncNoteManager {
      * Download from backend the list of Notes contained in the box.
      * Update the database with the obtained list.
      * <p/>
-     * Send a {@link io.mapsquare.osmcontributor.sync.events.SyncFinishDownloadNoteEvent} the ids of the obtained Notes.
-     * <p/>
      * Send a {@link io.mapsquare.osmcontributor.core.events.NotesLoadedEvent} containing the Notes in the box who are in the database.
      *
      * @param box The Box to synchronize with the database.
      */
     void syncDownloadNotesInBox(final Box box);
-
-    /**
-     * Execute the {@link #syncDownloadNotesInBox(Box)} with a delay from a timer.
-     * Reset the timer if a new call to function is made.
-     *
-     * @param event Event containing the box to synchronize.
-     */
-    void syncDownloadNotesWithTimer(SyncDownloadNoteEvent event);
 
     /**
      * Send new Comments to the backend.
