@@ -47,7 +47,7 @@ public interface PoiStorageClient {
     CreationOrUpdateResult updatePoi(@Path("id") String backendId, @Body PoiDto poi);
 
     @GET("/poi/")
-    List<PoiDto> getPois(@Query("after") String since, @Query("bounding_box") String boundingBox, @Query("bounding_circle") String boundingCircle);
+    List<PoiDto> getPois(@Query("after") String since, @Query("lat1") Double north, @Query("lng1") Double west, @Query("lat2") Double south, @Query("lng2") Double east, @Query("bounding_circle") String boundingCircle);
 
     @GET("/type/{id}")
     TypeDto getType(@Path("id") String backendId);

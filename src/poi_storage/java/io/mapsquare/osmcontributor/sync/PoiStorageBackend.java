@@ -20,7 +20,6 @@ package io.mapsquare.osmcontributor.sync;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.core.model.Poi;
@@ -68,9 +67,8 @@ public class PoiStorageBackend implements Backend {
      */
     @Override
     public List<Poi> getPoisInBox(Box box, boolean withDate) {
-        String bounds = String.format(Locale.ENGLISH, "%f,%f;%f,%f", box.getNorth(), box.getWest(), box.getSouth(), box.getEast());
         try {
-            return CollectionUtils.map(client.getPois(null, bounds, null), new Function<PoiDto, Poi>() {
+            return CollectionUtils.map(client.getPois(null, box.getNorth(), box.getWest(), box.getSouth(), box.getEast(), null), new Function<PoiDto, Poi>() {
                 @Override
                 public Poi apply(PoiDto poiDto) {
                     return converter.convertPoi(poiDto);
