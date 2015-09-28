@@ -64,7 +64,7 @@ public class SyncDownloadService extends IntentService {
                 syncManager.syncDownloadPoiTypes();
                 break;
             case FlavorUtils.TEMPLATE:
-                syncManager.syncDownloadPoiBox(configManager.getPreloadedBox(), true);
+                syncManager.syncDownloadPoiBox(configManager.getPreloadedBox());
                 syncNoteManager.syncDownloadNotesInBox(configManager.getPreloadedBox());
                 break;
         }

@@ -103,7 +103,7 @@ public class SyncManager {
     }
 
     public void onEventAsync(SyncDownloadPoiEvent event) {
-        syncDownloadPoiBox(event.getBox(), event.isWithDate());
+        syncDownloadPoiBox(event.getBox());
     }
 
     public void onEventAsync(SyncDownloadNoteEvent event) {
@@ -183,16 +183,15 @@ public class SyncManager {
      * <p/>
      * Send a {@link io.mapsquare.osmcontributor.core.events.PoisLoadedEvent} containing the POIs in the box who are in the database.
      *
-     * @param box      The Box to synchronize with the database.
-     * @param withDate If true, download only the POIs with a date after the newest date of update contained in the database.
+     * @param box The Box to synchronize with the database.
      */
-    public void syncDownloadPoiBox(final Box box, final boolean withDate) {
+    public void syncDownloadPoiBox(final Box box) {
         if (FlavorUtils.isPoiStorage()) {
             // Sync PoiTypes before the Poi to be sure we have all PoiTypes
             syncDownloadPoiTypes();
         }
 
-        List<Poi> pois = backend.getPoisInBox(box, withDate);
+        List<Poi> pois = backend.getPoisInBox(box);
         if (pois.size() > 0) {
             Timber.d("Updating %d nodes", pois.size());
             poiManager.mergeFromOsmPois(pois);

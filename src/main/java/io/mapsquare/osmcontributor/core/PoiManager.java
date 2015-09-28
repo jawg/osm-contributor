@@ -631,7 +631,7 @@ public class PoiManager {
         if (!FlavorUtils.isTemplate() || !configManager.getPreloadedBox().contains(event.getBox())) {
             Timber.d("Moving outside the default area, calling OSM to retrieve POIs");
             timer.cancel();
-            timer.setEvent(new SyncDownloadPoiEvent(event.getBox(), false));
+            timer.setEvent(new SyncDownloadPoiEvent(event.getBox()));
             timer.start();
         }
     }

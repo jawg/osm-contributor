@@ -22,18 +22,12 @@ import io.mapsquare.osmcontributor.utils.Box;
 
 public class SyncDownloadPoiEvent {
     private Box box;
-    private boolean withDate;
 
-    public SyncDownloadPoiEvent(Box box, boolean withDate) {
+    public SyncDownloadPoiEvent(Box box) {
         this.box = box;
-        this.withDate = withDate;
     }
 
     public Box getBox() {
         return box;
-    }
-
-    public boolean isWithDate() {
-        return withDate;
     }
 }

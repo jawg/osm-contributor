@@ -100,11 +100,10 @@ public interface Backend {
     /**
      * Download all the POIs contained in the area delimited by the box.
      *
-     * @param box      The bounds of the area.
-     * @param withDate f true, download only the POIs with a date after the newest date of update contained in the database.
+     * @param box The bounds of the area.
      * @return The list of downloaded POIs.
      */
-    List<Poi> getPoisInBox(final Box box, final boolean withDate);
+    List<Poi> getPoisInBox(final Box box);
 
     /**
      * Download a Poi from the backend by its id.

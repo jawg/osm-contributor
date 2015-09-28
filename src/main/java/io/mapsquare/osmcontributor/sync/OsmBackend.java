@@ -41,7 +41,6 @@ import io.mapsquare.osmcontributor.sync.events.error.SyncUploadRetrofitErrorEven
 import io.mapsquare.osmcontributor.sync.rest.OsmRestClient;
 import io.mapsquare.osmcontributor.sync.rest.OverpassRestClient;
 import io.mapsquare.osmcontributor.utils.Box;
-import io.mapsquare.osmcontributor.utils.DateTimeUtils;
 import retrofit.RetrofitError;
 import retrofit.mime.TypedString;
 import timber.log.Timber;
@@ -116,13 +115,13 @@ public class OsmBackend implements Backend {
      */
     @Override
     @NonNull
-    public List<Poi> getPoisInBox(final Box box, final boolean withDate) {
+    public List<Poi> getPoisInBox(final Box box) {
         Timber.d("Requesting overpass for download");
 
         OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
             @Override
             public OsmDto proceed() {
-                String request = generateOverpassRequest(box, withDate);
+                String request = generateOverpassRequest(box);
                 return overpassRestClient.sendRequest(new TypedString(request));
             }
         });
@@ -144,7 +143,7 @@ public class OsmBackend implements Backend {
         return pois;
     }
 
-    private String generateOverpassRequest(Box box, boolean withDate) {
+    private String generateOverpassRequest(Box box) {
 
         StringBuilder cmplReq = new StringBuilder("(");
 
@@ -166,16 +165,6 @@ public class OsmBackend implements Backend {
                 }
                 if (valid) {
                     cmplReq.append(req);
-
-                    // newer than
-                    if (withDate) {
-                        cmplReq.append("(")
-                                .append("newer:")
-                                .append("\"")
-                                .append(DateTimeUtils.UTC_DATE_TIME_FORMATTER.print(poiManager.getLastUpdateDate()))
-                                .append("\"")
-                                .append(")");
-                    }
 
                     // bounding box
                     cmplReq.append("(")

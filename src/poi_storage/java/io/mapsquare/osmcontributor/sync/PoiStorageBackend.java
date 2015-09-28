@@ -66,7 +66,7 @@ public class PoiStorageBackend implements Backend {
      * {@inheritDoc}
      */
     @Override
-    public List<Poi> getPoisInBox(Box box, boolean withDate) {
+    public List<Poi> getPoisInBox(Box box) {
         try {
             return CollectionUtils.map(client.getPois(null, box.getNorth(), box.getWest(), box.getSouth(), box.getEast(), null), new Function<PoiDto, Poi>() {
                 @Override
