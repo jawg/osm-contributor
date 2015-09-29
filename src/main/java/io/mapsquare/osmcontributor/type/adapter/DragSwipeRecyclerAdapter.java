@@ -111,6 +111,19 @@ public abstract class DragSwipeRecyclerAdapter<T extends Comparable<T>>
 
     public abstract long getItemId(T item);
 
+    public final T getItemById(long id) {
+        for (T item : data) {
+            if (getItemId(item) == id) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public final int getItemPosition(T item) {
+        return data.indexOf(item);
+    }
+
     public void clearAndAddAll(Collection<T> items) {
         data.clear();
         data.addAll(items);
@@ -127,11 +140,10 @@ public abstract class DragSwipeRecyclerAdapter<T extends Comparable<T>>
 
         int position = data.indexOf(item);
         if (oldPosition != -1) {
-            if (oldPosition == position) {
-                notifyItemChanged(position);
-            } else {
+            if (oldPosition != position) {
                 notifyItemMoved(oldPosition, position);
             }
+            notifyItemChanged(position);
         } else {
             notifyItemInserted(position);
         }

@@ -48,7 +48,6 @@ public class TypeListActivityPresenter {
     private static final String BUNDLE_CURRENT_POI_TYPE = "poi_type:current:id";
 
     private final TypeListActivity typeListActivity;
-    private List<PoiType> currentPoiTypes;
     private PoiType currentPoiType;
     private Long poiTypeIdFromSavedState;
 
@@ -106,12 +105,14 @@ public class TypeListActivityPresenter {
             public void onItemClicked(PoiType item) {
                 currentPoiType = item;
                 typeManager.finishLastDeletionJob();
-                typeListActivity.showTags(new ArrayList<>(item.getTags()), item);
+                bus.post(new InternalPleaseLoadEvent(item.getId()));
             }
 
             @Override
             public void onItemLongClicked(PoiType item) {
-                EditPoiTypeDialogFragment.display(typeListActivity.getSupportFragmentManager(), item);
+                if (currentPoiType == null) { // In case item was clicked before being long-clicked
+                    EditPoiTypeDialogFragment.display(typeListActivity.getSupportFragmentManager(), item);
+                }
             }
 
             @Override
@@ -262,24 +263,18 @@ public class TypeListActivityPresenter {
             typeListActivity.showTags(currentPoiType.getTags(), currentPoiType);
         }
 
-        this.currentPoiTypes = currentPoiTypes;
         this.currentPoiType = currentPoiType;
     }
 
     /* ========== POI type/tag edition ========== */
 
     public void onEventMainThread(PleaseSavePoiType event) {
-        PoiType poiType = null;
+        PoiType poiType;
 
         Long id = event.getId();
         if (id != null) {
             // We edit an existing type, so find it in the list...
-            for (PoiType type : currentPoiTypes) {
-                if (type.getId().equals(id)) {
-                    poiType = type;
-                    break;
-                }
-            }
+            poiType = typeListActivity.getPoiTypeById(id);
             if (poiType == null) {
                 throw new IllegalStateException("Edited type not found");
             }
@@ -330,10 +325,12 @@ public class TypeListActivityPresenter {
     }
 
     public void onEventMainThread(PoiTypeCreatedEvent event) {
+        typeManager.finishLastDeletionJob();
         typeListActivity.addNewPoiType(event.getPoiType());
     }
 
     public void onEventMainThread(PoiTagCreatedEvent event) {
+        typeManager.finishLastDeletionJob();
         typeListActivity.addNewPoiTag(event.getPoiTypeTag());
     }
 

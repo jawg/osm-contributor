@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.model.PoiType;
+import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.map.BitmapHandler;
 
 public class PoiTypeAdapter extends DragSwipeRecyclerAdapter<PoiType> {
@@ -55,6 +56,25 @@ public class PoiTypeAdapter extends DragSwipeRecyclerAdapter<PoiType> {
     @Override
     public long getItemId(PoiType item) {
         return item.getId();
+    }
+
+    // FIXME quick hack, implement in-memory type edition to get rid of this heresy
+    public void notifyTagRemoved(PoiTypeTag poiTypeTag) {
+        PoiType poiType = poiTypeTag.getPoiType();
+        Long id = poiType != null ? poiType.getId() : null;
+        if (id == null) {
+            return;
+        }
+
+        poiType = getItemById(id);
+        if (poiType != null) {
+            poiType.getTags().remove(poiTypeTag);
+
+            int position = getItemPosition(poiType);
+            if (position != -1) {
+                notifyItemChanged(position);
+            }
+        }
     }
 
     private static class ViewHolder extends BaseViewHolder<PoiType> {

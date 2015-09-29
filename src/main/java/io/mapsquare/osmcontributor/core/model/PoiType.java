@@ -103,10 +103,19 @@ public class PoiType implements Comparable<PoiType> {
 
     @Override
     public int compareTo(@NonNull PoiType o) {
-        if (backendId != null && o.backendId != null) {
-            return backendId.compareTo(o.backendId);
+        int result;
+        if (name != null && o.name != null) {
+            result = name.compareTo(o.name);
+        } else {
+            result = 0;
         }
-        return name.compareTo(o.getName());
+        if (result == 0 && backendId != null && o.backendId != null) {
+            result = backendId.compareTo(o.backendId);
+        }
+        if (result == 0 && id != null && o.id != null) {
+            result = id.compareTo(o.id);
+        }
+        return result;
     }
 
     @Override

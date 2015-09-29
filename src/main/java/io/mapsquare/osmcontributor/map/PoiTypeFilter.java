@@ -18,6 +18,8 @@
  */
 package io.mapsquare.osmcontributor.map;
 
+import android.support.annotation.NonNull;
+
 public class PoiTypeFilter implements Comparable<PoiTypeFilter> {
     private String poiTypeName;
     private Long poiTypeId;
@@ -87,7 +89,16 @@ public class PoiTypeFilter implements Comparable<PoiTypeFilter> {
     }
 
     @Override
-    public int compareTo(PoiTypeFilter o) {
-        return poiTypeName.compareTo(o.getPoiTypeName());
+    public int compareTo(@NonNull PoiTypeFilter o) {
+        int result;
+        if (poiTypeName != null && o.poiTypeName != null) {
+            result = poiTypeName.compareTo(o.poiTypeName);
+        } else {
+            result = 0;
+        }
+        if (result == 0 && poiTypeId != null && o.poiTypeId != null) {
+            result = poiTypeId.compareTo(o.poiTypeId);
+        }
+        return result;
     }
 }

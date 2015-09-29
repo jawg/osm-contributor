@@ -218,6 +218,11 @@ public class TypeListActivity extends AppCompatActivity {
 
     public void notifyPoiTagDefinitivelyRemoved(PoiTypeTag poiTypeTag) {
         tagsAdapter.notifyLastRemovalDone(poiTypeTag);
+        typesAdapter.notifyTagRemoved(poiTypeTag);
+    }
+
+    public PoiType getPoiTypeById(Long id) {
+        return typesAdapter.getItemById(id);
     }
 
     public void addNewPoiType(PoiType item) {
