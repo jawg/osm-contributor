@@ -69,6 +69,8 @@ public class NoteManager {
     EventBus bus;
     Application application;
 
+    EventCountDownTimer timer;
+
     @Inject
     public NoteManager(NoteDao noteDao, CommentDao commentDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, Application application) {
         this.noteDao = noteDao;
@@ -77,9 +79,8 @@ public class NoteManager {
         this.configManager = configManager;
         this.application = application;
         this.bus = bus;
+        timer = new EventCountDownTimer(5000, 5000, bus);
     }
-
-    EventCountDownTimer timer = new EventCountDownTimer(5000, 5000);
 
     // ********************************
     // ************ Events ************

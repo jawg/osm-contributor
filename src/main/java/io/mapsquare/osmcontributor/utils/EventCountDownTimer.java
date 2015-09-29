@@ -30,6 +30,7 @@ public class EventCountDownTimer extends CountDownTimer {
 
     private Object event;
     private Object stickyEvent;
+    private EventBus bus;
 
     /**
      * @param millisInFuture    The number of millis in the future from the call
@@ -38,8 +39,9 @@ public class EventCountDownTimer extends CountDownTimer {
      * @param countDownInterval The interval along the way to receive
      *                          {@link #onTick(long)} callbacks.
      */
-    public EventCountDownTimer(long millisInFuture, long countDownInterval) {
+    public EventCountDownTimer(long millisInFuture, long countDownInterval, EventBus bus) {
         super(millisInFuture, countDownInterval);
+        this.bus = bus;
     }
 
     /**
@@ -58,12 +60,11 @@ public class EventCountDownTimer extends CountDownTimer {
      */
     @Override
     public void onFinish() {
-        // TODO correctly load the eventbus
         if (event != null) {
-            EventBus.getDefault().post(event);
+            bus.post(event);
         }
         if (stickyEvent != null) {
-            EventBus.getDefault().postSticky(stickyEvent);
+            bus.postSticky(stickyEvent);
         }
     }
 

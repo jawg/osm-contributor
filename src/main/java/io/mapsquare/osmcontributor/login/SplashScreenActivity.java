@@ -45,8 +45,6 @@ import timber.log.Timber;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
-    private EventCountDownTimer timer;
-
     @Inject
     EventBus bus;
 
@@ -70,7 +68,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         editBy.setText(Html.fromHtml(getString(R.string.splash_screen_edited_by)));
         poweredBy.setText(Html.fromHtml(getString(R.string.splash_screen_powered_by)));
 
-        timer = new EventCountDownTimer(3000, 3000);
+        EventCountDownTimer timer = new EventCountDownTimer(3000, 3000, bus);
         timer.setStickyEvent(new SplashScreenTimerFinishedEvent());
         timer.start();
 

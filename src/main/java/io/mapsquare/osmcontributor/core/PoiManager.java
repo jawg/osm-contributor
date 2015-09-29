@@ -78,6 +78,8 @@ public class PoiManager {
     ConfigManager configManager;
     EventBus bus;
 
+    EventCountDownTimer timer;
+
     @Inject
     public PoiManager(PoiDao poiDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao, PoiTypeTagDao poiTypeTagDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus) {
         this.poiDao = poiDao;
@@ -88,9 +90,8 @@ public class PoiManager {
         this.databaseHelper = databaseHelper;
         this.configManager = configManager;
         this.bus = bus;
+        timer = new EventCountDownTimer(5000, 5000, bus);
     }
-
-    EventCountDownTimer timer = new EventCountDownTimer(5000, 5000);
 
     // ********************************
     // ************ Events ************

@@ -45,11 +45,12 @@ public class Geocoder {
 
     private OkHttpClient client = new OkHttpClient();
 
-    private EventCountDownTimer timer = new EventCountDownTimer(2000, 2000);
+    private EventCountDownTimer timer;
 
     @Inject
     public Geocoder(EventBus eventBus) {
         this.eventBus = eventBus;
+        this.timer = new EventCountDownTimer(2000, 2000, eventBus);
     }
 
     public void delayedReverseGeocoding(double lat, double lng) {
