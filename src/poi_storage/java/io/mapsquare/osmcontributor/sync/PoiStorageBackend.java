@@ -68,7 +68,7 @@ public class PoiStorageBackend implements Backend {
     @Override
     public List<Poi> getPoisInBox(Box box) {
         try {
-            return CollectionUtils.map(client.getPois(null, box.getNorth(), box.getWest(), box.getSouth(), box.getEast(), null), new Function<PoiDto, Poi>() {
+            return CollectionUtils.map(client.getPois(null, box.getNorth(), box.getWest(), box.getSouth(), box.getEast()), new Function<PoiDto, Poi>() {
                 @Override
                 public Poi apply(PoiDto poiDto) {
                     return converter.convertPoi(poiDto);
