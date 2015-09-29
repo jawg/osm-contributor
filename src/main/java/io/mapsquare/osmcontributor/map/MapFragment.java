@@ -1465,32 +1465,23 @@ public class MapFragment extends Fragment {
     *---------------------------------------------------------*/
 
     public void onEventMainThread(SyncFinishUploadPoiEvent event) {
-        String result;
+        boolean forceRefresh = false;
 
         if (event.getSuccessfullyAddedPoisCount() > 0) {
-            result = String.format(getResources().getString(R.string.add_done), event.getSuccessfullyAddedPoisCount());
-            presenter.setForceRefreshPoi();
-            Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), String.format(getResources().getString(R.string.add_done), event.getSuccessfullyAddedPoisCount()), Toast.LENGTH_SHORT).show();
+            forceRefresh = true;
         }
         if (event.getSuccessfullyUpdatedPoisCount() > 0) {
-            if (mapMode == MapMode.WAY_EDITION) {
-                result = String.format(getResources().getString(R.string.noderef_moved), event.getSuccessfullyUpdatedPoisCount());
-            } else {
-                result = String.format(getResources().getString(R.string.update_done), event.getSuccessfullyUpdatedPoisCount());
-                presenter.setForceRefreshPoi();
-            }
-            Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
-            Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
-            presenter.setForceRefreshPoi();
-
+            Toast.makeText(getActivity(), String.format(getResources().getString(mapMode == MapMode.WAY_EDITION ? R.string.noderef_moved : R.string.update_done), event.getSuccessfullyUpdatedPoisCount()), Toast.LENGTH_SHORT).show();
+            forceRefresh = true;
         }
         if (event.getSuccessfullyDeletedPoisCount() > 0) {
-            result = String.format(getResources().getString(R.string.delete_done), event.getSuccessfullyDeletedPoisCount());
-            Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
-            presenter.setForceRefreshPoi();
+            Toast.makeText(getActivity(), String.format(getResources().getString(R.string.delete_done), event.getSuccessfullyDeletedPoisCount()), Toast.LENGTH_SHORT).show();
+            forceRefresh = true;
         }
 
-        if (presenter.isForceRefreshPoi()) {
+        if (forceRefresh) {
+            presenter.setForceRefreshPoi();
             presenter.loadPoisIfNeeded();
         }
     }

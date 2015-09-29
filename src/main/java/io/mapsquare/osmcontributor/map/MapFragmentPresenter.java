@@ -142,26 +142,6 @@ public class MapFragmentPresenter {
         this.forceRefreshNotes = true;
     }
 
-
-    // TODO remove start
-    public boolean isForceRefreshPoi() {
-        return forceRefreshPoi;
-    }
-
-    public boolean isForceRefreshNotes() {
-        return forceRefreshNotes;
-    }
-
-    public void setForceRefreshPoi(boolean forceRefreshPoi) {
-        this.forceRefreshPoi = forceRefreshPoi;
-    }
-
-    public void setForceRefreshNotes(boolean forceRefreshNotes) {
-        this.forceRefreshNotes = forceRefreshNotes;
-    }
-
-    // TODO REMOVE END
-
     private boolean shouldReload(BoundingBox viewBoundingBox) {
         if (forceRefreshPoi || forceRefreshNotes) {
             forceRefreshPoi = false;
@@ -211,7 +191,7 @@ public class MapFragmentPresenter {
     public void onEventMainThread(PoisLoadedEvent event) {
         List<Poi> pois = event.getPois();
         Timber.d("Received event PoisLoaded  : " + pois.size());
-        setForceRefreshPoi(false);
+        forceRefreshPoi = false;
 
         List<Long> poiIds = new ArrayList<>(pois.size());
 
@@ -273,7 +253,7 @@ public class MapFragmentPresenter {
     public void onEventMainThread(NotesLoadedEvent event) {
         Timber.d("Showing notes : " + event.getNotes().size());
         List<Note> notes = event.getNotes();
-        setForceRefreshNotes(false);
+        forceRefreshNotes = false;
         LocationMarker marker;
 
         for (Note note : notes) {
