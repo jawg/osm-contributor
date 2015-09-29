@@ -24,6 +24,7 @@ import android.graphics.drawable.BitmapDrawable;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.overlay.Icon;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -120,8 +121,8 @@ public class MapFragmentPresenter {
                     Timber.d("Reloading pois");
                     previousZoom = mapFragment.getZoomLevel();
                     triggerReloadPoiBoundingBox = enlarge(viewBoundingBox, 1.5);
-                    eventBus.post(new PleaseLoadPoisEvent(enlarge(viewBoundingBox, 2)));
-                    eventBus.post(new PleaseLoadNotesEvent(enlarge(viewBoundingBox, 2)));
+                    eventBus.post(new PleaseLoadPoisEvent(enlarge(viewBoundingBox, 1.75)));
+                    eventBus.post(new PleaseLoadNotesEvent(enlarge(viewBoundingBox, 1.75)));
                 }
             } else {
                 if (mapFragment.hasMarkers()) {
@@ -208,42 +209,34 @@ public class MapFragmentPresenter {
 
 
     public void onEventMainThread(PoisLoadedEvent event) {
-        Timber.d("Received event PoisLoaded  : " + event.getPois().size());
         List<Poi> pois = event.getPois();
+        Timber.d("Received event PoisLoaded  : " + pois.size());
         setForceRefreshPoi(false);
-        LocationMarker marker;
 
-        mapFragment.removeAllPoiMarkers();
+        List<Long> poiIds = new ArrayList<>(pois.size());
 
         for (Poi poi : pois) {
-            if (mapFragment.getMarkersPoi().get(poi.getId()) == null) {
-                boolean selected = false;
-                marker = new LocationMarker(poi);
+            poiIds.add(poi.getId());
+            LocationMarker locationMarker = mapFragment.getMarkersPoi().get(poi.getId());
+            boolean selected = false;
+            if (locationMarker == null) {
+                locationMarker = new LocationMarker(poi);
 
                 //is it the marker selected
                 if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && poi.getId().equals(mapFragment.getMarkerSelectedId())) {
-                    mapFragment.setMarkerSelected(marker);
+                    mapFragment.setMarkerSelected(locationMarker);
                     selected = true;
                 } else if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && mapFragment.getMarkerSelected() != null && poi.getId().equals(mapFragment.getMarkerSelected().getPoi().getId())) {
                     selected = true;
                 }
 
-                // Marker will draw the right icon color
-                Bitmap bitmap = mapFragment.getBitmapHandler().getMarkerBitmap(poi.getType() != null ? poi.getType().getId() : null, Poi.computeState(selected, false, poi.getUpdated()));
-
-                if (bitmap != null) {
-                    marker.setIcon(new Icon(new BitmapDrawable(mapFragment.getResources(), bitmap)));
-                }
-
-                //the poi in edition should be hide
+                //the poi in edition should be hidden
                 if (!(mapFragment.getMarkerSelected() != null && mapFragment.getMapMode() == MapMode.POI_POSITION_EDITION) && !poi.getToDelete()) {
-                    mapFragment.addMarker(marker);
+                    mapFragment.addMarker(locationMarker);
                 }
 
             } else {
-                LocationMarker locationMarker = mapFragment.getMarkersPoi().get(poi.getId());
                 locationMarker.setPoi(poi);
-                boolean selected = false;
 
                 if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && (poi.getId().equals(mapFragment.getMarkerSelectedId()) || mapFragment.getMarkerSelected() != null && poi.getId().equals(mapFragment.getMarkerSelected().getPoi().getId()))) {
                     selected = true;
@@ -253,14 +246,17 @@ public class MapFragmentPresenter {
                 if (selected && mapFragment.getMapMode() == MapMode.DETAIL_POI) {
                     eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(getPoiType(poi.getType().getId()).getName(), poi.getName()));
                 }
+            }
 
-                Bitmap bitmap = mapFragment.getBitmapHandler().getMarkerBitmap(poi.getType() != null ? poi.getType().getId() : null, Poi.computeState(selected, false, poi.getUpdated()));
+            // Draw the marker in the right color
+            Bitmap bitmap = mapFragment.getBitmapHandler().getMarkerBitmap(poi.getType() != null ? poi.getType().getId() : null, Poi.computeState(selected, false, poi.getUpdated()));
 
-                if (bitmap != null) {
-                    locationMarker.setIcon(new Icon(new BitmapDrawable(mapFragment.getResources(), bitmap)));
-                }
+            if (bitmap != null) {
+                locationMarker.setIcon(new Icon(new BitmapDrawable(mapFragment.getResources(), bitmap)));
             }
         }
+
+        mapFragment.removePoiMarkersNotIn(poiIds);
 
         //use to click on the selected marker when the activity resume
         if (mapFragment.getMapMode() == MapMode.DEFAULT) {
