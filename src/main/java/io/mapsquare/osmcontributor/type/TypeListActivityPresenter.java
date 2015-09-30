@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.type;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +31,7 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
+import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.database.DatabaseHelper;
 import io.mapsquare.osmcontributor.core.model.PoiType;
@@ -110,9 +112,7 @@ public class TypeListActivityPresenter {
 
             @Override
             public void onItemLongClicked(PoiType item) {
-                if (currentPoiType == null) { // In case item was clicked before being long-clicked
-                    EditPoiTypeDialogFragment.display(typeListActivity.getSupportFragmentManager(), item);
-                }
+                Toast.makeText(typeListActivity, R.string.edit_poi_type, Toast.LENGTH_SHORT).show();
             }
 
             @Override

@@ -29,21 +29,31 @@
     android:paddingRight="@dimen/dialog_horizontal_margin"
     android:paddingTop="@dimen/dialog_vertical_margin">
 
-    <EditText
-        android:id="@+id/poi_tag_key"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:hint="@string/poi_tag_key_hint"
-        android:inputType="textNoSuggestions"/>
+        android:layout_marginBottom="8dp">
 
-    <EditText
-        android:id="@+id/poi_tag_value"
+        <EditText
+            android:id="@+id/poi_tag_key"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/poi_tag_key_hint"
+            android:inputType="textNoSuggestions"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:hint="@string/poi_tag_value_hint"
-        android:inputType="textNoSuggestions"/>
+        android:layout_marginBottom="8dp">
+
+        <EditText
+            android:id="@+id/poi_tag_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/poi_tag_value_hint"
+            android:inputType="textNoSuggestions"/>
+    </android.support.design.widget.TextInputLayout>
 
     <CheckBox
         android:id="@+id/poi_tag_mandatory"

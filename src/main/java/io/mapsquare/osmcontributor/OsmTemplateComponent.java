@@ -63,6 +63,7 @@ import io.mapsquare.osmcontributor.type.EditPoiTypeDialogFragment;
 import io.mapsquare.osmcontributor.type.TypeListActivity;
 import io.mapsquare.osmcontributor.type.TypeListActivityPresenter;
 import io.mapsquare.osmcontributor.type.TypeManager;
+import io.mapsquare.osmcontributor.type.TypeModule;
 import io.mapsquare.osmcontributor.upload.UploadActivity;
 
 @Singleton
@@ -72,7 +73,8 @@ import io.mapsquare.osmcontributor.upload.UploadActivity;
         DatabaseModule.class,
         SyncModule.class,
         CommonSyncModule.class,
-        LoginModule.class
+        LoginModule.class,
+        TypeModule.class
 })
 public interface OsmTemplateComponent {
     // INJECTING

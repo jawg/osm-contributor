@@ -137,4 +137,51 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
+
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final PoiTypeTag poiTypeTag;
+
+        public Builder() {
+            this.poiTypeTag = new PoiTypeTag();
+        }
+
+        public Builder id(Long id) {
+            this.poiTypeTag.id = id;
+            return this;
+        }
+
+        public Builder key(String key) {
+            this.poiTypeTag.key = key;
+            return this;
+        }
+
+        public Builder value(String value) {
+            this.poiTypeTag.value = value;
+            return this;
+        }
+
+        public Builder ordinal(Integer ordinal) {
+            this.poiTypeTag.ordinal = ordinal;
+            return this;
+        }
+
+        public Builder mandatory(Boolean mandatory) {
+            this.poiTypeTag.mandatory = mandatory;
+            return this;
+        }
+
+        public Builder poiType(PoiType poiType) {
+            this.poiTypeTag.poiType = poiType;
+            return this;
+        }
+
+        public PoiTypeTag build() {
+            return this.poiTypeTag;
+        }
+    }
 }

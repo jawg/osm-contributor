@@ -18,8 +18,13 @@
  */
 package io.mapsquare.osmcontributor.type;
 
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.view.View.OnClickListener;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,14 +32,23 @@ import javax.inject.Singleton;
 import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.PoiManager;
+import io.mapsquare.osmcontributor.core.events.PoiTypesLoaded;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
+import io.mapsquare.osmcontributor.type.dto.Combinations;
+import io.mapsquare.osmcontributor.type.dto.CombinationsData;
+import io.mapsquare.osmcontributor.type.dto.Suggestions;
+import io.mapsquare.osmcontributor.type.dto.Wiki;
 import io.mapsquare.osmcontributor.type.event.BasePoiTagEvent;
 import io.mapsquare.osmcontributor.type.event.BasePoiTypeEvent;
+import io.mapsquare.osmcontributor.type.event.PleaseDownloadPoiTypeSuggestionEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTagCreatedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTagDeletedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTypeCreatedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTypeDeletedEvent;
+import io.mapsquare.osmcontributor.type.event.PoiTypeSuggestedDownloadedEvent;
+import io.mapsquare.osmcontributor.type.rest.OsmTagInfoRestClient;
+import io.mapsquare.osmcontributor.utils.StringUtils;
 import timber.log.Timber;
 
 
@@ -43,14 +57,21 @@ public class TypeManager {
 
     private EventBus bus;
     private PoiManager poiManager;
+    private OsmTagInfoRestClient tagInfoRestClient;
 
     private final Object lock = new Object();
     private Snackbar lastSnackBar;
 
+    private static List<String> tagsGroup = Arrays.asList("aerialway", "aeroway", "amenity", "barrier", "craft", "emergency", "geological",
+            "highway", "cycleway", "busway", "historic", "landuse", "leisure", "man_made", "military",
+            "natural", "office", "place", "power", "public_transport", "railway", "service", "route",
+            "shop", "sport", "tourism", "waterway");
+
     @Inject
-    public TypeManager(EventBus bus, PoiManager poiManager) {
+    public TypeManager(EventBus bus, PoiManager poiManager, OsmTagInfoRestClient tagInfoRestClient) {
         this.bus = bus;
         this.poiManager = poiManager;
+        this.tagInfoRestClient = tagInfoRestClient;
     }
 
     // ********************************
@@ -75,6 +96,7 @@ public class TypeManager {
         poiManager.deletePoiType(poiType);
         Timber.i("Removed poi type %d", poiType.getId());
         bus.post(new PoiTypeDeletedEvent(poiType));
+        bus.post(new PoiTypesLoaded(poiManager.loadPoiTypes()));
     }
 
     public void onEventBackgroundThread(InternalRemovePoiTagEvent event) {
@@ -84,6 +106,10 @@ public class TypeManager {
         poiManager.savePoiType(poiType);
         Timber.i("Removed poi tag %d", poiTypeTag.getId());
         bus.post(new PoiTagDeletedEvent(poiTypeTag));
+    }
+
+    public void onEventBackgroundThread(PleaseDownloadPoiTypeSuggestionEvent event) {
+        bus.post(new PoiTypeSuggestedDownloadedEvent(getPoiTypeSuggested(event.getPoiTypeName())));
     }
 
     // ********************************
@@ -158,9 +184,97 @@ public class TypeManager {
         }
     }
 
+    /**
+     * Return poiTypes Suggestions for a given query.
+     *
+     * @param query          The query.
+     * @param page           The page number.
+     * @param resultsPerPage The number of results per page.
+     * @return The suggestions.
+     */
+    @Nullable
+    public Suggestions getSuggestionsBlocking(String query, Integer page, Integer resultsPerPage) {
+        if (!StringUtils.isEmpty(query)) {
+            return tagInfoRestClient.getSuggestions(query, page, resultsPerPage);
+        }
+        return null;
+    }
+
     // *********************************
     // ************ private ************
     // *********************************
+
+    /**
+     * Return the PoiType suggested for a given key.
+     *
+     * @param key The name of the wished PoiType.
+     * @return The suggested PoiType.
+     */
+    private PoiType getPoiTypeSuggested(String key) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+
+        List<Wiki> wikis = tagInfoRestClient.getWikiPages(key);
+        PoiType poiType = new PoiType();
+        poiType.setName(key);
+        poiType.setIcon(key);
+        int ordinal = 0;
+        List<PoiTypeTag> poiTypeTags = new ArrayList<>();
+
+        // Request for the English wiki and keep the tags of the tags_combination field.
+        for (Wiki wiki : wikis) {
+            if ("en".equals(wiki.getLang())) {
+                for (String tagCombination : wiki.getTagsCombination()) {
+                    String[] splitResult = tagCombination.split("=");
+
+                    if (splitResult.length > 1) {
+                        poiTypeTags.add(PoiTypeTag.builder()
+                                .key(splitResult[0])
+                                .value(splitResult[1])
+                                .mandatory(true)
+                                .poiType(poiType)
+                                .ordinal(ordinal++)
+                                .build());
+                    } else {
+                        poiTypeTags.add(PoiTypeTag.builder()
+                                .key(tagCombination)
+                                .mandatory(false)
+                                .poiType(poiType)
+                                .ordinal(ordinal++)
+                                .build());
+                    }
+                }
+                break;
+            }
+        }
+
+        // If there was no relevant information in the English wiki, query for tags combinations.
+        if (poiTypeTags.size() == 0) {
+            Combinations combinations = tagInfoRestClient.getCombinations(key, 1, 5);
+            for (CombinationsData data : combinations.getData()) {
+                if (tagsGroup.contains(data.getOtherKey())) {
+                    poiTypeTags.add(PoiTypeTag.builder()
+                            .key(data.getOtherKey())
+                            .value(key)
+                            .mandatory(true)
+                            .poiType(poiType)
+                            .ordinal(ordinal++)
+                            .build());
+                } else {
+                    poiTypeTags.add(PoiTypeTag.builder()
+                            .key(data.getOtherKey())
+                            .mandatory(false)
+                            .poiType(poiType)
+                            .ordinal(ordinal++)
+                            .build());
+                }
+            }
+        }
+
+        poiType.setTags(poiTypeTags);
+        return poiType;
+    }
 
     private void displayNewUndoSnackbar(Snackbar snackbar, OnClickListener undoAction, Snackbar.Callback callback) {
         if (snackbar.isShown()) {

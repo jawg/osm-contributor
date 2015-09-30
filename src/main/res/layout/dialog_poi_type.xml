@@ -21,6 +21,7 @@
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -29,10 +30,27 @@
     android:paddingRight="@dimen/dialog_horizontal_margin"
     android:paddingTop="@dimen/dialog_vertical_margin">
 
-    <EditText
-        android:id="@+id/poi_type_name"
+
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <io.mapsquare.osmcontributor.type.DelayedAutoCompleteTextView
+            android:id="@+id/poi_type_model"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:hint="@string/poi_type_name_hint"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/poi_type_details"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="@string/poi_type_name_hint"
-        android:inputType="textNoSuggestions"/>
+        android:layout_marginTop="8dp"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:visibility="gone"
+        tools:text="3 tag(s)"
+        tools:visibility="visible"/>
+
 </LinearLayout>

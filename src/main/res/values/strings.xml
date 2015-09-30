@@ -171,7 +171,7 @@
     <string name="tag_number">%1$s tags</string>
     <string name="new_poi_type">New type</string>
     <string name="new_poi_tag">New tag</string>
-    <string name="edit_poi_type">Edit type</string>
+    <string name="edit_poi_type">Type cannot be edited</string>
     <string name="edit_poi_tag">Edit tag</string>
     <string name="poi_type_name_hint">name</string>
     <string name="poi_tag_key_hint">key</string>
