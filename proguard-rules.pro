@@ -6,7 +6,7 @@
 ####################################################################################################
 ## Project specific
 
--keepclasseswithmembernames class mobi.designmyapp.osmtemplate.map.vectorial.GeoJSONFileDescriptor {
+-keepclasseswithmembernames class io.mapsquare.osmcontributor.map.vectorial.GeoJSONFileDescriptor {
     *;
 }
 
