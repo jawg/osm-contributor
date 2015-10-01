@@ -144,35 +144,24 @@ public class OsmBackend implements Backend {
     }
 
     private String generateOverpassRequest(Box box) {
-
         StringBuilder cmplReq = new StringBuilder("(");
 
         for (String type : Arrays.asList("node", "way")) {
             for (PoiType poiTypeDto : poiManager.loadPoiTypes().values()) {
-                StringBuilder req = new StringBuilder(type);
-
-                boolean valid = false;
-
                 //values
                 for (PoiTypeTag poiTypeTag : poiTypeDto.getTags()) {
-
                     if (poiTypeTag.getValue() != null) {
-                        String keyValue = "[\"" + poiTypeTag.getKey() + "\"~\"" + poiTypeTag.getValue() + "\"]";
-                        req.append(keyValue);
-                        valid = true;
+                        String keyValue = type + "[\"" + poiTypeTag.getKey() + "\"~\"" + poiTypeTag.getValue() + "\"]";
+
+                        cmplReq.append(keyValue);
+
+                        cmplReq.append("(")
+                                .append(box.getSouth()).append(",")
+                                .append(box.getWest()).append(",")
+                                .append(box.getNorth()).append(",")
+                                .append(box.getEast())
+                                .append(");");
                     }
-
-                }
-                if (valid) {
-                    cmplReq.append(req);
-
-                    // bounding box
-                    cmplReq.append("(")
-                            .append(box.getSouth()).append(",")
-                            .append(box.getWest()).append(",")
-                            .append(box.getNorth()).append(",")
-                            .append(box.getEast())
-                            .append(");");
                 }
             }
         }
