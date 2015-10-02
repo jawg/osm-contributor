@@ -10,6 +10,10 @@
     *;
 }
 
+-keepclasseswithmembernames class io.mapsquare.osmcontributor.type.dto.* {
+    *;
+}
+
 ####################################################################################################
 ## Crashlytics
 
