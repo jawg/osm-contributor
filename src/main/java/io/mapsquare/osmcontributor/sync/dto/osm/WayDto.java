@@ -21,7 +21,6 @@ package io.mapsquare.osmcontributor.sync.dto.osm;
 
 import org.joda.time.DateTime;
 import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
@@ -30,30 +29,6 @@ import java.util.List;
 
 @Root(name = "way", strict = false)
 public class WayDto implements PoiDto {
-
-    private static class Center {
-        @Attribute(required = false)
-        private double lat;
-
-        @Attribute(required = false)
-        private double lon;
-
-        public double getLon() {
-            return lon;
-        }
-
-        public void setLon(double lon) {
-            this.lon = lon;
-        }
-
-        public double getLat() {
-            return lat;
-        }
-
-        public void setLat(double lat) {
-            this.lat = lat;
-        }
-    }
 
     @Attribute(required = false)
     private String id;
@@ -76,8 +51,8 @@ public class WayDto implements PoiDto {
     @Attribute(required = false)
     private String uid;
 
-    @Element(required = false)
-    private Center center;
+    @Attribute(name = "center", required = false)
+    private CenterDto center;
 
     @ElementList(inline = true, required = false)
     private List<NdDto> ndDtoList;
@@ -144,11 +119,11 @@ public class WayDto implements PoiDto {
         this.uid = uid;
     }
 
-    public Center getCenter() {
+    public CenterDto getCenter() {
         return center;
     }
 
-    public void setCenter(Center center) {
+    public void setCenter(CenterDto center) {
         this.center = center;
     }
 
