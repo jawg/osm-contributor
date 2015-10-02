@@ -1,5 +1,12 @@
 ## Changelog
 
+[1.3.0]:
+
+ - OSM suggestions while adding a new PoiType
+ - Performances enhancement
+ - Refactor, code cleaning
+ - Bugfixes
+
 [1.2.0]:
 
  - Three flavours: store, template, poi_storage
