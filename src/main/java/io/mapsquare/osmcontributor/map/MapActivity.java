@@ -220,7 +220,6 @@ public class MapActivity extends AppCompatActivity {
         poiTypes = event.getPoiTypes();
 
         poiTypesHidden = event.getPoiTypeHidden();
-        boolean allSelected = poiTypesHidden.isEmpty();
 
         filters.clear();
         for (PoiType poiType : poiTypes.values()) {
@@ -236,13 +235,13 @@ public class MapActivity extends AppCompatActivity {
         for (PoiTypeFilter poiTypeFilter : filters) {
             filtersItemList.add(menu
                     .add(R.id.drawer_filter_pois_group, poiTypeFilter.getPoiTypeId().intValue(), 0, poiTypeFilter.getPoiTypeName())
-                    .setChecked(!allSelected && poiTypeFilter.isActive())
+                    .setChecked(poiTypeFilter.isActive())
                     .setIcon(bitmapHandler.getDrawable(poiTypeFilter.getPoiTypeIconName())));
         }
 
         menu.setGroupCheckable(R.id.drawer_filter_pois_group, true, false);
 
-        selectAllMenuItem.setChecked(allSelected);
+        selectAllMenuItem.setChecked(poiTypesHidden.isEmpty());
     }
 
     public void onEventMainThread(PleaseInitializeNoteDrawerEvent event) {
@@ -304,7 +303,7 @@ public class MapActivity extends AppCompatActivity {
         if (selectAllMenuItem.isChecked()) {
             poiTypesHidden.clear();
             for (MenuItem filter : filtersItemList) {
-                filter.setChecked(false);
+                filter.setChecked(true);
             }
         } else {
             for (MenuItem filter : filtersItemList) {
@@ -318,26 +317,15 @@ public class MapActivity extends AppCompatActivity {
     private void onFilterItemClick(MenuItem item) {
         long id = item.getItemId();
         if (item.isChecked()) {
-            if (selectAllMenuItem.isChecked()) {
-                selectAllMenuItem.setChecked(false);
-                poiTypesHidden.clear(); // Should be already empty
-                for (MenuItem filter : filtersItemList) {
-                    long itemId = filter.getItemId();
-                    if (itemId != id) {
-                        poiTypesHidden.add(itemId);
-                    }
-                }
-            } else {
-                poiTypesHidden.remove(id);
-                if (poiTypesHidden.isEmpty()) {
-                    selectAllMenuItem.setChecked(true);
-                    for (MenuItem filter : filtersItemList) {
-                        filter.setChecked(false);
-                    }
-                }
+            poiTypesHidden.remove(id);
+            if (poiTypesHidden.isEmpty()) {
+                selectAllMenuItem.setChecked(true);
             }
         } else {
             poiTypesHidden.add(id);
+            if (selectAllMenuItem.isChecked()) {
+                selectAllMenuItem.setChecked(false);
+            }
         }
         eventBus.post(new PleaseApplyPoiFilter(poiTypesHidden));
     }
