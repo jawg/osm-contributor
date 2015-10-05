@@ -69,6 +69,8 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.MapViewListener;
 import com.mapbox.mapboxsdk.views.util.TilesLoadedListener;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -191,6 +193,11 @@ public class MapFragment extends Fragment {
 
     @Inject
     ConfigManager configManager;
+
+    //olduv
+    //For testing purpose
+    @InjectView(R.id.zoom_level)
+    TextView zoomLevelText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -322,6 +329,9 @@ public class MapFragment extends Fragment {
             }
         });
 
+        final DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.DOWN);
+        zoomLevelText.setText(df.format(mapView.getZoomLevel()));
 
         mapView.addListener(new MapListener() {
             int initialX;
@@ -352,6 +362,10 @@ public class MapFragment extends Fragment {
 
             @Override
             public void onZoom(ZoomEvent zoomEvent) {
+                // olduv
+                // For testing purpose
+                zoomLevelText.setText(df.format(zoomEvent.getZoomLevel()));
+
                 presenter.loadPoisIfNeeded();
                 Timber.v("new zoom : %s", zoomEvent.getZoomLevel());
                 presenter.loadVectorialTilesIfNeeded();
