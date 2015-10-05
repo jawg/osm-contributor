@@ -1,5 +1,10 @@
 ## Changelog
 
+[1.3.1]
+
+ - Display current zoom in the top-left corner of the map
+ - Minor Bugfixes
+
 [1.3.0]:
 
  - OSM suggestions while adding a new PoiType
