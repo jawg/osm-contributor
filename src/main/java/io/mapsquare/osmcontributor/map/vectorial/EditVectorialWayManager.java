@@ -70,11 +70,12 @@ public class EditVectorialWayManager {
             vectorialObject.setPriority(2);
             vectorialObject.getPaint().setStrokeWidth(5);
             for (PoiNodeRef nodeRef : poi.getNodeRefs()) {
+                // Properties of a node in way edition
                 VectorialObject point = new VectorialObject(false);
                 point.setId(nodeRef.getNodeBackendId());
                 point.setPriority(1);
                 point.getPaint().setColor(application.getResources().getColor(R.color.colorCreation));
-                point.getPaint().setStrokeWidth(30);
+                point.getPaint().setStrokeWidth(10);
                 point.setFilled(true);
                 LatLng latLng = new LatLng(nodeRef.getLatitude(), nodeRef.getLongitude());
                 double[] precomputed;

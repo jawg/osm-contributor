@@ -71,11 +71,12 @@ public class VectorialOverlay extends Overlay {
         borderPaint.setStyle(Paint.Style.STROKE);
         borderPaint.setColor(Color.GRAY);
 
+        // Settings for selected nodes in a way
         movingPaint.setColor(0xFFFF0000);
-        movingPaint.setStrokeWidth(30);
+        movingPaint.setStrokeWidth(15);
 
         selectedPaint.setColor(0xFFFFFF00);
-        selectedPaint.setStrokeWidth(30);
+        selectedPaint.setStrokeWidth(15);
     }
 
     public VectorialOverlay(int zoomVectorial, Set<VectorialObject> vectorialObjects) {
