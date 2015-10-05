@@ -284,7 +284,7 @@ public class MapFragment extends Fragment {
         osmTileLayer.setName("OpenStreetMap")
                 .setAttribution("© OpenStreetMap Contributors")
                 .setMinimumZoomLevel(5)
-                .setMaximumZoomLevel(22);
+                .setMaximumZoomLevel(configManager.getZoomMax());
 
         // Set the OpenStreetMap tile source as tile source
         mapView.setTileSource(osmTileLayer);

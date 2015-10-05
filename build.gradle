@@ -91,7 +91,8 @@ android {
         store {
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.store"'
             buildConfigField "int", "DEFAULT_ZOOM", "16"
-            buildConfigField "int", "ZOOM_VECTORIAL", "20"
+            buildConfigField "int", "ZOOM_VECTORIAL", "19"
+            buildConfigField "float", "ZOOM_MAX", "19.9f"
             buildConfigField "double", "CENTER_LAT", "48.858370"
             buildConfigField "double", "CENTER_LNG", "2.294481"
             buildConfigField "String", "MAP_URL", '"http://tile.openstreetmap.org/{z}/{x}/{y}.png"'

@@ -48,6 +48,11 @@ public class StoreConfigManager implements ConfigManager {
     }
 
     @Override
+    public float getZoomMax() {
+        return BuildConfig.ZOOM_MAX;
+    }
+
+    @Override
     public boolean hasPoiModification() {
         return true;
     }
