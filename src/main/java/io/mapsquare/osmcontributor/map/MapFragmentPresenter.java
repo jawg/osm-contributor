@@ -194,7 +194,7 @@ public class MapFragmentPresenter {
         forceRefreshPoi = false;
 
         List<Long> poiIds = new ArrayList<>(pois.size());
-
+        LocationMarker markerSelected = mapFragment.getMarkerSelected();
         for (Poi poi : pois) {
             poiIds.add(poi.getId());
             LocationMarker locationMarker = mapFragment.getMarkersPoi().get(poi.getId());
@@ -206,19 +206,19 @@ public class MapFragmentPresenter {
                 if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && poi.getId().equals(mapFragment.getMarkerSelectedId())) {
                     mapFragment.setMarkerSelected(locationMarker);
                     selected = true;
-                } else if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && mapFragment.getMarkerSelected() != null && poi.getId().equals(mapFragment.getMarkerSelected().getPoi().getId())) {
+                } else if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && markerSelected != null && poi.getId().equals(markerSelected.getPoi().getId())) {
                     selected = true;
                 }
 
                 //the poi in edition should be hidden
-                if (!(mapFragment.getMarkerSelected() != null && mapFragment.getMapMode() == MapMode.POI_POSITION_EDITION) && !poi.getToDelete()) {
+                if (!(markerSelected != null && mapFragment.getMapMode() == MapMode.POI_POSITION_EDITION && markerSelected.equals(locationMarker)) && !poi.getToDelete()) {
                     mapFragment.addMarker(locationMarker);
                 }
 
             } else {
                 locationMarker.setPoi(poi);
 
-                if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && (poi.getId().equals(mapFragment.getMarkerSelectedId()) || mapFragment.getMarkerSelected() != null && poi.getId().equals(mapFragment.getMarkerSelected().getPoi().getId()))) {
+                if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && (poi.getId().equals(mapFragment.getMarkerSelectedId()) || markerSelected != null && poi.getId().equals(markerSelected.getPoi().getId()))) {
                     selected = true;
                 }
 
@@ -243,7 +243,7 @@ public class MapFragmentPresenter {
             mapFragment.reselectMarker();
         }
 
-        if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && mapFragment.getMarkerSelected() == null) {
+        if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && markerSelected == null) {
             mapFragment.setMarkerSelectedId(-1L);
         }
 
