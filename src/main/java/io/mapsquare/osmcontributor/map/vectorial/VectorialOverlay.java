@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
 
 public class VectorialOverlay extends Overlay {
@@ -71,11 +72,12 @@ public class VectorialOverlay extends Overlay {
         borderPaint.setStyle(Paint.Style.STROKE);
         borderPaint.setColor(Color.GRAY);
 
+        // Settings for selected nodes in a way
         movingPaint.setColor(0xFFFF0000);
-        movingPaint.setStrokeWidth(30);
+        movingPaint.setStrokeWidth(15);
 
         selectedPaint.setColor(0xFFFFFF00);
-        selectedPaint.setStrokeWidth(30);
+        selectedPaint.setStrokeWidth(15);
     }
 
     public VectorialOverlay(int zoomVectorial, Set<VectorialObject> vectorialObjects) {
@@ -152,7 +154,12 @@ public class VectorialOverlay extends Overlay {
             return;
         }
 
-        canvas.drawColor(0xFFB9B9B9);
+        // Color to apply on the map
+        if (FlavorUtils.isStore()) {
+            canvas.drawColor(0x37FFFFFF);
+        } else {
+            canvas.drawColor(0xFFB9B9B9);
+        }
 
         final Projection pj = mapView.getProjection();
         enlargeRect(pj.getScreenRect(), 100);

@@ -54,6 +54,11 @@ public class PoiStorageConfigManager implements ConfigManager {
     }
 
     @Override
+    public float getZoomMax() {
+        return Float.parseFloat(application.getString(R.string.zoomMax));
+    }
+
+    @Override
     public boolean hasPoiModification() {
         return application.getResources().getBoolean(R.bool.pointsModification);
     }

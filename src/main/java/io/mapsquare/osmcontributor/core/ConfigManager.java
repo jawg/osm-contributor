@@ -50,6 +50,13 @@ public interface ConfigManager {
     int getDefaultZoom();
 
     /**
+     * Get the max zoom level of the map.
+     *
+     * @return the max zoom level
+     */
+    float getZoomMax();
+
+    /**
      * Get whether the Poi modification feature is enabled.
      *
      * @return whether the Poi modification feature is enabled

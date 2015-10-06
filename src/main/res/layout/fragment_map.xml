@@ -37,6 +37,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <TextView
+        android:id="@+id/zoom_level"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <RelativeLayout
         android:id="@+id/poi_type_spinner_wrapper"
         android:layout_width="wrap_content"
