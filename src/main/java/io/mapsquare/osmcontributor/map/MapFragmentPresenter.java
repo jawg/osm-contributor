@@ -40,6 +40,7 @@ import io.mapsquare.osmcontributor.core.events.PleaseLoadNotesEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiTypes;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoisEvent;
 import io.mapsquare.osmcontributor.core.events.PoiTypesLoaded;
+import io.mapsquare.osmcontributor.core.events.PoisAndNotesDownloadedEvent;
 import io.mapsquare.osmcontributor.core.events.PoisLoadedEvent;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
@@ -48,6 +49,8 @@ import io.mapsquare.osmcontributor.map.events.PleaseChangeValuesDetailNoteFragme
 import io.mapsquare.osmcontributor.map.events.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadVectorialTileEvent;
+import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoisAndNotesEvent;
+import io.mapsquare.osmcontributor.utils.Box;
 import timber.log.Timber;
 
 public class MapFragmentPresenter {
@@ -187,6 +190,16 @@ public class MapFragmentPresenter {
                 || !triggerReloadVectorialTiles.union(viewBoundingBox).equals(triggerReloadVectorialTiles);
     }
 
+    public void downloadAreaPoisAndNotes() {
+        mapFragment.showProgressBar(true);
+        eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromBoundingBox(enlarge(mapFragment.getViewBoundingBox(), 1.75))));
+    }
+
+    public void onEventMainThread(PoisAndNotesDownloadedEvent event) {
+        mapFragment.showProgressBar(false);
+        forceRefreshPoi = true;
+        loadPoisIfNeeded();
+    }
 
     public void onEventMainThread(PoisLoadedEvent event) {
         List<Poi> pois = event.getPois();

@@ -32,8 +32,6 @@ import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.events.InitCredentialsEvent;
-import io.mapsquare.osmcontributor.core.events.InitSyncAlarmEvent;
-import io.mapsquare.osmcontributor.core.events.SyncAlarmInitializedEvent;
 import io.mapsquare.osmcontributor.login.events.SplashScreenTimerFinishedEvent;
 import io.mapsquare.osmcontributor.map.MapActivity;
 import io.mapsquare.osmcontributor.map.events.GeoJSONInitializedEvent;
@@ -75,7 +73,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         bus.post(new InitCredentialsEvent());
         bus.post(new InitDbEvent());
         bus.post(new InitGeoJSONEvent());
-        bus.post(new InitSyncAlarmEvent());
     }
 
     @Override
@@ -96,7 +93,6 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void startMapActivity() {
         bus.removeStickyEvent(DbInitializedEvent.class);
         bus.removeStickyEvent(GeoJSONInitializedEvent.class);
-        bus.removeStickyEvent(SyncAlarmInitializedEvent.class);
         bus.removeStickyEvent(SplashScreenTimerFinishedEvent.class);
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
@@ -109,18 +105,12 @@ public class SplashScreenActivity extends AppCompatActivity {
      */
     private boolean shouldStartMapActivity() {
         return bus.getStickyEvent(DbInitializedEvent.class) != null &&
-                bus.getStickyEvent(SyncAlarmInitializedEvent.class) != null &&
                 bus.getStickyEvent(GeoJSONInitializedEvent.class) != null &&
                 bus.getStickyEvent(SplashScreenTimerFinishedEvent.class) != null;
     }
 
     public void onEventBackgroundThread(DbInitializedEvent event) {
         Timber.d("Database initialized");
-        startMapActivityIfNeeded();
-    }
-
-    public void onEventBackgroundThread(SyncAlarmInitializedEvent event) {
-        Timber.d("Sync Alarm initialized");
         startMapActivityIfNeeded();
     }
 

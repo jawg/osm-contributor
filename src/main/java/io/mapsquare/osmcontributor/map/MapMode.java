@@ -26,6 +26,7 @@ import io.mapsquare.osmcontributor.R;
 public enum MapMode {
     CREATION(new MapModeProperties("Creation mode")
             .title(R.string.poi_creation)
+            .showDownloadArea()
             .unSelectIcon()
             .showSpinner()
             .showConfirmBtn()
@@ -35,6 +36,7 @@ public enum MapMode {
 
     DETAIL_POI(new MapModeProperties("Detail Poi mode")
             .showPoiBanner()
+            .showDownloadArea()
             .lockDrawer()),
 
     DETAIL_NOTE(new MapModeProperties("Detail Note mode")
@@ -43,6 +45,7 @@ public enum MapMode {
 
     POI_POSITION_EDITION(new MapModeProperties("Poi Position edition mode")
             .title(R.string.edit_poi_position)
+            .showDownloadArea()
             .showCreationPin()
             .showConfirmBtn()
             .lockDrawer()
@@ -50,6 +53,7 @@ public enum MapMode {
 
     NODE_REF_POSITION_EDITION(new MapModeProperties("Node ref position edition mode")
             .title(R.string.edit_noderef_position_title)
+            .showDownloadArea()
             .showConfirmBtn()
             .editColor()
             .showEditWays()
@@ -65,6 +69,7 @@ public enum MapMode {
 
     DEFAULT(new MapModeProperties("Default mode")
             .showAddPoiFab()
+            .showDownloadArea()
             .unSelectIcon()
             .menuBtn());
 

@@ -16,18 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.sync.events;
+package io.mapsquare.osmcontributor.map.events;
 
-import io.mapsquare.osmcontributor.utils.Box;
-
-public class SyncDownloadPoiEvent {
-    private Box box;
-
-    public SyncDownloadPoiEvent(Box box) {
-        this.box = box;
-    }
-
-    public Box getBox() {
-        return box;
-    }
+public class PleaseSwitchWayEditionModeEvent {
 }

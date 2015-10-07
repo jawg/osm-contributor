@@ -65,6 +65,7 @@
     <string name="licenses_title">Licences</string>
     <string name="osm_copyright">© OpenStreetMap contributors</string>
     <string name="zoom_to_edit">Cette zone est trop grande. Veuillez zoomer plus.</string>
+    <string name="download_in_progress">Tous les pois et notes de la zone affichée sont en cours de rechargement</string>
 
     <!-- Strings related to login -->
     <string name="prompt_login">Identifiant</string>

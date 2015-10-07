@@ -16,21 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.sync.download;
+package io.mapsquare.osmcontributor.sync.events;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
+import io.mapsquare.osmcontributor.utils.Box;
 
-/**
- * {@link android.content.BroadcastReceiver} starting a {@link io.mapsquare.osmcontributor.sync.download.SyncDownloadService}
- * whenever a broadcast is received.
- */
-public class SyncDownloadBroadcastReceiver extends BroadcastReceiver {
+public class SyncDownloadPoisAndNotesEvent {
+    private Box box;
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Intent syncIntent = new Intent(context, SyncDownloadService.class);
-        context.startService(syncIntent);
+    public SyncDownloadPoisAndNotesEvent(Box box) {
+        this.box = box;
+    }
+
+    public Box getBox() {
+        return box;
     }
 }

@@ -18,12 +18,7 @@
  */
 package io.mapsquare.osmcontributor.sync;
 
-import android.app.AlarmManager;
 import android.app.Application;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.os.SystemClock;
 
 import java.util.List;
 
@@ -34,16 +29,13 @@ import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.database.dao.PoiDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiTypeDao;
-import io.mapsquare.osmcontributor.core.events.InitSyncAlarmEvent;
 import io.mapsquare.osmcontributor.core.events.PoiTypesLoaded;
-import io.mapsquare.osmcontributor.core.events.PoisLoadedEvent;
-import io.mapsquare.osmcontributor.core.events.SyncAlarmInitializedEvent;
+import io.mapsquare.osmcontributor.core.events.PoisAndNotesDownloadedEvent;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
-import io.mapsquare.osmcontributor.sync.download.SyncDownloadBroadcastReceiver;
-import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoiEvent;
+import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoisAndNotesEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadWayEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNodeErrorEvent;
@@ -57,12 +49,6 @@ import timber.log.Timber;
  * Manage the synchronisation of POIs and Notes between the backend and the application.
  */
 public class SyncManager {
-
-    // every 30mn
-    private static final int ALARM_DOWNLOAD_TIME = 30 * 60 * 1000;
-
-    // every minute
-    private static final int ALARM_UPLOAD_TIME = 60 * 1000;
 
     Application application;
     PoiManager poiManager;
@@ -90,13 +76,10 @@ public class SyncManager {
     // ************ Events ************
     // ********************************
 
-    //download marker at periodic time
-    public void onEventBackgroundThread(InitSyncAlarmEvent event) {
-        initSyncAlarm(event);
-    }
-
-    public void onEventAsync(SyncDownloadPoiEvent event) {
+    public void onEventAsync(SyncDownloadPoisAndNotesEvent event) {
         syncDownloadPoiBox(event.getBox());
+        syncNoteManager.syncDownloadNotesInBox(event.getBox());
+        bus.post(new PoisAndNotesDownloadedEvent());
     }
 
     public void onEventAsync(SyncDownloadWayEvent event) {
@@ -165,8 +148,6 @@ public class SyncManager {
     /**
      * Download from backend the list of Poi contained in the box.
      * Update the database with the obtained list.
-     * <p/>
-     * Send a {@link io.mapsquare.osmcontributor.core.events.PoisLoadedEvent} containing the POIs in the box who are in the database.
      *
      * @param box The Box to synchronize with the database.
      */
@@ -183,7 +164,6 @@ public class SyncManager {
         } else {
             Timber.d("No new node found in the area");
         }
-        bus.post(new PoisLoadedEvent(box, poiManager.queryForAllInRect(box)));
     }
 
     /**
@@ -231,24 +211,6 @@ public class SyncManager {
     // *********************************
     // ************ private ************
     // *********************************
-
-    /**
-     * Initialize the {@link android.app.AlarmManager} to launch the {@link io.mapsquare.osmcontributor.sync.download.SyncDownloadService}
-     * every {@value #ALARM_DOWNLOAD_TIME} milli-seconds.
-     * <p/>
-     * Send a sticky {@link io.mapsquare.osmcontributor.core.events.SyncAlarmInitializedEvent}.
-     *
-     * @param event The Initialization event.
-     */
-    private void initSyncAlarm(InitSyncAlarmEvent event) {
-        // starts the alarm manager
-        AlarmManager alarmManager = (AlarmManager) application.getSystemService(Context.ALARM_SERVICE);
-        Intent downloadIntent = new Intent(application, SyncDownloadBroadcastReceiver.class);
-        PendingIntent alarmDownloadPendingIntent = PendingIntent.getBroadcast(application, 0, downloadIntent, 0);
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), ALARM_DOWNLOAD_TIME, alarmDownloadPendingIntent);
-
-        bus.postSticky(new SyncAlarmInitializedEvent());
-    }
 
     /**
      * Add a List of POIs to the backend.

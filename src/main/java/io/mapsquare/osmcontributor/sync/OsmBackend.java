@@ -125,9 +125,10 @@ public class OsmBackend implements Backend {
                 return overpassRestClient.sendRequest(new TypedString(request));
             }
         });
-        if (!result.isSuccess() && result.getRetrofitError() != null) {
-            RetrofitError retrofitError = result.getRetrofitError();
-            Timber.e(retrofitError, "Retrofit error, couldn't download from overpass");
+        if (!result.isSuccess()) {
+            if (result.getRetrofitError() != null) {
+                Timber.e(result.getRetrofitError(), "Retrofit error, couldn't download from overpass");
+            }
             bus.post(new SyncDownloadRetrofitErrorEvent());
             return new ArrayList<>();
         }

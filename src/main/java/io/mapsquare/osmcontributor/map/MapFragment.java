@@ -115,7 +115,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadEditVectorialTileEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseOpenEditionEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSelectNodeRefByID;
-import io.mapsquare.osmcontributor.map.events.PleaseSwitchModeEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.map.events.VectorialTilesLoadedEvent;
@@ -954,9 +954,31 @@ public class MapFragment extends Fragment {
         eventBus.post(new PleaseToggleDrawerLock(properties.isLockDrawer()));
     }
 
-    public void onEventMainThread(PleaseSwitchModeEvent event) {
-        switchMode(event.getMapMode());
+    /**
+     * Show or hide the {@link ButteryProgressBar}.
+     *
+     * @param show Whether we should show the progressBar.
+     */
+    public void showProgressBar(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    public void onEventMainThread(PleaseSwitchWayEditionModeEvent event) {
+        switchMode(MapMode.WAY_EDITION);
         downloadAreaForEdition();
+    }
+
+    /**
+     * Download datas from backend. If we are in {@link MapMode#WAY_EDITION}, download ways
+     * and if not, download Pois.
+     */
+    public void onDownloadZoneClick() {
+        if (mapMode == MapMode.WAY_EDITION) {
+            downloadAreaForEdition();
+        } else {
+            presenter.downloadAreaPoisAndNotes();
+            Toast.makeText(getActivity(), R.string.download_in_progress, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void defaultMap() {
@@ -1040,7 +1062,6 @@ public class MapFragment extends Fragment {
     private void removeMarker(LocationMarker marker) {
         if (marker != null) {
             mapView.removeMarker(marker);
-            Object poi = marker.getRelatedObject();
         }
     }
 
@@ -1093,10 +1114,6 @@ public class MapFragment extends Fragment {
 
     public boolean isVectorialObjEditionLoaded() {
         return vectorialObjectsEdition.isEmpty();
-    }
-
-    public void onDownloadZoneClick() {
-        downloadAreaForEdition();
     }
 
     //get data from overpass
@@ -1536,6 +1553,7 @@ public class MapFragment extends Fragment {
 
     public void onEventMainThread(SyncDownloadRetrofitErrorEvent event) {
         Toast.makeText(getActivity(), R.string.couldnt_download_retrofit, Toast.LENGTH_SHORT).show();
+        showProgressBar(false);
     }
 
     public void onEventMainThread(SyncConflictingNodeErrorEvent event) {
@@ -1583,7 +1601,6 @@ public class MapFragment extends Fragment {
     @InjectView(R.id.level_bar)
     LevelBar levelBar;
 
-    private BoundingBox triggerReloadVectorialTiles;
     private VectorialOverlay vectorialOverlay;
     private boolean isVectorial = false;
     private double currentLevel = 0;

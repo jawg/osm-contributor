@@ -44,10 +44,7 @@ import io.mapsquare.osmcontributor.core.model.Comment;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.map.events.NewNoteCreatedEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseApplyNewComment;
-import io.mapsquare.osmcontributor.sync.events.SyncDownloadNoteEvent;
 import io.mapsquare.osmcontributor.utils.Box;
-import io.mapsquare.osmcontributor.utils.EventCountDownTimer;
-import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
 
 import static io.mapsquare.osmcontributor.core.database.DatabaseHelper.loadLazyForeignCollection;
@@ -68,8 +65,6 @@ public class NoteManager {
     EventBus bus;
     Application application;
 
-    EventCountDownTimer timer;
-
     @Inject
     public NoteManager(NoteDao noteDao, CommentDao commentDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, Application application) {
         this.noteDao = noteDao;
@@ -78,7 +73,6 @@ public class NoteManager {
         this.configManager = configManager;
         this.application = application;
         this.bus = bus;
-        timer = new EventCountDownTimer(5000, 5000, bus);
     }
 
     // ********************************
@@ -286,19 +280,10 @@ public class NoteManager {
     /**
      * Send a {@link io.mapsquare.osmcontributor.core.events.NotesLoadedEvent} containing all the Notes
      * in the Box of the {@link io.mapsquare.osmcontributor.core.events.PleaseLoadNotesEvent}.
-     * <p/>
-     * Start a {@link io.mapsquare.osmcontributor.utils.EventCountDownTimer} with
-     * a {@link io.mapsquare.osmcontributor.sync.events.SyncDownloadNoteEvent} to update the Notes of the box.
      *
      * @param event Event containing the box to load.
      */
     private void loadNotes(PleaseLoadNotesEvent event) {
         bus.post(new NotesLoadedEvent(event.getBox(), queryForAllInRect(event.getBox())));
-        if (!FlavorUtils.isTemplate() || !configManager.getPreloadedBox().contains(event.getBox())) {
-            Timber.d("Moving outside the default area, calling OSM to retrieve Notes");
-            timer.cancel();
-            timer.setEvent(new SyncDownloadNoteEvent(event.getBox()));
-            timer.start();
-        }
     }
 }

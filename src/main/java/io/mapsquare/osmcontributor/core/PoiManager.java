@@ -18,6 +18,8 @@
  */
 package io.mapsquare.osmcontributor.core;
 
+import android.app.Application;
+
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -55,11 +57,8 @@ import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.map.events.ChangesInDB;
 import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
-import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoiEvent;
 import io.mapsquare.osmcontributor.upload.PoiUpdateWrapper;
 import io.mapsquare.osmcontributor.utils.Box;
-import io.mapsquare.osmcontributor.utils.EventCountDownTimer;
-import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
 
 import static io.mapsquare.osmcontributor.core.database.DatabaseHelper.loadLazyForeignCollection;
@@ -80,10 +79,8 @@ public class PoiManager {
     ConfigManager configManager;
     EventBus bus;
 
-    EventCountDownTimer timer;
-
     @Inject
-    public PoiManager(PoiDao poiDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao, PoiTypeTagDao poiTypeTagDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus) {
+    public PoiManager(PoiDao poiDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao, PoiTypeTagDao poiTypeTagDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, Application application) {
         this.poiDao = poiDao;
         this.poiTagDao = poiTagDao;
         this.poiNodeRefDao = poiNodeRefDao;
@@ -92,7 +89,6 @@ public class PoiManager {
         this.databaseHelper = databaseHelper;
         this.configManager = configManager;
         this.bus = bus;
-        timer = new EventCountDownTimer(5000, 5000, bus);
     }
 
     // ********************************
@@ -627,19 +623,10 @@ public class PoiManager {
     /**
      * Send a {@link io.mapsquare.osmcontributor.core.events.PoisLoadedEvent} containing all the POIs
      * in the Box of the {@link io.mapsquare.osmcontributor.core.events.PleaseLoadPoisEvent}.
-     * <p/>
-     * Start a {@link io.mapsquare.osmcontributor.utils.EventCountDownTimer} with
-     * a {@link io.mapsquare.osmcontributor.sync.events.SyncDownloadPoiEvent} to update the POIs of the box.
      *
      * @param event Event containing the box to load.
      */
     private void loadPois(PleaseLoadPoisEvent event) {
         bus.post(new PoisLoadedEvent(event.getBox(), queryForAllInRect(event.getBox())));
-        if (!FlavorUtils.isTemplate() || !configManager.getPreloadedBox().contains(event.getBox())) {
-            Timber.d("Moving outside the default area, calling OSM to retrieve POIs");
-            timer.cancel();
-            timer.setEvent(new SyncDownloadPoiEvent(event.getBox()));
-            timer.start();
-        }
     }
 }

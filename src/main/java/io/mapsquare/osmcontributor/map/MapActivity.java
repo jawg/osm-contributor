@@ -58,8 +58,8 @@ import io.mapsquare.osmcontributor.map.events.PleaseChangeToolbarColor;
 import io.mapsquare.osmcontributor.map.events.PleaseDisplayTutorialEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
-import io.mapsquare.osmcontributor.map.events.PleaseSwitchModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
+import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.preferences.MyPreferencesActivity;
@@ -355,7 +355,7 @@ public class MapActivity extends AppCompatActivity {
                 replayTutorial();
                 break;
             case R.id.edit_way:
-                eventBus.post(new PleaseSwitchModeEvent(MapMode.WAY_EDITION));
+                eventBus.post(new PleaseSwitchWayEditionModeEvent());
                 break;
             case R.id.preferences_menu:
                 startPreferencesActivity();

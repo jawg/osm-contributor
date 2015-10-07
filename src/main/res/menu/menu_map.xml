@@ -25,19 +25,19 @@
       tools:context=".MapActivity">
 
     <item
-        android:id="@+id/action_confirm_position"
-        android:icon="@drawable/content_save"
-        android:orderInCategory="100"
-        android:title=""
-        android:visible="false"
-        app:showAsAction="always"/>
-
-    <item
         android:id="@+id/action_download_area"
         android:icon="@drawable/refresh"
         android:orderInCategory="100"
         android:title=""
         android:visible="true"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_confirm_position"
+        android:icon="@drawable/content_save"
+        android:orderInCategory="100"
+        android:title=""
+        android:visible="false"
         app:showAsAction="always"/>
 
     <item

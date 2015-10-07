@@ -55,9 +55,7 @@ import io.mapsquare.osmcontributor.preferences.MyPreferencesActivity;
 import io.mapsquare.osmcontributor.sync.CommonSyncModule;
 import io.mapsquare.osmcontributor.sync.SyncManager;
 import io.mapsquare.osmcontributor.sync.SyncModule;
-import io.mapsquare.osmcontributor.sync.SyncNoteManager;
 import io.mapsquare.osmcontributor.sync.assets.PoiAssetLoader;
-import io.mapsquare.osmcontributor.sync.download.SyncDownloadService;
 import io.mapsquare.osmcontributor.sync.upload.SyncUploadService;
 import io.mapsquare.osmcontributor.type.EditPoiTagDialogFragment;
 import io.mapsquare.osmcontributor.type.EditPoiTypeDialogFragment;
@@ -124,8 +122,6 @@ public interface OsmTemplateComponent {
 
     // Services
 
-    void inject(SyncDownloadService syncDownloadService);
-
     void inject(SyncUploadService syncUploadService);
 
 
@@ -163,8 +159,6 @@ public interface OsmTemplateComponent {
     EditPoiManager getEditPoiManager();
 
     SyncManager getSyncManager();
-
-    SyncNoteManager getSyncNoteManager();
 
     // Poi type
 

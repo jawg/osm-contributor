@@ -84,13 +84,8 @@
             android:label="@string/title_activity_about"/>
 
         <service
-            android:name=".sync.download.SyncDownloadService"
-            android:exported="false"/>
-        <service
             android:name=".sync.upload.SyncUploadService"
             android:exported="false"/>
-
-        <receiver android:name=".sync.download.SyncDownloadBroadcastReceiver"/>
 
         <receiver
             android:name=".sync.ConnectionReceiver"

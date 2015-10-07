@@ -23,14 +23,12 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.core.database.dao.CommentDao;
 import io.mapsquare.osmcontributor.core.database.dao.NoteDao;
-import io.mapsquare.osmcontributor.core.events.NotesLoadedEvent;
 import io.mapsquare.osmcontributor.core.model.Comment;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.note.NoteManager;
 import io.mapsquare.osmcontributor.sync.converter.NoteConverter;
 import io.mapsquare.osmcontributor.sync.dto.osm.NoteDto;
 import io.mapsquare.osmcontributor.sync.dto.osm.OsmDto;
-import io.mapsquare.osmcontributor.sync.events.SyncDownloadNoteEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadNote;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNoteErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncDownloadRetrofitErrorEvent;
@@ -63,12 +61,6 @@ public class OSMSyncNoteManager implements SyncNoteManager {
         this.noteDao = noteDao;
     }
 
-    public void onEventAsync(SyncDownloadNoteEvent event) {
-        syncDownloadNotesInBox(event.getBox());
-        //to notify the app that notes have been loaded
-        bus.post(new NotesLoadedEvent(event.getBox(), noteManager.queryForAllInRect(event.getBox())));
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -92,8 +84,10 @@ public class OSMSyncNoteManager implements SyncNoteManager {
             }
         });
 
-        if (!result.isSuccess() && result.getRetrofitError() != null) {
-            Timber.e(result.getRetrofitError(), "Retrofit error while trying to download notes in area");
+        if (!result.isSuccess()) {
+            if (result.getRetrofitError() != null) {
+                Timber.e(result.getRetrofitError(), "Retrofit error, couldn't download from overpass");
+            }
             bus.post(new SyncDownloadRetrofitErrorEvent());
         }
     }
