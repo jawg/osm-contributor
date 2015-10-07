@@ -95,6 +95,7 @@ public class SyncModule {
         return new RestAdapter.Builder()
                 .setEndpoint(configManager.getBaseOverpassApiUrl())
                 .setConverter(getXMLConverterWithDateTime(persister))
+                .setLogLevel(RestAdapter.LogLevel.HEADERS).setLog(new AndroidLog("-------------------->"))
                 .build()
                 .create(OverpassRestClient.class);
     }
