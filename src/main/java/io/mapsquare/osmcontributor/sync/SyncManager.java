@@ -44,7 +44,6 @@ import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
 import io.mapsquare.osmcontributor.sync.download.SyncDownloadBroadcastReceiver;
 import io.mapsquare.osmcontributor.sync.events.ConnectedEvent;
-import io.mapsquare.osmcontributor.sync.events.SyncDownloadNoteEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadWayEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
@@ -104,10 +103,6 @@ public class SyncManager {
 
     public void onEventAsync(SyncDownloadPoiEvent event) {
         syncDownloadPoiBox(event.getBox());
-    }
-
-    public void onEventAsync(SyncDownloadNoteEvent event) {
-        syncNoteManager.syncDownloadNotesInBox(event.getBox());
     }
 
     public void onEventAsync(SyncDownloadWayEvent event) {

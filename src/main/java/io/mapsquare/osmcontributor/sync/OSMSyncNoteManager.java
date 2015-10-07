@@ -30,6 +30,7 @@ import io.mapsquare.osmcontributor.note.NoteManager;
 import io.mapsquare.osmcontributor.sync.converter.NoteConverter;
 import io.mapsquare.osmcontributor.sync.dto.osm.NoteDto;
 import io.mapsquare.osmcontributor.sync.dto.osm.OsmDto;
+import io.mapsquare.osmcontributor.sync.events.SyncDownloadNoteEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadNote;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNoteErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncDownloadRetrofitErrorEvent;
@@ -62,6 +63,12 @@ public class OSMSyncNoteManager implements SyncNoteManager {
         this.noteDao = noteDao;
     }
 
+    public void onEventAsync(SyncDownloadNoteEvent event) {
+        syncDownloadNotesInBox(event.getBox());
+        //to notify the app that notes have been loaded
+        bus.post(new NotesLoadedEvent(event.getBox(), noteManager.queryForAllInRect(event.getBox())));
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -81,8 +88,6 @@ public class OSMSyncNoteManager implements SyncNoteManager {
                 } else {
                     Timber.d("No new note found in the area");
                 }
-                //to notify the app that notes have been loaded
-                bus.post(new NotesLoadedEvent(box, noteManager.queryForAllInRect(box)));
                 return null;
             }
         });

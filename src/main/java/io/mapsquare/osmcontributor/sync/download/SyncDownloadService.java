@@ -24,12 +24,16 @@ import android.content.Intent;
 import javax.inject.Inject;
 
 import io.mapsquare.osmcontributor.BuildConfig;
+import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.core.ConfigManager;
+import io.mapsquare.osmcontributor.core.events.NotesLoadedEvent;
+import io.mapsquare.osmcontributor.note.NoteManager;
 import io.mapsquare.osmcontributor.sync.SyncManager;
 import io.mapsquare.osmcontributor.sync.SyncNoteManager;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
+import io.mapsquare.osmcontributor.utils.Box;
 
 /**
  * {@link android.app.IntentService} synchronising parts of the database and the backend whenever an intent is received.
@@ -44,6 +48,12 @@ public class SyncDownloadService extends IntentService {
 
     @Inject
     ConfigManager configManager;
+
+    @Inject
+    EventBus bus;
+
+    @Inject
+    NoteManager noteManager;
 
     @Override
     public void onCreate() {
@@ -64,8 +74,10 @@ public class SyncDownloadService extends IntentService {
                 syncManager.syncDownloadPoiTypes();
                 break;
             case FlavorUtils.TEMPLATE:
-                syncManager.syncDownloadPoiBox(configManager.getPreloadedBox());
-                syncNoteManager.syncDownloadNotesInBox(configManager.getPreloadedBox());
+                Box box = configManager.getPreloadedBox();
+                syncManager.syncDownloadPoiBox(box);
+                syncNoteManager.syncDownloadNotesInBox(box);
+                bus.post(new NotesLoadedEvent(box, noteManager.queryForAllInRect(box)));
                 break;
         }
     }

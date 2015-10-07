@@ -28,8 +28,6 @@ public interface SyncNoteManager {
     /**
      * Download from backend the list of Notes contained in the box.
      * Update the database with the obtained list.
-     * <p/>
-     * Send a {@link io.mapsquare.osmcontributor.core.events.NotesLoadedEvent} containing the Notes in the box who are in the database.
      *
      * @param box The Box to synchronize with the database.
      */
