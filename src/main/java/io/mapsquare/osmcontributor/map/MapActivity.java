@@ -61,7 +61,6 @@ import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.preferences.MyPreferencesActivity;
 import io.mapsquare.osmcontributor.sync.upload.SyncUploadService;
-import io.mapsquare.osmcontributor.type.TypeListActivity;
 import io.mapsquare.osmcontributor.upload.UploadActivity;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
@@ -151,8 +150,6 @@ public class MapActivity extends AppCompatActivity {
         });
 
         selectAllMenuItem = filterView.getMenu().findItem(R.id.select_all_item);
-
-        navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(!FlavorUtils.isPoiStorage());
 
         if (!FlavorUtils.isPoiStorage() && configManager.hasPoiModification()) {
             navigationView.getMenu().findItem(R.id.edit_way).setVisible(true);
@@ -339,9 +336,6 @@ public class MapActivity extends AppCompatActivity {
             case R.id.edit_way:
                 eventBus.post(new PleaseSwitchModeEvent(MapMode.WAY_EDITION));
                 break;
-            case R.id.manage_poi_types:
-                startPoiTypeListActivity();
-                break;
             case R.id.preferences_menu:
                 startPreferencesActivity();
                 break;
@@ -358,12 +352,6 @@ public class MapActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
         }
-    }
-
-    private void startPoiTypeListActivity() {
-        drawerLayout.closeDrawer(navigationView);
-        Intent intent = new Intent(this, TypeListActivity.class);
-        startActivity(intent);
     }
 
     private void startPreferencesActivity() {
