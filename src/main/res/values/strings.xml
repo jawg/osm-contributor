@@ -139,7 +139,7 @@
 
     <!-- Synchronization -->
     <string name="comment_changeset" translatable="false">adding/updating/deleting POIs</string>
-    <string name="sync_now">Sync now</string>
+    <string name="sync_now">Save&#8230;</string>
     <string name="title_activity_upload">Manual upload</string>
     <string name="couldnt_sync_connectivity">Couldn\’t upload POIs. Check your connectivity.</string>
 

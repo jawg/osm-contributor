@@ -22,11 +22,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
         android:id="@+id/sync"
-        android:checkableBehavior="none"
-        android:visible="false">
+        android:checkableBehavior="all"
+        android:visible="true">
         <item
-            android:id="@+id/auto_sync"
-            android:icon="@android:drawable/ic_popup_sync"
+            android:id="@+id/save_changes"
+            android:checked="false"
+            android:icon="@android:drawable/ic_menu_save"
             android:title="@string/sync_now"/>
     </group>
 

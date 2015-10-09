@@ -22,15 +22,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:key="@string/shared_prefs_sync_title_key"
-        android:title="@string/shared_prefs_sync_title">
-
-        <CheckBoxPreference
-            android:key="@string/shared_prefs_sync_key"
-            android:title="@string/shared_prefs_sync_manual"/>
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:key="@string/shared_prefs_login_title_key"
         android:title="@string/shared_prefs_login_title">
 

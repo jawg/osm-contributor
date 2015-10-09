@@ -39,17 +39,14 @@ import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.login.events.AttemptLoginEvent;
 import io.mapsquare.osmcontributor.login.events.ErrorLoginEvent;
 import io.mapsquare.osmcontributor.login.events.ValidLoginEvent;
-import io.mapsquare.osmcontributor.sync.upload.SyncUploadService;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 
 public class MyPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     String loginKey;
     String passwordKey;
-    String syncKey;
     Preference loginPref;
     Preference passwordPref;
-    Preference syncPref;
 
     private Tracker tracker;
 
@@ -83,14 +80,9 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
 
         loginKey = getString(R.string.shared_prefs_login);
         passwordKey = getString(R.string.shared_prefs_password);
-        syncKey = getString(R.string.shared_prefs_sync_key);
 
         loginPref = findPreference(loginKey);
         passwordPref = findPreference(passwordKey);
-        syncPref = findPreference(syncKey);
-
-        boolean isManual = sharedPreferences.getBoolean(SyncUploadService.IS_MANUAL_SYNC, false);
-        syncPref.setDefaultValue(isManual);
 
         Preference preference = findPreference(getString(R.string.shared_prefs_server_key));
         preference.setSummary(configManager.getBasePoiApiUrl());
@@ -172,15 +164,6 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
                     .setCategory("Edit preference")
                     .setAction("Password edited")
                     .build());
-
-        } else if (syncKey.equals(key)) {
-            boolean s = sharedPreferences.getBoolean(syncKey, false);
-            sharedPreferences.edit().putBoolean(SyncUploadService.IS_MANUAL_SYNC, s).apply();
-
-            tracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Edit preference")
-                    .setAction("Switch to manual sync mode = " + s)
-                    .build());
         }
     }
 
@@ -194,8 +177,6 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
 
     public void onEventMainThread(ValidLoginEvent event) {
         Toast.makeText(getActivity(), R.string.valid_login, Toast.LENGTH_SHORT).show();
-        // once log update all changes to OSM
-        SyncUploadService.startService(getActivity());
     }
 
     public void onEventMainThread(ErrorLoginEvent event) {

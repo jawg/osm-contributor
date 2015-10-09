@@ -28,11 +28,9 @@ import javax.inject.Inject;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.sync.SyncManager;
 import io.mapsquare.osmcontributor.sync.SyncNoteManager;
-import timber.log.Timber;
 
 public class SyncUploadService extends IntentService {
 
-    public static final String IS_MANUAL_SYNC = "IS_MANUAL_SYNC";
     public static final String COMMENT = "COMMENT";
 
     @Inject
@@ -56,24 +54,14 @@ public class SyncUploadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        boolean isManual = sharedPreferences.getBoolean(IS_MANUAL_SYNC, false);
-
         String comment = intent.getStringExtra(COMMENT);
 
-        if (!isManual) {
-            Timber.d("uploading our POIs");
-            syncManager.remoteAddOrUpdateOrDeletePois();
-        } else if (comment != null && !comment.isEmpty()) {
+        if (comment != null && !comment.isEmpty()) {
             syncManager.remoteAddOrUpdateOrDeletePois(comment);
         }
 
         //note are sent without changesets or comments
         syncNoteManager.remoteAddComments();
-    }
-
-    public static void startService(Context context) {
-        Intent syncIntent = new Intent(context, SyncUploadService.class);
-        context.startService(syncIntent);
     }
 
     public static void startService(Context context, String comment) {

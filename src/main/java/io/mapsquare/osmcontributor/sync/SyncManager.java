@@ -43,16 +43,12 @@ import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
 import io.mapsquare.osmcontributor.sync.download.SyncDownloadBroadcastReceiver;
-import io.mapsquare.osmcontributor.sync.events.ConnectedEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadWayEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
-import io.mapsquare.osmcontributor.sync.events.error.ConnectionLostEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNodeErrorEvent;
-import io.mapsquare.osmcontributor.sync.events.error.SyncConnectionLostErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncNewNodeErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadRetrofitErrorEvent;
-import io.mapsquare.osmcontributor.sync.upload.SyncUploadService;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
@@ -76,8 +72,6 @@ public class SyncManager {
     Backend backend;
     SyncWayManager syncWayManager;
     SyncNoteManager syncNoteManager;
-    private static boolean hasInternet = false;
-
 
     @Inject
     public SyncManager(Application application, PoiManager poiManager, PoiDao poiDao, PoiTypeDao poiTypeDao, EventBus bus, Backend backend, SyncWayManager syncWayManager, SyncNoteManager syncNoteManager) {
@@ -109,10 +103,6 @@ public class SyncManager {
         syncWayManager.syncDownloadWay(event.getBox());
     }
 
-    public void onEventAsync(ConnectionLostEvent event) {
-        bus.post(new SyncConnectionLostErrorEvent());
-        hasInternet = false;
-    }
 
     /**
      * Initialize the database if the Flavor is PoiStorage.
@@ -237,23 +227,6 @@ public class SyncManager {
         }
         bus.post(new SyncFinishUploadPoiEvent(successfullyAddedPoisCount, successfullyUpdatedPoisCount, successfullyDeletedPoisCount));
     }
-
-    // ******************************************************************
-    // ************   retry update later I lost connection   ************
-    // ******************************************************************
-
-    /**
-     * Start the {@link io.mapsquare.osmcontributor.sync.upload.SyncUploadService} if there was no connection before.
-     *
-     * @param event The connection event.
-     */
-    public void onEventBackgroundThread(ConnectedEvent event) {
-        if (!hasInternet) {
-            hasInternet = true;
-            SyncUploadService.startService(application);
-        }
-    }
-
 
     // *********************************
     // ************ private ************

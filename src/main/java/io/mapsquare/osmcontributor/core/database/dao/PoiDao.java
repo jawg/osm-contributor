@@ -104,6 +104,24 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
     }
 
     /**
+     * Query for all Poi changes.
+     *
+     * @return The list of changed POIs.
+     */
+    public List<Poi> queryForAllChanges() {
+        return DatabaseHelper.wrapException(new Callable<List<Poi>>() {
+            @Override
+            public List<Poi> call() throws Exception {
+                return queryBuilder()
+                        .where()
+                        .eq(Poi.UPDATED, true)
+                        .or().eq(Poi.TO_DELETE, true)
+                        .query();
+            }
+        });
+    }
+
+    /**
      * Query for all POIs who are ways.
      *
      * @return The list of POIs who are ways.

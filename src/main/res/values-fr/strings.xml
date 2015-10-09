@@ -127,7 +127,7 @@
     <string name="filter_poi_all">Tous</string>
 
     <!-- Synchronization -->
-    <string name="sync_now">Synchroniser</string>
+    <string name="sync_now">Sauvegarder&#8230;</string>
     <string name="title_activity_upload">Upload manuel</string>
     <string name="couldnt_sync_connectivity">Impossible d\'envoyer vos modifications. Vérifiez votre connexion</string>
 

@@ -21,7 +21,6 @@ package io.mapsquare.osmcontributor.sync;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import io.mapsquare.osmcontributor.sync.events.error.ConnectionLostEvent;
 import io.mapsquare.osmcontributor.sync.events.error.ServerNotAvailableEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.sync.events.error.TooManyRequestsEvent;
@@ -103,7 +102,6 @@ public class OSMProxy {
 
             if (e.getKind() == RetrofitError.Kind.NETWORK) {
                 Timber.e(e, "Retrofit error, connection lost");
-                eventBus.post(new ConnectionLostEvent());
                 return new Failure<>(null);
             } else if (e.getResponse() != null) {
                 switch (e.getResponse().getStatus()) {

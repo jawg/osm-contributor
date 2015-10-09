@@ -53,6 +53,8 @@ import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
 import io.mapsquare.osmcontributor.core.model.PoiTag;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
+import io.mapsquare.osmcontributor.map.events.ChangesInDB;
+import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoiEvent;
 import io.mapsquare.osmcontributor.upload.PoiUpdateWrapper;
 import io.mapsquare.osmcontributor.utils.Box;
@@ -111,6 +113,10 @@ public class PoiManager {
 
     public void onEventAsync(PleaseLoadPoisEvent event) {
         loadPois(event);
+    }
+
+    public void onEventAsync(PleaseTellIfDbChanges event) {
+        bus.post(new ChangesInDB(!poiDao.queryForAllChanges().isEmpty()));
     }
 
     public void onEventAsync(PleaseLoadPoisToUpdateEvent event) {

@@ -36,7 +36,6 @@ import io.mapsquare.osmcontributor.edition.events.PleaseApplyNodeRefPositionChan
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyPoiChanges;
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyPoiPositionChange;
 import io.mapsquare.osmcontributor.edition.events.PoiChangesApplyEvent;
-import io.mapsquare.osmcontributor.sync.upload.SyncUploadService;
 import timber.log.Timber;
 
 public class EditPoiManager {
@@ -61,7 +60,6 @@ public class EditPoiManager {
         editPoi.setUpdated(true);
         poiManager.savePoi(editPoi);
         eventBus.post(new PoiChangesApplyEvent());
-        SyncUploadService.startService(application);
     }
 
     public void onEventAsync(PleaseApplyPoiPositionChange event) {
@@ -71,7 +69,6 @@ public class EditPoiManager {
         editPoi.setLongitude(event.getPoiPosition().getLongitude());
         editPoi.setUpdated(true);
         poiManager.savePoi(editPoi);
-        SyncUploadService.startService(application);
     }
 
     public void onEventAsync(PleaseApplyNodeRefPositionChange event) {
@@ -84,8 +81,6 @@ public class EditPoiManager {
         poiNodeRef.setLatitude(newLatLng.getLatitude());
         poiNodeRef.setUpdated(true);
         poiNodeRefDao.createOrUpdate(poiNodeRef);
-
-        SyncUploadService.startService(application);
     }
 
     public void onEventAsync(PleaseCreatePoiEvent event) {
@@ -95,7 +90,6 @@ public class EditPoiManager {
         poi.applyChanges(event.getPoiChanges().getTagsMap());
         poiManager.savePoi(poi);
         eventBus.post(new PoiChangesApplyEvent());
-        SyncUploadService.startService(application);
     }
 
     public void onEventAsync(PleaseDeletePoiEvent event) {
@@ -110,7 +104,6 @@ public class EditPoiManager {
         } else {
             poi.setToDelete(true);
             poiManager.savePoi(poi);
-            SyncUploadService.startService(application);
         }
     }
 }

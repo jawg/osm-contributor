@@ -45,7 +45,6 @@ import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.map.events.NewNoteCreatedEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseApplyNewComment;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadNoteEvent;
-import io.mapsquare.osmcontributor.sync.upload.SyncUploadService;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.EventCountDownTimer;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
@@ -276,7 +275,6 @@ public class NoteManager {
 
         // save the changes in the DB
         saveNote(note);
-        SyncUploadService.startService(application);
 
         return creation;
     }

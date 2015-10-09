@@ -31,6 +31,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -49,6 +50,7 @@ import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.about.AboutActivity;
 import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.core.model.PoiType;
+import io.mapsquare.osmcontributor.map.events.ChangesInDB;
 import io.mapsquare.osmcontributor.map.events.OnBackPressedMapEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseApplyNoteFilterEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseApplyPoiFilter;
@@ -57,10 +59,10 @@ import io.mapsquare.osmcontributor.map.events.PleaseDisplayTutorialEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchModeEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.preferences.MyPreferencesActivity;
-import io.mapsquare.osmcontributor.sync.upload.SyncUploadService;
 import io.mapsquare.osmcontributor.upload.UploadActivity;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
@@ -158,22 +160,41 @@ public class MapActivity extends AppCompatActivity {
         if (configManager.hasPoiAddition()) {
             navigationView.getMenu().findItem(R.id.replay_tuto_menu).setVisible(true);
         }
+
+        navigationView.getMenu().findItem(R.id.save_changes).setEnabled(false);
+
+        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                eventBus.post(new PleaseTellIfDbChanges());
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        boolean isManual = sharedPreferences.getBoolean(SyncUploadService.IS_MANUAL_SYNC, false);
-        navigationView.getMenu().setGroupVisible(R.id.sync, isManual);
-
         eventBus.register(this);
     }
 
     @Override
     protected void onPause() {
         eventBus.unregister(this);
-
         super.onPause();
     }
 
@@ -347,7 +368,7 @@ public class MapActivity extends AppCompatActivity {
 
     private void onOptionsSyncClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
-            case R.id.auto_sync:
+            case R.id.save_changes:
                 Intent intent = new Intent(this, UploadActivity.class);
                 startActivity(intent);
                 break;
@@ -384,5 +405,9 @@ public class MapActivity extends AppCompatActivity {
         }
 
         eventBus.post(new PleaseApplyNoteFilterEvent(displayOpenNotes, displayClosedNotes));
+    }
+
+    public void onEventMainThread(ChangesInDB event) {
+        navigationView.getMenu().findItem(R.id.save_changes).setEnabled(event.hasChanges()).setChecked(event.hasChanges());
     }
 }

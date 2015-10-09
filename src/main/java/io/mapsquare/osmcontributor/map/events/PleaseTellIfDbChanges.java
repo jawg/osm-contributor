@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.sync.events.error;
+package io.mapsquare.osmcontributor.map.events;
 
-public class ConnectionLostEvent {
+public class PleaseTellIfDbChanges {
 }
