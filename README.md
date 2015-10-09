@@ -41,8 +41,8 @@ You can also reach us on Twitter:
 [@DesignMyApp](https://twitter.com/DesignMyApp)
 
 ### RoadMap
-Performance enhancements coming soon to all flavors !
-Stay tuned for a new workflow on points edition / modification on the store flavor in the next few
+ + Performance enhancements coming soon to all flavors !
+ + Stay tuned for a new workflow on points edition / modification on the store flavor in the next few
 weeks.
 
 ### Changelog
