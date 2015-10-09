@@ -119,6 +119,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseSwitchModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.map.events.VectorialTilesLoadedEvent;
+import io.mapsquare.osmcontributor.map.vectorial.BoxOverlay;
 import io.mapsquare.osmcontributor.map.vectorial.Geocoder;
 import io.mapsquare.osmcontributor.map.vectorial.LevelBar;
 import io.mapsquare.osmcontributor.map.vectorial.VectorialObject;
@@ -134,6 +135,7 @@ import io.mapsquare.osmcontributor.sync.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadNoteRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.TooManyRequestsEvent;
+import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import io.mapsquare.osmcontributor.utils.ViewAnimation;
 import timber.log.Timber;
@@ -151,6 +153,7 @@ public class MapFragment extends Fragment {
     public static final String HIDDEN_POI_TYPE = "HIDDEN_POI_TYPE";
     private static final String DISPLAY_OPEN_NOTES = "DISPLAY_OPEN_NOTES";
     private static final String DISPLAY_CLOSED_NOTES = "DISPLAY_CLOSED_NOTES";
+    private static final double BOUNDING_BOX_MARGE = 0.001;
 
     private LocationMarker markerSelected = null;
 
@@ -299,6 +302,12 @@ public class MapFragment extends Fragment {
         // Set the map bounds
         if (configManager.hasBounds()) {
             mapView.setScrollableAreaLimit(configManager.getBoundingBox());
+        }
+
+        // Set the map bounds for the map
+        if (FlavorUtils.isTemplate()) {
+            mapView.setScrollableAreaLimit(Box.enlarge(configManager.getPreloadedBox().getBoundingBox(), 2));
+            drawBounds();
         }
 
         // disable rotation of the map
@@ -455,6 +464,12 @@ public class MapFragment extends Fragment {
 
             }
         });
+    }
+
+    private void drawBounds() {
+        Box box = configManager.getPreloadedBox();
+        BoxOverlay boxOverlay = new BoxOverlay(box);
+        mapView.addOverlay(boxOverlay);
     }
 
     private void measureMaxPoiType() {

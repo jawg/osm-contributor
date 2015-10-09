@@ -86,4 +86,33 @@ public class Box {
         box.setWest(boundingBox.getLonWest());
         return box;
     }
+
+    /**
+     * Convert the box to a {@link com.mapbox.mapboxsdk.geometry.BoundingBox}.
+     *
+     * @return boundingBox The boundingBox to convert.
+     */
+    public BoundingBox getBoundingBox() {
+        return new BoundingBox(north, east, south, west);
+    }
+
+    /**
+     * Enlarge the Box.
+     *
+     * @param viewBoundingBox The box to enlarge.
+     * @param factor The factor to enlarge the box.
+     * @return Box the Box enlarged.
+     */
+    public static BoundingBox enlarge(BoundingBox viewBoundingBox, double factor) {
+        double n = viewBoundingBox.getLatNorth();
+        double e = viewBoundingBox.getLonEast();
+        double s = viewBoundingBox.getLatSouth();
+        double w = viewBoundingBox.getLonWest();
+        double f = (factor - 1) / 2;
+        return new BoundingBox(n + f * (n - s),
+                e + f * (e - w),
+                s - f * (n - s),
+                w - f * (e - w));
+    }
+
 }
