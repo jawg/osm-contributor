@@ -40,6 +40,11 @@ You can also reach us on Twitter:
 [@Olduv](https://twitter.com/Olduv)  (Legal)  
 [@DesignMyApp](https://twitter.com/DesignMyApp)
 
+### RoadMap
+Performance enhancements coming soon to all flavors !
+Stay tuned for a new workflow on points edition / modification on the store flavor in the next few
+weeks.
+
 ### Changelog
 
 See the [CHANGELOG.md](/CHANGELOG.md) file.
