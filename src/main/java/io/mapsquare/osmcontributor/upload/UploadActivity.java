@@ -43,6 +43,7 @@ import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoisToUpdateEvent;
 import io.mapsquare.osmcontributor.core.events.PoisToUpdateLoadedEvent;
+import io.mapsquare.osmcontributor.sync.events.PleaseUploadPoiChangesEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNodeErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConnectionLostErrorEvent;
@@ -50,7 +51,6 @@ import io.mapsquare.osmcontributor.sync.events.error.SyncNewNodeErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadNoteRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadRetrofitErrorEvent;
-import io.mapsquare.osmcontributor.sync.upload.SyncUploadService;
 
 public class UploadActivity extends AppCompatActivity {
 
@@ -130,7 +130,7 @@ public class UploadActivity extends AppCompatActivity {
             String comment = editTextComment.getText().toString();
 
             if (!comment.isEmpty()) {
-                SyncUploadService.startService(this, comment);
+                eventBus.post(new PleaseUploadPoiChangesEvent(comment));
                 ringProgressDialog = ProgressDialog.show(this, null, getString(R.string.synchronizing), true);
                 ringProgressDialog.setCancelable(true);
             } else {

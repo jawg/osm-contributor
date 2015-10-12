@@ -83,9 +83,6 @@
             android:name=".about.AboutActivity"
             android:label="@string/title_activity_about"/>
 
-        <service
-            android:name=".sync.upload.SyncUploadService"
-            android:exported="false"/>
     </application>
 
 </manifest>

@@ -37,6 +37,7 @@ import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.note.NoteManager;
 import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
+import io.mapsquare.osmcontributor.sync.events.PleaseUploadPoiChangesEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoisAndNotesEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadWayEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
@@ -91,6 +92,10 @@ public class SyncManager {
 
     public void onEventAsync(SyncDownloadWayEvent event) {
         syncWayManager.syncDownloadWay(event.getBox());
+    }
+
+    public void onEventAsync(PleaseUploadPoiChangesEvent event) {
+        remoteAddOrUpdateOrDeletePois(event.getComment());
     }
 
 
