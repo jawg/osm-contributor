@@ -86,14 +86,6 @@
         <service
             android:name=".sync.upload.SyncUploadService"
             android:exported="false"/>
-
-        <receiver
-            android:name=".sync.ConnectionReceiver"
-            class="io.mapsquare.osmcontributor.sync.ConnectionReceiver">
-            <intent-filter android:priority="100">
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

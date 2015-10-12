@@ -20,8 +20,6 @@ package io.mapsquare.osmcontributor.note;
 
 import android.app.Application;
 
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -247,53 +245,6 @@ public class NoteManager {
      */
     public List<Note> queryForAllInRect(Box box) {
         return noteDao.queryForAllInRect(box);
-    }
-
-    /**
-     * Add a {@link io.mapsquare.osmcontributor.core.model.Comment} to a {@link io.mapsquare.osmcontributor.core.model.Note}.
-     * <p/>
-     * Save the note in the database and start the {@link io.mapsquare.osmcontributor.sync.upload.SyncUploadService}.
-     *
-     * @param note    The Note to which we add a comment.
-     * @param action  The action of the comment.
-     * @param comment The text of the comment.
-     * @return Whether the Note was a new Note.
-     */
-    public boolean addComment(Note note, String action, String comment) {
-        Timber.d("please apply new comment");
-        Comment newComment = new Comment();
-        newComment.setText(comment);
-        boolean creation = false;
-
-        switch (action) {
-            case NoteActivity.CLOSE:
-                newComment.setAction(Comment.ACTION_CLOSE);
-                break;
-
-            case NoteActivity.COMMENT:
-                newComment.setAction(Comment.ACTION_COMMENT);
-                break;
-
-            case NoteActivity.REOPEN:
-                newComment.setAction(Comment.ACTION_REOPEN);
-                break;
-
-            default:
-                newComment.setAction(Comment.ACTION_OPEN);
-                creation = true;
-                break;
-        }
-
-        newComment.setNote(note);
-        newComment.setUpdated(true);
-        newComment.setCreatedDate(new DateTime());
-        note.getComments().add(newComment);
-        note.setStatus(Note.STATUS_SYNC);
-
-        // save the changes in the DB
-        saveNote(note);
-
-        return creation;
     }
 
     /**
