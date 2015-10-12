@@ -102,7 +102,7 @@ public class OSMProxy {
 
             if (e.getKind() == RetrofitError.Kind.NETWORK) {
                 Timber.e(e, "Retrofit error, connection lost");
-                return new Failure<>(null);
+                return new Failure<>(e);
             } else if (e.getResponse() != null) {
                 switch (e.getResponse().getStatus()) {
                     case 401:

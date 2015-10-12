@@ -126,7 +126,6 @@ import io.mapsquare.osmcontributor.map.vectorial.VectorialObject;
 import io.mapsquare.osmcontributor.map.vectorial.VectorialOverlay;
 import io.mapsquare.osmcontributor.note.NoteCommentDialogFragment;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadWayEvent;
-import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadNote;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNodeErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncDownloadRetrofitErrorEvent;
@@ -1530,12 +1529,6 @@ public class MapFragment extends Fragment {
             presenter.setForceRefreshPoi();
             presenter.loadPoisIfNeeded();
         }
-    }
-
-
-    public void onEventMainThread(SyncFinishUploadNote event) {
-        presenter.setForceRefreshNotes();
-        presenter.loadPoisIfNeeded();
     }
 
     public void onEventMainThread(NewNoteCreatedEvent event) {

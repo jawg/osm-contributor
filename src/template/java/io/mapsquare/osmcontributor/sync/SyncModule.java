@@ -29,10 +29,7 @@ import dagger.Provides;
 import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.core.PoiManager;
-import io.mapsquare.osmcontributor.core.database.dao.CommentDao;
-import io.mapsquare.osmcontributor.core.database.dao.NoteDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiNodeRefDao;
-import io.mapsquare.osmcontributor.note.NoteManager;
 import io.mapsquare.osmcontributor.sync.assets.PoiAssetLoader;
 import io.mapsquare.osmcontributor.sync.converter.NoteConverter;
 import io.mapsquare.osmcontributor.sync.converter.PoiConverter;
@@ -81,8 +78,8 @@ public class SyncModule {
     }
 
     @Provides
-    SyncNoteManager getSyncNoteManager(OSMProxy osmProxy, OsmRestClient osmRestClient, EventBus bus, NoteManager noteManager, NoteConverter noteConverter, CommentDao commentDao, NoteDao noteDao) {
-        return new OSMSyncNoteManager(osmProxy, osmRestClient, bus, noteManager, noteConverter, commentDao, noteDao);
+    SyncNoteManager getSyncNoteManager(OSMProxy osmProxy, OsmRestClient osmRestClient, EventBus bus, NoteConverter noteConverter) {
+        return new OSMSyncNoteManager(osmProxy, osmRestClient, bus, noteConverter);
     }
 
     @Provides

@@ -18,6 +18,10 @@
  */
 package io.mapsquare.osmcontributor.sync;
 
+import java.util.List;
+
+import io.mapsquare.osmcontributor.core.model.Comment;
+import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.utils.Box;
 
 /**
@@ -31,10 +35,13 @@ public interface SyncNoteManager {
      *
      * @param box The Box to synchronize with the database.
      */
-    void syncDownloadNotesInBox(final Box box);
+    List<Note> syncDownloadNotesInBox(final Box box);
 
     /**
-     * Send new Comments to the backend.
+     * Send a new Comment to the backend.
+     *
+     * @param comment The comment to send to the backend.
+     * @return The resulting Note, and null if there was an error.
      */
-    void remoteAddComments();
+    Note remoteAddComment(final Comment comment);
 }

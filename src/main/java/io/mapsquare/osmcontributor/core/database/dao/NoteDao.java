@@ -63,6 +63,24 @@ public class NoteDao extends RuntimeExceptionDao<Note, Long> {
     }
 
     /**
+     * Query a Note with the given backend id.
+     *
+     * @param backendId The backend id.
+     * @return The note.
+     */
+    public Note queryByBackendId(final String backendId) {
+        List<Note> notes = DatabaseHelper.wrapException(new Callable<List<Note>>() {
+            @Override
+            public List<Note> call() throws Exception {
+                return queryBuilder()
+                        .where().eq(Note.BACKEND_ID, backendId)
+                        .query();
+            }
+        });
+        return notes.size() > 0 ? notes.get(0) : null;
+    }
+
+    /**
      * Query a List of Notes with one of the given backend ids.
      *
      * @param backendIds The Collection of backend ids.

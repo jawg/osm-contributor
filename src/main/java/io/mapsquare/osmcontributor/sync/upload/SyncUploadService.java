@@ -21,26 +21,22 @@ package io.mapsquare.osmcontributor.sync.upload;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
 import javax.inject.Inject;
 
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.sync.SyncManager;
-import io.mapsquare.osmcontributor.sync.SyncNoteManager;
+import io.mapsquare.osmcontributor.utils.StringUtils;
 
+/**
+ * Service that upload the {@link io.mapsquare.osmcontributor.core.model.Poi} to the backend.
+ */
 public class SyncUploadService extends IntentService {
 
-    public static final String COMMENT = "COMMENT";
+    public static final String CHANGESET_COMMENT = "CHANGESET_COMMENT";
 
     @Inject
     SyncManager syncManager;
-
-    @Inject
-    SyncNoteManager syncNoteManager;
-
-    @Inject
-    SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate() {
@@ -54,19 +50,22 @@ public class SyncUploadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        String comment = intent.getStringExtra(COMMENT);
+        String changesetComment = intent.getStringExtra(CHANGESET_COMMENT);
 
-        if (comment != null && !comment.isEmpty()) {
-            syncManager.remoteAddOrUpdateOrDeletePois(comment);
+        if (!StringUtils.isEmpty(changesetComment)) {
+            syncManager.remoteAddOrUpdateOrDeletePois(changesetComment);
         }
-
-        //note are sent without changesets or comments
-        syncNoteManager.remoteAddComments();
     }
 
-    public static void startService(Context context, String comment) {
+    /**
+     * Start the SyncUploadService with a comment for the changeset.
+     *
+     * @param context          The context that start the service.
+     * @param changesetComment The comment of the changeset that will contain all the Pois modifications to send.
+     */
+    public static void startService(Context context, String changesetComment) {
         Intent syncIntent = new Intent(context, SyncUploadService.class);
-        syncIntent.putExtra(COMMENT, comment);
+        syncIntent.putExtra(CHANGESET_COMMENT, changesetComment);
         context.startService(syncIntent);
     }
 }

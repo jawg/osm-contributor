@@ -41,13 +41,13 @@ public class CommentDao extends RuntimeExceptionDao<Comment, Long> {
     }
 
     /**
-     * Delete comments associated to a Note.
+     * Delete comments associated to a Note and with the given updated value.
      *
      * @param noteId  Id of the Note.
      * @param updated Delete the comment with status updated or not.
      * @return The number of comments deleted
      */
-    public Integer deleteByNoteId(final Long noteId, final boolean updated) {
+    public Integer deleteByNoteIdAndUpdated(final Long noteId, final boolean updated) {
         if (noteId == null) {
             return 0;
         }

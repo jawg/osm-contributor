@@ -21,15 +21,11 @@ package io.mapsquare.osmcontributor.sync;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import io.mapsquare.osmcontributor.core.database.dao.CommentDao;
-import io.mapsquare.osmcontributor.core.database.dao.NoteDao;
 import io.mapsquare.osmcontributor.core.model.Comment;
 import io.mapsquare.osmcontributor.core.model.Note;
-import io.mapsquare.osmcontributor.note.NoteManager;
 import io.mapsquare.osmcontributor.sync.converter.NoteConverter;
 import io.mapsquare.osmcontributor.sync.dto.osm.NoteDto;
 import io.mapsquare.osmcontributor.sync.dto.osm.OsmDto;
-import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadNote;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNoteErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncDownloadRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadNoteRetrofitErrorEvent;
@@ -46,41 +42,35 @@ public class OSMSyncNoteManager implements SyncNoteManager {
     OSMProxy osmProxy;
     OsmRestClient osmRestClient;
     EventBus bus;
-    NoteManager noteManager;
     NoteConverter noteConverter;
-    CommentDao commentDao;
-    NoteDao noteDao;
 
-    public OSMSyncNoteManager(OSMProxy osmProxy, OsmRestClient osmRestClient, EventBus bus, NoteManager noteManager, NoteConverter noteConverter, CommentDao commentDao, NoteDao noteDao) {
+    public OSMSyncNoteManager(OSMProxy osmProxy, OsmRestClient osmRestClient, EventBus bus, NoteConverter noteConverter) {
         this.osmProxy = osmProxy;
         this.osmRestClient = osmRestClient;
         this.bus = bus;
-        this.noteManager = noteManager;
         this.noteConverter = noteConverter;
-        this.commentDao = commentDao;
-        this.noteDao = noteDao;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void syncDownloadNotesInBox(final Box box) {
+    public List<Note> syncDownloadNotesInBox(final Box box) {
         Timber.d("Requesting osm for notes download");
-        OSMProxy.Result<Void> result = osmProxy.proceed(new OSMProxy.NetworkAction<Void>() {
+        OSMProxy.Result<List<Note>> result = osmProxy.proceed(new OSMProxy.NetworkAction<List<Note>>() {
             @Override
-            public Void proceed() {
+            public List<Note> proceed() {
                 String strBox = box.getWest() + "," + box.getSouth() + "," + box.getEast() + "," + box.getNorth();
 
                 OsmDto osmDto = osmRestClient.getNotes(strBox);
 
                 if (osmDto != null && osmDto.getNoteDtoList() != null && osmDto.getNoteDtoList().size() > 0) {
                     Timber.d("Updating %d note(s)", osmDto.getNoteDtoList().size());
-                    locallyUpdateNotes(osmDto);
+                    return noteConverter.convertNoteDtosToNotes(osmDto.getNoteDtoList());
                 } else {
                     Timber.d("No new note found in the area");
+                    return null;
                 }
-                return null;
             }
         });
 
@@ -90,94 +80,58 @@ public class OSMSyncNoteManager implements SyncNoteManager {
             }
             bus.post(new SyncDownloadRetrofitErrorEvent());
         }
-    }
-
-    /**
-     * Merge Notes contained in an OsmDto with the database.
-     *
-     * @param osmDto The Notes to merge.
-     */
-    private void locallyUpdateNotes(OsmDto osmDto) {
-        List<NoteDto> noteDtoList = osmDto.getNoteDtoList();
-        List<Note> notes = noteConverter.convertNoteDtosToNotes(noteDtoList);
-
-        noteManager.mergeFromOsmNotes(notes);
+        return result.getResult();
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void remoteAddComments() {
-        List<Comment> newComments = commentDao.queryForAllNew();
-        int successfullyAddedComments = 0;
+    public Note remoteAddComment(final Comment comment) {
+        OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
+            @Override
+            public OsmDto proceed() {
+                OsmDto osmDto;
+                switch (comment.getAction()) {
+                    case Comment.ACTION_CLOSE:
+                        osmDto = osmRestClient.closeNote(comment.getNote().getBackendId(), comment.getText(), "");
+                        break;
 
-        if (newComments.size() == 0) {
-            Timber.i("No new Comments to send to osm");
-        } else {
-            Timber.i("Found %d new  Comment to send to osm", newComments.size());
-            for (final Comment comment : newComments) {
+                    case Comment.ACTION_REOPEN:
+                        osmDto = osmRestClient.reopenNote(comment.getNote().getBackendId(), comment.getText(), "");
+                        break;
 
-                noteDao.refresh(comment.getNote());
+                    case Comment.ACTION_OPEN:
+                        osmDto = osmRestClient.addNote(comment.getNote().getLatitude(), comment.getNote().getLongitude(), comment.getText(), "");
+                        break;
 
-                OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
-                    @Override
-                    public OsmDto proceed() {
-                        OsmDto osmDto;
-                        switch (comment.getAction()) {
-                            case Comment.ACTION_CLOSE:
-                                osmDto = osmRestClient.closeNote(comment.getNote().getBackendId(), comment.getText(), "");
-                                break;
-
-                            case Comment.ACTION_REOPEN:
-                                osmDto = osmRestClient.reopenNote(comment.getNote().getBackendId(), comment.getText(), "");
-                                break;
-
-                            case Comment.ACTION_OPEN:
-                                osmDto = osmRestClient.addNote(comment.getNote().getLatitude(), comment.getNote().getLongitude(), comment.getText(), "");
-                                break;
-
-                            default:
-                                osmDto = osmRestClient.addComment(comment.getNote().getBackendId(), comment.getText(), "");
-                                break;
-                        }
-                        return osmDto;
-                    }
-                });
-
-                if (result.isSuccess()) {
-                    OsmDto osmDto = result.getResult();
-                    if (osmDto != null && osmDto.getNoteDtoList() != null && osmDto.getNoteDtoList().size() == 1) {
-
-                        NoteDto noteDto = osmDto.getNoteDtoList().get(0);
-                        Note note = noteConverter.convertNoteDtoToNote(noteDto);
-                        note.setUpdated(false);
-                        note.setId(comment.getNote().getId());
-
-                        //delete comments updated = true
-                        commentDao.deleteByNoteId(note.getId(), true);
-
-                        // save note with all comments updated
-                        noteManager.saveNote(note);
-
-                        bus.post(new SyncFinishUploadNote(note));
-                        successfullyAddedComments++;
-                    }
+                    default:
+                        osmDto = osmRestClient.addComment(comment.getNote().getBackendId(), comment.getText(), "");
+                        break;
                 }
+                return osmDto;
+            }
+        });
 
-                if (!result.isSuccess() && result.getRetrofitError() != null) {
-                    RetrofitError e = result.getRetrofitError();
-                    if (e.getResponse() != null && e.getResponse().getStatus() == 409) {
-                        Timber.e(e, "Couldn't create note, note already closed");
-                        commentDao.delete(comment);
-                        bus.post(new SyncConflictingNoteErrorEvent(noteDao.queryForId(comment.getNote().getId())));
-                    } else {
-                        Timber.e(e, "Retrofit error, couldn't create comment !");
-                        bus.post(new SyncUploadNoteRetrofitErrorEvent(comment.getNote().getId()));
-                    }
+        if (result.isSuccess()) {
+            OsmDto osmDto = result.getResult();
+            NoteDto noteDto = osmDto.getNoteDtoList().get(0);
+            Note note = noteConverter.convertNoteDtoToNote(noteDto);
+            note.setUpdated(false);
+            note.setId(comment.getNote().getId());
+
+            return note;
+        } else {
+            if (result.getRetrofitError() != null) {
+                RetrofitError e = result.getRetrofitError();
+                if (e.getResponse() != null && e.getResponse().getStatus() == 409) {
+                    Timber.e(e, "Couldn't create note, note already closed");
+                    bus.post(new SyncConflictingNoteErrorEvent(comment.getNote()));
+                } else {
+                    Timber.e(e, "Retrofit error, couldn't create comment !");
+                    bus.post(new SyncUploadNoteRetrofitErrorEvent(comment.getNote().getId()));
                 }
             }
-            Timber.i(" %d comment sent to osm", successfullyAddedComments);
+            return null;
         }
     }
 }

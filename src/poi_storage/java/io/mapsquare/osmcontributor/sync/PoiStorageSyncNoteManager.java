@@ -18,6 +18,10 @@
  */
 package io.mapsquare.osmcontributor.sync;
 
+import java.util.List;
+
+import io.mapsquare.osmcontributor.core.model.Comment;
+import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.utils.Box;
 
 /**
@@ -33,8 +37,8 @@ public class PoiStorageSyncNoteManager implements SyncNoteManager {
      * {@inheritDoc}
      */
     @Override
-    public void syncDownloadNotesInBox(Box box) {
-
+    public List<Note> syncDownloadNotesInBox(Box box) {
+        return null;
     }
 
     /**
@@ -43,7 +47,7 @@ public class PoiStorageSyncNoteManager implements SyncNoteManager {
      * {@inheritDoc}
      */
     @Override
-    public void remoteAddComments() {
-
+    public Note remoteAddComment(Comment comment) {
+        return null;
     }
 }

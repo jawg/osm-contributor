@@ -31,8 +31,10 @@ import io.mapsquare.osmcontributor.core.database.dao.PoiDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiTypeDao;
 import io.mapsquare.osmcontributor.core.events.PoiTypesLoaded;
 import io.mapsquare.osmcontributor.core.events.PoisAndNotesDownloadedEvent;
+import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiType;
+import io.mapsquare.osmcontributor.note.NoteManager;
 import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoisAndNotesEvent;
@@ -52,6 +54,7 @@ public class SyncManager {
 
     Application application;
     PoiManager poiManager;
+    NoteManager noteManager;
     PoiDao poiDao;
     PoiTypeDao poiTypeDao;
     EventBus bus;
@@ -60,9 +63,10 @@ public class SyncManager {
     SyncNoteManager syncNoteManager;
 
     @Inject
-    public SyncManager(Application application, PoiManager poiManager, PoiDao poiDao, PoiTypeDao poiTypeDao, EventBus bus, Backend backend, SyncWayManager syncWayManager, SyncNoteManager syncNoteManager) {
+    public SyncManager(Application application, PoiManager poiManager, NoteManager noteManager, PoiDao poiDao, PoiTypeDao poiTypeDao, EventBus bus, Backend backend, SyncWayManager syncWayManager, SyncNoteManager syncNoteManager) {
         this.application = application;
         this.poiManager = poiManager;
+        this.noteManager = noteManager;
         this.poiDao = poiDao;
         this.poiTypeDao = poiTypeDao;
         this.bus = bus;
@@ -78,7 +82,10 @@ public class SyncManager {
 
     public void onEventAsync(SyncDownloadPoisAndNotesEvent event) {
         syncDownloadPoiBox(event.getBox());
-        syncNoteManager.syncDownloadNotesInBox(event.getBox());
+        List<Note> notes = syncNoteManager.syncDownloadNotesInBox(event.getBox());
+        if (notes != null && notes.size() > 0) {
+            noteManager.mergeBackendNotes(notes);
+        }
         bus.post(new PoisAndNotesDownloadedEvent());
     }
 

@@ -44,6 +44,8 @@ import io.mapsquare.osmcontributor.core.model.Comment;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.map.events.NewNoteCreatedEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseApplyNewComment;
+import io.mapsquare.osmcontributor.sync.SyncNoteManager;
+import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadNote;
 import io.mapsquare.osmcontributor.utils.Box;
 import timber.log.Timber;
 
@@ -64,15 +66,17 @@ public class NoteManager {
     ConfigManager configManager;
     EventBus bus;
     Application application;
+    SyncNoteManager syncNoteManager;
 
     @Inject
-    public NoteManager(NoteDao noteDao, CommentDao commentDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, Application application) {
+    public NoteManager(NoteDao noteDao, CommentDao commentDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, Application application, SyncNoteManager syncNoteManager) {
         this.noteDao = noteDao;
         this.commentDao = commentDao;
         this.databaseHelper = databaseHelper;
         this.configManager = configManager;
         this.application = application;
         this.bus = bus;
+        this.syncNoteManager = syncNoteManager;
     }
 
     // ********************************
@@ -90,8 +94,13 @@ public class NoteManager {
 
     public void onEventAsync(PleaseApplyNewComment event) {
         Timber.d("please apply new comment");
-        if (addComment(event.getNote(), event.getAction(), event.getText())) {
-            bus.post(new NewNoteCreatedEvent(event.getNote().getId()));
+
+        Note note = syncNoteManager.remoteAddComment(createComment(event.getNote(), event.getAction(), event.getText()));
+
+        if (note != null) {
+            mergeBackendNote(note);
+            bus.post(new NewNoteCreatedEvent(note.getId()));
+            bus.post(new SyncFinishUploadNote(note));
         }
     }
 
@@ -130,7 +139,7 @@ public class NoteManager {
      * @see #saveNote(Note)
      */
     private Note saveNoteNoTransactionMgmt(Note note) {
-        commentDao.deleteByNoteId(note.getId(), false);
+        commentDao.deleteByNoteIdAndUpdated(note.getId(), false);
         noteDao.createOrUpdate(note);
 
         if (note.getComments() != null) {
@@ -176,11 +185,25 @@ public class NoteManager {
     }
 
     /**
+     * Merge Note in parameters to the already in the database.
+     *
+     * @param remoteNote The Note to merge.
+     */
+    public void mergeBackendNote(Note remoteNote) {
+        Note localNote = noteDao.queryByBackendId(remoteNote.getBackendId());
+
+        if (localNote != null) {
+            remoteNote.setId(localNote.getId());
+        }
+        saveNote(remoteNote);
+    }
+
+    /**
      * Merge Notes in parameters to those already in the database.
      *
-     * @param remoteNotes The POIs to merge.
+     * @param remoteNotes The Notes to merge.
      */
-    public void mergeFromOsmNotes(List<Note> remoteNotes) {
+    public void mergeBackendNotes(List<Note> remoteNotes) {
         List<Note> toMergeNotes = new ArrayList<>();
 
         Map<String, Note> remoteNotesMap = new HashMap<>();
@@ -271,6 +294,41 @@ public class NoteManager {
         saveNote(note);
 
         return creation;
+    }
+
+    /**
+     * Create a Comment with the given parameters without modifying the Note.
+     *
+     * @param note    The Note associated with the comment.
+     * @param action  The action of the comment.
+     * @param comment The comment of the comment.
+     * @return The created comment.
+     */
+    public Comment createComment(Note note, String action, String comment) {
+        Comment newComment = new Comment();
+        newComment.setText(comment);
+
+        switch (action) {
+            case NoteActivity.CLOSE:
+                newComment.setAction(Comment.ACTION_CLOSE);
+                break;
+
+            case NoteActivity.COMMENT:
+                newComment.setAction(Comment.ACTION_COMMENT);
+                break;
+
+            case NoteActivity.REOPEN:
+                newComment.setAction(Comment.ACTION_REOPEN);
+                break;
+
+            default:
+                newComment.setAction(Comment.ACTION_OPEN);
+                break;
+        }
+
+        newComment.setNote(note);
+
+        return newComment;
     }
 
     // *********************************
