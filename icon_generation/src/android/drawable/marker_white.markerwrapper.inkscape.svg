@@ -10,7 +10,7 @@
 	.st4{display:inline;filter:url(#Adobe_OpacityMaskFilter);}
 	.st5{display:inline;opacity:0.2;mask:url(#SVGID_1_);}
 	.st6{display:none;fill:#FFFFFF;}
-	.st7{fill:#C6C6C6;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
+	.st7{fill:#FFFFFF;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
 	.st8{display:none;opacity:0.79;}
 	.st9{fill:#2196F3;}
 </style>
@@ -30,7 +30,7 @@
 	<mask maskUnits="userSpaceOnUse" x="40.5" y="0" width="431.4" height="493" id="SVGID_1_" class="st2">
 		<g style="filter:url(#Adobe_OpacityMaskFilter);">
 			
-				<image style="overflow:visible;" width="908" height="1036" xlink:href="B0C846C3E45B6570.jpg"  transform="matrix(0.48 0 0 0.48 38.5385 -1.9994)">
+				<image style="overflow:visible;" width="908" height="1036" xlink:href="CA2F4B322990AE6D.jpg"  transform="matrix(0.48 0 0 0.48 38.5385 -1.9994)">
 			</image>
 		</g>
 	</mask>

@@ -188,7 +188,7 @@ public class BitmapHandler {
 
             switch (state) {
                 case NORMAL:
-                    markerId = R.drawable.marker_green;
+                    markerId = R.drawable.marker_white;
                     break;
                 case NOT_SYNCED:
                     markerId = R.drawable.marker_grey;
@@ -197,7 +197,7 @@ public class BitmapHandler {
                     markerId = R.drawable.marker_blue;
                     break;
                 case MOVING:
-                    markerId = R.drawable.marker_orange;
+                    markerId = R.drawable.marker_red;
                     break;
             }
 

@@ -10,9 +10,9 @@
 	.st4{display:inline;filter:url(#Adobe_OpacityMaskFilter);}
 	.st5{display:inline;opacity:0.2;mask:url(#SVGID_1_);}
 	.st6{display:none;fill:#FFFFFF;}
-	.st7{fill:#C6C6C6;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
-	.st8{display:none;opacity:0.79;}
-	.st9{fill:#2196F3;}
+	.st7{fill:#FFFFFF;}
+	.st8{opacity:0.79;}
+	.st9{fill:#B42C00;}
 </style>
 <rect class="st0" width="512" height="512"/>
 <g class="st1">
@@ -30,7 +30,7 @@
 	<mask maskUnits="userSpaceOnUse" x="40.5" y="0" width="431.4" height="493" id="SVGID_1_" class="st2">
 		<g style="filter:url(#Adobe_OpacityMaskFilter);">
 			
-				<image style="overflow:visible;" width="908" height="1036" xlink:href="B0C846C3E45B6570.jpg"  transform="matrix(0.48 0 0 0.48 38.5385 -1.9994)">
+				<image style="overflow:visible;" width="908" height="1036" xlink:href="E6663190B47E791.jpg"  transform="matrix(0.48 0 0 0.48 38.5385 -1.9994)">
 			</image>
 		</g>
 	</mask>
@@ -46,7 +46,7 @@
 		c0,0-14.2-42.9-14.2-71.6c0-82.2,66.7-148.9,148.9-148.9C338.2,30.5,404.8,97.2,404.8,179.4z"/>
 </g>
 <g class="st8">
-	<g class="st2">
+	<g>
 		<path class="st9" d="M256,26.7c83.9,0,151.9,68,151.9,151.9c0,29.3-14.4,73-14.4,73c-17.6,57.7-114.2,212.1-134,243.4
 			c-0.8,1.3-2.2,2-3.5,2c-1.4,0-2.7-0.7-3.5-2c-19.8-31.3-116.3-185.8-133.9-243.4c0,0-14.4-43.7-14.4-73
 			C104.1,94.8,172.1,26.7,256,26.7 M256,0.7c-24,0-47.3,4.7-69.3,14c-21.2,9-40.2,21.8-56.5,38.1c-16.3,16.3-29.2,35.4-38.1,56.6
