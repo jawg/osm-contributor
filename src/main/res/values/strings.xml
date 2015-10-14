@@ -68,6 +68,7 @@
     <string name="osm_copyright">© OpenStreetMap contributors</string>
     <string name="zoom_to_edit">This area is too large to load, please zoom more.</string>
     <string name="download_in_progress">Download in progress of all pois and notes of the displayed zone</string>
+    <string name="switch_style">Satellite view</string>
 
     <!-- Strings related to login -->
     <string name="prompt_login">Login</string>

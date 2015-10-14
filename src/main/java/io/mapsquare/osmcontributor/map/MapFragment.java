@@ -64,7 +64,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Icon;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.Overlay;
-import com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer;
+import com.mapbox.mapboxsdk.tileprovider.tilesource.TileLayer;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.MapViewListener;
 import com.mapbox.mapboxsdk.views.util.TilesLoadedListener;
@@ -115,6 +115,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadEditVectorialTileEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseOpenEditionEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSelectNodeRefByID;
+import io.mapsquare.osmcontributor.map.events.PleaseSwitchMapStyleEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
@@ -134,6 +135,9 @@ import io.mapsquare.osmcontributor.sync.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadNoteRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.TooManyRequestsEvent;
+import io.mapsquare.osmcontributor.tileslayer.BingTileLayer;
+import io.mapsquare.osmcontributor.tileslayer.MBTilesLayer;
+import io.mapsquare.osmcontributor.tileslayer.WebSourceTileLayer;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import io.mapsquare.osmcontributor.utils.ViewAnimation;
@@ -152,7 +156,6 @@ public class MapFragment extends Fragment {
     public static final String HIDDEN_POI_TYPE = "HIDDEN_POI_TYPE";
     private static final String DISPLAY_OPEN_NOTES = "DISPLAY_OPEN_NOTES";
     private static final String DISPLAY_CLOSED_NOTES = "DISPLAY_CLOSED_NOTES";
-    private static final double BOUNDING_BOX_MARGE = 0.001;
 
     private LocationMarker markerSelected = null;
 
@@ -226,7 +229,6 @@ public class MapFragment extends Fragment {
         ButterKnife.inject(this, rootView);
         setHasOptionsMenu(true);
 
-
         zoomVectorial = configManager.getZoomVectorial();
 
         if (savedInstanceState != null) {
@@ -288,26 +290,10 @@ public class MapFragment extends Fragment {
     }
 
     private void instantiateMapView(Bundle savedInstanceState) {
-        // Create a TileSource from OpenStreetMap
-        WebSourceTileLayer osmTileLayer = new WebSourceTileLayer("openstreetmap", configManager.getMapUrl());
-        osmTileLayer.setName("OpenStreetMap")
-                .setAttribution("© OpenStreetMap Contributors")
-                .setMinimumZoomLevel(5)
-                .setMaximumZoomLevel(configManager.getZoomMax());
-
-        // Set the OpenStreetMap tile source as tile source
-        mapView.setTileSource(osmTileLayer);
-
-        // Set the map bounds
-        if (configManager.hasBounds()) {
-            mapView.setScrollableAreaLimit(configManager.getBoundingBox());
-        }
-
-        // Set the map bounds for the map
-        if (FlavorUtils.isTemplate()) {
-            mapView.setScrollableAreaLimit(Box.enlarge(configManager.getPreloadedBox().getBoundingBox(), 2));
-            drawBounds();
-        }
+        // Instantiate the different tiles sources
+        instantiateTileSources();
+        // Set the tile source has the Osm tile source
+        switchToTileSource(OSM_TILE_SOURCE);
 
         // disable rotation of the map
         mapView.setMapRotationEnabled(false);
@@ -339,7 +325,7 @@ public class MapFragment extends Fragment {
 
         final DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.DOWN);
-        zoomLevelText.setText(df.format(mapView.getZoomLevel()));
+        zoomLevelText.setText(df.format(getZoomLevel()));
 
         mapView.addListener(new MapListener() {
             int initialX;
@@ -550,6 +536,7 @@ public class MapFragment extends Fragment {
 
             displayOpenNotes = savedInstanceState.getBoolean(DISPLAY_OPEN_NOTES);
             displayClosedNotes = savedInstanceState.getBoolean(DISPLAY_CLOSED_NOTES);
+            switchToTileSource(savedInstanceState.getString(TILE_SOURCE));
         }
     }
 
@@ -599,6 +586,7 @@ public class MapFragment extends Fragment {
         outState.putDouble(LEVEL, currentLevel);
         outState.putBoolean(DISPLAY_OPEN_NOTES, displayOpenNotes);
         outState.putBoolean(DISPLAY_CLOSED_NOTES, displayClosedNotes);
+        outState.putString(TILE_SOURCE, currentTileLayer);
 
         int markerType = markerSelected == null ? LocationMarker.MarkerType.NONE.ordinal() : markerSelected.getType().ordinal();
         outState.putInt(MARKER_TYPE, markerType);
@@ -895,7 +883,9 @@ public class MapFragment extends Fragment {
         displayPoiDetailBanner(properties.isShowPoiBanner());
         displayNoteDetailBanner(properties.isShowNodeBanner());
 
-        mapView.setMinZoomLevel(properties.isZoomOutLimited() ? zoomVectorial : 1);
+        // If there must be a min zoom, take zoom vectorial
+        // If there is no need for a zoom min, take the zoom min of the current TileProvider.
+        mapView.setMinZoomLevel(properties.isZoomOutLimited() ? zoomVectorial : mapView.getTileProvider().getMinimumZoomLevel());
 
         tracker.send(new HitBuilders.EventBuilder()
                 .setCategory(Category.MapMode.getValue())
@@ -963,6 +953,9 @@ public class MapFragment extends Fragment {
     }
 
     public void onEventMainThread(PleaseSwitchWayEditionModeEvent event) {
+        if (getZoomLevel() < zoomVectorial) {
+            mapView.setZoom(zoomVectorial);
+        }
         switchMode(MapMode.WAY_EDITION);
         downloadAreaForEdition();
     }
@@ -1129,7 +1122,6 @@ public class MapFragment extends Fragment {
     //get data from the bd
     private void loadAreaForEdition() {
         if (getZoomLevel() >= zoomVectorial) {
-            BoundingBox viewBoundingBox = getViewBoundingBox();
             eventBus.post(new PleaseLoadEditVectorialTileEvent(false));
         } else {
             Toast.makeText(getActivity(), getString(R.string.zoom_to_edit), Toast.LENGTH_SHORT).show();
@@ -1620,7 +1612,6 @@ public class MapFragment extends Fragment {
             vectorialObjectsEdition.addAll(event.getVectorialObjects());
             updateVectorial(event.getLevels());
 
-
             if (getMarkerSelected() != null && getMarkerSelected().isNodeRef()) {
                 boolean reselectMaker = false;
                 for (VectorialObject v : vectorialObjectsEdition) {
@@ -1877,5 +1868,84 @@ public class MapFragment extends Fragment {
         showcaseView.hide();
         isTuto = false;
         sharedPreferences.edit().putBoolean(TUTORIAL_CREATION_FINISH, true).apply();
+    }
+
+    /*-----------------------------------------------------------
+    * TILE SOURCES
+    *---------------------------------------------------------*/
+    private static final String TILE_SOURCE = "TILE_SOURCE";
+
+    private TileLayer osmTileLayer;
+    private TileLayer bingTileLayer;
+
+    // Ids of tile layers
+    public static final String OSM_TILE_SOURCE = "OSM_TILE_SOURCE";
+    public static final String BING_TILE_SOURCE = "BING_TILE_SOURCE";
+    private String currentTileLayer;
+
+    private static final float MIN_ZOOM_LEVEL = 5;
+
+    private BoundingBox scrollableAreaLimit = null;
+
+    /**
+     * Switch the tile source between the osm tile source and the bing aerial vue tile source.
+     */
+    private void switchTileSource() {
+        switchToTileSource(BING_TILE_SOURCE.equals(currentTileLayer) ? OSM_TILE_SOURCE : BING_TILE_SOURCE);
+    }
+
+    /**
+     * Change the tile source of the mapView.
+     *
+     * @param tileSourceId The id of the new tile source.
+     */
+    private void switchToTileSource(String tileSourceId) {
+        Timber.d("Switch tileSource to %s", tileSourceId);
+        switch (tileSourceId) {
+            case BING_TILE_SOURCE:
+                currentTileLayer = BING_TILE_SOURCE;
+                mapView.setTileSource(bingTileLayer);
+                break;
+            case OSM_TILE_SOURCE:
+            default:
+                currentTileLayer = OSM_TILE_SOURCE;
+                mapView.setTileSource(osmTileLayer);
+                break;
+        }
+        // Reset the scroll limit of the map
+        mapView.setScrollableAreaLimit(scrollableAreaLimit);
+    }
+
+    /**
+     * Instantiate the different tiles sources used by the map.
+     */
+    private void instantiateTileSources() {
+        // Create a TileSource from OpenStreetMap
+        osmTileLayer = new WebSourceTileLayer("openstreetmap", configManager.getMapUrl())
+                .setName("OpenStreetMap")
+                .setAttribution("© OpenStreetMap Contributors")
+                .setMinimumZoomLevel(MIN_ZOOM_LEVEL)
+                .setMaximumZoomLevel(configManager.getZoomMax());
+
+        // Create a TileSource from Bing map with aerial with label style
+        bingTileLayer = new BingTileLayer(configManager.getBingApiKey(), BingTileLayer.IMAGERYSET_AERIALWITHLABELS)
+                .setName("Bing aerial view")
+                .setMinimumZoomLevel(MIN_ZOOM_LEVEL)
+                .setMaximumZoomLevel(configManager.getZoomMax());
+
+        // Set the map bounds
+        if (configManager.hasBounds()) {
+            scrollableAreaLimit = configManager.getBoundingBox();
+        }
+
+        // Set the map bounds for the map
+        if (FlavorUtils.isTemplate()) {
+            scrollableAreaLimit = Box.enlarge(configManager.getPreloadedBox().getBoundingBox(), 2);
+            drawBounds();
+        }
+    }
+
+    public void onEventMainThread(PleaseSwitchMapStyleEvent event) {
+        switchTileSource();
     }
 }

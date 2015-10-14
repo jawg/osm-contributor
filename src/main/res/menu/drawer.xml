@@ -41,6 +41,10 @@
             android:visible="false"/>
 
         <item
+            android:id="@+id/switch_style"
+            android:title="@string/switch_style"/>
+
+        <item
             android:id="@+id/replay_tuto_menu"
             android:title="@string/replay_tuto"
             android:visible="false"/>

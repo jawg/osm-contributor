@@ -91,4 +91,9 @@ public class StoreConfigManager implements ConfigManager {
     public String getBaseOverpassApiUrl() {
         return BuildConfig.BASE_OVERPASS_URL;
     }
+
+    @Override
+    public String getBingApiKey() {
+        return BuildConfig.BING_API_KEY;
+    }
 }

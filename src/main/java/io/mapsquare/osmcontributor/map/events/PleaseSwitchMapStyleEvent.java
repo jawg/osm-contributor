@@ -18,14 +18,5 @@
  */
 package io.mapsquare.osmcontributor.map.events;
 
-public class ChangesInDB {
-    private boolean hasChanges;
-
-    public ChangesInDB(boolean hasChanges) {
-        this.hasChanges = hasChanges;
-    }
-
-    public boolean hasChanges() {
-        return hasChanges;
-    }
+public class PleaseSwitchMapStyleEvent {
 }

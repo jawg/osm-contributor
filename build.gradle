@@ -86,6 +86,8 @@ android {
         targetSdkVersion 23
         versionCode 6
         versionName appVersion
+        // Load bing API key from the conf.properties file
+        buildConfigField "String", "BING_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("bingApiKey") + '"'
     }
     buildTypes {
         release {
@@ -98,7 +100,7 @@ android {
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.store"'
             buildConfigField "int", "DEFAULT_ZOOM", "16"
             buildConfigField "int", "ZOOM_VECTORIAL", "19"
-            buildConfigField "float", "ZOOM_MAX", "19.9f"
+            buildConfigField "float", "ZOOM_MAX", "21.99f"
             buildConfigField "double", "CENTER_LAT", "48.858370"
             buildConfigField "double", "CENTER_LNG", "2.294481"
             buildConfigField "String", "MAP_URL", '"http://tile.openstreetmap.org/{z}/{x}/{y}.png"'
@@ -123,6 +125,7 @@ configurations {
 dependencies {
     compile project(':fab')
     compile project(':navdrawer')
+    compile project(':tileslayer')
     compile "com.android.support:appcompat-v7:$androidSupportVersion"
     // Dependency injection
     compile "com.google.dagger:dagger:$daggerVersion"
@@ -138,7 +141,7 @@ dependencies {
     debugCompile "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
     debugCompile "im.dino:dbinspector:$dbinspectorVersion@aar"
-    if(project.hasProperty('foss')) {
+    if (project.hasProperty('foss')) {
         compile project(":fosstweaks")
     } else {
         compile "com.crashlytics.android:crashlytics:$crashlyticsVersion"
@@ -173,9 +176,19 @@ dependencies {
     //
 }
 
+// Specify the OSM API url to use when building by adding -PosmUrl=myUrl
+// Default url is the developer API at http://api06.dev.openstreetmap.org/api/0.6
+// The official API url is http://api.openstreetmap.org/api/0.6
 def osmUrl() {
     def osmUrl = project.getProperties().get("osmUrl")
     return osmUrl != null ? '"' + osmUrl + '"' : '"http://api06.dev.openstreetmap.org/api/0.6"'
+}
+
+// Load the properties from the given file
+def loadPropertiesFile(String name) {
+    def props = new Properties()
+    props.load(new FileInputStream(name))
+    return props
 }
 
 checkstyle {

@@ -25,6 +25,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import javax.inject.Singleton;
 
+import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.utils.Box;
 
@@ -97,5 +98,10 @@ public class PoiStorageConfigManager implements ConfigManager {
     @Override
     public String getBaseOverpassApiUrl() {
         return null;
+    }
+
+    @Override
+    public String getBingApiKey() {
+        return BuildConfig.BING_API_KEY;
     }
 }

@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 
 import javax.inject.Singleton;
 
+import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.CloseableUtils;
@@ -145,5 +146,10 @@ public class TemplateConfigManager implements ConfigManager {
     @Override
     public String getBaseOverpassApiUrl() {
         return application.getString(R.string.baseOverpassUrl);
+    }
+
+    @Override
+    public String getBingApiKey() {
+        return BuildConfig.BING_API_KEY;
     }
 }

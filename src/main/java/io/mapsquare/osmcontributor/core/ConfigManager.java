@@ -24,91 +24,98 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import io.mapsquare.osmcontributor.utils.Box;
 
 /**
- * Manager allowing to get all the informations of the application configuration.
+ * Manager allowing to get all the information of the application configuration.
  */
 public interface ConfigManager {
 
     /**
      * Get the box where POIs are preloaded into the assets.
      *
-     * @return the box
+     * @return The box.
      */
     Box getPreloadedBox();
 
     /**
      * Get the level of zoom where we should use the vectorial map.
      *
-     * @return the level of zoom for vectorial display
+     * @return The level of zoom for vectorial display.
      */
     int getZoomVectorial();
 
     /**
      * Get the default level of zoom of the map.
      *
-     * @return the default level of zoom
+     * @return The default level of zoom.
      */
     int getDefaultZoom();
 
     /**
      * Get the max zoom level of the map.
      *
-     * @return the max zoom level
+     * @return The max zoom level.
      */
     float getZoomMax();
 
     /**
      * Get whether the Poi modification feature is enabled.
      *
-     * @return whether the Poi modification feature is enabled
+     * @return Whether the Poi modification feature is enabled.
      */
     boolean hasPoiModification();
 
     /**
      * Get whether the Poi addition feature is enabled.
      *
-     * @return whether the Poi addition feature is enabled
+     * @return Whether the Poi addition feature is enabled.
      */
     boolean hasPoiAddition();
 
     /**
      * Get whether the map has bounds.
      *
-     * @return whether the map has bounds
+     * @return whether the map has bounds.
      */
     boolean hasBounds();
 
     /**
      * Get the bounding box of the map.
      *
-     * @return the BoundingBox of the map
+     * @return The BoundingBox of the map.
      */
     BoundingBox getBoundingBox();
 
     /**
      * Get the default center of the map at startup.
      *
-     * @return the default center
+     * @return The default center.
      */
     LatLng getDefaultCenter();
 
     /**
      * Get the url of the map tiles provider.
      *
-     * @return url of the map tiles provider
+     * @return Url of the map tiles provider.
      */
     String getMapUrl();
 
     /**
      * Get the url of the API for POIs.
      *
-     * @return the url of the api
+     * @return The url of the API.
      */
     String getBasePoiApiUrl();
 
     /**
      * Get the url of the Overpass API.
      *
-     * @return the url of the Overpass API
+     * @return The url of the Overpass API.
      */
     String getBaseOverpassApiUrl();
+
+    /**
+     * Get the Bing API key.
+     *
+     * @return The Bing API key.
+     */
+    String getBingApiKey();
 }
