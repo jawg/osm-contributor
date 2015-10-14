@@ -28,7 +28,7 @@
             android:id="@+id/save_changes"
             android:checked="false"
             android:icon="@android:drawable/ic_menu_save"
-            android:title="@string/sync_now"/>
+            android:title="@string/save_now"/>
     </group>
 
     <group

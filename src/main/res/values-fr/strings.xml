@@ -81,8 +81,6 @@
 
     <!-- Shared preferences -->
     <string name="shared_prefs_login_title">Connexion</string>
-    <string name="shared_prefs_sync_title">Synchronisation</string>
-    <string name="shared_prefs_sync_manual">Synchronisation manuelle</string>
     <string name="shared_prefs_server">Serveur OSM</string>
 
     <!-- Tuto -->
@@ -127,10 +125,11 @@
     <string name="filter_pois">POIs</string>
     <string name="filter_poi_all">Tous</string>
 
-    <!-- Synchronization -->
-    <string name="sync_now">Sauvegarder&#8230;</string>
-    <string name="title_activity_upload">Upload manuel</string>
-    <string name="couldnt_sync_connectivity">Impossible d\'envoyer vos modifications. Vérifiez votre connexion</string>
+    <!-- Saving -->
+    <string name="save_now">Sauvegarder&#8230;</string>
+    <string name="title_activity_upload">Sauvegarde des modifications</string>
+    <string name="couldnt_save_connectivity">Impossible d\'envoyer vos modifications. Vérifiez votre connexion</string>
+    <string name="saving">Sauvegarde en cours&#8230;</string>
 
     <!--Update-->
     <string name="update_title">Ajouter un commentaire à vos modifications</string>

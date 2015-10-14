@@ -131,7 +131,7 @@ public class UploadActivity extends AppCompatActivity {
 
             if (!comment.isEmpty()) {
                 eventBus.post(new PleaseUploadPoiChangesEvent(comment));
-                ringProgressDialog = ProgressDialog.show(this, null, getString(R.string.synchronizing), true);
+                ringProgressDialog = ProgressDialog.show(this, null, getString(R.string.saving), true);
                 ringProgressDialog.setCancelable(true);
             } else {
                 Toast.makeText(this, R.string.need_a_comment, Toast.LENGTH_SHORT).show();
@@ -205,7 +205,7 @@ public class UploadActivity extends AppCompatActivity {
     }
 
     public void onEventMainThread(SyncConnectionLostErrorEvent event) {
-        Toast.makeText(this, R.string.couldnt_sync_connectivity, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.couldnt_save_connectivity, Toast.LENGTH_SHORT).show();
         resultReceived();
     }
 

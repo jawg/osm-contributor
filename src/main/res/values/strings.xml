@@ -89,11 +89,8 @@
     <string name="shared_prefs_password" translatable="false">SHARED_PREFS_PASSWORD</string>
     <string name="shared_prefs_login_title_key" translatable="false">SHARED_PREFS_LOGIN_TITLE</string>
     <string name="shared_prefs_sync_title_key" translatable="false">SHARED_PREFS_SYNC_TITLE_KEY</string>
-    <string name="shared_prefs_sync_key" translatable="false">SHARED_PREFS_SYNC_KEY</string>
     <string name="shared_prefs_server_key" translatable="false">SHARED_PREFS_SERVER_KEY</string>
     <string name="shared_prefs_login_title">Connection</string>
-    <string name="shared_prefs_sync_title">Synchronisation</string>
-    <string name="shared_prefs_sync_manual">Manual synchronization</string>
     <string name="shared_prefs_server">OSM Server</string>
 
     <!-- Tuto -->
@@ -120,7 +117,7 @@
     <string name="comment_text_cant_be_null">The comment text cant\'t be null</string>
     <string name="comment_synchronizing">Please wait for synchronization to finish.</string>
     <string name="save_note">Save</string>
-    <string name="synchronizing">Synchronizing…</string>
+    <string name="synchronizing">Synchronizing&#8230;</string>
     <string name="note_already_closed">Note was already closed</string>
     <string name="title_activity_note">Note</string>
     <string name="note">Note</string>
@@ -138,11 +135,12 @@
     <string name="filter_pois">POIs</string>
     <string name="filter_poi_all">All</string>
 
-    <!-- Synchronization -->
+    <!-- Saving -->
     <string name="comment_changeset" translatable="false">adding/updating/deleting POIs</string>
-    <string name="sync_now">Save&#8230;</string>
-    <string name="title_activity_upload">Manual upload</string>
-    <string name="couldnt_sync_connectivity">Couldn\’t upload POIs. Check your connectivity.</string>
+    <string name="save_now">Save&#8230;</string>
+    <string name="title_activity_upload">Save modifications</string>
+    <string name="couldnt_save_connectivity">Couldn\’t upload POIs. Check your connectivity.</string>
+    <string name="saving">Saving&#8230;</string>
 
     <!--Update-->
     <string name="update_title">Add a comment to you changes :</string>
