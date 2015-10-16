@@ -19,145 +19,138 @@
 package io.mapsquare.osmcontributor.map.vectorial;
 
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
-import android.graphics.Paint;
+
+import com.mapbox.mapboxsdk.views.safecanvas.SafeDashPathEffect;
+import com.mapbox.mapboxsdk.views.safecanvas.SafePaint;
 
 public class Paints {
 
     /**
      * Paints used for the different types of highway
      */
-    public static final Paint MOTORWAY_PAINT = new Paint();
-    public static final Paint MOTORWAY_LINK_PAINT = new Paint();
-    public static final Paint TRUNK_PAINT = new Paint();
-    public static final Paint PRIMARY_PAINT = new Paint();
-    public static final Paint SECONDARY_PAINT = new Paint();
-    public static final Paint TERTIARY_PAINT = new Paint();
-    public static final Paint UNCLASSIFIED_PAINT = new Paint();
-    public static final Paint RESIDENTIAL_PAINT = new Paint();
-    public static final Paint SERVICE_PAINT = new Paint();
-    public static final Paint LIVING_STREET_PAINT = new Paint();
-    public static final Paint PEDESTRIAN_PAINT = new Paint();
-    public static final Paint BRIDLEWAY_PAINT = new Paint();
-    public static final Paint CYCLEWAY_PAINT = new Paint();
-    public static final Paint FOOTWAY_PAINT = new Paint();
-    public static final Paint PATH_PAINT = new Paint();
-    public static final Paint STEPS_PAINT = new Paint();
-    public static final Paint DEFAULT_PAINT = new Paint();
+    public static final SafePaint MOTORWAY_PAINT = new SafePaint();
+    public static final SafePaint MOTORWAY_LINK_PAINT = new SafePaint();
+    public static final SafePaint TRUNK_PAINT = new SafePaint();
+    public static final SafePaint PRIMARY_PAINT = new SafePaint();
+    public static final SafePaint SECONDARY_PAINT = new SafePaint();
+    public static final SafePaint TERTIARY_PAINT = new SafePaint();
+    public static final SafePaint UNCLASSIFIED_PAINT = new SafePaint();
+    public static final SafePaint RESIDENTIAL_PAINT = new SafePaint();
+    public static final SafePaint SERVICE_PAINT = new SafePaint();
+    public static final SafePaint LIVING_STREET_PAINT = new SafePaint();
+    public static final SafePaint PEDESTRIAN_PAINT = new SafePaint();
+    public static final SafePaint BRIDLEWAY_PAINT = new SafePaint();
+    public static final SafePaint CYCLEWAY_PAINT = new SafePaint();
+    public static final SafePaint FOOTWAY_PAINT = new SafePaint();
+    public static final SafePaint PATH_PAINT = new SafePaint();
+    public static final SafePaint STEPS_PAINT = new SafePaint();
+    public static final SafePaint DEFAULT_PAINT = new SafePaint();
 
     static {
-        MOTORWAY_PAINT.setStyle(Paint.Style.STROKE);
+        MOTORWAY_PAINT.setStyle(SafePaint.Style.STROKE);
         MOTORWAY_PAINT.setColor(0xff89a4cb);
         MOTORWAY_PAINT.setStrokeWidth(18);
-        MOTORWAY_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        MOTORWAY_PAINT.setStrokeCap(SafePaint.Cap.ROUND);
 
-        MOTORWAY_LINK_PAINT.setStyle(Paint.Style.STROKE);
+        MOTORWAY_LINK_PAINT.setStyle(SafePaint.Style.STROKE);
         MOTORWAY_LINK_PAINT.setColor(0xff89a4cb);
         MOTORWAY_LINK_PAINT.setStrokeWidth(15.5f);
-        MOTORWAY_LINK_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        MOTORWAY_LINK_PAINT.setStrokeCap(SafePaint.Cap.ROUND);
 
-        TRUNK_PAINT.setStyle(Paint.Style.STROKE);
+        TRUNK_PAINT.setStyle(SafePaint.Style.STROKE);
         TRUNK_PAINT.setColor(0xff94d494);
         TRUNK_PAINT.setStrokeWidth(18);
-        TRUNK_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        TRUNK_PAINT.setStrokeCap(SafePaint.Cap.ROUND);
 
-        PRIMARY_PAINT.setStyle(Paint.Style.STROKE);
+        PRIMARY_PAINT.setStyle(SafePaint.Style.STROKE);
         PRIMARY_PAINT.setColor(0xffdd9f9f);
         PRIMARY_PAINT.setStrokeWidth(18);
-        PRIMARY_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        PRIMARY_PAINT.setStrokeCap(SafePaint.Cap.ROUND);
 
-        SECONDARY_PAINT.setStyle(Paint.Style.STROKE);
+        SECONDARY_PAINT.setStyle(SafePaint.Style.STROKE);
         SECONDARY_PAINT.setColor(0xfff9d6aa);
         SECONDARY_PAINT.setStrokeWidth(18);
-        SECONDARY_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        SECONDARY_PAINT.setStrokeCap(SafePaint.Cap.ROUND);
 
-        TERTIARY_PAINT.setStyle(Paint.Style.STROKE);
+        TERTIARY_PAINT.setStyle(SafePaint.Style.STROKE);
         TERTIARY_PAINT.setColor(0xfff8f8ba);
         TERTIARY_PAINT.setStrokeWidth(15.5f);
-        TERTIARY_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        TERTIARY_PAINT.setStrokeCap(SafePaint.Cap.ROUND);
 
-        UNCLASSIFIED_PAINT.setStyle(Paint.Style.STROKE);
+        UNCLASSIFIED_PAINT.setStyle(SafePaint.Style.STROKE);
         UNCLASSIFIED_PAINT.setColor(0xff89a4cb);
         UNCLASSIFIED_PAINT.setStrokeWidth(15.5f);
-        UNCLASSIFIED_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        UNCLASSIFIED_PAINT.setStrokeCap(SafePaint.Cap.ROUND);
 
-        RESIDENTIAL_PAINT.setStyle(Paint.Style.STROKE);
+        RESIDENTIAL_PAINT.setStyle(SafePaint.Style.STROKE);
         RESIDENTIAL_PAINT.setColor(Color.WHITE);
         RESIDENTIAL_PAINT.setStrokeWidth(15.5f);
-        RESIDENTIAL_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        RESIDENTIAL_PAINT.setStrokeCap(SafePaint.Cap.ROUND);
 
-        SERVICE_PAINT.setStyle(Paint.Style.STROKE);
+        SERVICE_PAINT.setStyle(SafePaint.Style.STROKE);
         SERVICE_PAINT.setColor(Color.WHITE);
         SERVICE_PAINT.setStrokeWidth(7);
-        SERVICE_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        SERVICE_PAINT.setStrokeCap(SafePaint.Cap.ROUND);
 
-        LIVING_STREET_PAINT.setStyle(Paint.Style.STROKE);
+        LIVING_STREET_PAINT.setStyle(SafePaint.Style.STROKE);
         LIVING_STREET_PAINT.setColor(0xffcccccc);
         LIVING_STREET_PAINT.setStrokeWidth(14);
-        LIVING_STREET_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        LIVING_STREET_PAINT.setStrokeCap(SafePaint.Cap.ROUND);
 
-        PEDESTRIAN_PAINT.setStyle(Paint.Style.STROKE);
+        PEDESTRIAN_PAINT.setStyle(SafePaint.Style.STROKE);
         PEDESTRIAN_PAINT.setColor(0xffededed);
         PEDESTRIAN_PAINT.setStrokeWidth(14);
-        PEDESTRIAN_PAINT.setStrokeCap(Paint.Cap.ROUND);
+        PEDESTRIAN_PAINT.setStrokeCap(SafePaint.Cap.ROUND);
 
-        DashPathEffect dashPathEffect = new DashPathEffect(new float[]{20, 10}, 0);
-
-        BRIDLEWAY_PAINT.setStyle(Paint.Style.STROKE);
+        BRIDLEWAY_PAINT.setStyle(SafePaint.Style.STROKE);
         BRIDLEWAY_PAINT.setColor(Color.GREEN);
-        BRIDLEWAY_PAINT.setStrokeWidth(2.4f);
-        BRIDLEWAY_PAINT.setPathEffect(dashPathEffect);
+        BRIDLEWAY_PAINT.setPathEffect(new SafeDashPathEffect(new float[]{20, 10}, 0, 2.4f));
 
-        CYCLEWAY_PAINT.setStyle(Paint.Style.STROKE);
+        CYCLEWAY_PAINT.setStyle(SafePaint.Style.STROKE);
         CYCLEWAY_PAINT.setColor(Color.BLUE);
-        CYCLEWAY_PAINT.setStrokeWidth(2.4f);
-        CYCLEWAY_PAINT.setPathEffect(dashPathEffect);
+        CYCLEWAY_PAINT.setPathEffect(new SafeDashPathEffect(new float[]{20, 10}, 0, 2.4f));
 
-        FOOTWAY_PAINT.setStyle(Paint.Style.STROKE);
+        FOOTWAY_PAINT.setStyle(SafePaint.Style.STROKE);
         FOOTWAY_PAINT.setColor(0xfffa8072);
-        FOOTWAY_PAINT.setStrokeWidth(3f);
-        FOOTWAY_PAINT.setPathEffect(dashPathEffect);
+        FOOTWAY_PAINT.setPathEffect(new SafeDashPathEffect(new float[]{20, 10}, 0, 3f));
 
-        PATH_PAINT.setStyle(Paint.Style.STROKE);
+        PATH_PAINT.setStyle(SafePaint.Style.STROKE);
         PATH_PAINT.setColor(Color.BLACK);
-        PATH_PAINT.setStrokeWidth(2);
-        PATH_PAINT.setPathEffect(dashPathEffect);
+        PATH_PAINT.setPathEffect(new SafeDashPathEffect(new float[]{20, 10}, 0, 2f));
 
-        STEPS_PAINT.setStyle(Paint.Style.STROKE);
+        STEPS_PAINT.setStyle(SafePaint.Style.STROKE);
         STEPS_PAINT.setColor(0xfffa8072);
-        STEPS_PAINT.setStrokeWidth(2);
-        STEPS_PAINT.setPathEffect(dashPathEffect);
+        STEPS_PAINT.setPathEffect(new SafeDashPathEffect(new float[]{20, 10}, 0, 2f));
 
-        DEFAULT_PAINT.setStyle(Paint.Style.STROKE);
+        DEFAULT_PAINT.setStyle(SafePaint.Style.STROKE);
         DEFAULT_PAINT.setColor(Color.BLACK);
-        DEFAULT_PAINT.setStrokeWidth(1);
-        DEFAULT_PAINT.setPathEffect(dashPathEffect);
+        DEFAULT_PAINT.setPathEffect(new SafeDashPathEffect(new float[]{20, 10}, 0, 1f));
     }
 
 
     /**
-     * Paints used for the areas
+     * SafePaints used for the areas
      */
-    public static final Paint BRIDGE_PAINT = new Paint();
-    public static final Paint BUILDING_PAINT = new Paint();
-    public static final Paint CEMETERY_PAINT = new Paint();
-    public static final Paint COMMERCIAL_PAINT = new Paint();
-    public static final Paint CONSTRUCTION_PAINT = new Paint();
-    public static final Paint FOREST_PAINT = new Paint();
-    public static final Paint GOLF_PAINT = new Paint();
-    public static final Paint GRASS_PAINT = new Paint();
-    public static final Paint INDUSTRIAL_PAINT = new Paint();
-    public static final Paint PARK_PAINT = new Paint();
-    public static final Paint PARKING_PAINT = new Paint();
-    public static final Paint PEDESTRIAN_AREA_PAINT = new Paint();
-    public static final Paint PITCH_PAINT = new Paint();
-    public static final Paint PLAYGROUND_PAINT = new Paint();
-    public static final Paint RESIDENTIAL_AREA_PAINT = new Paint();
-    public static final Paint RETAIL_PAINT = new Paint();
-    public static final Paint SCHOOL_PAINT = new Paint();
-    public static final Paint STADIUM_PAINT = new Paint();
-    public static final Paint TRACK_PAINT = new Paint();
-    public static final Paint WATER_PAINT = new Paint();
+    public static final SafePaint BRIDGE_PAINT = new SafePaint();
+    public static final SafePaint BUILDING_PAINT = new SafePaint();
+    public static final SafePaint CEMETERY_PAINT = new SafePaint();
+    public static final SafePaint COMMERCIAL_PAINT = new SafePaint();
+    public static final SafePaint CONSTRUCTION_PAINT = new SafePaint();
+    public static final SafePaint FOREST_PAINT = new SafePaint();
+    public static final SafePaint GOLF_PAINT = new SafePaint();
+    public static final SafePaint GRASS_PAINT = new SafePaint();
+    public static final SafePaint INDUSTRIAL_PAINT = new SafePaint();
+    public static final SafePaint PARK_PAINT = new SafePaint();
+    public static final SafePaint PARKING_PAINT = new SafePaint();
+    public static final SafePaint PEDESTRIAN_AREA_PAINT = new SafePaint();
+    public static final SafePaint PITCH_PAINT = new SafePaint();
+    public static final SafePaint PLAYGROUND_PAINT = new SafePaint();
+    public static final SafePaint RESIDENTIAL_AREA_PAINT = new SafePaint();
+    public static final SafePaint RETAIL_PAINT = new SafePaint();
+    public static final SafePaint SCHOOL_PAINT = new SafePaint();
+    public static final SafePaint STADIUM_PAINT = new SafePaint();
+    public static final SafePaint TRACK_PAINT = new SafePaint();
+    public static final SafePaint WATER_PAINT = new SafePaint();
 
     static {
         BRIDGE_PAINT.setColor(0xa0ededed);
@@ -182,7 +175,7 @@ public class Paints {
         WATER_PAINT.setColor(0xa0b5d0d0);
     }
 
-    public static final Paint TRANSPARENT_PAINT = new Paint();
+    public static final SafePaint TRANSPARENT_PAINT = new SafePaint();
 
     static {
         TRANSPARENT_PAINT.setAlpha(0);

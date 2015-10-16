@@ -19,6 +19,7 @@
 package io.mapsquare.osmcontributor.map.vectorial;
 
 import android.app.Application;
+import android.graphics.Paint;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.util.Projection;
@@ -51,12 +52,18 @@ public class EditVectorialWayManager {
     private PoiNodeRefDao poiNodeRefDao;
     private EventBus bus;
 
+    private float scaledDensity;
+
     @Inject
     public EditVectorialWayManager(Application application, PoiManager poiManager, PoiNodeRefDao poiNodeRefDao, EventBus bus) {
         this.application = application;
         this.poiManager = poiManager;
         this.poiNodeRefDao = poiNodeRefDao;
         this.bus = bus;
+        scaledDensity = application.getResources().getDisplayMetrics().scaledDensity;
+        if (scaledDensity < 3) {
+            scaledDensity = 3;
+        }
     }
 
     public void buildEditionVectorialObject(List<Poi> pois, boolean isRefreshFromOverpass) {
@@ -75,7 +82,8 @@ public class EditVectorialWayManager {
                 point.setId(nodeRef.getNodeBackendId());
                 point.setPriority(1);
                 point.getPaint().setColor(application.getResources().getColor(R.color.colorCreation));
-                point.getPaint().setStrokeWidth(10);
+                point.getPaint().setStrokeWidth(6 * scaledDensity);
+                point.getPaint().setStrokeCap(Paint.Cap.ROUND);
                 point.setFilled(true);
                 LatLng latLng = new LatLng(nodeRef.getLatitude(), nodeRef.getLongitude());
                 double[] precomputed;

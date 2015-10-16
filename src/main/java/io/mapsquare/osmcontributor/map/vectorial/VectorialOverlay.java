@@ -18,16 +18,18 @@
  */
 package io.mapsquare.osmcontributor.map.vectorial;
 
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PathDashPathEffect;
 import android.graphics.PathEffect;
 import android.graphics.Rect;
 
-import com.mapbox.mapboxsdk.overlay.Overlay;
+import com.mapbox.mapboxsdk.overlay.SafeDrawOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
+import com.mapbox.mapboxsdk.views.safecanvas.ISafeCanvas;
+import com.mapbox.mapboxsdk.views.safecanvas.SafeDashPathEffect;
+import com.mapbox.mapboxsdk.views.safecanvas.SafePaint;
+import com.mapbox.mapboxsdk.views.safecanvas.SafeTranslatedPath;
 import com.mapbox.mapboxsdk.views.util.Projection;
 
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ import java.util.TreeSet;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
 
-public class VectorialOverlay extends Overlay {
+public class VectorialOverlay extends SafeDrawOverlay {
 
     private static final String TAG = "VectorialOverlay";
     private static final int PRECISION = 1000;
@@ -53,40 +55,45 @@ public class VectorialOverlay extends Overlay {
     private TreeSet<Double> levels;
 
     // Paint for the borders of a closed vectorial object
-    private Paint borderPaint;
+    private SafePaint borderPaint = new SafePaint();
 
     private double level = 0;
 
     private int zoomVectorial;
 
-    private Paint movingPaint = new Paint();
-    private Paint selectedPaint = new Paint();
+    private SafePaint movingPaint = new SafePaint();
+    private SafePaint selectedPaint = new SafePaint();
 
-    public VectorialOverlay(int zoomVectorial) {
+    public VectorialOverlay(int zoomVectorial, float scaledDensity) {
         this.zoomVectorial = zoomVectorial;
         this.levels = new TreeSet<>();
         this.levels.add(0d);
         setOverlayIndex(PATHOVERLAY_INDEX);
 
-        borderPaint = new Paint();
         borderPaint.setStyle(Paint.Style.STROKE);
         borderPaint.setColor(Color.GRAY);
 
+        if (scaledDensity < 3) {
+            scaledDensity = 3;
+        }
+
         // Settings for selected nodes in a way
         movingPaint.setColor(0xFFFF0000);
-        movingPaint.setStrokeWidth(15);
+        movingPaint.setStrokeWidth(6 * scaledDensity);
+        movingPaint.setStrokeCap(Paint.Cap.ROUND);
 
         selectedPaint.setColor(0xFFFFFF00);
-        selectedPaint.setStrokeWidth(15);
+        selectedPaint.setStrokeWidth(6 * scaledDensity);
+        selectedPaint.setStrokeCap(Paint.Cap.ROUND);
     }
 
-    public VectorialOverlay(int zoomVectorial, Set<VectorialObject> vectorialObjects) {
-        this(zoomVectorial);
+    public VectorialOverlay(int zoomVectorial, Set<VectorialObject> vectorialObjects, float scaledDensity) {
+        this(zoomVectorial, scaledDensity);
         setVectorialObjects(vectorialObjects);
     }
 
-    public VectorialOverlay(int zoomVectorial, Set<VectorialObject> vectorialObjects, TreeSet<Double> levels) {
-        this(zoomVectorial, vectorialObjects);
+    public VectorialOverlay(int zoomVectorial, Set<VectorialObject> vectorialObjects, TreeSet<Double> levels, float scaledDensity) {
+        this(zoomVectorial, vectorialObjects, scaledDensity);
         this.levels = levels;
     }
 
@@ -145,7 +152,7 @@ public class VectorialOverlay extends Overlay {
     boolean isBeingEditObj = false;
 
     @Override
-    protected void draw(Canvas canvas, MapView mapView, boolean shadow) {
+    protected void drawSafe(ISafeCanvas canvas, MapView mapView, boolean shadow) {
 
         float zoomLevel = mapView.getZoomLevel();
 
@@ -167,11 +174,10 @@ public class VectorialOverlay extends Overlay {
 
         double scaleFactor = Math.pow(1.75, Math.floor(zoomLevel) - 18);
 
-        Path p = new Path();
-        p.addCircle(0, 0, (float) (3 * scaleFactor), Path.Direction.CCW);
-        PathDashPathEffect dashPathEffect = new PathDashPathEffect(p, (float) (10 * scaleFactor), (float) (10 * scaleFactor), PathDashPathEffect.Style.TRANSLATE);
+        PathDashPathEffect dashPathEffect = new SafeDashPathEffect(new float[]{(float) (10 * scaleFactor), (float) (10 * scaleFactor)}, 0, (float) (3 * scaleFactor));
 
-        Path path = new Path();
+        SafeTranslatedPath path = new SafeTranslatedPath();
+        path.onDrawCycleStart(canvas);
         double[] projectionResult = new double[2];
 
         for (VectorialObject vObject : vectorialObjectList) {
@@ -195,12 +201,12 @@ public class VectorialOverlay extends Overlay {
                 XY currentPoint = applyChangesOnSelectedPoint(point, canvas);
 
                 if (isBeingEditObj) {
-                    canvas.drawPoint((float) currentPoint.getX(), (float) currentPoint.getY(), movingPaint);
+                    canvas.drawPoint(currentPoint.getX(), currentPoint.getY(), movingPaint);
                     isBeingEditObj = false;
                 } else if (currentPoint.getNodeRefId().equals(selectedObjectId)) {
-                    canvas.drawPoint((float) projectionResult[0], (float) projectionResult[1], selectedPaint);
+                    canvas.drawPoint(projectionResult[0], projectionResult[1], selectedPaint);
                 } else {
-                    canvas.drawPoint((float) projectionResult[0], (float) projectionResult[1], vObject.getPaint());
+                    canvas.drawPoint(projectionResult[0], projectionResult[1], vObject.getPaint());
                 }
                 continue;
             }
@@ -229,9 +235,9 @@ public class VectorialOverlay extends Overlay {
 
             // Make the path to draw
             path.reset();
-            path.moveTo((float) clippedList.get(0).getX(), (float) clippedList.get(0).getY());
+            path.moveTo(clippedList.get(0).getX(), clippedList.get(0).getY());
             for (int i = 1; i < clippedList.size(); i++) {
-                path.lineTo((float) clippedList.get(i).getX(), (float) clippedList.get(i).getY());
+                path.lineTo(clippedList.get(i).getX(), clippedList.get(i).getY());
             }
 
             // Draw path
@@ -253,7 +259,7 @@ public class VectorialOverlay extends Overlay {
 
     }
 
-    private XY applyChangesOnSelectedPoint(XY point, Canvas canvas) {
+    private XY applyChangesOnSelectedPoint(XY point, ISafeCanvas canvas) {
         if (movingObjectId != null && movingObjectId.equals(point.getNodeRefId())) {
             XY res = new XY();
             res.setX(canvas.getClipBounds().exactCenterX());

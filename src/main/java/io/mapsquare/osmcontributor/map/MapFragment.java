@@ -1633,7 +1633,7 @@ public class MapFragment extends Fragment {
             vectorialObjects.addAll(vectorialObjectsBackground);
             vectorialObjects.addAll(vectorialObjectsEdition);
 
-            vectorialOverlay = new VectorialOverlay(zoomVectorial, vectorialObjects, levels);
+            vectorialOverlay = new VectorialOverlay(zoomVectorial, vectorialObjects, levels, getResources().getDisplayMetrics().scaledDensity);
             mapView.addOverlay(vectorialOverlay);
         } else {
 

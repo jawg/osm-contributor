@@ -20,6 +20,8 @@ package io.mapsquare.osmcontributor.map.vectorial;
 
 import android.graphics.Paint;
 
+import com.mapbox.mapboxsdk.views.safecanvas.SafePaint;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class VectorialObject implements Comparable<VectorialObject> {
     /**
      * Color of the path
      */
-    private Paint paint;
+    private SafePaint paint;
 
     private double level = 0;
 
@@ -49,7 +51,7 @@ public class VectorialObject implements Comparable<VectorialObject> {
 
     public VectorialObject(boolean filled) {
         this.filled = filled;
-        this.paint = new Paint();
+        this.paint = new SafePaint();
         paint.setColor(0x880000FF);
         if (filled) {
             paint.setStyle(Paint.Style.FILL);
@@ -59,10 +61,9 @@ public class VectorialObject implements Comparable<VectorialObject> {
         xyList = new ArrayList<>();
     }
 
-    public VectorialObject(Paint paint, boolean filled) {
+    public VectorialObject(SafePaint paint, boolean filled) {
         this.filled = filled;
         this.paint = paint;
-        this.paint = new Paint();
         if (filled) {
             paint.setStyle(Paint.Style.FILL);
         } else {
@@ -102,11 +103,11 @@ public class VectorialObject implements Comparable<VectorialObject> {
         this.filled = filled;
     }
 
-    public Paint getPaint() {
+    public SafePaint getPaint() {
         return paint;
     }
 
-    public void setPaint(Paint paint) {
+    public void setPaint(SafePaint paint) {
         this.paint = paint;
     }
 
