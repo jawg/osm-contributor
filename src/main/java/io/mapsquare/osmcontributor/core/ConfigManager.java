@@ -50,6 +50,13 @@ public interface ConfigManager {
     int getDefaultZoom();
 
     /**
+     * Get the max zoom of the tile provider.
+     *
+     * @return The provider max zoom.
+     */
+    int getZoomMaxProvider();
+
+    /**
      * Get the max zoom level of the map.
      *
      * @return The max zoom level.

@@ -73,7 +73,7 @@ public class MBTilesLayer extends TileLayer implements MapViewConstants, MapboxC
     private static final String TAG = "MBTilesLayer";
     MBTilesFileArchive mbTilesFileArchive;
     private static final int TILE_SIZE = 256;
-    public static final int PROVIDER_ZOOM_LIMIT = 19;
+    private int providerZoomLimit = 19;
 
     /**
      * Initialize a new tile layer, represented by a MBTiles file.
@@ -81,8 +81,10 @@ public class MBTilesLayer extends TileLayer implements MapViewConstants, MapboxC
      * @param url     path to a MBTiles file
      * @param context the graphics drawing context
      */
-    public MBTilesLayer(final Context context, final String url) {
+    // Custom tweak: Add provider zoom limit parameter to constructor
+    public MBTilesLayer(final Context context, final String url, final int providerZoomLimit) {
         super(url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.')), url);
+        this.providerZoomLimit = providerZoomLimit;
         initialize(url, context);
     }
 
@@ -93,8 +95,9 @@ public class MBTilesLayer extends TileLayer implements MapViewConstants, MapboxC
      *
      * @param url path to a MBTiles file
      */
-    public MBTilesLayer(final String url) {
-        this(null, url);
+    // Custom tweak: Add provider zoom limit parameter to constructor
+    public MBTilesLayer(final String url, final int providerZoomLimit) {
+        this(null, url, providerZoomLimit);
     }
 
     /**
@@ -102,8 +105,10 @@ public class MBTilesLayer extends TileLayer implements MapViewConstants, MapboxC
      *
      * @param file a MBTiles file
      */
-    public MBTilesLayer(final File file) {
+    // Custom tweak: Add provider zoom limit parameter to constructor
+    public MBTilesLayer(final File file, final int providerZoomLimit) {
         super(file.getName(), file.getAbsolutePath());
+        this.providerZoomLimit = providerZoomLimit;
         initialize(file);
     }
 
@@ -112,9 +117,20 @@ public class MBTilesLayer extends TileLayer implements MapViewConstants, MapboxC
      *
      * @param db a database used as the MBTiles source
      */
-    public MBTilesLayer(final SQLiteDatabase db) {
+    // Custom tweak: Add provider zoom limit parameter to constructor
+    public MBTilesLayer(final SQLiteDatabase db, final int providerZoomLimit) {
         super(getFileName(db.getPath()), db.getPath());
+        this.providerZoomLimit = providerZoomLimit;
         initialize(db);
+    }
+
+    /**
+     * Get the zoom limit of the provider.
+     *
+     * @return The zoom limit of the provider
+     */
+    public int getProviderZoomLimit() {
+        return providerZoomLimit;
     }
 
     /**
@@ -242,10 +258,10 @@ public class MBTilesLayer extends TileLayer implements MapViewConstants, MapboxC
             InputStream stream;
 
             // Custom tweak: If zoom > zoom limit, load the tile of zoom limit, cut the part of interest and resize it.
-            if (mapTile.getZ() > PROVIDER_ZOOM_LIMIT) {
+            if (mapTile.getZ() > providerZoomLimit) {
                 // Create the corresponding MapTile of zoom 19
-                int zoomFactor = (int) Math.pow(2, (mapTile.getZ() - PROVIDER_ZOOM_LIMIT));
-                MapTile preMapTile = new MapTile(PROVIDER_ZOOM_LIMIT, mapTile.getX() / zoomFactor, mapTile.getY() / zoomFactor);
+                int zoomFactor = (int) Math.pow(2, (mapTile.getZ() - providerZoomLimit));
+                MapTile preMapTile = new MapTile(providerZoomLimit, mapTile.getX() / zoomFactor, mapTile.getY() / zoomFactor);
 
                 // Fetch the tile in the database
                 stream = mbTilesFileArchive.getInputStream(this, preMapTile);

@@ -25,7 +25,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import javax.inject.Singleton;
 
-import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.utils.Box;
 
@@ -52,6 +51,11 @@ public class PoiStorageConfigManager implements ConfigManager {
     @Override
     public int getDefaultZoom() {
         return Integer.parseInt(application.getString(R.string.defaultZoom));
+    }
+
+    @Override
+    public int getZoomMaxProvider() {
+        return Integer.parseInt(application.getString(R.string.zoomMaxProvider));
     }
 
     @Override
@@ -102,6 +106,6 @@ public class PoiStorageConfigManager implements ConfigManager {
 
     @Override
     public String getBingApiKey() {
-        return BuildConfig.BING_API_KEY;
+        return "";
     }
 }

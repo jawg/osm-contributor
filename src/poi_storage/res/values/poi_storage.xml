@@ -23,10 +23,11 @@
 
     <string name="defaultZoom" translatable="false">18</string>
     <string name="zoomVectorial" translatable="false">20</string>
+    <string name="zoomMaxProvider" translatable="false">19</string>
+    <string name="zoomMax" translatable="false">22</string>
 
     <string name="centerLat" translatable="false">48.858370</string>
     <string name="centerLng" translatable="false">2.294481</string>
-    <string name="zoomMax" translatable="false">22</string>
 
     <string name="northBound" translatable="false">48,8610021955755</string>
     <string name="eastBound" translatable="false">2,30796575546265</string>

@@ -80,8 +80,8 @@ public class BingTileLayer extends WebSourceTileLayer {
     private boolean mHasMetadata = false;
 
     // Custom tweak: Set the style in the constructor before calling getMetadata
-    public BingTileLayer(String key, String style) {
-        super("Bing Tile Layer", BASE_URL_PATTERN, false);
+    public BingTileLayer(String key, String style, int providerZoomLimit) {
+        super("Bing Tile Layer", BASE_URL_PATTERN, false, providerZoomLimit);
 
         setBingMapKey(key);
         mStyle = style;
@@ -99,8 +99,8 @@ public class BingTileLayer extends WebSourceTileLayer {
             getMetadata();
         }
         // Custom tweak: If the zoom > zoom limit, create the url for the tile of zoom limit
-        if (aTile.getZ() > PROVIDER_ZOOM_LIMIT) {
-            return mUrl.replace("{quadkey}", quadTree(new MapTile(PROVIDER_ZOOM_LIMIT, aTile.getX() /  (int) Math.pow(2, (aTile.getZ() - PROVIDER_ZOOM_LIMIT)), aTile.getY() / (int) Math.pow(2, (aTile.getZ() - PROVIDER_ZOOM_LIMIT)))));
+        if (aTile.getZ() > getProviderZoomLimit()) {
+            return mUrl.replace("{quadkey}", quadTree(new MapTile(getProviderZoomLimit(), aTile.getX() /  (int) Math.pow(2, (aTile.getZ() - getProviderZoomLimit())), aTile.getY() / (int) Math.pow(2, (aTile.getZ() - getProviderZoomLimit())))));
         }
 
         return mUrl.replace("{quadkey}", quadTree(aTile));

@@ -100,6 +100,11 @@ public class TemplateConfigManager implements ConfigManager {
     }
 
     @Override
+    public int getZoomMaxProvider() {
+        return Integer.parseInt(application.getString(R.string.zoomMaxProvider));
+    }
+
+    @Override
     public float getZoomMax() {
         return Float.parseFloat(application.getString(R.string.zoomMax));
     }

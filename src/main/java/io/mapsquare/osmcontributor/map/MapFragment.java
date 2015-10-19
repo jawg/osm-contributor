@@ -69,9 +69,11 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.MapViewListener;
 import com.mapbox.mapboxsdk.views.util.TilesLoadedListener;
 
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1874,6 +1876,8 @@ public class MapFragment extends Fragment {
     * TILE SOURCES
     *---------------------------------------------------------*/
     private static final String TILE_SOURCE = "TILE_SOURCE";
+    private static final String OSM_MBTILES_FILE = "osm.mbtiles";
+    private static final String BING_MBTILES_FILE = "satellite.mbtiles";
 
     private TileLayer osmTileLayer;
     private TileLayer bingTileLayer;
@@ -1920,18 +1924,43 @@ public class MapFragment extends Fragment {
      * Instantiate the different tiles sources used by the map.
      */
     private void instantiateTileSources() {
-        // Create a TileSource from OpenStreetMap
-        osmTileLayer = new WebSourceTileLayer("openstreetmap", configManager.getMapUrl())
-                .setName("OpenStreetMap")
-                .setAttribution("© OpenStreetMap Contributors")
-                .setMinimumZoomLevel(MIN_ZOOM_LEVEL)
-                .setMaximumZoomLevel(configManager.getZoomMax());
+        if (FlavorUtils.isTemplate()) {
+            try {
+                List<String> assetsList = Arrays.asList(getActivity().getResources().getAssets().list(""));
+                if (assetsList.contains(OSM_MBTILES_FILE)) {
+                    // Create a TileSource with OpenstreetMap's Tiles from a MBTiles file
+                    osmTileLayer = new MBTilesLayer(getActivity(), OSM_MBTILES_FILE, configManager.getZoomMaxProvider())
+                            .setName("OpenStreetMap")
+                            .setAttribution("© OpenStreetMap Contributors")
+                            .setMaximumZoomLevel(configManager.getZoomMax());
+                }
 
-        // Create a TileSource from Bing map with aerial with label style
-        bingTileLayer = new BingTileLayer(configManager.getBingApiKey(), BingTileLayer.IMAGERYSET_AERIALWITHLABELS)
-                .setName("Bing aerial view")
-                .setMinimumZoomLevel(MIN_ZOOM_LEVEL)
-                .setMaximumZoomLevel(configManager.getZoomMax());
+                if (assetsList.contains(BING_MBTILES_FILE)) {
+                    // Create a TileSource with Bing Maps' Tiles from a MBTiles file
+                    bingTileLayer = new MBTilesLayer(getActivity(), BING_MBTILES_FILE, configManager.getZoomMaxProvider())
+                            .setName("Bing aerial view")
+                            .setMaximumZoomLevel(configManager.getZoomMax());
+                }
+            } catch (IOException e) {
+                Timber.e(e, "Couldn't get assets list");
+            }
+        }
+
+        if (osmTileLayer == null) {
+            // Create a TileSource from OpenStreetMap server
+            osmTileLayer = new WebSourceTileLayer("openstreetmap", configManager.getMapUrl(), configManager.getZoomMaxProvider())
+                    .setName("OpenStreetMap")
+                    .setAttribution("© OpenStreetMap Contributors")
+                    .setMinimumZoomLevel(MIN_ZOOM_LEVEL)
+                    .setMaximumZoomLevel(configManager.getZoomMax());
+        }
+        if (bingTileLayer == null) {
+            // Create a TileSource from Bing map with aerial with label style
+            bingTileLayer = new BingTileLayer(configManager.getBingApiKey(), BingTileLayer.IMAGERYSET_AERIALWITHLABELS, configManager.getZoomMaxProvider())
+                    .setName("Bing aerial view")
+                    .setMinimumZoomLevel(MIN_ZOOM_LEVEL)
+                    .setMaximumZoomLevel(configManager.getZoomMax());
+        }
 
         // Set the map bounds
         if (configManager.hasBounds()) {

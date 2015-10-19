@@ -69,18 +69,21 @@ import uk.co.senab.bitmapcache.CacheableBitmapDrawable;
 public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
     private static final String TAG = "WebSourceTileLayer";
     private static final int TILE_SIZE = 256;
-    public static final int PROVIDER_ZOOM_LIMIT = 19;
+    private int providerZoomLimit = 19;
 
     // Tracks the number of threads active in the getBitmapFromURL method.
     private AtomicInteger activeThreads = new AtomicInteger(0);
     protected boolean mEnableSSL = false;
 
-    public WebSourceTileLayer(final String pId, final String url) {
-        this(pId, url, false);
+    // Custom tweak: Add provider zoom limit parameter to constructor
+    public WebSourceTileLayer(final String pId, final String url, final int providerZoomLimit) {
+        this(pId, url, false, providerZoomLimit);
     }
 
-    public WebSourceTileLayer(final String pId, final String url, final boolean enableSSL) {
+    // Custom tweak: Add provider zoom limit parameter to constructor
+    public WebSourceTileLayer(final String pId, final String url, final boolean enableSSL, final int providerZoomLimit) {
         super(pId, url);
+        this.providerZoomLimit = providerZoomLimit;
         initialize(pId, url, enableSSL);
     }
 
@@ -102,6 +105,15 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
     protected void initialize(String pId, String aUrl, boolean enableSSL) {
         mEnableSSL = enableSSL;
         setURL(aUrl);
+    }
+
+    /**
+     * Get the zoom limit of the provider.
+     *
+     * @return The zoom limit of the provider
+     */
+    public int getProviderZoomLimit() {
+        return providerZoomLimit;
     }
 
     /**
@@ -132,10 +144,10 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
 
     protected String parseUrlForTile(String url, final MapTile aTile, boolean hdpi) {
         // Custom tweak: if zoom > zoom limit, download the tile of zoom limit
-        if (aTile.getZ() > PROVIDER_ZOOM_LIMIT) {
-            return url.replace("{z}", String.valueOf(PROVIDER_ZOOM_LIMIT))
-                    .replace("{x}", String.valueOf((int) (aTile.getX() / (int) Math.pow(2, (aTile.getZ() - PROVIDER_ZOOM_LIMIT))))) // Cast into int to truncate
-                    .replace("{y}", String.valueOf((int) (aTile.getY() / (int) Math.pow(2, (aTile.getZ() - PROVIDER_ZOOM_LIMIT))))) // Cast into int to truncate
+        if (aTile.getZ() > providerZoomLimit) {
+            return url.replace("{z}", String.valueOf(providerZoomLimit))
+                    .replace("{x}", String.valueOf((int) (aTile.getX() / (int) Math.pow(2, (aTile.getZ() - providerZoomLimit))))) // Cast into int to truncate
+                    .replace("{y}", String.valueOf((int) (aTile.getY() / (int) Math.pow(2, (aTile.getZ() - providerZoomLimit))))) // Cast into int to truncate
                     .replace("{2x}", hdpi ? "@2x" : "");
         }
         return url.replace("{z}", String.valueOf(aTile.getZ()))
@@ -221,15 +233,15 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
             Bitmap bitmap = BitmapFactory.decodeStream(connection.getInputStream());
 
             // Custom tweak: If zoom > zoom limit, load the tile of zoom limit, cut the part of interest and resize it.
-            if (mapTile.getZ() > PROVIDER_ZOOM_LIMIT) {
-                int zoomFactor = 2 * (mapTile.getZ() - PROVIDER_ZOOM_LIMIT);
+            if (mapTile.getZ() > providerZoomLimit) {
+                int zoomFactor = 2 * (mapTile.getZ() - providerZoomLimit);
                 int cutTileSize = TILE_SIZE / zoomFactor;
                 // Cut the part of the Bitmap corresponding to the Tile of zoom 19
                 Bitmap cutBitmap = Bitmap.createBitmap(bitmap, (mapTile.getX() % zoomFactor) * cutTileSize, (mapTile.getY() % zoomFactor) * cutTileSize, cutTileSize, cutTileSize);
                 // Resize the map to the right size
                 bitmap = Bitmap.createScaledBitmap(cutBitmap, TILE_SIZE, TILE_SIZE, false);
             }
-            if (bitmap != null && mapTile.getZ() < PROVIDER_ZOOM_LIMIT) {
+            if (bitmap != null && mapTile.getZ() < providerZoomLimit) {
                 aCache.putTileInMemoryCache(mapTile, bitmap);
             }
             return bitmap;
