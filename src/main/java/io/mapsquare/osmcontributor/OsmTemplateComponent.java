@@ -45,7 +45,6 @@ import io.mapsquare.osmcontributor.map.MapFragmentPresenter;
 import io.mapsquare.osmcontributor.map.NoteDetailFragment;
 import io.mapsquare.osmcontributor.map.PoiDetailFragment;
 import io.mapsquare.osmcontributor.map.vectorial.EditVectorialWayManager;
-import io.mapsquare.osmcontributor.map.vectorial.GeoJSONFileManager;
 import io.mapsquare.osmcontributor.map.vectorial.Geocoder;
 import io.mapsquare.osmcontributor.note.NoteActivity;
 import io.mapsquare.osmcontributor.note.NoteCommentDialogFragment;
@@ -124,8 +123,6 @@ public interface OsmTemplateComponent {
 
     // Core
     EventBus getEventBus();
-
-    GeoJSONFileManager getGeoJSONFileManager();
 
     EditVectorialWayManager getEditVectorialWayManager();
 

@@ -70,7 +70,6 @@ public class OsmTemplateApplication extends Application {
         bus.register(getOsmTemplateComponent().getNoteManager());
         bus.register(getOsmTemplateComponent().getSyncManager());
         bus.register(getOsmTemplateComponent().getTypeManager());
-        bus.register(getOsmTemplateComponent().getGeoJSONFileManager());
         bus.register(getOsmTemplateComponent().getGeocoder());
         bus.register(getOsmTemplateComponent().getPoiAssetLoader());
         bus.register(getOsmTemplateComponent().getEditVectorialWayManager());

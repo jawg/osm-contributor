@@ -48,7 +48,6 @@ import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.map.events.PleaseChangeValuesDetailNoteFragmentEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeDrawer;
-import io.mapsquare.osmcontributor.map.events.PleaseLoadVectorialTileEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoisAndNotesEvent;
 import io.mapsquare.osmcontributor.utils.Box;
 import timber.log.Timber;
@@ -63,14 +62,12 @@ public class MapFragmentPresenter {
     @Inject
     ConfigManager configManager;
 
-    private int zoomVectorial;
     private boolean forceRefreshPoi = false;
     private boolean forceRefreshNotes = false;
 
     public MapFragmentPresenter(MapFragment mapFragment) {
         this.mapFragment = mapFragment;
         ((OsmTemplateApplication) mapFragment.getActivity().getApplication()).getOsmTemplateComponent().inject(this);
-        zoomVectorial = configManager.getZoomVectorial();
     }
 
     public void register() {
@@ -168,26 +165,6 @@ public class MapFragmentPresenter {
                 e + f * (e - w),
                 s - f * (n - s),
                 w - f * (e - w));
-    }
-
-    private BoundingBox triggerReloadVectorialTiles;
-
-    public void loadVectorialTilesIfNeeded() {
-        BoundingBox viewBoundingBox = mapFragment.getViewBoundingBox();
-        if (viewBoundingBox != null) {
-            if (mapFragment.getZoomLevel() >= zoomVectorial) {
-                if (shouldReloadVectorialTiles(viewBoundingBox)) {
-                    Timber.d("Reloading vectorial tiles");
-                    triggerReloadVectorialTiles = enlarge(viewBoundingBox, 1.25);
-                    eventBus.post(new PleaseLoadVectorialTileEvent(enlarge(viewBoundingBox, 1.5)));
-                }
-            }
-        }
-    }
-
-    private boolean shouldReloadVectorialTiles(BoundingBox viewBoundingBox) {
-        return triggerReloadVectorialTiles == null
-                || !triggerReloadVectorialTiles.union(viewBoundingBox).equals(triggerReloadVectorialTiles);
     }
 
     public void downloadAreaPoisAndNotes() {

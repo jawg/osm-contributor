@@ -121,7 +121,6 @@ import io.mapsquare.osmcontributor.map.events.PleaseSwitchMapStyleEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
-import io.mapsquare.osmcontributor.map.events.VectorialTilesLoadedEvent;
 import io.mapsquare.osmcontributor.map.vectorial.BoxOverlay;
 import io.mapsquare.osmcontributor.map.vectorial.Geocoder;
 import io.mapsquare.osmcontributor.map.vectorial.LevelBar;
@@ -347,7 +346,6 @@ public class MapFragment extends Fragment {
                     initialX = scrollEvent.getX();
                     initialY = scrollEvent.getY();
                     presenter.loadPoisIfNeeded();
-                    presenter.loadVectorialTilesIfNeeded();
 
                     if (getZoomLevel() > zoomVectorial) {
                         LatLng center = mapView.getCenter();
@@ -364,7 +362,6 @@ public class MapFragment extends Fragment {
 
                 presenter.loadPoisIfNeeded();
                 Timber.v("new zoom : %s", zoomEvent.getZoomLevel());
-                presenter.loadVectorialTilesIfNeeded();
 
                 if (zoomEvent.getZoomLevel() < zoomVectorial) {
                     levelBar.setVisibility(View.INVISIBLE);
@@ -391,7 +388,6 @@ public class MapFragment extends Fragment {
             @Override
             public void onRotate(RotateEvent rotateEvent) {
                 presenter.loadPoisIfNeeded();
-                presenter.loadVectorialTilesIfNeeded();
             }
 
         });
@@ -554,7 +550,6 @@ public class MapFragment extends Fragment {
         presenter.setForceRefreshPoi();
         presenter.setForceRefreshNotes();
         presenter.loadPoisIfNeeded();
-        presenter.loadVectorialTilesIfNeeded();
         eventBus.post(new PleaseInitializeNoteDrawerEvent(displayOpenNotes, displayClosedNotes));
     }
 
@@ -1594,14 +1589,6 @@ public class MapFragment extends Fragment {
     Set<VectorialObject> vectorialObjectsBackground = new HashSet<>();
     private LocationMarker.MarkerType selectedMarkerType = LocationMarker.MarkerType.NONE;
     private int zoomVectorial;
-
-
-    public void onEventMainThread(VectorialTilesLoadedEvent event) {
-        Timber.d("Received event VectorialTilesLoaded");
-        vectorialObjectsBackground.clear();
-        vectorialObjectsBackground = event.getVectorialObjects();
-        updateVectorial(event.getLevels());
-    }
 
     public void onEventMainThread(EditionVectorialTilesLoadedEvent event) {
         if (event.isRefreshFromOverpass()) {
