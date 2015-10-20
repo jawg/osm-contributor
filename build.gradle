@@ -1,5 +1,5 @@
 ext {
-    appVersion = "1.4.0-SNAPSHOT"
+    appVersion = "1.4.0"
 
     crashlyticsVersion = '1.+'
 
