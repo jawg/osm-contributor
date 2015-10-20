@@ -6,13 +6,12 @@
 ####################################################################################################
 ## Project specific
 
--keepclasseswithmembernames class io.mapsquare.osmcontributor.map.vectorial.GeoJSONFileDescriptor {
-    *;
-}
-
 -keepclasseswithmembernames class io.mapsquare.osmcontributor.type.dto.* {
     *;
 }
+
+-keepclasseswithmembernames class io.mapsquare.osmcontributor.utils.Box { *; }
+
 
 ####################################################################################################
 ## Crashlytics
