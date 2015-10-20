@@ -30,6 +30,27 @@ apps. Go crazy and let us know!
 
 http://osm.mapsquare.io
 
+### How to compile the application
+This application has three flavours: store, template and poi_storage.  
+Every flavours use Google Analytics and Crashlytics. If you don't want them, add the following property
+when using gradle assemble task:  
+```
+-Pfoss=true
+```  
+
+The flavour you will most probably want to build yourself is the store flavour which is the one on the Google Playstore.  
+To build this flavour:  
+ 1. Create a conf.properties file at the project's root  
+ 2. Generate a [Bing Maps API key](https://www.bingmapsportal.com)  
+ 3. Put the generated key in conf.properties:
+ ```
+ bingApiKey=My_Api_Key
+ ```  
+ 4. Execute the gradle task assembleStoreRelease, you can specify the OSM api url as a parameter:  
+ ```
+ ./gradlew assembleStoreRelease -PosmUrl=http://api.openstreetmap.org/api/0.6
+ ```  
+
 ### Feedback / Issue tracking
 Please use this github project as a feedback, feature request or issue tracker.  
 You can use the following tags to help us: [Bug], [Mobile], [Web], [Feature], [Feedback]

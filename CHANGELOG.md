@@ -1,5 +1,17 @@
 ## Changelog
 
+[1.4.0]
+
+ - Removed manual management of PoiTypes
+ - Removed automatic save of Pois modifications
+ - Download of Pois and Notes is now manual
+ - Changed markers' icons
+ - Add the possibility to switch to Bing Aerial vue
+ - Better drawing of vector tiles and ways edition
+ - Performance enhancements
+ - Disabled vector map.
+ - In template flavor, include the map tiles in the app as mbtiles files
+
 [1.3.1]
 
  - Display current zoom in the top-left corner of the map
@@ -8,7 +20,7 @@
 [1.3.0]:
 
  - OSM suggestions while adding a new PoiType
- - Performances enhancement
+ - Performance enhancements
  - Refactor, code cleaning
  - Bugfixes
 
