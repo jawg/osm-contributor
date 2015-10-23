@@ -1,0 +1,82 @@
+[
+  {
+    "name": "amenity\u003dbicycle_parking",
+    "label": {
+      "pt": "Estacionamento de bicicletas",
+      "en": "bicycle parking"
+    },
+    "description": {
+      "de": "Fahrradparkplatz",
+      "fi": "Paikka, johon voi pysäköidä pyöränsä.",
+      "ru": "Место парковки велосипедов.",
+      "pt": "Paraciclo",
+      "pt-br": "Um lugar de estacionamento para bicicletas.",
+      "uk": "Місце для паркування велосипедів.",
+      "el": "Χώρος στάθμευσης ποδηλάτων",
+      "ja": "自転車を停めるための場所。",
+      "en": "A place for parking bicycles.",
+      "fr": "Emplacement pour garer son vélo.",
+      "pl": "Miejsce parkingowe dla rowerów.",
+      "es": "Un lugar para estacionar bicicletas"
+    },
+    "usageCount": 10956,
+    "keyWords": {},
+    "tags": [
+      {
+        "key": "amenity",
+        "value": "bicycle_parking"
+      },
+      {"key": "access"},
+      {"key": "bicycle_parking"},
+      {"key": "capacity"},
+      {"key": "covered"},
+      {"key": "cyclestreets_id"},
+      {"key": "fee"},
+      {"key": "maxstay"},
+      {"key": "name"},
+      {"key": "operator"},
+      {"key": "surveillance"}
+    ]
+  },
+  {
+    "name": "amenity\u003dmusic_venue",
+    "label": {
+      "de": "Veranstaltungsort für Musikdarbietungen",
+      "fi": "konserttitila",
+      "ru": "концертная площадка",
+      "pt": "Casa de shows",
+      "en": "music venue",
+      "simple": "Music venue",
+      "fr": "salle de concert",
+      "ar": "صالة موسيقى",
+      "nb": "konsertlokale",
+      "ja": "コンサート会場",
+      "nl": "accomodatie voor muziekuitvoeringen",
+      "sco": "muisic venue",
+      "mk": "музичко одржувалиште"
+    },
+    "usageCount": 2,
+    "description": {"en": "An indoor place to hear live music"},
+    "keyWords": {
+      "de": [
+        "Konzerthalle",
+        "Konzerthaus",
+        "Konzertsaal",
+        "Konzertlocation"
+      ],
+      "en": [
+        "ds",
+        "gfd",
+        "ab",
+        "Konzertlocation"
+      ],
+      "nl": ["muziekzaal"]
+    },
+    "tags": [
+      {
+        "key": "amenity",
+        "value": "music_venue"
+      }
+    ]
+  }
+]

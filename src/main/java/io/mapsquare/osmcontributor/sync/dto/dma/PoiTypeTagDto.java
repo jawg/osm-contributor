@@ -23,13 +23,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class PoiTypeTagDto {
 
-    @SerializedName("dataName")
+    @SerializedName("key")
     private String key;
 
-    @SerializedName("dataType")
-    private String type;
-
-    @SerializedName("defaultValue")
+    @SerializedName("value")
     private String value;
 
     @SerializedName("mandatory")
@@ -41,14 +38,6 @@ public class PoiTypeTagDto {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getValue() {

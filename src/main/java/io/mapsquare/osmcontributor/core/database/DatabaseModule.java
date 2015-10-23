@@ -31,6 +31,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.mapsquare.osmcontributor.core.model.Comment;
+import io.mapsquare.osmcontributor.core.model.KeyWord;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
@@ -54,6 +55,11 @@ public class DatabaseModule {
     @Provides
     Dao<Note, Long> getNoteDao(OsmSqliteOpenHelper helper) {
         return createDao(helper, Note.class);
+    }
+
+    @Provides
+    Dao<KeyWord, Long> getKeyWordDao(OsmSqliteOpenHelper helper) {
+        return createDao(helper, KeyWord.class);
     }
 
     @Provides

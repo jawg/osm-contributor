@@ -87,6 +87,7 @@ public class BoxOverlay extends Overlay {
                 pointsToClip.add(new XY(projectionResult[0], projectionResult[1]));
             }
 
+            //TODO fix rectangle when zoom
             clipPoints = clipper.clip(pointsToClip, true);
 
             if (clipPoints != null && clipPoints.size() > 0) {

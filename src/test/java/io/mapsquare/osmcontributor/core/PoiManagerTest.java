@@ -37,6 +37,7 @@ import java.util.Map;
 import io.mapsquare.osmcontributor.DaggerOsmTemplateComponent;
 import io.mapsquare.osmcontributor.OsmTemplateComponent;
 import io.mapsquare.osmcontributor.OsmTemplateModule;
+import io.mapsquare.osmcontributor.core.model.Label;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiTag;
 import io.mapsquare.osmcontributor.core.model.PoiType;
@@ -121,7 +122,9 @@ public class PoiManagerTest {
         poiTypeTag.setOrdinal(0);
         poiTypeTag.setMandatory(true);
         poiType.setTags(Collections.singletonList(poiTypeTag));
-        poiType.setName("PoiType");
+        List<Label> labels = new ArrayList<>();
+        labels.add(new Label(poiType, "en", "PoiType"));
+        poiType.setLabels(labels);
         return poiType;
     }
 

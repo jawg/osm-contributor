@@ -16,22 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.sync.dto.dma;
+package io.mapsquare.osmcontributor.core.database.dao;
 
-import com.google.gson.annotations.SerializedName;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 
-import java.util.List;
+import javax.inject.Inject;
 
-public class PoiTypesDto {
+import io.mapsquare.osmcontributor.core.model.KeyWord;
 
-    @SerializedName("dataTypes")
-    private List<PoiTypeDto> types;
+public class KeyWordDao extends RuntimeExceptionDao<KeyWord, Long> {
 
-    public List<PoiTypeDto> getTypes() {
-        return types;
+    @Inject
+    public KeyWordDao(Dao<KeyWord, Long> dao) {
+        super(dao);
     }
 
-    public void setTypes(List<PoiTypeDto> types) {
-        this.types = types;
-    }
+
 }

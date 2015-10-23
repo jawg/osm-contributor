@@ -34,6 +34,7 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.core.database.DatabaseHelper;
+import io.mapsquare.osmcontributor.core.database.dao.KeyWordDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiNodeRefDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiTagDao;
@@ -50,6 +51,7 @@ import io.mapsquare.osmcontributor.core.events.PoiForEditionLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PoiTypesLoaded;
 import io.mapsquare.osmcontributor.core.events.PoisLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PoisToUpdateLoadedEvent;
+import io.mapsquare.osmcontributor.core.model.KeyWord;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
 import io.mapsquare.osmcontributor.core.model.PoiTag;
@@ -74,17 +76,19 @@ public class PoiManager {
     PoiTagDao poiTagDao;
     PoiNodeRefDao poiNodeRefDao;
     PoiTypeDao poiTypeDao;
+    KeyWordDao keyWordDao;
     PoiTypeTagDao poiTypeTagDao;
     DatabaseHelper databaseHelper;
     ConfigManager configManager;
     EventBus bus;
 
     @Inject
-    public PoiManager(PoiDao poiDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao, PoiTypeTagDao poiTypeTagDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, Application application) {
+    public PoiManager(PoiDao poiDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao, KeyWordDao keyWordDao, PoiTypeTagDao poiTypeTagDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, Application application) {
         this.poiDao = poiDao;
         this.poiTagDao = poiTagDao;
         this.poiNodeRefDao = poiNodeRefDao;
         this.poiTypeDao = poiTypeDao;
+        this.keyWordDao = keyWordDao;
         this.poiTypeTagDao = poiTypeTagDao;
         this.databaseHelper = databaseHelper;
         this.configManager = configManager;
@@ -266,6 +270,12 @@ public class PoiManager {
                     poiTypeTag.setPoiType(poiType);
                     poiTypeTagDao.createOrUpdate(poiTypeTag);
                 }
+
+                for (KeyWord keyWord : poiType.getKeyWords()) {
+                    keyWord.setPoiType(poiType);
+                    keyWordDao.createOrUpdate(keyWord);
+                }
+
                 return poiType;
             }
         });

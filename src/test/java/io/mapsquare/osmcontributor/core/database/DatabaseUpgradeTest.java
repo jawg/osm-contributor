@@ -87,9 +87,10 @@ public class DatabaseUpgradeTest {
         Set<String> newContents = extractContent(baseJdbcUrl + newDbFile.getAbsolutePath());
         Set<String> updatedContents = extractContent(baseJdbcUrl + updatedDbFile.getAbsolutePath());
 
+        //TODO Fix sql script
+        System.out.printf(newContents.toString() + "---------- updated -> " + updatedContents.toString());
         assertThat(updatedContents).containsAll(newContents);
         assertThat(updatedContents).isEqualTo(newContents);
-
 
     }
 

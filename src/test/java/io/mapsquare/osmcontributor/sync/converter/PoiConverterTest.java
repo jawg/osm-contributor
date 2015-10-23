@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.mapsquare.osmcontributor.core.database.dao.PoiTypeDao;
+import io.mapsquare.osmcontributor.core.model.Label;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
@@ -96,7 +97,10 @@ public class PoiConverterTest {
 
     private PoiType poiType(String name, String... tags) {
         PoiType t1 = new PoiType();
-        t1.setName(name);
+        List<Label> labels = new ArrayList<>();
+        labels.add(new Label(t1, "en", name));
+        t1.setLabels(labels);
+
         List<PoiTypeTag> poiTypeTags = new ArrayList<>();
         if (tags.length % 2 != 0) {
             throw new AssertionError("Malformed tags ! Array must be an even number");

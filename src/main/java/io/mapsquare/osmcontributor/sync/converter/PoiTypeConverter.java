@@ -18,12 +18,19 @@
  */
 package io.mapsquare.osmcontributor.sync.converter;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.mapsquare.osmcontributor.core.model.KeyWord;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.sync.dto.dma.PoiTypeDto;
@@ -31,31 +38,36 @@ import io.mapsquare.osmcontributor.sync.dto.dma.PoiTypeTagDto;
 
 public class PoiTypeConverter {
 
+    String language;
+
     @Inject
     public PoiTypeConverter() {
+        language = Locale.getDefault().getLanguage();
+        if (language.isEmpty()) {
+            language = "en";
+        }
     }
-
-    private List<String> supportedTagTypes = Arrays.asList("text", "number", "on/off");
 
     private PoiType convert(PoiTypeDto dto) {
         PoiType type = new PoiType();
-        type.setName(dto.getName());
-        type.setIcon(dto.getName());
+        type.setName(getTranslationFormJson(dto.getLabels(), type, dto.getName()));
+        type.setDescription(getTranslationFormJson(dto.getDescription(), type, ""));
+        type.setKeyWords(getKeywordsFormJson(dto.getKeyWords(), type));
+        type.setIcon(getName(dto.getName()));
+        type.setUsageCount(dto.getUsageCount());
 
         int ordinal = 0;
         if (dto.getTags() != null) {
             ArrayList<PoiTypeTag> tags = new ArrayList<>(dto.getTags().size());
             type.setTags(tags);
             for (PoiTypeTagDto tagDto : dto.getTags()) {
-                if (supportedTagTypes.contains(tagDto.getType())) {
-                    PoiTypeTag poiTypeTag = new PoiTypeTag();
-                    poiTypeTag.setPoiType(type);
-                    poiTypeTag.setKey(tagDto.getKey());
-                    poiTypeTag.setValue(tagDto.getValue());
-                    poiTypeTag.setMandatory(tagDto.isMandatory());
-                    poiTypeTag.setOrdinal(ordinal++);
-                    tags.add(poiTypeTag);
-                }
+                PoiTypeTag poiTypeTag = new PoiTypeTag();
+                poiTypeTag.setPoiType(type);
+                poiTypeTag.setKey(tagDto.getKey());
+                poiTypeTag.setValue(tagDto.getValue());
+                poiTypeTag.setMandatory(tagDto.isMandatory());
+                poiTypeTag.setOrdinal(ordinal++);
+                tags.add(poiTypeTag);
             }
         }
         return type;
@@ -70,5 +82,50 @@ public class PoiTypeConverter {
             result.add(convert(dto));
         }
         return result;
+    }
+
+    private String getName(String str) {
+        if (str != null) {
+            String[] splits = str.split("=");
+            if (splits.length == 2) {
+                return splits[1];
+            }
+        }
+        return "";
+    }
+
+    private String getTranslationFormJson(JsonElement jsonElement, PoiType type, String defaultName) {
+        Type mapType = new TypeToken<Map<String, String>>() { } .getType();
+        Gson gson = new Gson();
+        Map<String, String> map = gson.fromJson(jsonElement, mapType);
+
+        // if there is a translation for the user language
+        if (map.containsKey(language)) {
+            return map.get(language);
+        }
+        // else we look for the english translation
+        if (map.containsKey("en")) {
+            return map.get("en");
+        }
+
+        // if we don't have the translation we use the name from the JSON file
+        return defaultName;
+    }
+
+    private List<KeyWord> getKeywordsFormJson(JsonElement jsonElement, PoiType poiType) {
+        List<KeyWord> keyWords = new ArrayList<>();
+        Type mapType = new TypeToken<Map<String, List<String>>>() { } .getType();
+        Gson gson = new Gson();
+        Map<String, List<String>> map = gson.fromJson(jsonElement, mapType);
+
+        // if there is a translation for the user language
+        if (map.containsKey(language)) {
+            List<String> strList = map.get(language);
+            for (String k : strList) {
+                keyWords.add(new KeyWord(k, poiType));
+            }
+        }
+
+        return keyWords;
     }
 }

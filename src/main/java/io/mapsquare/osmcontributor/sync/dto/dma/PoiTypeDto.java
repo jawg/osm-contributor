@@ -18,6 +18,7 @@
  */
 package io.mapsquare.osmcontributor.sync.dto.dma;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -26,18 +27,51 @@ public class PoiTypeDto {
     @SerializedName("name")
     private String name;
 
-    @SerializedName("values")
+    @SerializedName("label")
+    private JsonElement labels;
+
+    @SerializedName("description")
+    private JsonElement description;
+
+    @SerializedName("tags")
     private List<PoiTypeTagDto> tags;
 
-    @SerializedName("state")
-    private String state;
+    @SerializedName("usageCount")
+    private int usageCount;
+
+    @SerializedName("keyWords")
+    private JsonElement keyWords;
+
+    public JsonElement getLabels() {
+        return labels;
+    }
+
+    public void setLabels(JsonElement labels) {
+        this.labels = labels;
+    }
 
     public String getName() {
         return name;
     }
 
+    public int getUsageCount() {
+        return usageCount;
+    }
+
+    public void setUsageCount(int usageCount) {
+        this.usageCount = usageCount;
+    }
+
     public void setName(String name) {
         this.name = name;
+    }
+
+    public JsonElement getDescription() {
+        return description;
+    }
+
+    public void setDescription(JsonElement description) {
+        this.description = description;
     }
 
     public List<PoiTypeTagDto> getTags() {
@@ -48,11 +82,11 @@ public class PoiTypeDto {
         this.tags = tags;
     }
 
-    public String getState() {
-        return state;
+    public JsonElement getKeyWords() {
+        return keyWords;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setKeyWords(JsonElement keyWords) {
+        this.keyWords = keyWords;
     }
 }

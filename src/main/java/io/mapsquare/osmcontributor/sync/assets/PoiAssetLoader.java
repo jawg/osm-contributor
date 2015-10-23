@@ -21,11 +21,14 @@ package io.mapsquare.osmcontributor.sync.assets;
 import android.app.Application;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.simpleframework.xml.core.Persister;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -40,7 +43,7 @@ import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
 import io.mapsquare.osmcontributor.sync.converter.PoiConverter;
 import io.mapsquare.osmcontributor.sync.converter.PoiTypeConverter;
-import io.mapsquare.osmcontributor.sync.dto.dma.PoiTypesDto;
+import io.mapsquare.osmcontributor.sync.dto.dma.PoiTypeDto;
 import io.mapsquare.osmcontributor.sync.dto.osm.OsmDto;
 import io.mapsquare.osmcontributor.utils.CloseableUtils;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
@@ -113,9 +116,10 @@ public class PoiAssetLoader {
     public List<PoiType> loadPoiTypesFromAssets() {
         Reader reader = null;
         try {
-            reader = new InputStreamReader(application.getAssets().open("poitypes.json"));
-            PoiTypesDto poiTypesDto = gson.fromJson(reader, PoiTypesDto.class);
-            return poiTypeConverter.convert(poiTypesDto.getTypes());
+            reader = new InputStreamReader(application.getAssets().open("h2geo.json"));
+            Type poiTypesType = new TypeToken<ArrayList<PoiTypeDto>>() { } .getType();
+            List<PoiTypeDto> poiTypesDto = gson.fromJson(reader, poiTypesType);
+            return poiTypeConverter.convert(poiTypesDto);
         } catch (Exception e) {
             Timber.e(e, "Error while loading POI Types from assets");
             throw new RuntimeException(e);

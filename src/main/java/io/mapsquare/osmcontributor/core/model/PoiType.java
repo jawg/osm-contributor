@@ -31,18 +31,21 @@ public class PoiType implements Comparable<PoiType> {
     public static final String POI_TYPE = "POI_TYPE";
 
     public static final String ID = "ID";
-    public static final String NAME = "NAME";
     public static final String ICON = "ICON";
     public static final String BACKEND_ID = "BACKEND_ID";
+    public static final String EN = "en";
+    public static final String NAME = "NAME";
+    public static final String DESCRIPTION = "DESCRIPTION";
+    public static final String USAGE_COUNT = "USAGE_COUNT";
 
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
 
-    @DatabaseField(columnName = NAME)
-    private String name;
-
     @DatabaseField(columnName = ICON)
     private String icon;
+
+    @DatabaseField(columnName = USAGE_COUNT)
+    private int usageCount;
 
     @DatabaseField(columnName = BACKEND_ID)
     private String backendId;
@@ -50,20 +53,29 @@ public class PoiType implements Comparable<PoiType> {
     @ForeignCollectionField(orderColumnName = PoiTypeTag.ORDINAL)
     private Collection<PoiTypeTag> tags;
 
+    @DatabaseField(columnName = DESCRIPTION)
+    private String description;
+
+    @DatabaseField(columnName = NAME, canBeNull = false)
+    private String name;
+
+    @ForeignCollectionField
+    private Collection<KeyWord> keyWords;
+
+    public int getUsageCount() {
+        return usageCount;
+    }
+
+    public void setUsageCount(int usageCount) {
+        this.usageCount = usageCount;
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getIcon() {
@@ -90,26 +102,47 @@ public class PoiType implements Comparable<PoiType> {
         this.tags = tags;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Collection<KeyWord> getKeyWords() {
+        return keyWords;
+    }
+
+    public void setKeyWords(Collection<KeyWord> keyWords) {
+        this.keyWords = keyWords;
+    }
+
     @Override
     public String toString() {
         return "PoiType{" +
-                "backendId='" + backendId + '\'' +
-                ", id=" + id +
-                ", name='" + name + '\'' +
+                "id=" + id +
                 ", icon='" + icon + '\'' +
+                ", backendId='" + backendId + '\'' +
                 ", tags=" + tags +
+                ", description='" + description + '\'' +
+                ", name='" + name + '\'' +
+                ", keyWords=" + keyWords +
                 '}';
     }
 
     @Override
     public int compareTo(@NonNull PoiType o) {
-        int result;
-        if (name != null && o.name != null) {
-            result = name.compareTo(o.name);
-        } else {
-            result = 0;
-        }
-        if (result == 0 && backendId != null && o.backendId != null) {
+        int result = 0;
+        if (backendId != null && o.backendId != null) {
             result = backendId.compareTo(o.backendId);
         }
         if (result == 0 && id != null && o.id != null) {
