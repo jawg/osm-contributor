@@ -191,4 +191,10 @@ public class ButteryProgressBar extends View {
 
     }
 
+    /**
+     * Call this method when the listeners to avoid leaks.
+     */
+    public void removeListeners() {
+        mAnimator.removeAllUpdateListeners();
+    }
 }
