@@ -57,6 +57,7 @@
     <string name="edit_noderef_position_title">Edition de position</string>
     <string name="poi_creation">Création de poi</string>
     <string name="delete_poi">Supprimer le poi</string>
+    <string name="add_poi">Ajouter un Poi</string>
     <string name="delete_poi_title">Suppression de poi</string>
     <string name="delete_poi_confirm_message">Voulez-vous vraiment supprimer ce poi?</string>
     <string name="delete_poi_positive_btn">Supprimer</string>
@@ -91,6 +92,7 @@
     <string name="tuto_title_cancel">Annulez vos modifications</string>
     <string name="tuto_text_press_create">Cliquez ici pour ajouter un nouveau point</string>
     <string name="tuto_text_choose_type">Choisissez le type du Poi que vous souhaitez ajouter</string>
+    <string name="tuto_text_poi_or_note">Voullez vous ajouter une note ou un poi ?</string>
     <string name="tuto_text_swipe_for_position">Faites bouger la carte afin de positionner votre poi.</string>
     <string name="tuto_text_confirm_position_creation">Cliquez pour confirmer la position, tout retour annulera votre création.</string>
     <string name="tuto_text_cancel_creation">Ce Bouton ou le bouton de retour annuleront vos modifications. Rien ne sera envoyé à OSM.</string>

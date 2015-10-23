@@ -1173,9 +1173,6 @@ public class MapFragment extends Fragment {
     * POI CREATION
     *---------------------------------------------------------*/
 
-    @InjectView(R.id.add_poi)
-    FloatingActionButton floatingButtonAddPoi;
-
     @InjectView(R.id.hand)
     ImageView handImageView;
 
@@ -1251,21 +1248,16 @@ public class MapFragment extends Fragment {
         }
 
         //which kind of add to display depending on screen size
-        if (presenter.getNumberOfPoiTypes() <= maxPoiType) {
-            floatingMenuAddFewValues.setVisibility(View.VISIBLE);
-            floatingMenuAddFewValues.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (isTuto) {
-                        nextTutoStep();
-                    }
+        // if in store flavor show the spinner
+        floatingMenuAddFewValues.setVisibility(View.VISIBLE);
+        floatingMenuAddFewValues.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isTuto) {
+                    nextTutoStep();
                 }
-            });
-            floatingButtonAddPoi.setVisibility(View.INVISIBLE);
-        } else {
-            floatingButtonAddPoi.setVisibility(View.VISIBLE);
-            floatingMenuAddFewValues.setVisibility(View.GONE);
-        }
+            }
+        });
     }
 
     protected void loadPoiTypeFloatingBtn() {
@@ -1296,23 +1288,47 @@ public class MapFragment extends Fragment {
             floatingMenuAddFewValues.addButton(floatingActionButton);
         }
 
-        //add poiTypes
-        for (final PoiType poiType : presenter.getPoiTypes()) {
+        if (presenter.getNumberOfPoiTypes() <= maxPoiType) {
+            //add a btn per poiType
+            for (final PoiType poiType : presenter.getPoiTypes()) {
+                floatingActionButton = new FloatingActionButton(getActivity());
+                floatingActionButton.setTitle(poiType.getName());
+                floatingActionButton.setColorPressed(getResources().getColor(R.color.material_blue_grey_800));
+                floatingActionButton.setColorNormal(getResources().getColor(R.color.material_blue_500));
+                floatingActionButton.setSize(FloatingActionButton.SIZE_MINI);
+                floatingActionButton.setIconDrawable(bitmapHandler.getIconWhite(poiType.getId()));
+                floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (configManager.hasPoiAddition()) {
+                            switchMode(MapMode.CREATION);
+                            int pos = ((SpinnerAdapter) spinner.getAdapter()).getPoiTypePosition(poiType.getId());
+                            spinner.setSelection(pos);
+                            poiTypeSelected(poiType);
+                            floatingMenuAddFewValues.collapse();
+                            if (isTuto) {
+                                nextTutoStep();
+                            }
+                        } else {
+                            Toast.makeText(getActivity(), getResources().getString(R.string.point_modification_forbidden), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                floatingMenuAddFewValues.addButton(floatingActionButton);
+            }
+        } else {
+            // add a btn for all poiTypes
             floatingActionButton = new FloatingActionButton(getActivity());
-            floatingActionButton.setTitle(poiType.getName());
+            floatingActionButton.setTitle(getResources().getString(R.string.add_poi));
             floatingActionButton.setColorPressed(getResources().getColor(R.color.material_blue_grey_800));
             floatingActionButton.setColorNormal(getResources().getColor(R.color.material_blue_500));
             floatingActionButton.setSize(FloatingActionButton.SIZE_MINI);
-            floatingActionButton.setIconDrawable(bitmapHandler.getIconWhite(poiType.getId()));
+            floatingActionButton.setIconDrawable(getResources().getDrawable(R.drawable.marker_white));
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (configManager.hasPoiAddition()) {
                         switchMode(MapMode.CREATION);
-                        int pos = ((SpinnerAdapter) spinner.getAdapter()).getPoiTypePosition(poiType.getId());
-                        spinner.setSelection(pos);
-                        poiTypeSelected(poiType);
-                        floatingMenuAddFewValues.collapse();
                         if (isTuto) {
                             nextTutoStep();
                         }
@@ -1356,15 +1372,6 @@ public class MapFragment extends Fragment {
         }
         spinnerAdapter.notifyDataSetChanged();
 
-    }
-
-    @OnClick(R.id.add_poi)
-    public void setOnAddPoi() {
-        poiTypeSelected(poiTypeSelected);
-        switchMode(MapMode.CREATION);
-        if (isTuto) {
-            nextTutoStep();
-        }
     }
 
     /*-----------------------------------------------------------
@@ -1791,33 +1798,29 @@ public class MapFragment extends Fragment {
                     .setStyle(R.style.CustomShowcaseTheme)
                     .setContentTitle(getString(R.string.tuto_title_press_create))
                     .setContentText(getString(R.string.tuto_text_press_create))
-                    .setTarget(new ViewTarget(floatingButtonAddPoi))
+                    .setTarget(new ViewTarget(floatingMenuAddFewValues.getChildAt(0)))
                     .setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 switch (showcaseCounter) {
                                                     case 0:
-                                                        if (presenter.getNumberOfPoiTypes() <= maxPoiType) {
-                                                            floatingMenuAddFewValues.expand();
-                                                            nextTutoStep();
-                                                        } else {
-                                                            floatingButtonAddPoi.performClick();
-                                                        }
-                                                        break;
-
-                                                    case 1:
-                                                        if (presenter.getNumberOfPoiTypes() <= maxPoiType) {
-                                                            floatingMenuAddFewValues.getChildAt(0).performClick();
-                                                        } else {
-                                                            nextTutoStep();
-                                                        }
-                                                        break;
-
-                                                    case 2:
+                                                        floatingMenuAddFewValues.expand();
                                                         nextTutoStep();
                                                         break;
 
+                                                    case 1:
+                                                        floatingMenuAddFewValues.getChildAt(0).performClick();
+                                                        break;
+
+                                                    case 2:
+                                                        floatingMenuAddFewValues.getChildAt(0).performClick();
+                                                        break;
+
                                                     case 3:
+                                                        nextTutoStep();
+                                                        break;
+
+                                                    case 4:
                                                         nextTutoStep();
                                                         switchMode(MapMode.DEFAULT);
                                                         break;
@@ -1834,23 +1837,32 @@ public class MapFragment extends Fragment {
     private void nextTutoStep() {
         switch (showcaseCounter) {
             case 0:
-                View objectToFocus = presenter.getNumberOfPoiTypes() <= maxPoiType ? floatingMenuAddFewValues.getChildAt(0) : spinner;
-                showcaseView.setContentText(getString(R.string.tuto_text_choose_type));
-                showcaseView.setTarget(new ViewTarget(objectToFocus));
+                if (presenter.getNumberOfPoiTypes() <= maxPoiType) {
+                    showcaseView.setContentText(getString(R.string.tuto_text_choose_type));
+                    showcaseCounter++;
+                } else {
+                    //compact view
+                    showcaseView.setContentText(getString(R.string.tuto_text_poi_or_note));
+                }
+                showcaseView.setTarget(new ViewTarget(floatingMenuAddFewValues.getChildAt(0)));
                 break;
 
-
             case 1:
+                showcaseView.setContentText(getString(R.string.tuto_text_choose_type));
+                showcaseView.setTarget(new ViewTarget(floatingMenuAddFewValues.getChildAt(0)));
+                break;
+
+            case 2:
                 showcaseView.setContentText(getString(R.string.tuto_text_swipe_for_position));
                 showcaseView.setTarget(new ViewTarget(mapView));
                 break;
 
-            case 2:
+            case 3:
                 showcaseView.setContentText(getString(R.string.tuto_text_confirm_position_creation));
                 showcaseView.setTarget(new ViewTarget(R.id.action_confirm_position, getActivity()));
                 break;
 
-            case 3:
+            case 4:
                 closeTuto();
                 break;
         }
