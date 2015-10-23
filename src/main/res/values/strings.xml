@@ -69,6 +69,7 @@
     <string name="zoom_to_edit">This area is too large to load, please zoom more.</string>
     <string name="download_in_progress">Download in progress of all pois and notes of the displayed zone</string>
     <string name="switch_style">Satellite view</string>
+    <string name="zoom_more">You need to zoom more in order to download Pois</string>
 
     <!-- Strings related to login -->
     <string name="prompt_login">Login</string>

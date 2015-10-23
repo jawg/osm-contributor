@@ -965,8 +965,13 @@ public class MapFragment extends Fragment {
         if (mapMode == MapMode.WAY_EDITION) {
             downloadAreaForEdition();
         } else {
-            presenter.downloadAreaPoisAndNotes();
-            Toast.makeText(getActivity(), R.string.download_in_progress, Toast.LENGTH_SHORT).show();
+            // If flavor Store, allow the download only if the zoom > 19
+            if (!FlavorUtils.isStore() || getZoomLevel() >= 19) {
+                presenter.downloadAreaPoisAndNotes();
+                Toast.makeText(getActivity(), R.string.download_in_progress, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), R.string.zoom_more, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

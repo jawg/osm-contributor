@@ -21,7 +21,6 @@ package io.mapsquare.osmcontributor.sync;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -41,6 +40,7 @@ import io.mapsquare.osmcontributor.sync.events.error.SyncUploadRetrofitErrorEven
 import io.mapsquare.osmcontributor.sync.rest.OsmRestClient;
 import io.mapsquare.osmcontributor.sync.rest.OverpassRestClient;
 import io.mapsquare.osmcontributor.utils.Box;
+import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import retrofit.RetrofitError;
 import retrofit.mime.TypedString;
 import timber.log.Timber;
@@ -65,6 +65,9 @@ public class OsmBackend implements Backend {
     PoiConverter poiConverter;
 
     EventBus bus;
+
+    public static final String[] KEYS = new String[]{"amenity", "shop", "highway", "tourism", "historic"};
+    public static final String[] OBJECT_TYPES = new String[]{"node", "way"};
 
     public OsmBackend(EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient, OsmRestClient osmRestClient, PoiConverter poiConverter, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
         this.bus = bus;
@@ -147,21 +150,40 @@ public class OsmBackend implements Backend {
     private String generateOverpassRequest(Box box) {
         StringBuilder cmplReq = new StringBuilder("(");
 
-        for (String type : Arrays.asList("node", "way")) {
-            for (PoiType poiTypeDto : poiManager.loadPoiTypes().values()) {
-                //values
-                for (PoiTypeTag poiTypeTag : poiTypeDto.getTags()) {
-                    if (poiTypeTag.getValue() != null) {
-                        String keyValue = type + "[\"" + poiTypeTag.getKey() + "\"~\"" + poiTypeTag.getValue() + "\"]";
+        // If we are in the Store flavor, download all the pois in the box
+        if (FlavorUtils.isStore()) {
+            for (String type : OBJECT_TYPES) {
+                for (String key : KEYS) {
+                    cmplReq.append(type)
+                            .append("[\"")
+                            .append(key)
+                            .append("\"]")
+                            .append("(")
+                            .append(box.getSouth()).append(",")
+                            .append(box.getWest()).append(",")
+                            .append(box.getNorth()).append(",")
+                            .append(box.getEast())
+                            .append(");");
+                }
+            }
+        } else {
+            // Download all the pois in the box who are of one of the PoiType contained in the database
+            for (String type : OBJECT_TYPES) {
+                for (PoiType poiTypeDto : poiManager.loadPoiTypes().values()) {
+                    //values
+                    for (PoiTypeTag poiTypeTag : poiTypeDto.getTags()) {
+                        if (poiTypeTag.getValue() != null) {
+                            String keyValue = type + "[\"" + poiTypeTag.getKey() + "\"~\"" + poiTypeTag.getValue() + "\"]";
 
-                        cmplReq.append(keyValue);
+                            cmplReq.append(keyValue);
 
-                        cmplReq.append("(")
-                                .append(box.getSouth()).append(",")
-                                .append(box.getWest()).append(",")
-                                .append(box.getNorth()).append(",")
-                                .append(box.getEast())
-                                .append(");");
+                            cmplReq.append("(")
+                                    .append(box.getSouth()).append(",")
+                                    .append(box.getWest()).append(",")
+                                    .append(box.getNorth()).append(",")
+                                    .append(box.getEast())
+                                    .append(");");
+                        }
                     }
                 }
             }
