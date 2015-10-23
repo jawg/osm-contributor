@@ -120,7 +120,7 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
      * Gets a list of Tile URLs used by this layer for a specific tile.
      *
      * @param aTile a map tile
-     * @param hdpi a boolean that indicates whether the tile should be at 2x or retina size
+     * @param hdpi  a boolean that indicates whether the tile should be at 2x or retina size
      * @return a list of tile URLS
      */
     public String[] getTileURLs(final MapTile aTile, boolean hdpi) {
@@ -135,7 +135,7 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
      * Get a single Tile URL for a single tile.
      *
      * @param aTile a map tile
-     * @param hdpi a boolean that indicates whether the tile should be at 2x or retina size
+     * @param hdpi  a boolean that indicates whether the tile should be at 2x or retina size
      * @return a list of tile URLs
      */
     public String getTileURL(final MapTile aTile, boolean hdpi) {
@@ -146,8 +146,8 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
         // Custom tweak: if zoom > zoom limit, download the tile of zoom limit
         if (aTile.getZ() > providerZoomLimit) {
             return url.replace("{z}", String.valueOf(providerZoomLimit))
-                    .replace("{x}", String.valueOf((int) (aTile.getX() / (int) Math.pow(2, (aTile.getZ() - providerZoomLimit))))) // Cast into int to truncate
-                    .replace("{y}", String.valueOf((int) (aTile.getY() / (int) Math.pow(2, (aTile.getZ() - providerZoomLimit))))) // Cast into int to truncate
+                    .replace("{x}", String.valueOf((aTile.getX() / (int) Math.pow(2, (aTile.getZ() - providerZoomLimit))))) // Cast into int to truncate
+                    .replace("{y}", String.valueOf((aTile.getY() / (int) Math.pow(2, (aTile.getZ() - providerZoomLimit))))) // Cast into int to truncate
                     .replace("{2x}", hdpi ? "@2x" : "");
         }
         return url.replace("{z}", String.valueOf(aTile.getZ()))
@@ -213,10 +213,9 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
     /**
      * Requests and returns a bitmap object from a given URL, using aCache to decode it.
      *
-     *
      * @param mapTile MapTile
-     * @param url the map tile url. should refer to a valid bitmap resource.
-     * @param aCache a cache, an instance of MapTileCache
+     * @param url     the map tile url. should refer to a valid bitmap resource.
+     * @param aCache  a cache, an instance of MapTileCache
      * @return the tile if valid, otherwise null
      */
     public Bitmap getBitmapFromURL(MapTile mapTile, final String url, final MapTileCache aCache) {
@@ -234,7 +233,7 @@ public class WebSourceTileLayer extends TileLayer implements MapboxConstants {
 
             // Custom tweak: If zoom > zoom limit, load the tile of zoom limit, cut the part of interest and resize it.
             if (mapTile.getZ() > providerZoomLimit) {
-                int zoomFactor = 2 * (mapTile.getZ() - providerZoomLimit);
+                int zoomFactor = (int) Math.pow(2, (mapTile.getZ() - providerZoomLimit));
                 int cutTileSize = TILE_SIZE / zoomFactor;
                 // Cut the part of the Bitmap corresponding to the Tile of zoom 19
                 Bitmap cutBitmap = Bitmap.createBitmap(bitmap, (mapTile.getX() % zoomFactor) * cutTileSize, (mapTile.getY() % zoomFactor) * cutTileSize, cutTileSize, cutTileSize);

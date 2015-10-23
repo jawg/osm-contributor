@@ -100,7 +100,7 @@ public class BingTileLayer extends WebSourceTileLayer {
         }
         // Custom tweak: If the zoom > zoom limit, create the url for the tile of zoom limit
         if (aTile.getZ() > getProviderZoomLimit()) {
-            return mUrl.replace("{quadkey}", quadTree(new MapTile(getProviderZoomLimit(), aTile.getX() /  (int) Math.pow(2, (aTile.getZ() - getProviderZoomLimit())), aTile.getY() / (int) Math.pow(2, (aTile.getZ() - getProviderZoomLimit())))));
+            return mUrl.replace("{quadkey}", quadTree(new MapTile(getProviderZoomLimit(), aTile.getX() / (int) Math.pow(2, (aTile.getZ() - getProviderZoomLimit())), aTile.getY() / (int) Math.pow(2, (aTile.getZ() - getProviderZoomLimit())))));
         }
 
         return mUrl.replace("{quadkey}", quadTree(aTile));
