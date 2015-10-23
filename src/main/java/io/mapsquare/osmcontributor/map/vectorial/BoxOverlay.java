@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.overlay.SafeDrawOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.safecanvas.ISafeCanvas;
@@ -32,22 +33,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import io.mapsquare.osmcontributor.utils.Box;
-
 public class BoxOverlay extends SafeDrawOverlay {
 
-    private Box box;
     private Clipper clipper;
     private SafePaint paint;
     private List<XY> clipPoints = new ArrayList<>();
-    private double[] projection;
     private Projection pj;
     private double[] projectionResult;
     private XY nw, ne, se, sw;
 
 
-    public BoxOverlay(Box box) {
-        this.box = box;
+    public BoxOverlay(BoundingBox box) {
         clipper = new Clipper();
         paint = new SafePaint();
 
@@ -56,16 +52,17 @@ public class BoxOverlay extends SafeDrawOverlay {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeCap(Paint.Cap.ROUND);
 
-        projection = Projection.latLongToPixelXY(box.getNorth(), box.getWest());
+        double[] projection;
+        projection = Projection.latLongToPixelXY(box.getLatNorth(), box.getLonWest());
         nw = new XY(projection[0], projection[1]);
 
-        projection = Projection.latLongToPixelXY(box.getNorth(), box.getEast());
+        projection = Projection.latLongToPixelXY(box.getLatNorth(), box.getLonEast());
         ne = new XY(projection[0], projection[1]);
 
-        projection = Projection.latLongToPixelXY(box.getSouth(), box.getEast());
+        projection = Projection.latLongToPixelXY(box.getLatSouth(), box.getLonEast());
         se = new XY(projection[0], projection[1]);
 
-        projection = Projection.latLongToPixelXY(box.getSouth(), box.getWest());
+        projection = Projection.latLongToPixelXY(box.getLatSouth(), box.getLonWest());
         sw = new XY(projection[0], projection[1]);
     }
 

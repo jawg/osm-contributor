@@ -26,21 +26,14 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import javax.inject.Singleton;
 
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.utils.Box;
 
 @Singleton
 public class PoiStorageConfigManager implements ConfigManager {
-
 
     private Application application;
 
     public PoiStorageConfigManager(Application application) {
         this.application = application;
-    }
-
-    @Override
-    public Box getPreloadedBox() {
-        return null;
     }
 
     @Override

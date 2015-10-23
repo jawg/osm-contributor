@@ -24,17 +24,11 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import javax.inject.Singleton;
 
 import io.mapsquare.osmcontributor.BuildConfig;
-import io.mapsquare.osmcontributor.utils.Box;
 
 @Singleton
 public class StoreConfigManager implements ConfigManager {
 
     public StoreConfigManager() {
-    }
-
-    @Override
-    public Box getPreloadedBox() {
-        return null;
     }
 
     @Override

@@ -20,73 +20,21 @@ package io.mapsquare.osmcontributor.core;
 
 import android.app.Application;
 
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 import javax.inject.Singleton;
 
 import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.utils.Box;
-import io.mapsquare.osmcontributor.utils.CloseableUtils;
 
 @Singleton
 public class TemplateConfigManager implements ConfigManager {
-
-    private TemplateConfig templateConfig;
 
     private Application application;
 
     public TemplateConfigManager(Application application) {
         this.application = application;
-    }
-
-    /**
-     * Class representing the coordinates of the preloaded box.
-     * Used as a model for parsing a json file.
-     */
-    public static class TemplateConfig {
-        @SerializedName("coordinates")
-        private Box coordinates;
-
-        public Box getCoordinates() {
-            return coordinates;
-        }
-
-        public void setCoordinates(Box coordinates) {
-            this.coordinates = coordinates;
-        }
-    }
-
-    /**
-     * ATM coordinates are still loaded from poitypes.json, they will be loaded from strings.xml in the future
-     *
-     * @return a representation of poitypes.json containing the coordinates
-     */
-    @Deprecated
-    private TemplateConfig getTemplateConfig() {
-        if (templateConfig == null) {
-            InputStreamReader reader = null;
-            try {
-                reader = new InputStreamReader(application.getAssets().open("poitypes.json"));
-                templateConfig = new Gson().fromJson(reader, TemplateConfig.class);
-            } catch (IOException e) {
-                throw new RuntimeException("Error while loading poitypes.json", e);
-            } finally {
-                CloseableUtils.closeQuietly(reader);
-            }
-        }
-        return templateConfig;
-    }
-
-    @Override
-    public Box getPreloadedBox() {
-        return getTemplateConfig().getCoordinates();
     }
 
     @Override

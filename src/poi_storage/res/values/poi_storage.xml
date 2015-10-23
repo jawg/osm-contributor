@@ -29,10 +29,10 @@
     <string name="centerLat" translatable="false">48.858370</string>
     <string name="centerLng" translatable="false">2.294481</string>
 
-    <string name="northBound" translatable="false">48,8610021955755</string>
-    <string name="eastBound" translatable="false">2,30796575546265</string>
-    <string name="southBound" translatable="false">48,8504841156124</string>
-    <string name="westBound" translatable="false">2,28740930557251</string>
+    <string name="northBound" translatable="false">48.8610021955755</string>
+    <string name="eastBound" translatable="false">2.30796575546265</string>
+    <string name="southBound" translatable="false">48.8504841156124</string>
+    <string name="westBound" translatable="false">2.28740930557251</string>
 
     <string name="mapUrl" translatable="false">http://tile.openstreetmap.org/{z}/{x}/{y}.png</string>
     <string name="baseApiUrl" translatable="false">http://url</string>

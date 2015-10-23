@@ -450,8 +450,7 @@ public class MapFragment extends Fragment {
     }
 
     private void drawBounds() {
-        Box box = configManager.getPreloadedBox();
-        BoxOverlay boxOverlay = new BoxOverlay(box);
+        BoxOverlay boxOverlay = new BoxOverlay(configManager.getBoundingBox());
         mapView.addOverlay(boxOverlay);
     }
 
@@ -1974,7 +1973,7 @@ public class MapFragment extends Fragment {
 
         // Set the map bounds for the map
         if (FlavorUtils.isTemplate()) {
-            scrollableAreaLimit = Box.enlarge(configManager.getPreloadedBox().getBoundingBox(), 2);
+            scrollableAreaLimit = Box.enlarge(configManager.getBoundingBox(), 2);
             drawBounds();
         }
     }

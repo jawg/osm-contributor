@@ -21,19 +21,10 @@ package io.mapsquare.osmcontributor.core;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
-import io.mapsquare.osmcontributor.utils.Box;
-
 /**
  * Manager allowing to get all the information of the application configuration.
  */
 public interface ConfigManager {
-
-    /**
-     * Get the box where POIs are preloaded into the assets.
-     *
-     * @return The box.
-     */
-    Box getPreloadedBox();
 
     /**
      * Get the level of zoom where we should use the vectorial map.
