@@ -1,5 +1,10 @@
 ## Changelog
 
+[1.4.1]
+
+ - Fixed bug in the drawing of the box on the map
+ - Fixed a memory leak
+
 [1.4.0]
 
  - Removed manual management of PoiTypes
