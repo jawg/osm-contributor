@@ -28,7 +28,10 @@
       },
       {"key": "access"},
       {"key": "bicycle_parking"},
-      {"key": "capacity"},
+      {
+        "key": "capacity",
+        "mandatory": true
+      },
       {"key": "covered"},
       {"key": "cyclestreets_id"},
       {"key": "fee"},

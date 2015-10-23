@@ -253,15 +253,13 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void addSeparator(int nbMandatory) {
-        // if there is optional tags
-        if (nbMandatory != this.getItemCount()) {
+        // if there is only mandatory or only optional tags we hide the separators
+        if (nbMandatory != 0 && nbMandatory != this.getItemCount()) {
             cardModelList.add(nbMandatory, new CardModel("", "", false, null, false, CardModel.CardType.HEADER_OPTIONAL));
+            cardModelList.add(0, new CardModel("", "", false, null, false, CardModel.CardType.HEADER_REQUIRED));
             notifyItemInserted(nbMandatory);
+            notifyItemInserted(0);
         }
-
-        cardModelList.add(0, new CardModel("", "", false, null, false, CardModel.CardType.HEADER_REQUIRED));
-        notifyItemInserted(0);
-
     }
 
     public void onEventBackgroundThread(PleaseApplyTagChange event) {
