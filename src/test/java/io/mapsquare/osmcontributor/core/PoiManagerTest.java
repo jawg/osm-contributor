@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.core;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,7 @@ import java.util.Map;
 import io.mapsquare.osmcontributor.DaggerOsmTemplateComponent;
 import io.mapsquare.osmcontributor.OsmTemplateComponent;
 import io.mapsquare.osmcontributor.OsmTemplateModule;
-import io.mapsquare.osmcontributor.core.model.Label;
+import io.mapsquare.osmcontributor.core.model.KeyWord;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiTag;
 import io.mapsquare.osmcontributor.core.model.PoiType;
@@ -122,9 +123,9 @@ public class PoiManagerTest {
         poiTypeTag.setOrdinal(0);
         poiTypeTag.setMandatory(true);
         poiType.setTags(Collections.singletonList(poiTypeTag));
-        List<Label> labels = new ArrayList<>();
-        labels.add(new Label(poiType, "en", "PoiType"));
-        poiType.setLabels(labels);
+        poiType.setName("PoiType");
+        poiType.setLastUse(new DateTime());
+        poiType.setKeyWords(new ArrayList<KeyWord>());
         return poiType;
     }
 

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.mapsquare.osmcontributor.core.database.dao.PoiTypeDao;
-import io.mapsquare.osmcontributor.core.model.Label;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
@@ -71,14 +70,6 @@ public class PoiConverterTest {
         assertThat(pois.get(0).getType().getName()).isEqualTo("t2");
     }
 
-    @Test
-    public void type_tricky() {
-        when(poiTypeDao.queryForAll()).thenReturn(asList(poiType("t1", "key1", "value", "key2", "value1"), poiType("t2", "key1", "value", "key2", "value2")));
-        List<Poi> pois = new PoiConverter(poiTypeDao, null).convertDtosToPois(singletonList(getNodeDto("key1", "value", "key2", "value2")));
-        assertThat(pois).hasSize(1);
-        assertThat(pois.get(0).getType().getName()).isEqualTo("t2");
-    }
-
 
     private NodeDto getNodeDto(String... tags) {
         NodeDto nodeDto = new NodeDto();
@@ -97,10 +88,7 @@ public class PoiConverterTest {
 
     private PoiType poiType(String name, String... tags) {
         PoiType t1 = new PoiType();
-        List<Label> labels = new ArrayList<>();
-        labels.add(new Label(t1, "en", name));
-        t1.setLabels(labels);
-
+        t1.setName(name);
         List<PoiTypeTag> poiTypeTags = new ArrayList<>();
         if (tags.length % 2 != 0) {
             throw new AssertionError("Malformed tags ! Array must be an even number");
