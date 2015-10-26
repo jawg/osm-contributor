@@ -24,6 +24,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import org.joda.time.DateTime;
+
 import java.util.Collection;
 
 @DatabaseTable(tableName = PoiType.POI_TYPE)
@@ -37,6 +39,7 @@ public class PoiType implements Comparable<PoiType> {
     public static final String NAME = "NAME";
     public static final String DESCRIPTION = "DESCRIPTION";
     public static final String USAGE_COUNT = "USAGE_COUNT";
+    public static final String LAST_USE = "LAST_USE";
 
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
@@ -58,6 +61,9 @@ public class PoiType implements Comparable<PoiType> {
 
     @DatabaseField(columnName = NAME, canBeNull = false)
     private String name;
+
+    @DatabaseField(columnName = LAST_USE, canBeNull = false)
+    private DateTime lastUse;
 
     @ForeignCollectionField
     private Collection<KeyWord> keyWords;
@@ -126,15 +132,25 @@ public class PoiType implements Comparable<PoiType> {
         this.keyWords = keyWords;
     }
 
+    public DateTime getLastUse() {
+        return lastUse;
+    }
+
+    public void setLastUse(DateTime lastUse) {
+        this.lastUse = lastUse;
+    }
+
     @Override
     public String toString() {
         return "PoiType{" +
                 "id=" + id +
                 ", icon='" + icon + '\'' +
+                ", usageCount=" + usageCount +
                 ", backendId='" + backendId + '\'' +
                 ", tags=" + tags +
                 ", description='" + description + '\'' +
                 ", name='" + name + '\'' +
+                ", lastUse=" + lastUse +
                 ", keyWords=" + keyWords +
                 '}';
     }

@@ -579,6 +579,20 @@ public class PoiManager {
         }
     }
 
+    /**
+     * Update the date of last use of a PoiType.
+     *
+     * @param id The id of the PoiType to update.
+     */
+    public void updatePoiTypeLastUse(long id) {
+        PoiType poiType = poiTypeDao.queryForId(id);
+        if (poiType != null) {
+            poiType.setLastUse(new DateTime());
+            Timber.d("Update date of : %s", poiType);
+            poiTypeDao.createOrUpdate(poiType);
+        }
+    }
+
     // *********************************
     // ************ private ************
     // *********************************

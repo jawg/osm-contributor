@@ -22,6 +22,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
+import org.joda.time.DateTime;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,8 @@ import io.mapsquare.osmcontributor.sync.dto.dma.PoiTypeTagDto;
 
 public class PoiTypeConverter {
 
-    String language;
+    private String language;
+    private DateTime dateTime;
 
     @Inject
     public PoiTypeConverter() {
@@ -46,15 +49,18 @@ public class PoiTypeConverter {
         if (language.isEmpty()) {
             language = "en";
         }
+        dateTime = new DateTime(0);
     }
 
     private PoiType convert(PoiTypeDto dto) {
         PoiType type = new PoiType();
-        type.setName(getTranslationFormJson(dto.getLabels(), type, dto.getName()));
-        type.setDescription(getTranslationFormJson(dto.getDescription(), type, ""));
+        type.setName(getTranslationFormJson(dto.getLabels(), dto.getName()));
+        type.setDescription(getTranslationFormJson(dto.getDescription(), ""));
         type.setKeyWords(getKeywordsFormJson(dto.getKeyWords(), type));
         type.setIcon(getName(dto.getName()));
         type.setUsageCount(dto.getUsageCount());
+        // When creating a new PoiType from file, put the same date of last use to all new PoiTypes : 1970-01-01T00:00:00Z
+        type.setLastUse(dateTime);
 
         int ordinal = 0;
         if (dto.getTags() != null) {
@@ -84,6 +90,13 @@ public class PoiTypeConverter {
         return result;
     }
 
+    /**
+     * A name looks like "amenity=restaurant". This method return the part after the "=" symbol.
+     * If there was no "=" symbol or more than one, return an empty String.
+     *
+     * @param str The String to split.
+     * @return The part after the "=" symbol.
+     */
     private String getName(String str) {
         if (str != null) {
             String[] splits = str.split("=");
@@ -94,8 +107,17 @@ public class PoiTypeConverter {
         return "";
     }
 
-    private String getTranslationFormJson(JsonElement jsonElement, PoiType type, String defaultName) {
-        Type mapType = new TypeToken<Map<String, String>>() { } .getType();
+    /**
+     * Get the value of the JsonElement in the language of the system. If the language is not found, search for English.
+     * If the language is still not found, put the default name.
+     *
+     * @param jsonElement The json element containing a value in many languages.
+     * @param defaultName The default value if no translation was found for the system language or in English.
+     * @return The value of the element for the system language or in English.
+     */
+    private String getTranslationFormJson(JsonElement jsonElement, String defaultName) {
+        Type mapType = (new TypeToken<Map<String, String>>() {
+        }).getType();
         Gson gson = new Gson();
         Map<String, String> map = gson.fromJson(jsonElement, mapType);
 
@@ -112,9 +134,17 @@ public class PoiTypeConverter {
         return defaultName;
     }
 
+    /**
+     * Get the keywords from a JsonElement in the language of the system.
+     *
+     * @param jsonElement The json element containing the keywords in many languages.
+     * @param poiType     The PoiType corresponding to the keywords.
+     * @return The list of keywords for the system language.
+     */
     private List<KeyWord> getKeywordsFormJson(JsonElement jsonElement, PoiType poiType) {
         List<KeyWord> keyWords = new ArrayList<>();
-        Type mapType = new TypeToken<Map<String, List<String>>>() { } .getType();
+        Type mapType = (new TypeToken<Map<String, List<String>>>() {
+        }).getType();
         Gson gson = new Gson();
         Map<String, List<String>> map = gson.fromJson(jsonElement, mapType);
 

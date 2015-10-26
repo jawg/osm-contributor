@@ -59,6 +59,7 @@ public class EditPoiManager {
         editPoi.applyChanges(event.getPoiChanges().getTagsMap());
         editPoi.setUpdated(true);
         poiManager.savePoi(editPoi);
+        poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
         eventBus.post(new PoiChangesApplyEvent());
     }
 
@@ -69,6 +70,7 @@ public class EditPoiManager {
         editPoi.setLongitude(event.getPoiPosition().getLongitude());
         editPoi.setUpdated(true);
         poiManager.savePoi(editPoi);
+        poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
     }
 
     public void onEventAsync(PleaseApplyNodeRefPositionChange event) {
@@ -89,6 +91,7 @@ public class EditPoiManager {
         poi.setUpdated(true);
         poi.applyChanges(event.getPoiChanges().getTagsMap());
         poiManager.savePoi(poi);
+        poiManager.updatePoiTypeLastUse(poi.getType().getId());
         eventBus.post(new PoiChangesApplyEvent());
     }
 
