@@ -45,7 +45,7 @@ import timber.log.Timber;
 public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DATABASE_NAME = "osm-db.sqlite";
-    public static final int CURRENT_VERSION = 6;
+    public static final int CURRENT_VERSION = 7;
 
     private Context context;
 
