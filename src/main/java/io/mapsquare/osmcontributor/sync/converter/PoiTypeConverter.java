@@ -54,7 +54,7 @@ public class PoiTypeConverter {
 
     private PoiType convert(PoiTypeDto dto) {
         PoiType type = new PoiType();
-        type.setName(getTranslationFormJson(dto.getLabels(), dto.getName()));
+        type.setName(getTranslationFormJson(dto.getLabels(), getName(dto.getName())));
         type.setDescription(getTranslationFormJson(dto.getDescription(), ""));
         type.setKeyWords(getKeywordsFormJson(dto.getKeyWords(), type));
         type.setIcon(getName(dto.getName()));
@@ -67,13 +67,16 @@ public class PoiTypeConverter {
             ArrayList<PoiTypeTag> tags = new ArrayList<>(dto.getTags().size());
             type.setTags(tags);
             for (PoiTypeTagDto tagDto : dto.getTags()) {
-                PoiTypeTag poiTypeTag = new PoiTypeTag();
-                poiTypeTag.setPoiType(type);
-                poiTypeTag.setKey(tagDto.getKey());
-                poiTypeTag.setValue(tagDto.getValue());
-                poiTypeTag.setMandatory(tagDto.isMandatory());
-                poiTypeTag.setOrdinal(ordinal++);
-                tags.add(poiTypeTag);
+                // If the tag is implied, do not keep it
+                if (!tagDto.isImplied()) {
+                    PoiTypeTag poiTypeTag = new PoiTypeTag();
+                    poiTypeTag.setPoiType(type);
+                    poiTypeTag.setKey(tagDto.getKey());
+                    poiTypeTag.setValue(tagDto.getValue());
+                    poiTypeTag.setMandatory(tagDto.isMandatory());
+                    poiTypeTag.setOrdinal(ordinal++);
+                    tags.add(poiTypeTag);
+                }
             }
         }
         return type;

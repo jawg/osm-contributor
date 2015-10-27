@@ -32,6 +32,9 @@ public class PoiTypeTagDto {
     @SerializedName("mandatory")
     private boolean mandatory;
 
+    @SerializedName("implied")
+    private boolean implied;
+
     public String getKey() {
         return key;
     }
@@ -54,5 +57,13 @@ public class PoiTypeTagDto {
 
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
+    }
+
+    public boolean isImplied() {
+        return implied;
+    }
+
+    public void setImplied(boolean implied) {
+        this.implied = implied;
     }
 }
