@@ -169,21 +169,31 @@ public class OsmBackend implements Backend {
         } else {
             // Download all the pois in the box who are of one of the PoiType contained in the database
             for (String type : OBJECT_TYPES) {
+                // For each poiTypes, add the corresponding part to the request
                 for (PoiType poiTypeDto : poiManager.loadPoiTypes().values()) {
-                    //values
+                    // Check for tags who have a value and add a ["key"~"value"] string to the request
+                    boolean valid = false;
                     for (PoiTypeTag poiTypeTag : poiTypeDto.getTags()) {
                         if (poiTypeTag.getValue() != null) {
-                            String keyValue = type + "[\"" + poiTypeTag.getKey() + "\"~\"" + poiTypeTag.getValue() + "\"]";
-
-                            cmplReq.append(keyValue);
-
-                            cmplReq.append("(")
-                                    .append(box.getSouth()).append(",")
-                                    .append(box.getWest()).append(",")
-                                    .append(box.getNorth()).append(",")
-                                    .append(box.getEast())
-                                    .append(");");
+                            if (!valid) {
+                                cmplReq.append(type);
+                            }
+                            valid = true;
+                            cmplReq.append("[\"")
+                                    .append(poiTypeTag.getKey())
+                                    .append("\"~\"")
+                                    .append(poiTypeTag.getValue())
+                                    .append("\"]");
                         }
+                    }
+                    // If there was at least one tag with a value, add the box coordinates to the request
+                    if (valid) {
+                        cmplReq.append("(")
+                                .append(box.getSouth()).append(",")
+                                .append(box.getWest()).append(",")
+                                .append(box.getNorth()).append(",")
+                                .append(box.getEast())
+                                .append(");");
                     }
                 }
             }

@@ -164,9 +164,11 @@ public class PoiConverter {
     private PoiType findType(PoiDto dto, List<PoiType> availableTypes) {
         if (dto.getTagsDtoList() != null) {
             for (PoiType type : availableTypes) {
+                int tagsWithValues = 0;
                 int matchingTags = 0;
                 for (PoiTypeTag poiTypeTag : type.getTags()) {
                     if (poiTypeTag.getValue() != null) {
+                        tagsWithValues++;
                         for (TagDto tagDto : dto.getTagsDtoList()) {
                             if (tagDto.getKey().equals(poiTypeTag.getKey())) {
                                 if (tagDto.getValue().equals(poiTypeTag.getValue())) {
@@ -176,7 +178,7 @@ public class PoiConverter {
                         }
                     }
                 }
-                if (matchingTags >= 1) {
+                if (tagsWithValues == matchingTags) {
                     return type;
                 }
             }
