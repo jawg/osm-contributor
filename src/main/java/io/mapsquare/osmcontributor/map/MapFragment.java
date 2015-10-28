@@ -1321,7 +1321,7 @@ public class MapFragment extends Fragment {
             floatingActionButton.setColorPressed(getResources().getColor(R.color.material_blue_grey_800));
             floatingActionButton.setColorNormal(getResources().getColor(R.color.material_blue_500));
             floatingActionButton.setSize(FloatingActionButton.SIZE_MINI);
-            floatingActionButton.setIconDrawable(getResources().getDrawable(R.drawable.marker_white));
+            floatingActionButton.setIconDrawable(getResources().getDrawable(R.drawable.fab_poi));
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
