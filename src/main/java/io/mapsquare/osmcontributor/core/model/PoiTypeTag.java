@@ -53,6 +53,9 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
     @DatabaseField(foreign = true, columnName = POI_TYPE_ID, canBeNull = false)
     private PoiType poiType;
 
+    @DatabaseField(columnName = "POSSIBLE_VALUES")
+    private String possibleValues;
+
     public Long getId() {
         return id;
     }
@@ -101,6 +104,14 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
         this.poiType = poiType;
     }
 
+    public String getPossibleValues() {
+        return possibleValues;
+    }
+
+    public void setPossibleValues(String possibleValues) {
+        this.possibleValues = possibleValues;
+    }
+
     @Override
     public String toString() {
         return "PoiTypeTag{" +
@@ -110,6 +121,7 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
                 ", ordinal=" + ordinal +
                 ", mandatory=" + mandatory +
                 ", poiType=" + (poiType == null ? null : poiType.getId()) +
+                ", possibleValues=" + possibleValues +
                 '}';
     }
 

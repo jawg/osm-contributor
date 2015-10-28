@@ -19,6 +19,7 @@
 package io.mapsquare.osmcontributor.sync.dto.dma;
 
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 public class PoiTypeTagDto {
@@ -34,6 +35,9 @@ public class PoiTypeTagDto {
 
     @SerializedName("implied")
     private boolean implied;
+
+    @SerializedName("possibleValues")
+    private JsonElement possibleValues;
 
     public String getKey() {
         return key;
@@ -65,5 +69,13 @@ public class PoiTypeTagDto {
 
     public void setImplied(boolean implied) {
         this.implied = implied;
+    }
+
+    public JsonElement getPossibleValues() {
+        return possibleValues;
+    }
+
+    public void setPossibleValues(JsonElement possibleValues) {
+        this.possibleValues = possibleValues;
     }
 }

@@ -23,6 +23,8 @@ import android.app.Application;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +63,7 @@ import io.mapsquare.osmcontributor.map.events.ChangesInDB;
 import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.upload.PoiUpdateWrapper;
 import io.mapsquare.osmcontributor.utils.Box;
+import io.mapsquare.osmcontributor.utils.StringUtils;
 import timber.log.Timber;
 
 import static io.mapsquare.osmcontributor.core.database.DatabaseHelper.loadLazyForeignCollection;
@@ -266,11 +269,13 @@ public class PoiManager {
                 List<PoiTypeTag> poiTypeTagsToDelete = poiTypeTagDao.queryByPoiTypeId(poiType.getId());
                 poiTypeTagsToDelete.removeAll(poiType.getTags());
                 poiTypeTagDao.delete(poiTypeTagsToDelete);
+                // Save the PoiTypeTags
                 for (PoiTypeTag poiTypeTag : poiType.getTags()) {
                     poiTypeTag.setPoiType(poiType);
                     poiTypeTagDao.createOrUpdate(poiTypeTag);
                 }
 
+                // Save the KeyWords
                 for (KeyWord keyWord : poiType.getKeyWords()) {
                     keyWord.setPoiType(poiType);
                     keyWordDao.createOrUpdate(keyWord);
@@ -506,16 +511,24 @@ public class PoiManager {
     }
 
     /**
-     * Query for all the existing values of each PoiTag of the List.
+     * Get a Map containing all the suggestions for each tags.
+     * <br/>
+     * Parse the possible values of a PoiTypeTag and if there are none, query the database for all
+     * the values for the tag.
      *
-     * @param keys The list of PoiTags.
+     * @param poiTypeTags The list of PoiTypeTags.
      * @return The map of results.
      */
-    public Map<String, List<String>> suggestionsForTagsValue(List<String> keys) {
+    public Map<String, List<String>> suggestionsForTagsValue(Collection<PoiTypeTag> poiTypeTags) {
         Map<String, List<String>> res = new HashMap<>();
-        for (String key : keys) {
-            List<String> temp = suggestionsForTagValue(key);
-            res.put(key, temp);
+        for (PoiTypeTag poiTypeTag : poiTypeTags) {
+            // If there are no possible values, load all the values in the database for the given tag name
+            if (StringUtils.isEmpty(poiTypeTag.getPossibleValues())) {
+                res.put(poiTypeTag.getKey(), suggestionsForTagValue(poiTypeTag.getKey()));
+            } else {
+                // Split the possible values string to a list
+                res.put(poiTypeTag.getKey(), Arrays.asList(poiTypeTag.getPossibleValues().split(Character.toString((char) 29))));
+            }
         }
         return res;
     }
@@ -604,13 +617,8 @@ public class PoiManager {
      */
     private void loadPoiForEdition(Long id) {
         Poi poi = queryForId(id);
-        List<String> keys = new ArrayList<>();
 
-        for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
-            keys.add(poiTypeTag.getKey());
-        }
-
-        bus.post(new PoiForEditionLoadedEvent(poi, suggestionsForTagsValue(keys)));
+        bus.post(new PoiForEditionLoadedEvent(poi, suggestionsForTagsValue(poi.getType().getTags())));
     }
 
     /**
@@ -626,7 +634,6 @@ public class PoiManager {
         poi.setLatitude(event.getLat());
         poi.setLongitude(event.getLng());
         poi.setType(poiTypeDao.queryForId(event.getPoiType()));
-        List<String> keys = new ArrayList<>();
 
         Map<String, String> defaultTags = new HashMap<>();
         for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
@@ -636,12 +643,7 @@ public class PoiManager {
         }
         poi.applyChanges(defaultTags);
 
-
-        for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
-            keys.add(poiTypeTag.getKey());
-        }
-
-        bus.post(new PoiForEditionLoadedEvent(poi, suggestionsForTagsValue(keys)));
+        bus.post(new PoiForEditionLoadedEvent(poi, suggestionsForTagsValue(poi.getType().getTags())));
     }
 
     /**

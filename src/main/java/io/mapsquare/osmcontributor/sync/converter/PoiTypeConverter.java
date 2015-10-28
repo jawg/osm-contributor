@@ -26,6 +26,7 @@ import org.joda.time.DateTime;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class PoiTypeConverter {
 
     private String language;
     private DateTime dateTime;
+    private Gson gson;
 
     @Inject
     public PoiTypeConverter() {
@@ -50,6 +52,7 @@ public class PoiTypeConverter {
             language = "en";
         }
         dateTime = new DateTime(0);
+        gson = new Gson();
     }
 
     private PoiType convert(PoiTypeDto dto) {
@@ -75,6 +78,7 @@ public class PoiTypeConverter {
                     poiTypeTag.setValue(tagDto.getValue());
                     poiTypeTag.setMandatory(tagDto.isMandatory());
                     poiTypeTag.setOrdinal(ordinal++);
+                    poiTypeTag.setPossibleValues(getPossibleValues(tagDto.getPossibleValues()));
                     tags.add(poiTypeTag);
                 }
             }
@@ -119,18 +123,19 @@ public class PoiTypeConverter {
      * @return The value of the element for the system language or in English.
      */
     private String getTranslationFormJson(JsonElement jsonElement, String defaultName) {
-        Type mapType = (new TypeToken<Map<String, String>>() {
-        }).getType();
-        Gson gson = new Gson();
-        Map<String, String> map = gson.fromJson(jsonElement, mapType);
+        if (jsonElement != null) {
+            Type mapType = (new TypeToken<Map<String, String>>() {
+            }).getType();
+            Map<String, String> map = gson.fromJson(jsonElement, mapType);
 
-        // if there is a translation for the user language
-        if (map.containsKey(language)) {
-            return map.get(language);
-        }
-        // else we look for the english translation
-        if (map.containsKey("en")) {
-            return map.get("en");
+            // if there is a translation for the user language
+            if (map.containsKey(language)) {
+                return map.get(language);
+            }
+            // else we look for the english translation
+            if (map.containsKey("en")) {
+                return map.get("en");
+            }
         }
 
         // if we don't have the translation we use the name from the JSON file
@@ -146,19 +151,43 @@ public class PoiTypeConverter {
      */
     private List<KeyWord> getKeywordsFormJson(JsonElement jsonElement, PoiType poiType) {
         List<KeyWord> keyWords = new ArrayList<>();
-        Type mapType = (new TypeToken<Map<String, List<String>>>() {
-        }).getType();
-        Gson gson = new Gson();
-        Map<String, List<String>> map = gson.fromJson(jsonElement, mapType);
+        if (jsonElement != null) {
+            Type mapType = (new TypeToken<Map<String, List<String>>>() {
+            }).getType();
+            Map<String, List<String>> map = gson.fromJson(jsonElement, mapType);
 
-        // if there is a translation for the user language
-        if (map.containsKey(language)) {
-            List<String> strList = map.get(language);
-            for (String k : strList) {
-                keyWords.add(new KeyWord(k, poiType));
+            // if there is a translation for the user language
+            if (map.containsKey(language)) {
+                List<String> strList = map.get(language);
+                for (String k : strList) {
+                    keyWords.add(new KeyWord(k, poiType));
+                }
             }
         }
 
         return keyWords;
+    }
+
+    /**
+     * Get the possible values from a JsonElement as a String with each values separated by a Group Separator character (ASCII character 29).
+     *
+     * @param jsonElement The jsonElement containing the possible values.
+     * @return The possible values.
+     */
+    private String getPossibleValues(JsonElement jsonElement) {
+        StringBuilder possibleValues = new StringBuilder();
+
+        if (jsonElement != null) {
+            List<String> values = gson.fromJson(jsonElement, (new TypeToken<List<String>>() {
+            }).getType());
+            Iterator<String> it = values.iterator();
+            if (it.hasNext()) {
+                possibleValues.append(it.next());
+                while (it.hasNext()) {
+                    possibleValues.append((char) 29).append(it.next());
+                }
+            }
+        }
+        return possibleValues.toString();
     }
 }
