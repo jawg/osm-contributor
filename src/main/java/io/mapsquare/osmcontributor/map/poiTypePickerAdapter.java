@@ -182,7 +182,7 @@ class poiTypePickerAdapter extends BaseAdapter implements Filterable {
             }
 
             for (int i = 0; i < count; i++) {
-                String filterableString = list.get(i).getKeywordsStr();
+                String filterableString = list.get(i).getKeyWords() + " " + list.get(i).getName();
                 if (filterableString.toLowerCase().contains(filterString) || filterableString.toLowerCase().equals(filterString)) {
                     newValuesList.add(list.get(i));
                 }

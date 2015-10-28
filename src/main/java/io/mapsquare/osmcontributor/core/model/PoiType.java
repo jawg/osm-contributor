@@ -40,6 +40,7 @@ public class PoiType implements Comparable<PoiType> {
     public static final String DESCRIPTION = "DESCRIPTION";
     public static final String USAGE_COUNT = "USAGE_COUNT";
     public static final String LAST_USE = "LAST_USE";
+    public static final String KEYWORDS = "KEYWORDS";
 
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
@@ -65,8 +66,8 @@ public class PoiType implements Comparable<PoiType> {
     @DatabaseField(columnName = LAST_USE, canBeNull = false)
     private DateTime lastUse;
 
-    @ForeignCollectionField
-    private Collection<KeyWord> keyWords;
+    @DatabaseField(columnName = KEYWORDS)
+    private String keyWords;
 
     public int getUsageCount() {
         return usageCount;
@@ -116,15 +117,6 @@ public class PoiType implements Comparable<PoiType> {
         return name;
     }
 
-    //TODO refactor keywords
-    public String getKeywordsStr() {
-        String str = name;
-        for (KeyWord k : keyWords) {
-            str += k.getValue();
-        }
-        return str;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -133,12 +125,12 @@ public class PoiType implements Comparable<PoiType> {
         this.description = description;
     }
 
-    public Collection<KeyWord> getKeyWords() {
-        return keyWords;
+    public void setKeyWords(String keyWords) {
+        this.keyWords = keyWords;
     }
 
-    public void setKeyWords(Collection<KeyWord> keyWords) {
-        this.keyWords = keyWords;
+    public String getKeyWords() {
+        return keyWords;
     }
 
     public DateTime getLastUse() {

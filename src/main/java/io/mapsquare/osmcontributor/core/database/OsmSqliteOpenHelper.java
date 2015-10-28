@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
 import io.mapsquare.osmcontributor.core.model.Comment;
-import io.mapsquare.osmcontributor.core.model.KeyWord;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
@@ -64,7 +63,6 @@ public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, PoiNodeRef.class);
             TableUtils.createTable(connectionSource, Note.class);
             TableUtils.createTable(connectionSource, Comment.class);
-            TableUtils.createTable(connectionSource, KeyWord.class);
         } catch (SQLException e) {
             Timber.e(e, "Error while creating tables");
         }

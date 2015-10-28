@@ -33,7 +33,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.mapsquare.osmcontributor.core.model.KeyWord;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.sync.dto.dma.PoiTypeDto;
@@ -59,7 +58,7 @@ public class PoiTypeConverter {
         PoiType type = new PoiType();
         type.setName(getTranslationFormJson(dto.getLabels(), getName(dto.getName())));
         type.setDescription(getTranslationFormJson(dto.getDescription(), ""));
-        type.setKeyWords(getKeywordsFormJson(dto.getKeyWords(), type));
+        type.setKeyWords(getKeywordsFormJson(dto.getKeyWords()));
         type.setIcon(getName(dto.getName()));
         type.setUsageCount(dto.getUsageCount());
         // When creating a new PoiType from file, put the same date of last use to all new PoiTypes : 1970-01-01T00:00:00Z
@@ -146,26 +145,24 @@ public class PoiTypeConverter {
      * Get the keywords from a JsonElement in the language of the system.
      *
      * @param jsonElement The json element containing the keywords in many languages.
-     * @param poiType     The PoiType corresponding to the keywords.
-     * @return The list of keywords for the system language.
+     * @return The list of keywords.
      */
-    private List<KeyWord> getKeywordsFormJson(JsonElement jsonElement, PoiType poiType) {
-        List<KeyWord> keyWords = new ArrayList<>();
-        if (jsonElement != null) {
-            Type mapType = (new TypeToken<Map<String, List<String>>>() {
-            }).getType();
-            Map<String, List<String>> map = gson.fromJson(jsonElement, mapType);
+    private String getKeywordsFormJson(JsonElement jsonElement) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Type mapType = (new TypeToken<Map<String, List<String>>>() {
+        }).getType();
+        Map<String, List<String>> map = gson.fromJson(jsonElement, mapType);
 
-            // if there is a translation for the user language
-            if (map.containsKey(language)) {
-                List<String> strList = map.get(language);
-                for (String k : strList) {
-                    keyWords.add(new KeyWord(k, poiType));
-                }
+        // if there is a translation for the user language
+        if (map.containsKey(language)) {
+            List<String> strList = map.get(language);
+            for (String keyword : strList) {
+                stringBuilder.append(keyword);
+                stringBuilder.append(" ");
             }
         }
 
-        return keyWords;
+        return stringBuilder.toString();
     }
 
     /**
