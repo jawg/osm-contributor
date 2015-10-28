@@ -153,7 +153,7 @@ public class SyncManager {
         }
 
         if (modified) {
-            bus.postSticky(new PoiTypesLoaded(poiManager.loadPoiTypes()));
+            bus.postSticky(new PoiTypesLoaded(poiManager.getPoiTypesSortedByName()));
         }
     }
 

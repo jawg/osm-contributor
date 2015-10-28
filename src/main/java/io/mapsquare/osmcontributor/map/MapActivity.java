@@ -38,7 +38,6 @@ import android.view.WindowManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -59,8 +58,8 @@ import io.mapsquare.osmcontributor.map.events.PleaseDisplayTutorialEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchMapStyleEvent;
-import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.preferences.MyPreferencesActivity;
@@ -94,7 +93,7 @@ public class MapActivity extends AppCompatActivity {
     @Inject
     SharedPreferences sharedPreferences;
 
-    private Map<Long, PoiType> poiTypes;
+    private     List<PoiType> poiTypes;
 
     private List<PoiTypeFilter> filters = new ArrayList<>();
 
@@ -241,7 +240,7 @@ public class MapActivity extends AppCompatActivity {
         poiTypesHidden = event.getPoiTypeHidden();
 
         filters.clear();
-        for (PoiType poiType : poiTypes.values()) {
+        for (PoiType poiType : poiTypes) {
             Long id = poiType.getId();
             filters.add(new PoiTypeFilter(poiType.getName(), id, poiType.getIcon(), !poiTypesHidden.contains(id)));
         }

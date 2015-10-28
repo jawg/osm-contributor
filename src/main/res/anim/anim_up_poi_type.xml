@@ -19,15 +19,10 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<TextView
-    android:id="@+id/text_view_spinner"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:drawablePadding="8dp"
-    android:fontFamily="sans-serif"
-    android:paddingLeft="16dp"
-    android:paddingRight="4dp"
-    android:textColor="#ff454545"
-    android:textSize="16sp"
-    android:textStyle="bold"/>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <translate
+        android:fromYDelta="75%p"
+        android:toYDelta="0%p"
+        android:fillAfter="true"
+        android:duration="500"/>
+</set>

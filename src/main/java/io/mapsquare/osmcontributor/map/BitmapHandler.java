@@ -49,8 +49,6 @@ public class BitmapHandler {
     public static final String BITMAP_NOTE_ID = "BITMAP_NOTE_ID";
     private LruCache<String, Bitmap> cache;
     private final Map<String, Integer> icons = new HashMap<>();
-    private Map<Long, PoiType> poiTypes;
-
     private final Context context;
 
     @Inject
@@ -137,10 +135,6 @@ public class BitmapHandler {
         icons.put("village", R.drawable.town);
     }
 
-    public void setPoiTypes(Map<Long, PoiType> poiTypes) {
-        this.poiTypes = poiTypes;
-    }
-
     /**
      * Add a bitmap to the memory cache.
      *
@@ -167,16 +161,16 @@ public class BitmapHandler {
      * <br/>
      * Put the marker corresponding to a poiType into a color pin. The color depends of the poi's state.
      *
-     * @param poiTypeId The PoiType id of the desired bitmap.
-     * @param state     State of the Poi.
+     * @param poiType The PoiType of the desired bitmap.
+     * @param state   State of the Poi.
      * @return The marker corresponding to the poiType and the poi state.
      */
-    Bitmap getMarkerBitmap(Long poiTypeId, Poi.State state) {
+    Bitmap getMarkerBitmap(PoiType poiType, Poi.State state) {
 
         try {
 
             Integer markerId = null;
-            Integer iconId = getIconDrawableId(poiTypeId);
+            Integer iconId = getIconDrawableId(poiType);
 
 
             Bitmap markerWrapper;
@@ -236,11 +230,11 @@ public class BitmapHandler {
     /**
      * Get the white icon corresponding to a poiType.
      *
-     * @param poiTypeId The id of the PoiType.
+     * @param poiType the PoiType or null for notes.
      * @return The white icon.
      */
-    public Drawable getIconWhite(Long poiTypeId) {
-        Bitmap myBitmap = BitmapFactory.decodeResource(context.getResources(), poiTypeId == null ? R.drawable.open_book : getIconDrawableId(poiTypeId));
+    public Drawable getIconWhite(PoiType poiType) {
+        Bitmap myBitmap = BitmapFactory.decodeResource(context.getResources(), poiType == null ? R.drawable.open_book : getIconDrawableId(poiType));
         myBitmap = myBitmap.copy(myBitmap.getConfig(), true);
 
         int[] allpixels = new int[myBitmap.getHeight() * myBitmap.getWidth()];
@@ -267,18 +261,11 @@ public class BitmapHandler {
     /**
      * Get the icon drawable id corresponding to the PoiType id.
      *
-     * @param poiTypeId The PoiType id.
+     * @param poiType The PoiType.
      * @return The icon drawable id.
      */
-    public Integer getIconDrawableId(Long poiTypeId) {
-        String icon = null;
-        if (poiTypes != null) {
-            PoiType poiType = poiTypes.get(poiTypeId);
-            if (poiType != null) {
-                icon = poiType.getIcon();
-            }
-        }
-        return getDrawableId(icon);
+    public Integer getIconDrawableId(PoiType poiType) {
+        return getDrawableId(poiType == null ? "" : poiType.getIcon());
     }
 
     /**

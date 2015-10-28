@@ -19,21 +19,20 @@
 package io.mapsquare.osmcontributor.map.events;
 
 import java.util.List;
-import java.util.Map;
 
 import io.mapsquare.osmcontributor.core.model.PoiType;
 
 public class PleaseInitializeDrawer {
 
-    private Map<Long, PoiType> poiTypes;
+    private List<PoiType> poiTypes;
     private List<Long> poiTypeHidden;
 
-    public PleaseInitializeDrawer(Map<Long, PoiType> poiTypes, List<Long> poiTypeHidden) {
+    public PleaseInitializeDrawer(List<PoiType> poiTypes, List<Long> poiTypeHidden) {
         this.poiTypes = poiTypes;
         this.poiTypeHidden = poiTypeHidden;
     }
 
-    public Map<Long, PoiType> getPoiTypes() {
+    public List<PoiType> getPoiTypes() {
         return poiTypes;
     }
 

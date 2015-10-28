@@ -96,7 +96,7 @@ public class TypeManager {
         poiManager.deletePoiType(poiType);
         Timber.i("Removed poi type %d", poiType.getId());
         bus.post(new PoiTypeDeletedEvent(poiType));
-        bus.post(new PoiTypesLoaded(poiManager.loadPoiTypes()));
+        bus.post(new PoiTypesLoaded(poiManager.getPoiTypesSortedByName()));
     }
 
     public void onEventBackgroundThread(InternalRemovePoiTagEvent event) {

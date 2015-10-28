@@ -30,6 +30,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,12 +41,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -141,7 +143,6 @@ import io.mapsquare.osmcontributor.tileslayer.MBTilesLayer;
 import io.mapsquare.osmcontributor.tileslayer.WebSourceTileLayer;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
-import io.mapsquare.osmcontributor.utils.ViewAnimation;
 import timber.log.Timber;
 
 
@@ -153,6 +154,7 @@ public class MapFragment extends Fragment {
     private static final String LEVEL = "level";
     private static final String MARKER_TYPE = "MARKER_TYPE";
     public static final String CREATION_MODE = "CREATION_MODE";
+    public static final String POI_TYPE_ID = "POI_TYPE_ID";
     public static final String SELECTED_MARKER_ID = "SELECTED_MARKER_ID";
     public static final String HIDDEN_POI_TYPE = "HIDDEN_POI_TYPE";
     private static final String DISPLAY_OPEN_NOTES = "DISPLAY_OPEN_NOTES";
@@ -238,11 +240,9 @@ public class MapFragment extends Fragment {
         }
 
         instantiateProgressBar();
-
         instantiateMapView(savedInstanceState);
-
         instantiateLevelBar();
-
+        instantiatePoiTypePicker();
 
         Timber.d("bounding box : %s", getViewBoundingBox());
         Timber.d("bounding box internal : %s", mapView.getBoundingBoxInternal());
@@ -256,7 +256,7 @@ public class MapFragment extends Fragment {
         RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        p.addRule(RelativeLayout.BELOW, R.id.poi_type_spinner_wrapper);
+        p.addRule(RelativeLayout.BELOW, R.id.poi_type_value_wrapper);
         progressBar.setVisibility(View.GONE);
         progressBar.setLayoutParams(p);
         progressbarWrapper.addView(progressBar);
@@ -405,7 +405,7 @@ public class MapFragment extends Fragment {
             public void onTapMarker(MapView mapView, Marker marker) {
                 if (marker instanceof LocationMarker) {
                     LocationMarker locationMarker = (LocationMarker) marker;
-                    if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.CREATION && mapMode != MapMode.WAY_EDITION && !isTuto) {
+                    if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION && mapMode != MapMode.WAY_EDITION && !isTuto) {
                         switch (locationMarker.getType()) {
                             case POI:
                                 onPoiMarkerClick(locationMarker);
@@ -470,7 +470,7 @@ public class MapFragment extends Fragment {
     void onPoiMarkerClick(LocationMarker marker) {
         unselectIcon();
         markerSelected = (marker);
-        Bitmap bitmap = bitmapHandler.getMarkerBitmap(markerSelected.getPoi().getType().getId(), Poi.computeState(true, false, false));
+        Bitmap bitmap = bitmapHandler.getMarkerBitmap(markerSelected.getPoi().getType(), Poi.computeState(true, false, false));
         if (bitmap != null) {
             markerSelected.setIcon(new Icon(new BitmapDrawable(getResources(), bitmap)));
         }
@@ -515,6 +515,8 @@ public class MapFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null) {
             Integer creationModeInt = savedInstanceState.getInt(CREATION_MODE);
+            savePoiTypeId = savedInstanceState.getLong(POI_TYPE_ID);
+
             markerSelectedId = savedInstanceState.getLong(SELECTED_MARKER_ID, -1);
 
             mapMode = MapMode.values()[creationModeInt];
@@ -580,6 +582,7 @@ public class MapFragment extends Fragment {
         outState.putParcelable(LOCATION, mapView.getCenter());
         outState.putFloat(ZOOM_LEVEL, getZoomLevel());
         outState.putInt(CREATION_MODE, mapMode.ordinal());
+        outState.putLong(POI_TYPE_ID, poiTypeSelected == null ? -1 : poiTypeSelected.getId());
         outState.putDouble(LEVEL, currentLevel);
         outState.putBoolean(DISPLAY_OPEN_NOTES, displayOpenNotes);
         outState.putBoolean(DISPLAY_CLOSED_NOTES, displayClosedNotes);
@@ -705,30 +708,28 @@ public class MapFragment extends Fragment {
 
     private void confirmPosition() {
         LatLng newPoiPosition;
+        LatLng pos;
 
         switch (mapMode) {
-            case CREATION:
+            case POI_CREATION:
 
-                PoiType poiType = (PoiType) spinner.getSelectedItem();
-                LatLng pos = mapView.getCenter();
+                pos = mapView.getCenter();
+                switchMode(MapMode.DEFAULT);
 
-                if (poiType != null) {
+                Intent intent = new Intent(getActivity(), EditPoiActivity.class);
+                intent.putExtra(EditPoiActivity.CREATION_MODE, true);
+                intent.putExtra(EditPoiActivity.POI_LAT, pos.getLatitude());
+                intent.putExtra(EditPoiActivity.POI_LNG, pos.getLongitude());
+                intent.putExtra(EditPoiActivity.POI_LEVEL, isVectorial ? currentLevel : 0d);
+                intent.putExtra(EditPoiActivity.POI_TYPE, poiTypeSelected.getId());
 
-                    switchMode(MapMode.DEFAULT);
+                getActivity().startActivityForResult(intent, EditPoiActivity.EDIT_POI_ACTIVITY_CODE);
+                break;
 
-                    Intent intent = new Intent(getActivity(), EditPoiActivity.class);
-                    intent.putExtra(EditPoiActivity.CREATION_MODE, true);
-                    intent.putExtra(EditPoiActivity.POI_LAT, pos.getLatitude());
-                    intent.putExtra(EditPoiActivity.POI_LNG, pos.getLongitude());
-                    intent.putExtra(EditPoiActivity.POI_LEVEL, isVectorial ? currentLevel : 0d);
-                    intent.putExtra(EditPoiActivity.POI_TYPE, poiType.getId());
-
-                    getActivity().startActivityForResult(intent, EditPoiActivity.EDIT_POI_ACTIVITY_CODE);
-                } else {
-                    // adding a note
-                    NoteCommentDialogFragment dialog = NoteCommentDialogFragment.newInstance(pos.getLatitude(), pos.getLongitude());
-                    dialog.show(getActivity().getFragmentManager(), "dialog");
-                }
+            case NOTE_CREATION:
+                pos = mapView.getCenter();
+                NoteCommentDialogFragment dialog = NoteCommentDialogFragment.newInstance(pos.getLatitude(), pos.getLongitude());
+                dialog.show(getActivity().getFragmentManager(), "dialog");
                 break;
 
             case POI_POSITION_EDITION:
@@ -774,7 +775,6 @@ public class MapFragment extends Fragment {
             } else {
                 actionBar.setHomeAsUpIndicator(R.drawable.back);
             }
-
         }
     }
 
@@ -794,9 +794,6 @@ public class MapFragment extends Fragment {
             closeTuto();
         } else {
             switch (mapMode) {
-                case CREATION:
-                    switchMode(MapMode.DEFAULT);
-                    break;
 
                 case POI_POSITION_EDITION:
                     mapView.addMarker(markerSelected);
@@ -815,6 +812,9 @@ public class MapFragment extends Fragment {
 
                 case DETAIL_POI:
                 case DETAIL_NOTE:
+                case POI_CREATION:
+                case NOTE_CREATION:
+                case TYPE_PICKER:
                     switchMode(MapMode.DEFAULT);
                     break;
 
@@ -863,20 +863,14 @@ public class MapFragment extends Fragment {
         editNodeRefPosition.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
 
-        MapMode.MapModeProperties properties = mode.getProperties();
+        final MapMode.MapModeProperties properties = mode.getProperties();
 
         if (properties.isUnSelectIcon()) {
             unselectIcon();
         }
 
         showFloatingButtonAddPoi(properties.isShowAddPoiFab());
-
-        if (properties.isShowSpinner()) {
-            ViewAnimation.animate(spinnerWrapper, true);
-        } else {
-            spinnerWrapper.setVisibility(View.GONE);
-        }
-
+        displayPoiTypePicker(properties.isShowListPicker(), properties.isShowSpinner());
         displayPoiDetailBanner(properties.isShowPoiBanner());
         displayNoteDetailBanner(properties.isShowNodeBanner());
 
@@ -893,15 +887,21 @@ public class MapFragment extends Fragment {
 
             case DETAIL_POI:
             case DETAIL_NOTE:
+            case TYPE_PICKER:
                 break;
 
-            case CREATION:
+            case POI_CREATION:
+                animationPoiCreation();
+                break;
+
+            case NOTE_CREATION:
+                noteSelected();
                 animationPoiCreation();
                 break;
 
             case POI_POSITION_EDITION:
                 // This marker is being moved
-                bitmap = bitmapHandler.getMarkerBitmap(markerSelected.getPoi().getType().getId(), Poi.computeState(false, true, false));
+                bitmap = bitmapHandler.getMarkerBitmap(markerSelected.getPoi().getType(), Poi.computeState(false, true, false));
                 creationPin.setImageBitmap(bitmap);
                 break;
 
@@ -919,6 +919,7 @@ public class MapFragment extends Fragment {
                 break;
 
             default:
+                poiTypeEditText.setText("");
                 floatingMenuAddFewValues.collapse();
                 break;
         }
@@ -988,7 +989,7 @@ public class MapFragment extends Fragment {
 
             switch (markerSelected.getType()) {
                 case POI:
-                    bitmap = bitmapHandler.getMarkerBitmap(markerSelected.getPoi().getType().getId(), Poi.computeState(false, false, markerSelected.getPoi().getUpdated()));
+                    bitmap = bitmapHandler.getMarkerBitmap(markerSelected.getPoi().getType(), Poi.computeState(false, false, markerSelected.getPoi().getUpdated()));
                     break;
 
                 case NOTE:
@@ -1106,10 +1107,6 @@ public class MapFragment extends Fragment {
     private List<Overlay> overlays = new ArrayList<>();
     Set<VectorialObject> vectorialObjectsEdition = new HashSet<>();
 
-    public boolean isVectorialObjEditionLoaded() {
-        return vectorialObjectsEdition.isEmpty();
-    }
-
     //get data from overpass
     private void downloadAreaForEdition() {
         if (getZoomLevel() >= zoomVectorial) {
@@ -1179,14 +1176,6 @@ public class MapFragment extends Fragment {
     @InjectView(R.id.add_poi_few_values)
     FloatingActionsMenu floatingMenuAddFewValues;
 
-    @InjectView(R.id.poi_type_spinner)
-    Spinner spinner;
-
-    private SpinnerAdapter spinnerAdapter;
-
-    @InjectView(R.id.poi_type_spinner_wrapper)
-    RelativeLayout spinnerWrapper;
-
     @InjectView(R.id.floating_btn_wrapper)
     RelativeLayout floatingBtnWrapper;
 
@@ -1204,27 +1193,40 @@ public class MapFragment extends Fragment {
 
     public void onEventMainThread(NewPoiTypeSelected event) {
         Timber.d("Received event NewPoiTypeSelected");
-        PoiType poiType = (PoiType) spinner.getSelectedItem();
-        poiTypeSelected(poiType);
+        if (isTuto) {
+            nextTutoStep();
+        }
+        poiTypeSelected(event.getPoiType());
+        switchMode(MapMode.POI_CREATION);
     }
 
     private void poiTypeSelected(PoiType poiType) {
+        poiTypeTextView.setText(poiType.getName());
         poiTypeSelected = poiType;
+        savePoiTypeId = 0;
         Bitmap bitmap;
 
-        if (poiType != null) {
-            bitmap = bitmapHandler.getMarkerBitmap(poiType.getId(), Poi.computeState(false, true, false));
-            if (poiTypeHidden.contains(poiType.getId())) {
-                poiTypeHidden.remove(poiType.getId());
-                applyPoiFilter();
-            }
-        } else { // Comment type has been selected
-            bitmap = bitmapHandler.getNoteBitmap(Note.computeState(null, false, true));
+        bitmap = bitmapHandler.getMarkerBitmap(poiType, Poi.computeState(false, true, false));
+        if (poiTypeHidden.contains(poiType.getId())) {
+            poiTypeHidden.remove(poiType.getId());
+            applyPoiFilter();
+        }
 
+        if (presenter.getNumberOfPoiTypes() > maxPoiType) {
+            editPoiTypeBtn.setVisibility(View.VISIBLE);
         }
 
         creationPin.setImageBitmap(bitmap);
         creationPin.setVisibility(View.VISIBLE);
+    }
+
+    private void noteSelected() {
+        editPoiTypeBtn.setVisibility(View.GONE);
+        poiTypeTextView.setText(getResources().getString(R.string.note));
+        Bitmap bitmap = bitmapHandler.getNoteBitmap(Note.computeState(null, false, true));
+        creationPin.setImageBitmap(bitmap);
+        creationPin.setVisibility(View.VISIBLE);
+        poiTypeSelected = null;
     }
 
     private void showFloatingButtonAddPoi(boolean show) {
@@ -1275,12 +1277,10 @@ public class MapFragment extends Fragment {
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    switchMode(MapMode.CREATION);
-                    //the note is the last one
-                    spinner.setSelection(spinner.getCount() - 1);
-                    poiTypeSelected(null);
+                    switchMode(MapMode.NOTE_CREATION);
                     floatingMenuAddFewValues.collapse();
                     if (isTuto) {
+                        nextTutoStep();
                         nextTutoStep();
                     }
                 }
@@ -1296,14 +1296,12 @@ public class MapFragment extends Fragment {
                 floatingActionButton.setColorPressed(getResources().getColor(R.color.material_blue_grey_800));
                 floatingActionButton.setColorNormal(getResources().getColor(R.color.material_blue_500));
                 floatingActionButton.setSize(FloatingActionButton.SIZE_MINI);
-                floatingActionButton.setIconDrawable(bitmapHandler.getIconWhite(poiType.getId()));
+                floatingActionButton.setIconDrawable(bitmapHandler.getIconWhite(poiType));
                 floatingActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (configManager.hasPoiAddition()) {
-                            switchMode(MapMode.CREATION);
-                            int pos = ((SpinnerAdapter) spinner.getAdapter()).getPoiTypePosition(poiType.getId());
-                            spinner.setSelection(pos);
+                            switchMode(MapMode.POI_CREATION);
                             poiTypeSelected(poiType);
                             floatingMenuAddFewValues.collapse();
                             if (isTuto) {
@@ -1328,7 +1326,7 @@ public class MapFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     if (configManager.hasPoiAddition()) {
-                        switchMode(MapMode.CREATION);
+                        switchMode(MapMode.TYPE_PICKER);
                         if (isTuto) {
                             nextTutoStep();
                         }
@@ -1339,39 +1337,20 @@ public class MapFragment extends Fragment {
             });
             floatingMenuAddFewValues.addButton(floatingActionButton);
         }
+
+        // the floating btn and tthe poitypes are loaded we can now start the tuto
+        displayTutorial(false);
     }
 
     protected void loadPoiTypeSpinner() {
-        if (spinnerAdapter == null) {
-            spinnerAdapter = new SpinnerAdapter(getActivity(), bitmapHandler);
-            spinner.setAdapter(spinnerAdapter);
-
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    eventBus.post(new NewPoiTypeSelected());
+        poiTypePickerAdapter.addAll(presenter.getPoiTypes());
+        if (savePoiTypeId != 0) {
+            for (PoiType poiType : presenter.getPoiTypes()) {
+                if (poiType.getId().equals(savePoiTypeId)) {
+                    poiTypeSelected(poiType);
                 }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-
-                }
-            });
+            }
         }
-
-        //like this the only object the user can create will be the note
-        if (configManager.hasPoiAddition()) {
-            spinnerAdapter.clear();
-            spinnerAdapter.addItems(presenter.getPoiTypes());
-        }
-        //if there is only one poitype disable the spinner
-        if (spinnerAdapter.getCount() == 1) {
-            spinner.setEnabled(false);
-        } else {
-            spinner.setEnabled(true);
-        }
-        spinnerAdapter.notifyDataSetChanged();
-
     }
 
     /*-----------------------------------------------------------
@@ -1430,7 +1409,7 @@ public class MapFragment extends Fragment {
         if (display) {
 
             if (markerSelected != null) {
-                eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(presenter.getPoiType(markerSelected.getPoi().getType().getId()).getName(), markerSelected.getPoi().getName()));
+                eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(markerSelected.getPoi().getType().getName(), markerSelected.getPoi().getName()));
             }
 
             if (poiDetailWrapper.getVisibility() != View.VISIBLE) {
@@ -1679,6 +1658,133 @@ public class MapFragment extends Fragment {
 
 
     /*-----------------------------------------------------------
+    * PoiType picker
+    *---------------------------------------------------------*/
+
+    @InjectView(R.id.poi_type_value)
+    EditText poiTypeEditText;
+
+    @InjectView(R.id.poi_type)
+    TextView poiTypeTextView;
+
+    @InjectView(R.id.edit_poi_type)
+    ImageButton editPoiTypeBtn;
+
+    @InjectView(R.id.autocomplete_list)
+    ListView poiTypeListView;
+
+    @InjectView(R.id.poi_type_value_wrapper)
+    RelativeLayout poiTypeHeaderWrapper;
+
+    @OnClick(R.id.edit_poi_type)
+    public void onEditPoiTypeWrapperClick() {
+        editPoiType();
+    }
+
+    @OnClick(R.id.poi_type_value_wrapper)
+    public void onEditPoiTypeClick() {
+        editPoiType();
+    }
+
+    public void editPoiType() {
+        if (mapMode == MapMode.POI_CREATION) {
+            switchMode(MapMode.TYPE_PICKER);
+        }
+    }
+
+    private long savePoiTypeId = 0;
+    private poiTypePickerAdapter poiTypePickerAdapter;
+    private List<PoiType> autocompletePoiTypeValues = new ArrayList<>();
+
+    private void instantiatePoiTypePicker() {
+        poiTypePickerAdapter = new poiTypePickerAdapter(getActivity(), autocompletePoiTypeValues, poiTypeEditText, eventBus, bitmapHandler);
+        poiTypeListView.setAdapter(poiTypePickerAdapter);
+
+        // Add Text Change Listener to EditText
+        poiTypeEditText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Call back the Adapter with current character to Filter
+                poiTypePickerAdapter.getFilter().filter(s.toString());
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
+    private void displayPoiTypePicker(boolean showPicker, boolean showSpinner) {
+        if (showPicker) {
+            if (poiTypeListView.getVisibility() != View.VISIBLE) {
+                Animation bottomUp = AnimationUtils.loadAnimation(getActivity(),
+                        R.anim.anim_up_poi_type);
+
+                if (android.os.Build.VERSION.SDK_INT >= 21) {
+                    bottomUp.setInterpolator(getActivity(), android.R.interpolator.linear_out_slow_in);
+                }
+
+                bottomUp.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        poiTypeEditText.setVisibility(View.VISIBLE);
+                        poiTypeTextView.setVisibility(View.GONE);
+                        editPoiTypeBtn.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+
+                poiTypeListView.startAnimation(bottomUp);
+                poiTypeListView.setVisibility(View.VISIBLE);
+
+                if (poiTypeTextView.getVisibility() == View.GONE) {
+                    Animation slideTop = AnimationUtils.loadAnimation(getActivity(),
+                            R.anim.slide_top_annimation);
+                    poiTypeHeaderWrapper.startAnimation(slideTop);
+                    poiTypeHeaderWrapper.setVisibility(View.VISIBLE);
+                    poiTypeEditText.setVisibility(View.VISIBLE);
+                }
+            }
+        } else if (showSpinner) {
+            if (poiTypeListView.getVisibility() == View.VISIBLE) {
+                Animation upBottom = AnimationUtils.loadAnimation(getActivity(),
+                        R.anim.anim_down_poi_type);
+                if (android.os.Build.VERSION.SDK_INT >= 21) {
+                    upBottom.setInterpolator(getActivity(), android.R.interpolator.linear_out_slow_in);
+                }
+                poiTypeListView.startAnimation(upBottom);
+            }
+            poiTypeListView.setVisibility(View.GONE);
+            poiTypeEditText.setVisibility(View.GONE);
+            // if we have few value we hide the editPoiType btn
+            if (presenter.getNumberOfPoiTypes() > maxPoiType) {
+                editPoiTypeBtn.setVisibility(View.VISIBLE);
+            }
+            poiTypeTextView.setVisibility(View.VISIBLE);
+        } else {
+            poiTypeListView.setVisibility(View.GONE);
+            poiTypeEditText.setVisibility(View.GONE);
+            poiTypeTextView.setVisibility(View.GONE);
+            editPoiTypeBtn.setVisibility(View.GONE);
+        }
+    }
+
+
+    /*-----------------------------------------------------------
     * ADDRESS
     *---------------------------------------------------------*/
     @InjectView(R.id.addressView)
@@ -1759,7 +1865,6 @@ public class MapFragment extends Fragment {
     /*-----------------------------------------------------------
     * TUTORIAL
     *---------------------------------------------------------*/
-
     public static final String TUTORIAL_CREATION_FINISH = "TUTORIAL_CREATION_FINISH";
     private ShowcaseView showcaseView;
     private int showcaseCounter = 0;
@@ -1798,7 +1903,7 @@ public class MapFragment extends Fragment {
                     .setStyle(R.style.CustomShowcaseTheme)
                     .setContentTitle(getString(R.string.tuto_title_press_create))
                     .setContentText(getString(R.string.tuto_text_press_create))
-                    .setTarget(new ViewTarget(floatingMenuAddFewValues.getChildAt(0)))
+                    .setTarget(new ViewTarget(floatingMenuAddFewValues.getmAddButton()))
                     .setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -1809,11 +1914,14 @@ public class MapFragment extends Fragment {
                                                         break;
 
                                                     case 1:
-                                                        floatingMenuAddFewValues.getChildAt(0).performClick();
+                                                        floatingMenuAddFewValues.getChildAt(1).performClick();
                                                         break;
 
                                                     case 2:
-                                                        floatingMenuAddFewValues.getChildAt(0).performClick();
+                                                        //chose the first type
+                                                        poiTypeSelected(presenter.getPoiTypes().iterator().next());
+                                                        switchMode(MapMode.POI_CREATION);
+                                                        nextTutoStep();
                                                         break;
 
                                                     case 3:

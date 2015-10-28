@@ -80,6 +80,10 @@ public class FloatingActionsMenu extends ViewGroup {
         void onMenuCollapsed();
     }
 
+    public AddFloatingActionButton getmAddButton() {
+        return mAddButton;
+    }
+
     public FloatingActionsMenu(Context context) {
         this(context, null);
     }

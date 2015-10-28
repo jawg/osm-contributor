@@ -19,22 +19,22 @@
 package io.mapsquare.osmcontributor.core.events;
 
 
-import java.util.Map;
+import java.util.List;
 
 import io.mapsquare.osmcontributor.core.model.PoiType;
 
 public class PoiTypesLoaded {
-    private Map<Long, PoiType> poiTypes;
+    private List<PoiType> poiTypes;
 
-    public PoiTypesLoaded(Map<Long, PoiType> poiTypes) {
+    public PoiTypesLoaded(List<PoiType> poiTypes) {
         this.poiTypes = poiTypes;
     }
 
-    public Map<Long, PoiType> getPoiTypes() {
+    public List<PoiType> getPoiTypes() {
         return poiTypes;
     }
 
-    public void setPoiTypes(Map<Long, PoiType> poiTypes) {
+    public void setPoiTypes(List<PoiType> poiTypes) {
         this.poiTypes = poiTypes;
     }
 }

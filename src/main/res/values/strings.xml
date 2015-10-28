@@ -58,6 +58,7 @@
     <string name="edit_way_title">Edit way</string>
     <string name="edit_noderef_position_title">Edit position</string>
     <string name="poi_creation">POI Creation</string>
+    <string name="note_creation">Note Creation</string>
     <string name="delete_poi">Delete Poi</string>
     <string name="add_poi">Add Poi</string>
     <string name="delete_poi_title">Delete Poi</string>
@@ -71,6 +72,8 @@
     <string name="download_in_progress">Download in progress of all pois and notes of the displayed zone</string>
     <string name="switch_style">Satellite view</string>
     <string name="zoom_more">You need to zoom more in order to download Pois</string>
+    <string name="search_poitype_hint">Search a Poi type</string>
+
 
     <!-- Strings related to login -->
     <string name="prompt_login">Login</string>

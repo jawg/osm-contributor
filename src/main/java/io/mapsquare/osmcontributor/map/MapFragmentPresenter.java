@@ -25,10 +25,7 @@ import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.overlay.Icon;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -78,17 +75,17 @@ public class MapFragmentPresenter {
         eventBus.unregister(this);
     }
 
-    private Map<Long, PoiType> poiTypes = null;
+    private List<PoiType> poiTypes = null;
 
     public int getNumberOfPoiTypes() {
         return poiTypes != null ? poiTypes.size() : 0;
     }
 
-    public Collection<PoiType> getPoiTypes() {
-        return poiTypes == null ? Collections.<PoiType>emptyList() : poiTypes.values();
+    public List<PoiType> getPoiTypes() {
+        return poiTypes == null ? new ArrayList<PoiType>() : poiTypes;
     }
 
-    public PoiType getPoiType(Long id) {
+    public PoiType getPoiType(int id) {
         return poiTypes.get(id);
     }
 
@@ -98,11 +95,9 @@ public class MapFragmentPresenter {
         setForceRefreshPoi();
         setForceRefreshNotes();
         loadPoisIfNeeded();
-        mapFragment.getBitmapHandler().setPoiTypes(poiTypes);
         eventBus.post(new PleaseInitializeDrawer(poiTypes, mapFragment.getPoiTypeHidden()));
         mapFragment.loadPoiTypeSpinner();
         mapFragment.loadPoiTypeFloatingBtn();
-        mapFragment.displayTutorial(false);
         eventBus.removeStickyEvent(event);
     }
 
@@ -214,12 +209,12 @@ public class MapFragmentPresenter {
 
                 //update the detail banner data
                 if (selected && mapFragment.getMapMode() == MapMode.DETAIL_POI) {
-                    eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(getPoiType(poi.getType().getId()).getName(), poi.getName()));
+                    eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(poi.getType().getName(), poi.getName()));
                 }
             }
 
             // Draw the marker in the right color
-            Bitmap bitmap = mapFragment.getBitmapHandler().getMarkerBitmap(poi.getType() != null ? poi.getType().getId() : null, Poi.computeState(selected, false, poi.getUpdated()));
+            Bitmap bitmap = mapFragment.getBitmapHandler().getMarkerBitmap(poi.getType(), Poi.computeState(selected, false, poi.getUpdated()));
 
             if (bitmap != null) {
                 locationMarker.setIcon(new Icon(new BitmapDrawable(mapFragment.getResources(), bitmap)));
@@ -289,7 +284,7 @@ public class MapFragmentPresenter {
 
         }
 
-        if ((mapFragment.getMapMode() == MapMode.DEFAULT || mapFragment.getMapMode() == MapMode.CREATION)) {
+        if ((mapFragment.getMapMode() == MapMode.DEFAULT || mapFragment.getMapMode() == MapMode.POI_CREATION)) {
             mapFragment.reselectMarker();
 
         }

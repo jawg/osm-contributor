@@ -111,7 +111,7 @@ public class SpinnerAdapter extends BaseAdapter {
         if (mItems.size() == position && !FlavorUtils.isPoiStorage()) {
             holder.getTextView().setCompoundDrawablesWithIntrinsicBounds(R.drawable.open_book, 0, 0, 0);
         } else {
-            Integer resourceId = bitmapHandler.getIconDrawableId(mItems.get(position).getId());
+            Integer resourceId = bitmapHandler.getIconDrawableId(mItems.get(position));
             holder.getTextView().setCompoundDrawablesWithIntrinsicBounds(resourceId, 0, 0, 0);
         }
 

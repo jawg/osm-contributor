@@ -116,6 +116,15 @@ public class PoiType implements Comparable<PoiType> {
         return name;
     }
 
+    //TODO refactor keywords
+    public String getKeywordsStr() {
+        String str = name;
+        for (KeyWord k : keyWords) {
+            str += k.getValue();
+        }
+        return str;
+    }
+
     public String getDescription() {
         return description;
     }

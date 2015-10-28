@@ -37,25 +37,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/zoom_level"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <RelativeLayout
-        android:id="@+id/poi_type_spinner_wrapper"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:visibility="gone">
-
-        <Spinner
-            android:id="@+id/poi_type_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:padding="15dp"/>
-    </RelativeLayout>
 
     <TextView
         android:id="@+id/addressView"
@@ -63,26 +44,17 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/poi_type_spinner_wrapper"
+        android:layout_below="@+id/poi_type_value_wrapper"
         android:layout_margin="10dp"
         android:background="@android:drawable/dialog_holo_light_frame"
         android:padding="15dp"
         android:visibility="invisible"/>
+    $*
 
-    <io.mapsquare.osmcontributor.map.vectorial.LevelBar
-        android:id="@+id/level_bar"
-        style="@android:style/Widget.Holo.SeekBar"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="-80dp"
-        android:layout_marginStart="-80dp"
-        android:layout_marginTop="50dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:rotation="270"
-        android:splitTrack="false"
-        android:visibility="invisible"/>
+    <TextView
+        android:id="@+id/zoom_level"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <ImageButton
         android:id="@+id/pin"
@@ -114,6 +86,73 @@
         android:text="@string/osm_copyright"/>
 
     <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:background="@android:color/white"
+        android:id="@+id/poi_type_value_wrapper">
+
+        <TextView
+            android:gravity="center"
+            android:id="@+id/poi_type"
+            android:layout_toLeftOf="@+id/edit_poi_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_centerInParent="true"
+            android:ellipsize="end"
+            android:visibility="gone"/>
+
+        <EditText
+            android:singleLine="true"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_centerVertical="true"
+            android:id="@+id/poi_type_value"
+            android:layout_toLeftOf="@+id/edit_poi_type"
+            android:imeOptions="flagNoExtractUi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:hint="@string/search_poitype_hint"
+            android:drawableRight="@drawable/magnify"
+            android:visibility="gone"/>
+
+        <ImageButton
+            android:id="@+id/edit_poi_type"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:padding="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/chevron_down"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+    <ListView
+        android:background="@android:color/white"
+        android:id="@+id/autocomplete_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/poi_type_value_wrapper"
+        android:visibility="gone"
+       />
+
+    <io.mapsquare.osmcontributor.map.vectorial.LevelBar
+        android:id="@+id/level_bar"
+        style="@android:style/Widget.Holo.SeekBar"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="-80dp"
+        android:layout_marginStart="-80dp"
+        android:layout_marginTop="50dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:rotation="270"
+        android:splitTrack="false"
+        android:visibility="invisible"/>
+
+    <RelativeLayout
         android:id="@+id/note_detail_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -140,7 +179,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"/>
     </RelativeLayout>
-
 
     <com.getbase.floatingactionbutton.FloatingActionButton
         android:id="@+id/edit_way_elemnt_position"

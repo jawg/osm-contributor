@@ -18,5 +18,16 @@
  */
 package io.mapsquare.osmcontributor.map.events;
 
+import io.mapsquare.osmcontributor.core.model.PoiType;
+
 public class NewPoiTypeSelected {
+    private final PoiType poiType;
+
+    public NewPoiTypeSelected(PoiType poiType) {
+        this.poiType = poiType;
+    }
+
+    public PoiType getPoiType() {
+        return poiType;
+    }
 }

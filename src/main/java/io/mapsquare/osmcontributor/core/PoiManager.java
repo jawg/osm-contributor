@@ -143,7 +143,7 @@ public class PoiManager {
     }
 
     public void onEventAsync(PleaseLoadPoiTypes event) {
-        bus.postSticky(new PoiTypesLoaded(loadPoiTypes()));
+        bus.postSticky(new PoiTypesLoaded(getPoiTypesSortedByName()));
     }
 
     // ********************************

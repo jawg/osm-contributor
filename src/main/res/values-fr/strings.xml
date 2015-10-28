@@ -56,6 +56,7 @@
     <string name="edit_way_title">Edition de chemins</string>
     <string name="edit_noderef_position_title">Edition de position</string>
     <string name="poi_creation">Création de poi</string>
+    <string name="note_creation">Création de note</string>
     <string name="delete_poi">Supprimer le poi</string>
     <string name="add_poi">Ajouter un Poi</string>
     <string name="delete_poi_title">Suppression de poi</string>
@@ -69,6 +70,7 @@
     <string name="download_in_progress">Tous les pois et notes de la zone affichée sont en cours de rechargement</string>
     <string name="switch_style">Vue satellite</string>
     <string name="zoom_more">Vous devez zoomer plus pour pouvoir télécharger les données</string>
+    <string name="search_poitype_hint">Chercher un type de Poi</string>
 
     <!-- Strings related to login -->
     <string name="prompt_login">Identifiant</string>

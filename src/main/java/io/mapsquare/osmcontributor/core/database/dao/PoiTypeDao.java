@@ -67,7 +67,7 @@ public class PoiTypeDao extends RuntimeExceptionDao<PoiType, Long> {
             @Override
             public List<PoiType> call() throws Exception {
                 return queryBuilder()
-                        .orderBy(PoiType.NAME, true)
+                        .orderByRaw(PoiType.NAME + " COLLATE NOCASE")
                         .query();
             }
         });
