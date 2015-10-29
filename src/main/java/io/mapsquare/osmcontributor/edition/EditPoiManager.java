@@ -23,6 +23,9 @@ import android.app.Application;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
@@ -32,10 +35,14 @@ import io.mapsquare.osmcontributor.core.events.PleaseCreatePoiEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseDeletePoiEvent;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
+import io.mapsquare.osmcontributor.core.model.PoiTag;
+import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyNodeRefPositionChange;
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyPoiChanges;
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyPoiPositionChange;
 import io.mapsquare.osmcontributor.edition.events.PoiChangesApplyEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseCreateNoTagPoiEvent;
+import io.mapsquare.osmcontributor.map.events.PoiNoTypeCreated;
 import timber.log.Timber;
 
 public class EditPoiManager {
@@ -108,5 +115,33 @@ public class EditPoiManager {
             poi.setToDelete(true);
             poiManager.savePoi(poi);
         }
+    }
+
+    public void onEventAsync(PleaseCreateNoTagPoiEvent event) {
+
+        Poi poi = new Poi();
+        LatLng latLng = event.getLatLng();
+
+        poi.setLatitude(latLng.getLatitude());
+        poi.setLongitude(latLng.getLongitude());
+        poi.setType(event.getPoiType());
+
+        List<PoiTag> defaultTags = new ArrayList<>();
+        for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
+            if (poiTypeTag.getValue() != null) { // default tags should be set in the corresponding POI
+                PoiTag poiTag = new PoiTag();
+                poiTag.setKey(poiTypeTag.getKey());
+                poiTag.setValue(poiTypeTag.getValue());
+                defaultTags.add(poiTag);
+            }
+        }
+
+        poi.setTags(defaultTags);
+        poi.setUpdated(true);
+
+        poiManager.savePoi(poi);
+        poiManager.updatePoiTypeLastUse(event.getPoiType().getId());
+
+        eventBus.post(new PoiNoTypeCreated());
     }
 }

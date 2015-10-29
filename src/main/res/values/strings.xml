@@ -108,8 +108,8 @@
     <string name="tuto_text_poi_or_note">Choose to add a poi or a note</string>
     <string name="tuto_text_swipe_for_position">Swipe the map to set the position of your new point</string>
     <string name="tuto_text_confirm_position_creation">Click to confirm the position, any return will discard your creation.</string>
-    <string name="tuto_text_cancel_creation">This button or the back one will discard your changes. Nothing will be sent to OSM.</string>
-    <string name="tuto_text_confirm_creation">Click to finalize your creation or edition, your changes will be sent to OSM.</string>
+    <string name="tuto_text_cancel_creation">This button or the back one will discard your changes.</string>
+    <string name="tuto_text_confirm_creation">Click to finalize your creation or edition.</string>
     <string name="replay_tuto">Replay tutorial</string>
 
     <!-- note -->

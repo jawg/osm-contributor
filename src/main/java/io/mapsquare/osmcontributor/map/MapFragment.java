@@ -101,6 +101,7 @@ import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
 import io.mapsquare.osmcontributor.core.model.PoiType;
+import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.edition.EditPoiActivity;
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyNodeRefPositionChange;
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyPoiPositionChange;
@@ -115,6 +116,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseChangePoiPosition;
 import io.mapsquare.osmcontributor.map.events.PleaseChangeToolbarColor;
 import io.mapsquare.osmcontributor.map.events.PleaseChangeValuesDetailNoteFragmentEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseChangeValuesDetailPoiFragmentEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseCreateNoTagPoiEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseDeletePoiFromMapEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseDisplayTutorialEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
@@ -125,6 +127,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseSwitchMapStyleEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
+import io.mapsquare.osmcontributor.map.events.PoiNoTypeCreated;
 import io.mapsquare.osmcontributor.map.vectorial.BoxOverlay;
 import io.mapsquare.osmcontributor.map.vectorial.Geocoder;
 import io.mapsquare.osmcontributor.map.vectorial.LevelBar;
@@ -145,6 +148,7 @@ import io.mapsquare.osmcontributor.tileslayer.MBTilesLayer;
 import io.mapsquare.osmcontributor.tileslayer.WebSourceTileLayer;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
+import io.mapsquare.osmcontributor.utils.StringUtils;
 import timber.log.Timber;
 
 
@@ -719,18 +723,7 @@ public class MapFragment extends Fragment {
 
         switch (mapMode) {
             case POI_CREATION:
-
-                pos = mapView.getCenter();
-
-                Intent intent = new Intent(getActivity(), EditPoiActivity.class);
-                intent.putExtra(EditPoiActivity.CREATION_MODE, true);
-                intent.putExtra(EditPoiActivity.POI_LAT, pos.getLatitude());
-                intent.putExtra(EditPoiActivity.POI_LNG, pos.getLongitude());
-                intent.putExtra(EditPoiActivity.POI_LEVEL, isVectorial ? currentLevel : 0d);
-                intent.putExtra(EditPoiActivity.POI_TYPE, poiTypeSelected.getId());
-
-                switchMode(MapMode.DEFAULT);
-                getActivity().startActivityForResult(intent, EditPoiActivity.EDIT_POI_ACTIVITY_CODE);
+                createPoi();
                 break;
 
             case NOTE_CREATION:
@@ -1193,6 +1186,38 @@ public class MapFragment extends Fragment {
     ImageButton creationPin;
 
     ValueAnimator valueAnimator;
+
+    private void createPoi() {
+        LatLng pos = mapView.getCenter();
+        boolean needTagEdition = false;
+
+        for (PoiTypeTag poiTypeTag : poiTypeSelected.getTags()) {
+            if (StringUtils.isEmpty(poiTypeTag.getValue())) {
+                needTagEdition = true;
+                break;
+            }
+        }
+
+        if (needTagEdition) {
+            Intent intent = new Intent(getActivity(), EditPoiActivity.class);
+            intent.putExtra(EditPoiActivity.CREATION_MODE, true);
+            intent.putExtra(EditPoiActivity.POI_LAT, pos.getLatitude());
+            intent.putExtra(EditPoiActivity.POI_LNG, pos.getLongitude());
+            intent.putExtra(EditPoiActivity.POI_LEVEL, isVectorial ? currentLevel : 0d);
+            intent.putExtra(EditPoiActivity.POI_TYPE, poiTypeSelected.getId());
+
+            switchMode(MapMode.DEFAULT);
+            getActivity().startActivityForResult(intent, EditPoiActivity.EDIT_POI_ACTIVITY_CODE);
+        } else {
+            eventBus.post(new PleaseCreateNoTagPoiEvent(poiTypeSelected, pos, isVectorial ? currentLevel : 0d));
+            switchMode(MapMode.DEFAULT);
+        }
+    }
+
+    public void onEventMainThread(PoiNoTypeCreated event) {
+        presenter.setForceRefreshPoi();
+        presenter.loadPoisIfNeeded();
+    }
 
     private void animationPoiCreation() {
         handImageView.setVisibility(View.VISIBLE);
