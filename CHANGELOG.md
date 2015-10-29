@@ -1,4 +1,12 @@
 ## Changelog
+[2.0.0]
+
+ - PoiTypes loaded from H2geo json file
+ - New UI to select PoiTypes
+ - Adding keywords to ease the Poitype search
+ - Using possible values from H2geo file to ease the edition
+ - Translation of Poitypes
+ - Bugfixes
 
 [1.4.0]
 
