@@ -49,6 +49,7 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
 
     private List<PoiType> originalValues = null;
     private List<PoiType> filteredValues = null;
+    private List<PoiType> lastUseValues = null;
     private LayoutInflater inflater;
     private ItemFilter filter = new ItemFilter();
     private EditText editText;
@@ -60,6 +61,7 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
 
     public PoiTypePickerAdapter(Context context, List<PoiType> values, EditText editText, EventBus eventBus, BitmapHandler bitmapHandler) {
         this.filteredValues = values;
+        this.lastUseValues = values;
         Collections.sort(filteredValues, new SortIgnoreCase()); // sorting values ignoring case
         this.originalValues = filteredValues;
         this.editText = editText;
@@ -123,6 +125,12 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
         notifyDataSetChanged();
     }
 
+    public void addAllLastUse(Collection<PoiType> poiTypes) {
+        lastUseValues.clear();
+        lastUseValues.addAll(poiTypes);
+        notifyDataSetChanged();
+    }
+
     private void closeKeyboard() {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
@@ -176,8 +184,8 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
             final ArrayList<PoiType> newValuesList = new ArrayList<>(count);
 
             if (filterString.isEmpty()) {
-                results.values = originalValues;
-                results.count = originalValues.size();
+                results.values = lastUseValues;
+                results.count = lastUseValues.size();
                 return results;
             }
 

@@ -72,4 +72,20 @@ public class PoiTypeDao extends RuntimeExceptionDao<PoiType, Long> {
             }
         });
     }
+
+    /**
+     * Query for all the PoiTypes last use sorted.
+     *
+     * @return The List of PoiTypes alphabetically sorted.
+     */
+    public List<PoiType> queryAllSortedByLastUse() {
+        return DatabaseHelper.wrapException(new Callable<List<PoiType>>() {
+            @Override
+            public List<PoiType> call() throws Exception {
+                return queryBuilder()
+                        .orderByRaw(PoiType.LAST_USE + " DESC, " + PoiType.NAME + " COLLATE NOCASE ASC")
+                        .query();
+            }
+        });
+    }
 }

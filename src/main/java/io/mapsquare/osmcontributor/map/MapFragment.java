@@ -107,6 +107,7 @@ import io.mapsquare.osmcontributor.edition.events.PleaseApplyNodeRefPositionChan
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyPoiPositionChange;
 import io.mapsquare.osmcontributor.map.events.AddressFoundEvent;
 import io.mapsquare.osmcontributor.map.events.EditionVectorialTilesLoadedEvent;
+import io.mapsquare.osmcontributor.map.events.LastUsePoiTypeLoaded;
 import io.mapsquare.osmcontributor.map.events.NewNoteCreatedEvent;
 import io.mapsquare.osmcontributor.map.events.NewPoiTypeSelected;
 import io.mapsquare.osmcontributor.map.events.OnBackPressedMapEvent;
@@ -121,6 +122,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseDeletePoiFromMapEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseDisplayTutorialEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadEditVectorialTileEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseLoadLastUsedPoiType;
 import io.mapsquare.osmcontributor.map.events.PleaseOpenEditionEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSelectNodeRefByID;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchMapStyleEvent;
@@ -889,7 +891,10 @@ public class MapFragment extends Fragment {
 
             case DETAIL_POI:
             case DETAIL_NOTE:
+                break;
+
             case TYPE_PICKER:
+                eventBus.post(new PleaseLoadLastUsedPoiType());
                 break;
 
             case POI_CREATION:
@@ -1829,6 +1834,10 @@ public class MapFragment extends Fragment {
         }
     }
 
+    public void onEventMainThread(LastUsePoiTypeLoaded event) {
+        poiTypePickerAdapter.addAllLastUse(event.getAutocompleteLastUsePoiTypeValues());
+        poiTypeListView.setSelectionAfterHeaderView();
+    }
 
     /*-----------------------------------------------------------
     * ADDRESS

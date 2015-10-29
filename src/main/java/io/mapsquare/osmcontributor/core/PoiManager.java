@@ -58,6 +58,8 @@ import io.mapsquare.osmcontributor.core.model.PoiTag;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.map.events.ChangesInDB;
+import io.mapsquare.osmcontributor.map.events.LastUsePoiTypeLoaded;
+import io.mapsquare.osmcontributor.map.events.PleaseLoadLastUsedPoiType;
 import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.upload.PoiUpdateWrapper;
 import io.mapsquare.osmcontributor.utils.Box;
@@ -143,6 +145,10 @@ public class PoiManager {
 
     public void onEventAsync(PleaseLoadPoiTypes event) {
         bus.postSticky(new PoiTypesLoaded(getPoiTypesSortedByName()));
+    }
+
+    public void onEventAsync(PleaseLoadLastUsedPoiType event) {
+        bus.post(new LastUsePoiTypeLoaded(getPoiTypesSortedByLastUse()));
     }
 
     // ********************************
@@ -553,6 +559,15 @@ public class PoiManager {
      */
     public List<PoiType> getPoiTypesSortedByName() {
         return poiTypeDao.queryAllSortedByName();
+    }
+
+    /**
+     * Get all the PoiTypes last use sorted.
+     *
+     * @return The List of PoiTypes last use sorted.
+     */
+    public List<PoiType> getPoiTypesSortedByLastUse() {
+        return poiTypeDao.queryAllSortedByLastUse();
     }
 
     /**
