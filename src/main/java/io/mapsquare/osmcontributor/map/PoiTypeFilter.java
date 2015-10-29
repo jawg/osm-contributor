@@ -92,7 +92,7 @@ public class PoiTypeFilter implements Comparable<PoiTypeFilter> {
     public int compareTo(@NonNull PoiTypeFilter o) {
         int result;
         if (poiTypeName != null && o.poiTypeName != null) {
-            result = poiTypeName.compareTo(o.poiTypeName);
+            result = poiTypeName.toLowerCase().compareTo(o.poiTypeName.toLowerCase());
         } else {
             result = 0;
         }
