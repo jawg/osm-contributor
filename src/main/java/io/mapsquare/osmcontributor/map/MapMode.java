@@ -28,7 +28,6 @@ public enum MapMode {
             .title(R.string.poi_creation)
             .showDownloadArea()
             .unSelectIcon()
-            .showSpinner()
             .showConfirmBtn()
             .showCreationPin()
             .editColor()
@@ -38,7 +37,6 @@ public enum MapMode {
             .title(R.string.note_creation)
             .showDownloadArea()
             .unSelectIcon()
-            .showSpinner()
             .showConfirmBtn()
             .showCreationPin()
             .editColor()
@@ -48,7 +46,6 @@ public enum MapMode {
             .title(R.string.poi_creation)
             .unSelectIcon()
             .editColor()
-            .showListPicker()
             .lockDrawer()),
 
     DETAIL_POI(new MapModeProperties("Detail Poi mode")
@@ -103,8 +100,6 @@ public enum MapMode {
     public static class MapModeProperties {
         private boolean unSelectIcon = false;
         private boolean showAddPoiFab = false;
-        private boolean showSpinner = false;
-        private boolean showListPicker = false;
         private boolean showPoiBanner = false;
         private boolean showNodeBanner = false;
         private boolean showCreationPin = false;
@@ -131,11 +126,6 @@ public enum MapMode {
             return this;
         }
 
-        public MapModeProperties showSpinner() {
-            this.showSpinner = true;
-            return this;
-        }
-
         public MapModeProperties showPoiBanner() {
             this.showPoiBanner = true;
             return this;
@@ -148,11 +138,6 @@ public enum MapMode {
 
         public MapModeProperties showCreationPin() {
             this.showCreationPin = true;
-            return this;
-        }
-
-        public MapModeProperties showListPicker() {
-            this.showListPicker = true;
             return this;
         }
 
@@ -208,10 +193,6 @@ public enum MapMode {
             return showAddPoiFab;
         }
 
-        public boolean isShowSpinner() {
-            return showSpinner;
-        }
-
         public boolean isShowPoiBanner() {
             return showPoiBanner;
         }
@@ -222,10 +203,6 @@ public enum MapMode {
 
         public boolean isShowCreationPin() {
             return showCreationPin;
-        }
-
-        public boolean isShowListPicker() {
-            return showListPicker;
         }
 
         public boolean isShowEditWays() {

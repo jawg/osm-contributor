@@ -45,7 +45,7 @@ import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.map.events.NewPoiTypeSelected;
 
-class poiTypePickerAdapter extends BaseAdapter implements Filterable {
+public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
 
     private List<PoiType> originalValues = null;
     private List<PoiType> filteredValues = null;
@@ -58,7 +58,7 @@ class poiTypePickerAdapter extends BaseAdapter implements Filterable {
 
     EventBus eventBus;
 
-    public poiTypePickerAdapter(Context context, List<PoiType> values, EditText editText, EventBus eventBus, BitmapHandler bitmapHandler) {
+    public PoiTypePickerAdapter(Context context, List<PoiType> values, EditText editText, EventBus eventBus, BitmapHandler bitmapHandler) {
         this.filteredValues = values;
         Collections.sort(filteredValues, new SortIgnoreCase()); // sorting values ignoring case
         this.originalValues = filteredValues;

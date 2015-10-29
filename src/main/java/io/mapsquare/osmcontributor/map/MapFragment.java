@@ -22,6 +22,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -41,6 +42,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -559,6 +561,11 @@ public class MapFragment extends Fragment {
         eventBus.unregister(this);
         presenter.unregister();
         mapView.setUserLocationEnabled(false);
+        if (valueAnimator != null) {
+            valueAnimator.cancel();
+            valueAnimator.removeAllListeners();
+            valueAnimator.removeAllUpdateListeners();
+        }
         super.onPause();
     }
 
@@ -714,7 +721,6 @@ public class MapFragment extends Fragment {
             case POI_CREATION:
 
                 pos = mapView.getCenter();
-                switchMode(MapMode.DEFAULT);
 
                 Intent intent = new Intent(getActivity(), EditPoiActivity.class);
                 intent.putExtra(EditPoiActivity.CREATION_MODE, true);
@@ -723,6 +729,7 @@ public class MapFragment extends Fragment {
                 intent.putExtra(EditPoiActivity.POI_LEVEL, isVectorial ? currentLevel : 0d);
                 intent.putExtra(EditPoiActivity.POI_TYPE, poiTypeSelected.getId());
 
+                switchMode(MapMode.DEFAULT);
                 getActivity().startActivityForResult(intent, EditPoiActivity.EDIT_POI_ACTIVITY_CODE);
                 break;
 
@@ -816,6 +823,8 @@ public class MapFragment extends Fragment {
                 case NOTE_CREATION:
                 case TYPE_PICKER:
                     switchMode(MapMode.DEFAULT);
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mapView.getWindowToken(), 0);
                     break;
 
                 default:
@@ -870,7 +879,7 @@ public class MapFragment extends Fragment {
         }
 
         showFloatingButtonAddPoi(properties.isShowAddPoiFab());
-        displayPoiTypePicker(properties.isShowListPicker(), properties.isShowSpinner());
+        displayPoiTypePicker();
         displayPoiDetailBanner(properties.isShowPoiBanner());
         displayNoteDetailBanner(properties.isShowNodeBanner());
 
@@ -919,6 +928,7 @@ public class MapFragment extends Fragment {
                 break;
 
             default:
+                poiTypeSelected = null;
                 poiTypeEditText.setText("");
                 floatingMenuAddFewValues.collapse();
                 break;
@@ -1182,9 +1192,11 @@ public class MapFragment extends Fragment {
     @InjectView(R.id.pin)
     ImageButton creationPin;
 
+    ValueAnimator valueAnimator;
+
     private void animationPoiCreation() {
         handImageView.setVisibility(View.VISIBLE);
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, OsmCreationAnimatorUpdateListener.STEPS_CENTER_ANIMATION);
+        valueAnimator = ValueAnimator.ofFloat(0, OsmCreationAnimatorUpdateListener.STEPS_CENTER_ANIMATION);
         valueAnimator.setDuration(1000);
         valueAnimator.addListener(new OsmCreationAnimatorUpdateListener(mapView, handImageView, getActivity()));
         valueAnimator.addUpdateListener(new OsmCreationAnimatorUpdateListener(mapView, handImageView, getActivity()));
@@ -1221,8 +1233,6 @@ public class MapFragment extends Fragment {
     }
 
     private void noteSelected() {
-        editPoiTypeBtn.setVisibility(View.GONE);
-        poiTypeTextView.setText(getResources().getString(R.string.note));
         Bitmap bitmap = bitmapHandler.getNoteBitmap(Note.computeState(null, false, true));
         creationPin.setImageBitmap(bitmap);
         creationPin.setVisibility(View.VISIBLE);
@@ -1693,11 +1703,11 @@ public class MapFragment extends Fragment {
     }
 
     private long savePoiTypeId = 0;
-    private poiTypePickerAdapter poiTypePickerAdapter;
+    private PoiTypePickerAdapter poiTypePickerAdapter;
     private List<PoiType> autocompletePoiTypeValues = new ArrayList<>();
 
     private void instantiatePoiTypePicker() {
-        poiTypePickerAdapter = new poiTypePickerAdapter(getActivity(), autocompletePoiTypeValues, poiTypeEditText, eventBus, bitmapHandler);
+        poiTypePickerAdapter = new PoiTypePickerAdapter(getActivity(), autocompletePoiTypeValues, poiTypeEditText, eventBus, bitmapHandler);
         poiTypeListView.setAdapter(poiTypePickerAdapter);
 
         // Add Text Change Listener to EditText
@@ -1719,8 +1729,8 @@ public class MapFragment extends Fragment {
         });
     }
 
-    private void displayPoiTypePicker(boolean showPicker, boolean showSpinner) {
-        if (showPicker) {
+    private void displayPoiTypePicker() {
+        if (mapMode == MapMode.TYPE_PICKER) {
             if (poiTypeListView.getVisibility() != View.VISIBLE) {
                 Animation bottomUp = AnimationUtils.loadAnimation(getActivity(),
                         R.anim.anim_up_poi_type);
@@ -1729,6 +1739,7 @@ public class MapFragment extends Fragment {
                     bottomUp.setInterpolator(getActivity(), android.R.interpolator.linear_out_slow_in);
                 }
 
+                //the text view will be changed to edit text at the end of the animation
                 bottomUp.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
@@ -1751,6 +1762,7 @@ public class MapFragment extends Fragment {
                 poiTypeListView.startAnimation(bottomUp);
                 poiTypeListView.setVisibility(View.VISIBLE);
 
+                // animation of the edit text from the top
                 if (poiTypeTextView.getVisibility() == View.GONE) {
                     Animation slideTop = AnimationUtils.loadAnimation(getActivity(),
                             R.anim.slide_top_annimation);
@@ -1759,7 +1771,7 @@ public class MapFragment extends Fragment {
                     poiTypeEditText.setVisibility(View.VISIBLE);
                 }
             }
-        } else if (showSpinner) {
+        } else if (mapMode == MapMode.POI_CREATION) {
             if (poiTypeListView.getVisibility() == View.VISIBLE) {
                 Animation upBottom = AnimationUtils.loadAnimation(getActivity(),
                         R.anim.anim_down_poi_type);
@@ -1775,11 +1787,20 @@ public class MapFragment extends Fragment {
                 editPoiTypeBtn.setVisibility(View.VISIBLE);
             }
             poiTypeTextView.setVisibility(View.VISIBLE);
+        } else if (mapMode == MapMode.NOTE_CREATION) {
+            poiTypeHeaderWrapper.setVisibility(View.VISIBLE);
+            poiTypeTextView.setVisibility(View.VISIBLE);
+            poiTypeListView.setVisibility(View.GONE);
+            poiTypeEditText.setVisibility(View.GONE);
+            editPoiTypeBtn.setVisibility(View.GONE);
+            poiTypeTextView.setText(getResources().getString(R.string.note));
         } else {
+            //For default behavior hide all poitype picker components
             poiTypeListView.setVisibility(View.GONE);
             poiTypeEditText.setVisibility(View.GONE);
             poiTypeTextView.setVisibility(View.GONE);
             editPoiTypeBtn.setVisibility(View.GONE);
+            poiTypeHeaderWrapper.setVisibility(View.GONE);
         }
     }
 

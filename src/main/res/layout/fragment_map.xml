@@ -49,7 +49,6 @@
         android:background="@android:drawable/dialog_holo_light_frame"
         android:padding="15dp"
         android:visibility="invisible"/>
-    $*
 
     <TextView
         android:id="@+id/zoom_level"

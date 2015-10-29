@@ -93,8 +93,6 @@ public class MapActivity extends AppCompatActivity {
     @Inject
     SharedPreferences sharedPreferences;
 
-    private     List<PoiType> poiTypes;
-
     private List<PoiTypeFilter> filters = new ArrayList<>();
 
     private List<Long> poiTypesHidden;
@@ -235,7 +233,7 @@ public class MapActivity extends AppCompatActivity {
         if (filtersItemList == null) {
             filtersItemList = new ArrayList<>();
         }
-        poiTypes = event.getPoiTypes();
+        List<PoiType> poiTypes = event.getPoiTypes();
 
         poiTypesHidden = event.getPoiTypeHidden();
 
