@@ -64,6 +64,7 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
                         .and().lt(Poi.LATITUDE, new SelectArg(box.getNorth()))
                         .and().gt(Poi.LONGITUDE, new SelectArg(box.getWest()))
                         .and().lt(Poi.LONGITUDE, new SelectArg(box.getEast()))
+                        .and().eq(Poi.OLD, false)
                         .query();
             }
         });
@@ -122,6 +123,24 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
     }
 
     /**
+     * Count for all Poi changes.
+     *
+     * @return The count of changed POIs.
+     */
+    public Long countForAllChanges() {
+        return DatabaseHelper.wrapException(new Callable<Long>() {
+            @Override
+            public Long call() throws Exception {
+                return queryBuilder()
+                        .where()
+                        .eq(Poi.UPDATED, true)
+                        .or().eq(Poi.TO_DELETE, true)
+                        .countOf();
+            }
+        });
+    }
+
+    /**
      * Query for all POIs who are ways.
      *
      * @return The list of POIs who are ways.
@@ -134,6 +153,7 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
                         .where().isNotNull(Poi.BACKEND_ID)
                         .and().eq(Poi.WAY, true)
                         .and().eq(Poi.TO_DELETE, false)
+                        .and().eq(Poi.OLD, false)
                         .query();
             }
         });
@@ -153,6 +173,7 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
                         .and().eq(Poi.WAY, true)
                         .and().eq(Poi.TO_DELETE, false)
                         .and().isNull(Poi.POI_TYPE_ID)
+                        .and().eq(Poi.OLD, false)
                         .query();
             }
         });
@@ -188,6 +209,40 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
                 return queryBuilder()
                         .where().in(Poi.BACKEND_ID, backendIds)
                         .query();
+            }
+        });
+    }
+
+    /**
+     * Query for POIs with a given backend Id.
+     *
+     * @param backendId The backend id.
+     * @return The List of POIs.
+     */
+    public List<Poi> queryForBackendId(final String backendId) {
+        return DatabaseHelper.wrapException(new Callable<List<Poi>>() {
+            @Override
+            public List<Poi> call() throws Exception {
+                return queryBuilder()
+                        .where().eq(Poi.BACKEND_ID, backendId)
+                        .query();
+            }
+        });
+    }
+
+    /**
+     * Count for POIs with the same backend Id.
+     *
+     * @param backendId The backend id.
+     * @return The count of pois.
+     */
+    public Long countForBackendId(final String backendId) {
+        return DatabaseHelper.wrapException(new Callable<Long>() {
+            @Override
+            public Long call() throws Exception {
+                return queryBuilder()
+                        .where().eq(Poi.BACKEND_ID, backendId)
+                        .countOf();
             }
         });
     }

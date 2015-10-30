@@ -29,11 +29,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import timber.log.Timber;
+
 @DatabaseTable(tableName = Poi.TABLE_NAME)
-public class Poi {
+public class Poi implements Cloneable {
     public static final String TABLE_NAME = "POI";
 
     public static final String ID = "ID";
@@ -49,6 +52,7 @@ public class Poi {
     public static final String TO_DELETE = "TO_DELETE";
     public static final String LEVEL = "LEVEL";
     public static final String POI_TYPE_ID = "POI_TYPE_ID";
+    public static final String OLD = "OLD";
 
     public enum State {
         NORMAL, SELECTED, MOVING, NOT_SYNCED
@@ -94,6 +98,9 @@ public class Poi {
 
     @DatabaseField(columnName = VISIBLE)
     private Boolean visible;
+
+    @DatabaseField(columnName = OLD)
+    private boolean old;
 
     @DatabaseField(columnName = UPDATED, canBeNull = false)
     private Boolean updated;
@@ -241,6 +248,14 @@ public class Poi {
         this.level = level;
     }
 
+    public boolean getOld() {
+        return old;
+    }
+
+    public void setOld(boolean old) {
+        this.old = old;
+    }
+
     //fill levels set if there isn't any levels adding level 0
     private void initLevel() {
         levels = getLevelsFromString();
@@ -330,7 +345,6 @@ public class Poi {
         return false;
     }
 
-
     @Override
     public String toString() {
         return "Poi{" +
@@ -342,6 +356,7 @@ public class Poi {
                 ", version='" + version + '\'' +
                 ", updateDate=" + updateDate +
                 ", visible=" + visible +
+                ", old=" + old +
                 ", updated=" + updated +
                 ", way=" + way +
                 ", toDelete=" + toDelete +
@@ -363,8 +378,7 @@ public class Poi {
         return hashMap;
     }
 
-    public boolean applyChanges(Map<String, String> tagsMap) {
-        boolean updated = false;
+    public void applyChanges(Map<String, String> tagsMap) {
         if (tags == null) {
             tags = new ArrayList<>();
         }
@@ -374,7 +388,6 @@ public class Poi {
             String newValue = tagsMap.remove(poiTag.getKey());
             if (newValue != null && !newValue.equals(poiTag.getValue())) {
                 poiTag.setValue(newValue);
-                updated = true;
             }
         }
 
@@ -387,7 +400,6 @@ public class Poi {
                 tempPoiTag.setValue(tagToAdd.getValue());
                 tempPoiTag.setPoi(this);
                 tags.add(tempPoiTag);
-                updated = true;
             }
         }
 
@@ -400,7 +412,21 @@ public class Poi {
                 setLevel(tag.getValue());
             }
         }
-        return updated;
+    }
+
+    public boolean hasChanges(Map<String, String> tagsMap) {
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
+
+        // Apply the new values to the existing tags
+        for (PoiTag poiTag : tags) {
+            String newValue = tagsMap.remove(poiTag.getKey());
+            if (newValue != null && !newValue.equals(poiTag.getValue())) {
+                return true;
+            }
+        }
+        return tagsMap.entrySet().size() > 0;
     }
 
     @Override
@@ -414,11 +440,49 @@ public class Poi {
 
         Poi poi = (Poi) o;
 
-        return backendId != null ? backendId.equals(poi.backendId) : id != null && id.equals(poi.id);
+        return backendId != null ? (backendId.equals(poi.backendId) && old == poi.old) : id != null && id.equals(poi.id);
     }
 
     @Override
     public int hashCode() {
         return backendId.hashCode();
     }
+
+    public Poi getCopy() {
+        Poi poi;
+
+        try {
+            poi = (Poi) clone();
+        } catch (CloneNotSupportedException e) {
+            Timber.e(e, "could not clone Poi");
+            return null;
+        }
+
+        poi.setId(null);
+
+        List<PoiTag> poiTagsOld = new ArrayList<>();
+        for (PoiTag poiTag : getTags()) {
+            PoiTag poiTagOld = new PoiTag();
+            poiTagOld.setValue(poiTag.getValue());
+            poiTagOld.setKey(poiTag.getKey());
+            poiTagsOld.add(poiTagOld);
+        }
+        poi.setTags(poiTagsOld);
+
+        List<PoiNodeRef> poiNodeRefsOld = new ArrayList<>();
+        for (PoiNodeRef poiNodeRef : getNodeRefs()) {
+            PoiNodeRef poiNodeRefOld = new PoiNodeRef();
+            poiNodeRefOld.setLatitude(poiNodeRef.getLatitude());
+            poiNodeRefOld.setLongitude(poiNodeRef.getLongitude());
+            poiNodeRefOld.setNodeBackendId(poiNodeRef.getNodeBackendId());
+            poiNodeRefOld.setOrdinal(poiNodeRef.getOrdinal());
+            poiNodeRefOld.setUpdated(poiNodeRef.getUpdated());
+
+            poiNodeRefsOld.add(poiNodeRefOld);
+        }
+        poi.setNodeRefs(poiNodeRefsOld);
+
+        return poi;
+    }
+
 }

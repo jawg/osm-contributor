@@ -63,17 +63,27 @@ public class EditPoiManager {
     public void onEventAsync(PleaseApplyPoiChanges event) {
         Timber.d("please apply poi changes");
         Poi editPoi = poiManager.queryForId(event.getPoiChanges().getId());
-        if (editPoi.applyChanges(event.getPoiChanges().getTagsMap())) {
+
+        if (editPoi.hasChanges(event.getPoiChanges().getTagsMap())) {
+
+            saveOldVersionOfPoi(editPoi);
+
+            //this is the edition of a new poi or we already edited this poi
+            editPoi.applyChanges(event.getPoiChanges().getTagsMap());
             editPoi.setUpdated(true);
             poiManager.savePoi(editPoi);
             poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
         }
+
         eventBus.post(new PoiChangesApplyEvent());
     }
 
     public void onEventAsync(PleaseApplyPoiPositionChange event) {
         Timber.d("Please apply poi position change");
         Poi editPoi = poiManager.queryForId(event.getPoiId());
+
+        saveOldVersionOfPoi(editPoi);
+
         editPoi.setLatitude(event.getPoiPosition().getLatitude());
         editPoi.setLongitude(event.getPoiPosition().getLongitude());
         editPoi.setUpdated(true);
@@ -87,6 +97,9 @@ public class EditPoiManager {
 
         //apply changes on the noderef
         PoiNodeRef poiNodeRef = poiNodeRefDao.queryForId(event.getPoiId());
+
+        saveOldVersionOfPoiNodeRef(poiNodeRef);
+
         poiNodeRef.setLongitude(newLatLng.getLongitude());
         poiNodeRef.setLatitude(newLatLng.getLatitude());
         poiNodeRef.setUpdated(true);
@@ -144,5 +157,21 @@ public class EditPoiManager {
         poiManager.updatePoiTypeLastUse(event.getPoiType().getId());
 
         eventBus.post(new PoiNoTypeCreated());
+    }
+
+    private void saveOldVersionOfPoi(Poi poi) {
+        if (poiManager.countForBackendId(poi.getBackendId()) == 1) {
+            Poi old = poi.getCopy();
+            old.setOld(true);
+            poiManager.savePoi(old);
+        }
+    }
+
+    private void saveOldVersionOfPoiNodeRef(PoiNodeRef poiNodeRef) {
+        if (poiNodeRefDao.countForBackendId(poiNodeRef.getNodeBackendId()) == 1) {
+            PoiNodeRef old = poiNodeRef.getCopy();
+            old.setOld(true);
+            poiNodeRefDao.createOrUpdate(old);
+        }
     }
 }

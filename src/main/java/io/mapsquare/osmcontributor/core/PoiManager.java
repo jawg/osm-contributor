@@ -119,7 +119,7 @@ public class PoiManager {
     }
 
     public void onEventAsync(PleaseTellIfDbChanges event) {
-        bus.post(new ChangesInDB(!poiDao.queryForAllChanges().isEmpty()));
+        bus.post(new ChangesInDB(poiDao.countForAllChanges() > 0 || poiNodeRefDao.countAllToUpdate() > 0));
     }
 
     public void onEventAsync(PleaseLoadPoisToUpdateEvent event) {
@@ -302,6 +302,26 @@ public class PoiManager {
         poi.setTags(loadLazyForeignCollection(poi.getTags()));
         poi.getType().setTags(loadLazyForeignCollection(poi.getType().getTags()));
         return poi;
+    }
+
+    /**
+     * Query for Poi with a given backendId.
+     *
+     * @param backendId The backendId of the Pois to load.
+     * @return The queried Poi.
+     */
+    public List<Poi> queryForBackendId(String backendId) {
+        return poiDao.queryForBackendId(backendId);
+    }
+
+    /**
+     * Count for POIs with the same backend Id.
+     *
+     * @param backendId The backend id.
+     * @return The count of pois.
+     */
+    public Long countForBackendId(String backendId) {
+        return poiDao.countForBackendId(backendId);
     }
 
     /**

@@ -75,6 +75,22 @@ public class PoiNodeRefDao extends RuntimeExceptionDao<PoiNodeRef, Long> {
     }
 
     /**
+     * Count for all PoiNodeRefs to update.
+     *
+     * @return The count of PoiNodeRefs to update.
+     */
+    public Long countAllToUpdate() {
+        return DatabaseHelper.wrapException(new Callable<Long>() {
+            @Override
+            public Long call() throws Exception {
+                return queryBuilder()
+                        .where().eq(PoiNodeRef.UPDATED, true)
+                        .countOf();
+            }
+        });
+    }
+
+    /**
      * Query for the backend id of all PoiNodeRef to update.
      *
      * @return The list of backend ids.
@@ -145,6 +161,23 @@ public class PoiNodeRefDao extends RuntimeExceptionDao<PoiNodeRef, Long> {
             public Object call() throws Exception {
                 deleteBuilder().delete();
                 return null;
+            }
+        });
+    }
+
+    /**
+     * Count for PoiNodeRefs with the same backend Id.
+     *
+     * @param backendId The backend id.
+     * @return The count of poiNodeRefs.
+     */
+    public Long countForBackendId(final String backendId) {
+        return DatabaseHelper.wrapException(new Callable<Long>() {
+            @Override
+            public Long call() throws Exception {
+                return queryBuilder()
+                        .where().eq(PoiNodeRef.NODE_BACKEND_ID, backendId)
+                        .countOf();
             }
         });
     }

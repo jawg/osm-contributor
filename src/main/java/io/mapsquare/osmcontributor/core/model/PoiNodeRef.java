@@ -22,8 +22,10 @@ package io.mapsquare.osmcontributor.core.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import timber.log.Timber;
+
 @DatabaseTable(tableName = PoiNodeRef.TABLE_NAME)
-public class PoiNodeRef {
+public class PoiNodeRef implements Cloneable {
     public static final String TABLE_NAME = "POI_NODE_REF";
     public static final String ID = "ID";
     public static final String NODE_BACKEND_ID = "NODE_BACKEND_ID";
@@ -32,6 +34,7 @@ public class PoiNodeRef {
     public static final String LONGITUDE = "LONGITUDE";
     public static final String LATITUDE = "LATITUDE";
     public static final String UPDATED = "UPDATED";
+    public static final String OLD = "OLD";
 
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
@@ -48,11 +51,14 @@ public class PoiNodeRef {
     @DatabaseField(columnName = ORDINAL, canBeNull = false)
     private Integer ordinal;
 
-    @DatabaseField(columnName = POI_ID, foreign = true, canBeNull = false)
+    @DatabaseField(columnName = POI_ID, foreign = true)
     private Poi poi;
 
     @DatabaseField(columnName = UPDATED, canBeNull = false)
     private Boolean updated;
+
+    @DatabaseField(columnName = OLD)
+    private Boolean old;
 
     public Long getId() {
         return id;
@@ -110,6 +116,14 @@ public class PoiNodeRef {
         this.latitude = latitude;
     }
 
+    public Boolean getOld() {
+        return old;
+    }
+
+    public void setOld(Boolean old) {
+        this.old = old;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -139,7 +153,21 @@ public class PoiNodeRef {
                 "id=" + id +
                 ", nodeBackendId='" + nodeBackendId + '\'' +
                 ", ordinal=" + ordinal +
+                ", old=" + old +
                 ", poi=" + (poi == null ? null : poi.getId()) +
                 '}';
+    }
+
+    public PoiNodeRef getCopy() {
+        PoiNodeRef poiNodeRef;
+        try {
+            poiNodeRef = (PoiNodeRef) clone();
+        } catch (CloneNotSupportedException e) {
+            Timber.e(e, "could not clone PoiNodeRef");
+            return null;
+        }
+        poiNodeRef.setId(null);
+        poiNodeRef.setPoi(null);
+        return poiNodeRef;
     }
 }
