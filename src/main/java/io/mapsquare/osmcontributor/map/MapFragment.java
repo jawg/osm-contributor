@@ -967,15 +967,15 @@ public class MapFragment extends Fragment {
     }
 
     /**
-     * Download datas from backend. If we are in {@link MapMode#WAY_EDITION}, download ways
+     * Download data from backend. If we are in {@link MapMode#WAY_EDITION}, download ways
      * and if not, download Pois.
      */
     public void onDownloadZoneClick() {
         if (mapMode == MapMode.WAY_EDITION) {
             downloadAreaForEdition();
         } else {
-            // If flavor Store, allow the download only if the zoom > 19
-            if (!FlavorUtils.isStore() || getZoomLevel() >= 19) {
+            // If flavor Store, allow the download only if the zoom > 18
+            if (!FlavorUtils.isStore() || getZoomLevel() >= 18) {
                 presenter.downloadAreaPoisAndNotes();
                 Toast.makeText(getActivity(), R.string.download_in_progress, Toast.LENGTH_SHORT).show();
             } else {
