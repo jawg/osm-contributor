@@ -136,6 +136,7 @@ import io.mapsquare.osmcontributor.map.vectorial.LevelBar;
 import io.mapsquare.osmcontributor.map.vectorial.VectorialObject;
 import io.mapsquare.osmcontributor.map.vectorial.VectorialOverlay;
 import io.mapsquare.osmcontributor.note.NoteCommentDialogFragment;
+import io.mapsquare.osmcontributor.note.events.ApplyNewCommentFailedEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadWayEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNodeErrorEvent;
@@ -1558,6 +1559,14 @@ public class MapFragment extends Fragment {
         selectedMarkerType = LocationMarker.MarkerType.NOTE;
         presenter.setForceRefreshNotes();
         presenter.loadPoisIfNeeded();
+    }
+
+    public void onEventMainThread(ApplyNewCommentFailedEvent event) {
+        Toast.makeText(getActivity(), getString(R.string.failed_apply_comment), Toast.LENGTH_SHORT).show();
+        markerSelectedId = null;
+        markerSelected = null;
+        selectedMarkerType = LocationMarker.MarkerType.NONE;
+        switchMode(MapMode.DEFAULT);
     }
 
     public void onEventMainThread(SyncUnauthorizedEvent event) {

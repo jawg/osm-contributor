@@ -32,8 +32,8 @@ public class PoiStorageLoginManager extends LoginManager {
 
     PoiStorageClient poiStorageClient;
 
-    public PoiStorageLoginManager(EventBus bus, PoiStorageClient poiStorageClient) {
-        super(bus);
+    public PoiStorageLoginManager(EventBus bus, LoginPreferences loginPreferences, PoiStorageClient poiStorageClient) {
+        super(bus, loginPreferences);
         this.poiStorageClient = poiStorageClient;
     }
 

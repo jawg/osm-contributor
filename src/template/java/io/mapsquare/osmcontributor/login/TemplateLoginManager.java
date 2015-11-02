@@ -36,13 +36,11 @@ public class TemplateLoginManager extends LoginManager {
 
     Application application;
     OsmRestClient osmRestClient;
-    LoginPreferences loginPreferences;
 
     public TemplateLoginManager(EventBus bus, Application application, OsmRestClient osmRestClient, LoginPreferences loginPreferences) {
-        super(bus);
+        super(bus, loginPreferences);
         this.application = application;
         this.osmRestClient = osmRestClient;
-        this.loginPreferences = loginPreferences;
     }
 
     /**

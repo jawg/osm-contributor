@@ -133,6 +133,7 @@
     <string name="create_note">Create</string>
     <string name="cancel">Cancel</string>
     <string name="note_spinner_element">Note</string>
+    <string name="failed_apply_comment">Failed to add the comment, check your connection and your credentials</string>
 
     <!-- Filter drawer -->
     <string name="filters">Filters</string>

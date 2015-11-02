@@ -30,7 +30,7 @@ import io.mapsquare.osmcontributor.sync.rest.OsmRestClient;
 public class LoginModule {
 
     @Provides
-    LoginManager getLoginManager(EventBus bus, OsmRestClient osmRestClient) {
-        return new StoreLoginManager(bus, osmRestClient);
+    LoginManager getLoginManager(EventBus bus, LoginPreferences loginPreferences, OsmRestClient osmRestClient) {
+        return new StoreLoginManager(bus, loginPreferences, osmRestClient);
     }
 }

@@ -16,21 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.login;
+package io.mapsquare.osmcontributor.note.events;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-import de.greenrobot.event.EventBus;
-import io.mapsquare.osmcontributor.sync.rest.PoiStorageClient;
-
-@Module
-@Singleton
-public class LoginModule {
-
-    @Provides
-    LoginManager getLoginManager(EventBus bus, LoginPreferences loginPreferences, PoiStorageClient poiStorageClient) {
-        return new PoiStorageLoginManager(bus, loginPreferences, poiStorageClient);
-    }
+public class ApplyNewCommentFailedEvent {
 }

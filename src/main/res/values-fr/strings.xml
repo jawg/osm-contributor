@@ -122,6 +122,7 @@
     <string name="create_note">Créer</string>
     <string name="cancel">Annuler</string>
     <string name="note_spinner_element">Note</string>
+    <string name="failed_apply_comment">Echec lors de l\'ajout du commentaire, vérifiez votre connexion et vos identifiants</string>
 
     <!-- Filter drawer -->
     <string name="filters">Filtres</string>
