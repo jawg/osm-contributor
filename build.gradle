@@ -1,5 +1,5 @@
 ext {
-    appVersion = "2.0.0"
+    appVersion = "2.1.0-SNAPSHOT"
 
     crashlyticsVersion = '1.+'
 
@@ -84,7 +84,7 @@ android {
         applicationId "io.mapsquare.osmcontributor"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 8
+        versionCode 9
         versionName appVersion
     }
     buildTypes {
