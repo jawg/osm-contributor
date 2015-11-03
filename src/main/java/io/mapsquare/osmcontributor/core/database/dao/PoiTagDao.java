@@ -22,6 +22,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.SelectArg;
 
 import java.sql.SQLException;
@@ -33,6 +34,7 @@ import java.util.concurrent.Callable;
 import javax.inject.Inject;
 
 import io.mapsquare.osmcontributor.core.database.DatabaseHelper;
+import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiTag;
 
 /**
@@ -40,9 +42,12 @@ import io.mapsquare.osmcontributor.core.model.PoiTag;
  */
 public class PoiTagDao extends RuntimeExceptionDao<PoiTag, Long> {
 
+    private final PoiDao poiTypeDao;
+
     @Inject
-    public PoiTagDao(Dao<PoiTag, Long> dao) {
+    public PoiTagDao(Dao<PoiTag, Long> dao, PoiDao poiDao) {
         super(dao);
+        this.poiTypeDao = poiDao;
     }
 
     /**
@@ -51,13 +56,16 @@ public class PoiTagDao extends RuntimeExceptionDao<PoiTag, Long> {
      * @param key The key of the PoiTag.
      * @return The list of values.
      */
-    public List<String> existingValuesForTag(final String key) {
+    public List<String> existingValuesForTag(final String key, final Long poiTypeId) {
         return DatabaseHelper.wrapException(new Callable<List<String>>() {
             @Override
             public List<String> call() throws Exception {
+                QueryBuilder<Poi, Long> checkPoiTypeQueryBuilder = poiTypeDao.queryBuilder();
+                checkPoiTypeQueryBuilder.where().eq(Poi.POI_TYPE_ID, poiTypeId);
                 String statement = queryBuilder()
                         .selectColumns(PoiTag.VALUE).distinct()
                         .orderBy(PoiTag.VALUE, true)
+                        .join(checkPoiTypeQueryBuilder)
                         .where().eq(PoiTag.KEY, new SelectArg())
                         .prepare().getStatement();
                 return queryRaw(statement, new RawRowMapper<String>() {

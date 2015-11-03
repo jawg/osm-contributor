@@ -501,8 +501,8 @@ public class PoiManager {
      * @param key The key of the PoiTag.
      * @return The list of values.
      */
-    public List<String> suggestionsForTagValue(String key) {
-        return poiTagDao.existingValuesForTag(key);
+    public List<String> suggestionsForTagValue(String key, Long poiTypeId) {
+        return poiTagDao.existingValuesForTag(key, poiTypeId);
     }
 
     /**
@@ -519,7 +519,7 @@ public class PoiManager {
         for (PoiTypeTag poiTypeTag : poiTypeTags) {
             // If there are no possible values, load all the values in the database for the given tag name
             if (StringUtils.isEmpty(poiTypeTag.getPossibleValues())) {
-                res.put(poiTypeTag.getKey(), suggestionsForTagValue(poiTypeTag.getKey()));
+                res.put(poiTypeTag.getKey(), suggestionsForTagValue(poiTypeTag.getKey(), poiTypeTag.getPoiType().getId()));
             } else {
                 // Split the possible values string to a list
                 res.put(poiTypeTag.getKey(), Arrays.asList(poiTypeTag.getPossibleValues().split(Character.toString((char) 29))));
