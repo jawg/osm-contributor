@@ -30,8 +30,8 @@ public class StoreLoginManager extends LoginManager {
 
     OsmRestClient osmRestClient;
 
-    public StoreLoginManager(EventBus bus, OsmRestClient osmRestClient) {
-        super(bus);
+    public StoreLoginManager(EventBus bus, LoginPreferences loginPreferences, OsmRestClient osmRestClient) {
+        super(bus, loginPreferences);
         this.osmRestClient = osmRestClient;
     }
 

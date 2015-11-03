@@ -40,8 +40,10 @@ import io.mapsquare.osmcontributor.core.events.PleaseLoadNoteEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNotesEvent;
 import io.mapsquare.osmcontributor.core.model.Comment;
 import io.mapsquare.osmcontributor.core.model.Note;
+import io.mapsquare.osmcontributor.login.LoginManager;
 import io.mapsquare.osmcontributor.map.events.NewNoteCreatedEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseApplyNewComment;
+import io.mapsquare.osmcontributor.note.events.ApplyNewCommentFailedEvent;
 import io.mapsquare.osmcontributor.sync.SyncNoteManager;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadNote;
 import io.mapsquare.osmcontributor.utils.Box;
@@ -65,9 +67,10 @@ public class NoteManager {
     EventBus bus;
     Application application;
     SyncNoteManager syncNoteManager;
+    LoginManager loginManager;
 
     @Inject
-    public NoteManager(NoteDao noteDao, CommentDao commentDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, Application application, SyncNoteManager syncNoteManager) {
+    public NoteManager(NoteDao noteDao, CommentDao commentDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, Application application, SyncNoteManager syncNoteManager, LoginManager loginManager) {
         this.noteDao = noteDao;
         this.commentDao = commentDao;
         this.databaseHelper = databaseHelper;
@@ -75,6 +78,7 @@ public class NoteManager {
         this.application = application;
         this.bus = bus;
         this.syncNoteManager = syncNoteManager;
+        this.loginManager = loginManager;
     }
 
     // ********************************
@@ -93,12 +97,16 @@ public class NoteManager {
     public void onEventAsync(PleaseApplyNewComment event) {
         Timber.d("please apply new comment");
 
-        Note note = syncNoteManager.remoteAddComment(createComment(event.getNote(), event.getAction(), event.getText()));
+        if (loginManager.checkCredentials()) {
+            Note note = syncNoteManager.remoteAddComment(createComment(event.getNote(), event.getAction(), event.getText()));
 
-        if (note != null) {
-            mergeBackendNote(note);
-            bus.post(new NewNoteCreatedEvent(note.getId()));
-            bus.post(new SyncFinishUploadNote(note));
+            if (note != null) {
+                mergeBackendNote(note);
+                bus.post(new NewNoteCreatedEvent(note.getId()));
+                bus.post(new SyncFinishUploadNote(note));
+            }
+        } else {
+            bus.post(new ApplyNewCommentFailedEvent());
         }
     }
 

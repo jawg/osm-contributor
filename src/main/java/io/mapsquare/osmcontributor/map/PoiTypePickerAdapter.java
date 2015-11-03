@@ -93,7 +93,7 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
         if (view != null) {
             holder = (ViewHolder) view.getTag();
         } else {
-            view = inflater.inflate(R.layout.single_autocomplete_layout, parent, false);
+            view = inflater.inflate(R.layout.single_poitype_autocomplete_layout, parent, false);
             holder = new ViewHolder(view);
             view.setTag(holder);
         }

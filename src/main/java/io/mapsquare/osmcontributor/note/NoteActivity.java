@@ -55,6 +55,7 @@ import io.mapsquare.osmcontributor.core.events.PleaseLoadNoteEvent;
 import io.mapsquare.osmcontributor.core.model.Comment;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.map.events.PleaseApplyNewComment;
+import io.mapsquare.osmcontributor.note.events.ApplyNewCommentFailedEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadNote;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNoteErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUnauthorizedEvent;
@@ -221,6 +222,10 @@ public class NoteActivity extends AppCompatActivity {
 
     public void onEventMainThread(SyncFinishUploadNote event) {
         refreshView(event.getNote());
+    }
+
+    public void onEventMainThread(ApplyNewCommentFailedEvent event) {
+        Toast.makeText(this, getString(R.string.failed_apply_comment), Toast.LENGTH_LONG).show();
     }
 
     public void onEventMainThread(SyncConflictingNoteErrorEvent event) {

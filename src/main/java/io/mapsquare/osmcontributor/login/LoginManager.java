@@ -30,9 +30,11 @@ import io.mapsquare.osmcontributor.login.events.ValidLoginEvent;
 public abstract class LoginManager {
 
     protected EventBus bus;
+    protected LoginPreferences loginPreferences;
 
-    public LoginManager(EventBus bus) {
+    public LoginManager(EventBus bus, LoginPreferences loginPreferences) {
         this.bus = bus;
+        this.loginPreferences = loginPreferences;
     }
 
     public void onEventAsync(final AttemptLoginEvent event) {
@@ -45,6 +47,15 @@ public abstract class LoginManager {
 
     public void onEventAsync(InitCredentialsEvent event) {
         initializeCredentials();
+    }
+
+    /**
+     * Check if the credentials in the SharedPreferences are valid.
+     *
+     * @return Whether the credentials are valid.
+     */
+    public boolean checkCredentials() {
+        return isValidLogin(loginPreferences.retrieveLogin(), loginPreferences.retrievePassword());
     }
 
     /**

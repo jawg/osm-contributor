@@ -363,19 +363,22 @@ public class Poi {
         return hashMap;
     }
 
-    public void applyChanges(Map<String, String> tagsMap) {
+    public boolean applyChanges(Map<String, String> tagsMap) {
+        boolean updated = false;
         if (tags == null) {
             tags = new ArrayList<>();
         }
 
+        // Apply the new values to the existing tags
         for (PoiTag poiTag : tags) {
-            String newValue = tagsMap.get(poiTag.getKey());
-            tagsMap.remove(poiTag.getKey());
-            if (newValue != null) {
+            String newValue = tagsMap.remove(poiTag.getKey());
+            if (newValue != null && !newValue.equals(poiTag.getValue())) {
                 poiTag.setValue(newValue);
+                updated = true;
             }
         }
 
+        // Add the new tags to the Poi
         for (Map.Entry<String, String> tagToAdd : tagsMap.entrySet()) {
             //The default level is zero, we don't send this tag if it's the default value
             if (!("level".equals(tagToAdd.getKey()) && "0".equals(tagToAdd.getValue()))) {
@@ -384,9 +387,11 @@ public class Poi {
                 tempPoiTag.setValue(tagToAdd.getValue());
                 tempPoiTag.setPoi(this);
                 tags.add(tempPoiTag);
+                updated = true;
             }
         }
 
+        // Set the name and level of the Poi to the value of the tags
         for (PoiTag tag : tags) {
             if ("name".equalsIgnoreCase(tag.getKey())) {
                 setName(tag.getValue());
@@ -395,6 +400,7 @@ public class Poi {
                 setLevel(tag.getValue());
             }
         }
+        return updated;
     }
 
     @Override

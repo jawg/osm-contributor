@@ -133,6 +133,7 @@
     <string name="create_note">Create</string>
     <string name="cancel">Cancel</string>
     <string name="note_spinner_element">Note</string>
+    <string name="failed_apply_comment">Failed to add the comment, check your connection and your credentials</string>
 
     <!-- Filter drawer -->
     <string name="filters">Filters</string>
@@ -150,7 +151,7 @@
     <string name="saving">Saving&#8230;</string>
 
     <!--Update-->
-    <string name="update_title">Add a comment to you changes :</string>
+    <string name="update_title">Add a comment to your changes :</string>
     <string name="need_a_comment">The comment can\'t be empty</string>
     <string name="nothing_to_update">You don\'t have anything to update</string>
     <string name="created">Created</string>

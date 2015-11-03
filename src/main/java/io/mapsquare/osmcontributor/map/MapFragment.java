@@ -136,6 +136,7 @@ import io.mapsquare.osmcontributor.map.vectorial.LevelBar;
 import io.mapsquare.osmcontributor.map.vectorial.VectorialObject;
 import io.mapsquare.osmcontributor.map.vectorial.VectorialOverlay;
 import io.mapsquare.osmcontributor.note.NoteCommentDialogFragment;
+import io.mapsquare.osmcontributor.note.events.ApplyNewCommentFailedEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadWayEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNodeErrorEvent;
@@ -967,15 +968,15 @@ public class MapFragment extends Fragment {
     }
 
     /**
-     * Download datas from backend. If we are in {@link MapMode#WAY_EDITION}, download ways
+     * Download data from backend. If we are in {@link MapMode#WAY_EDITION}, download ways
      * and if not, download Pois.
      */
     public void onDownloadZoneClick() {
         if (mapMode == MapMode.WAY_EDITION) {
             downloadAreaForEdition();
         } else {
-            // If flavor Store, allow the download only if the zoom > 19
-            if (!FlavorUtils.isStore() || getZoomLevel() >= 19) {
+            // If flavor Store, allow the download only if the zoom > 18
+            if (!FlavorUtils.isStore() || getZoomLevel() >= 18) {
                 presenter.downloadAreaPoisAndNotes();
                 Toast.makeText(getActivity(), R.string.download_in_progress, Toast.LENGTH_SHORT).show();
             } else {
@@ -1558,6 +1559,14 @@ public class MapFragment extends Fragment {
         selectedMarkerType = LocationMarker.MarkerType.NOTE;
         presenter.setForceRefreshNotes();
         presenter.loadPoisIfNeeded();
+    }
+
+    public void onEventMainThread(ApplyNewCommentFailedEvent event) {
+        Toast.makeText(getActivity(), getString(R.string.failed_apply_comment), Toast.LENGTH_SHORT).show();
+        markerSelectedId = null;
+        markerSelected = null;
+        selectedMarkerType = LocationMarker.MarkerType.NONE;
+        switchMode(MapMode.DEFAULT);
     }
 
     public void onEventMainThread(SyncUnauthorizedEvent event) {

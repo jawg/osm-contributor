@@ -63,10 +63,11 @@ public class EditPoiManager {
     public void onEventAsync(PleaseApplyPoiChanges event) {
         Timber.d("please apply poi changes");
         Poi editPoi = poiManager.queryForId(event.getPoiChanges().getId());
-        editPoi.applyChanges(event.getPoiChanges().getTagsMap());
-        editPoi.setUpdated(true);
-        poiManager.savePoi(editPoi);
-        poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
+        if (editPoi.applyChanges(event.getPoiChanges().getTagsMap())) {
+            editPoi.setUpdated(true);
+            poiManager.savePoi(editPoi);
+            poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
+        }
         eventBus.post(new PoiChangesApplyEvent());
     }
 
