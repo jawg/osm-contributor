@@ -18,8 +18,17 @@
  */
 package io.mapsquare.osmcontributor.upload;
 
+import android.text.Layout;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
+import io.mapsquare.osmcontributor.core.model.PoiTag;
 
 public class PoiUpdateWrapper {
 
@@ -29,37 +38,39 @@ public class PoiUpdateWrapper {
         DELETED
     }
 
-    private Poi poi;
+    private Poi newPoi;
+    private Poi oldPoi;
     private PoiNodeRef nodeRef;
     private PoiAction action;
     private final Boolean isPoi;
+    private List<PoiDiffWrapper> poiDiff = new ArrayList<>();
+    private boolean open = false;
 
-    public PoiUpdateWrapper(boolean isPoi, Poi poi, PoiNodeRef nodeRef, PoiAction action) {
-        this.poi = poi;
+
+
+    public PoiUpdateWrapper(boolean isPoi, Poi newPoi, Poi oldPoi, PoiNodeRef nodeRef, PoiAction action) {
+        this.oldPoi = oldPoi;
+        this.newPoi = newPoi;
         this.nodeRef = nodeRef;
         this.isPoi = isPoi;
         this.action = action;
+        initDescriptions();
     }
 
     public String getName() {
-        String name;
-        if (isPoi) {
-            name = poi.getName();
-            if (name == null || name.isEmpty()) {
-                name = "POI" + (poi.getBackendId() == null ? "" : poi.getBackendId());
-            }
-        } else {
-            name = "POI " + nodeRef.getNodeBackendId();
-        }
-        return name;
+        return newPoi == null ? oldPoi == null ? "" : oldPoi.getName() : newPoi.getName();
     }
 
-    public Poi getPoi() {
-        return poi;
+    public String getPoiType() {
+        return newPoi == null ? oldPoi == null ? "" : oldPoi.getType().getName() : newPoi.getType().getName();
     }
 
-    public void setPoi(Poi poi) {
-        this.poi = poi;
+    public Poi getNewPoi() {
+        return newPoi;
+    }
+
+    public void setNewPoi(Poi newPoi) {
+        this.newPoi = newPoi;
     }
 
     public PoiAction getAction() {
@@ -76,5 +87,58 @@ public class PoiUpdateWrapper {
 
     public Boolean getIsPoi() {
         return isPoi;
+    }
+
+    public Layout getDetailContent() {
+        return null;
+    }
+
+    public List<PoiDiffWrapper> getPoiDiff() {
+        return poiDiff;
+    }
+
+    public void setPoiDiff(List<PoiDiffWrapper> poiDiff) {
+        this.poiDiff = poiDiff;
+    }
+
+    public boolean isOpen() {
+        return open;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
+    }
+
+    private void initDescriptions() {
+        Collection<PoiTag> oldTags = oldPoi == null ? new ArrayList<PoiTag>() : oldPoi.getTags();
+        Collection<PoiTag> newTags = newPoi == null ? new ArrayList<PoiTag>() : newPoi.getTags();
+        Map<String, String> newTagsMap = new HashMap<>();
+
+        // add all new tags in a map
+        for (PoiTag poiTag : newTags) {
+            newTagsMap.put(poiTag.getKey(), poiTag.getValue());
+        }
+
+        // add all old tags with the new value if there is one
+        for (PoiTag poiTagOld : oldTags) {
+            String key = poiTagOld.getKey();
+            String newTagValue = null;
+            if (newTagsMap.containsKey(key)) {
+                newTagValue = newTagsMap.remove(key);
+            }
+            poiDiff.add(new PoiDiffWrapper(key, poiTagOld.getValue(), newTagValue));
+        }
+
+        //adding all tags created by the user
+        for (String key : newTagsMap.keySet()) {
+            poiDiff.add(new PoiDiffWrapper(key, null, newTagsMap.get(key)));
+        }
+    }
+
+    public boolean isPositionChanged() {
+        if (oldPoi == null || newPoi == null) {
+            return false;
+        }
+        return !oldPoi.getLatitude().equals(newPoi.getLatitude()) || !oldPoi.getLongitude().equals(newPoi.getLongitude());
     }
 }

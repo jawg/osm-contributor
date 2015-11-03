@@ -130,16 +130,16 @@ public class PoiManager {
         List<PoiUpdateWrapper> allPois = new ArrayList<>();
 
         for (Poi p : updatedPois) {
-            allPois.add(new PoiUpdateWrapper(true, p, null, PoiUpdateWrapper.PoiAction.UPDATE));
+            allPois.add(new PoiUpdateWrapper(true, p, poiDao.queryForId(p.getOldPoiId()), null, PoiUpdateWrapper.PoiAction.UPDATE));
         }
         for (Poi p : newPois) {
-            allPois.add(new PoiUpdateWrapper(true, p, null, PoiUpdateWrapper.PoiAction.CREATE));
+            allPois.add(new PoiUpdateWrapper(true, p, null, null, PoiUpdateWrapper.PoiAction.CREATE));
         }
         for (Poi p : toDeletePois) {
-            allPois.add(new PoiUpdateWrapper(true, p, null, PoiUpdateWrapper.PoiAction.DELETED));
+            allPois.add(new PoiUpdateWrapper(true, null, poiDao.queryForId(p.getOldPoiId()), null, PoiUpdateWrapper.PoiAction.DELETED));
         }
         for (PoiNodeRef p : wayPoiNodeRef) {
-            allPois.add(new PoiUpdateWrapper(false, null, p, PoiUpdateWrapper.PoiAction.UPDATE));
+            allPois.add(new PoiUpdateWrapper(false, null, null, p, PoiUpdateWrapper.PoiAction.UPDATE));
         }
 
         bus.post(new PoisToUpdateLoadedEvent(allPois));

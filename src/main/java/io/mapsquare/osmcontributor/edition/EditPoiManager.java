@@ -66,7 +66,7 @@ public class EditPoiManager {
 
         if (editPoi.hasChanges(event.getPoiChanges().getTagsMap())) {
 
-            saveOldVersionOfPoi(editPoi);
+            editPoi.setOldPoiId(saveOldVersionOfPoi(editPoi));
 
             //this is the edition of a new poi or we already edited this poi
             editPoi.applyChanges(event.getPoiChanges().getTagsMap());
@@ -82,7 +82,7 @@ public class EditPoiManager {
         Timber.d("Please apply poi position change");
         Poi editPoi = poiManager.queryForId(event.getPoiId());
 
-        saveOldVersionOfPoi(editPoi);
+        editPoi.setOldPoiId(saveOldVersionOfPoi(editPoi));
 
         editPoi.setLatitude(event.getPoiPosition().getLatitude());
         editPoi.setLongitude(event.getPoiPosition().getLongitude());
@@ -98,7 +98,7 @@ public class EditPoiManager {
         //apply changes on the noderef
         PoiNodeRef poiNodeRef = poiNodeRefDao.queryForId(event.getPoiId());
 
-        saveOldVersionOfPoiNodeRef(poiNodeRef);
+        poiNodeRef.setOldPoiId(saveOldVersionOfPoiNodeRef(poiNodeRef));
 
         poiNodeRef.setLongitude(newLatLng.getLongitude());
         poiNodeRef.setLatitude(newLatLng.getLatitude());
@@ -126,6 +126,7 @@ public class EditPoiManager {
         if (poi.getBackendId() == null) {
             poiManager.deletePoi(poi);
         } else {
+            poi.setOldPoiId(saveOldVersionOfPoi(poi));
             poi.setToDelete(true);
             poiManager.savePoi(poi);
         }
@@ -159,19 +160,26 @@ public class EditPoiManager {
         eventBus.post(new PoiNoTypeCreated());
     }
 
-    private void saveOldVersionOfPoi(Poi poi) {
+    private Long saveOldVersionOfPoi(Poi poi) {
+        if (poi.getBackendId() == null) {
+            return null;
+        }
         if (poiManager.countForBackendId(poi.getBackendId()) == 1) {
             Poi old = poi.getCopy();
             old.setOld(true);
             poiManager.savePoi(old);
+            return old.getId();
         }
+        return poi.getOldPoiId();
     }
 
-    private void saveOldVersionOfPoiNodeRef(PoiNodeRef poiNodeRef) {
+    private Long saveOldVersionOfPoiNodeRef(PoiNodeRef poiNodeRef) {
         if (poiNodeRefDao.countForBackendId(poiNodeRef.getNodeBackendId()) == 1) {
             PoiNodeRef old = poiNodeRef.getCopy();
             old.setOld(true);
             poiNodeRefDao.createOrUpdate(old);
+            return old.getId();
         }
+        return poiNodeRef.getOldPoiId();
     }
 }

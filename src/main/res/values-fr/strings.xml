@@ -177,4 +177,8 @@
     <string name="item_removed">\"%1$s\" a été supprimé</string>
     <string name="undo">Annuler</string>
 
+    <!-- Upload -->
+    <string name="position">Position :</string>
+    <string name="changed">Modifiée</string>
+
 </resources>

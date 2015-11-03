@@ -35,6 +35,7 @@ public class PoiNodeRef implements Cloneable {
     public static final String LATITUDE = "LATITUDE";
     public static final String UPDATED = "UPDATED";
     public static final String OLD = "OLD";
+    public static final String OLD_POI_ID = "OLD_POI_ID";
 
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
@@ -59,6 +60,17 @@ public class PoiNodeRef implements Cloneable {
 
     @DatabaseField(columnName = OLD)
     private Boolean old;
+
+    @DatabaseField(columnName = OLD_POI_ID)
+    private Long oldPoiId;
+
+    public Long getOldPoiId() {
+        return oldPoiId;
+    }
+
+    public void setOldPoiId(Long oldPoiId) {
+        this.oldPoiId = oldPoiId;
+    }
 
     public Long getId() {
         return id;

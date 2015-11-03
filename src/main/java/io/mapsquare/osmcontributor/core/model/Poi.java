@@ -53,6 +53,7 @@ public class Poi implements Cloneable {
     public static final String LEVEL = "LEVEL";
     public static final String POI_TYPE_ID = "POI_TYPE_ID";
     public static final String OLD = "OLD";
+    public static final String OLD_POI_ID = "OLD_POI_ID";
 
     public enum State {
         NORMAL, SELECTED, MOVING, NOT_SYNCED
@@ -113,6 +114,9 @@ public class Poi implements Cloneable {
 
     @DatabaseField(columnName = LEVEL)
     private String level;
+
+    @DatabaseField(columnName = OLD_POI_ID)
+    private Long oldPoiId;
 
     @DatabaseField(foreign = true, columnName = POI_TYPE_ID, foreignAutoRefresh = true)
     private PoiType type;
@@ -254,6 +258,14 @@ public class Poi implements Cloneable {
 
     public void setOld(boolean old) {
         this.old = old;
+    }
+
+    public Long getOldPoiId() {
+        return oldPoiId;
+    }
+
+    public void setOldPoiId(Long oldPoiId) {
+        this.oldPoiId = oldPoiId;
     }
 
     //fill levels set if there isn't any levels adding level 0
@@ -419,14 +431,19 @@ public class Poi implements Cloneable {
             tags = new ArrayList<>();
         }
 
+        int count = tagsMap.entrySet().size();
+
         // Apply the new values to the existing tags
         for (PoiTag poiTag : tags) {
-            String newValue = tagsMap.remove(poiTag.getKey());
-            if (newValue != null && !newValue.equals(poiTag.getValue())) {
-                return true;
+            String newValue = tagsMap.get(poiTag.getKey());
+            if (newValue != null) {
+                count--;
+                if (!newValue.equals(poiTag.getValue())) {
+                    return true;
+                }
             }
         }
-        return tagsMap.entrySet().size() > 0;
+        return count > 0;
     }
 
     @Override

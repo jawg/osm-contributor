@@ -19,31 +19,90 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<RelativeLayout
+<android.support.v7.widget.CardView
+    android:id="@+id/card_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:background="?attr/selectableItemBackground">
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardUseCompatPadding="true"
+    >
 
-    <TextView
-        android:id="@+id/poi_name"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:ellipsize="end"
-        android:textSize="16sp"/>
+        android:background="@android:color/white"
+        android:padding="16dp"
+        >
 
-    <TextView
-        android:id="@+id/poi_action"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_toEndOf="@+id/poi_name"
-        android:layout_toRightOf="@+id/poi_name"
-        android:gravity="end"
-        android:text="no action"
-        android:textSize="14sp"/>
+        <RelativeLayout
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-</RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/type_wrapper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                >
+
+                <TextView
+                    android:id="@+id/poi_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/poi_action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/poi_type"
+                    android:textSize="14sp"/>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/poi_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_toLeftOf="@+id/expend_button"
+                android:layout_toStartOf="@+id/expend_button"
+                android:layout_toRightOf="@+id/type_wrapper"
+                android:layout_toEndOf="@+id/type_wrapper"
+                android:ellipsize="end"
+                android:textSize="16sp"
+                />
+
+            <ImageButton
+                android:id="@+id/expend_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:background="@android:color/white"
+                android:padding="5dp"
+                android:src="@drawable/chevron_down"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/changes_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/header"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+        </LinearLayout>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
