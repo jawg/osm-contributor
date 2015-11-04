@@ -1,4 +1,10 @@
 ## Changelog
+[2.0.1]
+
+ - Download of Pois allowed at zoom level greater than 18
+ - It is now impossible to add or comment a note without being connected to OpenStreetMap
+ - Bugfixes
+
 [2.0.0]
 
  - PoiTypes loaded from H2geo json file
