@@ -149,6 +149,7 @@
     <string name="update_title">Ajouter un commentaire à vos modifications</string>
     <string name="need_a_comment">Le commentaire ne peut pas être vide</string>
     <string name="nothing_to_update">Vous n\'avez rien à mettre à jour</string>
+    <string name="nothing_selected">Vous n\' avez rien selectionné</string>
     <string name="created">Créé</string>
     <string name="deleted">Supprimé</string>
     <string name="updated">Modifié</string>

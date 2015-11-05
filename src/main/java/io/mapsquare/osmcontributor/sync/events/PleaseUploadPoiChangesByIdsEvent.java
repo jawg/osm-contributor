@@ -18,14 +18,40 @@
  */
 package io.mapsquare.osmcontributor.sync.events;
 
-public class PleaseUploadPoiChangesEvent {
-    private String comment;
+import java.util.List;
 
-    public PleaseUploadPoiChangesEvent(String comment) {
+public class PleaseUploadPoiChangesByIdsEvent {
+    private String comment;
+    private List<Long> poiIds;
+    private List<Long> poiNodeRefIds;
+
+    public PleaseUploadPoiChangesByIdsEvent(String comment, List<Long> poiIds, List<Long> poiNodeRefIds) {
         this.comment = comment;
+        this.poiIds = poiIds;
+        this.poiNodeRefIds = poiNodeRefIds;
     }
 
     public String getComment() {
         return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public List<Long> getPoiIds() {
+        return poiIds;
+    }
+
+    public void setPoiIds(List<Long> poiIds) {
+        this.poiIds = poiIds;
+    }
+
+    public List<Long> getPoiNodeRefIds() {
+        return poiNodeRefIds;
+    }
+
+    public void setPoiNodeRefIds(List<Long> poiNodeRefIds) {
+        this.poiNodeRefIds = poiNodeRefIds;
     }
 }

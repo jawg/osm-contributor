@@ -75,6 +75,22 @@ public class PoiNodeRefDao extends RuntimeExceptionDao<PoiNodeRef, Long> {
     }
 
     /**
+     * Query for all PoiNodeRefs by Ids .
+     *
+     * @return The list of PoiNodeRefs.
+     */
+    public List<PoiNodeRef> queryByPoiNodeRefIds(final List<Long> poiIds) {
+        return DatabaseHelper.wrapException(new Callable<List<PoiNodeRef>>() {
+            @Override
+            public List<PoiNodeRef> call() throws Exception {
+                return queryBuilder()
+                        .where().in(PoiNodeRef.ID, poiIds)
+                        .query();
+            }
+        });
+    }
+
+    /**
      * Count for all PoiNodeRefs to update.
      *
      * @return The count of PoiNodeRefs to update.

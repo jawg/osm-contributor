@@ -152,7 +152,6 @@
     <string name="filter_poi_all">All</string>
 
     <!-- Saving -->
-    <string name="comment_changeset" translatable="false">adding/updating/deleting POIs</string>
     <string name="save_now">Save&#8230;</string>
     <string name="title_activity_upload">Save modifications</string>
     <string name="couldnt_save_connectivity">Couldn\’t upload POIs. Check your connectivity.</string>
@@ -162,6 +161,7 @@
     <string name="update_title">Add a comment to your changes :</string>
     <string name="need_a_comment">The comment can\'t be empty</string>
     <string name="nothing_to_update">You don\'t have anything to update</string>
+    <string name="nothing_selected">You didn\'t select any changes</string>
     <string name="created">Created</string>
     <string name="deleted">Deleted</string>
     <string name="updated">Updated</string>

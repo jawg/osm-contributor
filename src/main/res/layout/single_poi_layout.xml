@@ -129,6 +129,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
+                android:checked="true"
                 />
 
             <Button

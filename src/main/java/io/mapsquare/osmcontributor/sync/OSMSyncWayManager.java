@@ -121,11 +121,13 @@ public class OSMSyncWayManager implements SyncWayManager {
      * {@inheritDoc}
      */
     @Override
-    public void downloadPoiForWayEdition() {
+    public List<Poi> downloadPoiForWayEdition(List<Long> ids) {
+        //get noderefs to update
+        List<PoiNodeRef> poiNodeRefs = poiNodeRefDao.queryByPoiNodeRefIds(ids);
+
         //get Pois corresponding to noderefs to update
         List<Poi> pois = getPoiWaysToUpdate();
-        //get noderefs to update
-        List<PoiNodeRef> poiNodeRefs = poiNodeRefDao.queryAllToUpdate();
+
         List<PoiNodeRef> poiNodeRefsToSave = new ArrayList<>();
 
         Map<String, PoiNodeRef> poiNodeRefMap = new HashMap<>();
@@ -142,13 +144,20 @@ public class OSMSyncWayManager implements SyncWayManager {
                 poi.setUpdated(true);
 
                 poiNodeRef.setUpdated(false);
+                Long oldId = poiNodeRef.getOldPoiId();
+                if(oldId != null){
+                    poiNodeRefDao.deleteById(oldId);
+                }
+                poiNodeRef.setOldPoiId(null);
                 poiNodeRefsToSave.add(poiNodeRef);
             }
         }
 
         //save changes
-        poiManager.savePois(pois);
+        pois = poiManager.savePois(pois);
         poiManager.savePoiNodeRefs(poiNodeRefsToSave);
+
+        return pois;
     }
 
     /**

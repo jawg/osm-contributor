@@ -20,12 +20,12 @@ package io.mapsquare.osmcontributor.sync;
 
 import android.app.Application;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.database.dao.PoiDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiTypeDao;
@@ -37,7 +37,7 @@ import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.note.NoteManager;
 import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
-import io.mapsquare.osmcontributor.sync.events.PleaseUploadPoiChangesEvent;
+import io.mapsquare.osmcontributor.sync.events.PleaseUploadPoiChangesByIdsEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoisAndNotesEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadWayEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
@@ -94,10 +94,9 @@ public class SyncManager {
         syncWayManager.syncDownloadWay(event.getBox());
     }
 
-    public void onEventAsync(PleaseUploadPoiChangesEvent event) {
-        remoteAddOrUpdateOrDeletePois(event.getComment());
+    public void onEventAsync(PleaseUploadPoiChangesByIdsEvent event) {
+        remoteAddOrUpdateOrDeletePois(event.getComment(), event.getPoiIds(), event.getPoiNodeRefIds());
     }
-
 
     /**
      * Initialize the database if the Flavor is PoiStorage.
@@ -179,26 +178,37 @@ public class SyncManager {
     }
 
     /**
-     * Call {@link io.mapsquare.osmcontributor.sync.SyncManager#remoteAddOrUpdateOrDeletePois(String)} with default comment.
-     */
-    public void remoteAddOrUpdateOrDeletePois() {
-        remoteAddOrUpdateOrDeletePois(application.getResources().getString(R.string.comment_changeset));
-    }
-
-    /**
-     * Send in a unique changeSet all the new POIs, modified and suppressed ones contained in the database.
+     * Send in a unique changeSet all the new POIs, modified and suppressed ones from ids send in params.
      * <p/>
      * Send a {@link io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent} with the counts.
      *
-     * @param comment The comment of the changeSet.
+     * @param comment       The comment of the changeSet.
+     * @param poisId        Pois to upload
+     * @param poiNodeRefsId PoisNodeRef to upload
      */
-    public void remoteAddOrUpdateOrDeletePois(String comment) {
-        syncWayManager.downloadPoiForWayEdition();
+    public void remoteAddOrUpdateOrDeletePois(String comment, List<Long> poisId, List<Long> poiNodeRefsId) {
+        final List<Poi> pois = poiDao.queryForIds(poisId);
+        final List<Poi> updatedPois = new ArrayList<>();
+        final List<Poi> newPois = new ArrayList<>();
+        final List<Poi> toDeletePois = new ArrayList<>();
 
-        final List<Poi> updatedPois = poiDao.queryForAllUpdated();
-        final List<Poi> newPois = poiDao.queryForAllNew();
-        final List<Poi> toDeletePois = poiDao.queryToDelete();
+        updatedPois.addAll(syncWayManager.downloadPoiForWayEdition(poiNodeRefsId));
 
+        for (Poi p : pois) {
+            if (p.getBackendId() == null) {
+                newPois.add(p);
+                continue;
+            }
+            if (p.getToDelete()) {
+                toDeletePois.add(p);
+                continue;
+            }
+            updatedPois.add(p);
+        }
+        remoteAddOrUpdateOrDeletePois(comment, poiDao.queryForAllUpdated(), poiDao.queryForAllNew(), poiDao.queryToDelete());
+    }
+
+    private void remoteAddOrUpdateOrDeletePois(String comment, List<Poi> updatedPois, List<Poi> newPois, List<Poi> toDeletePois) {
         int successfullyAddedPoisCount = 0;
         int successfullyUpdatedPoisCount = 0;
         int successfullyDeletedPoisCount = 0;

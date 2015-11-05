@@ -48,7 +48,7 @@ import io.mapsquare.osmcontributor.core.events.PleaseLoadPoisToUpdateEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseRevertPoiEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseRevertPoiNodeRefEvent;
 import io.mapsquare.osmcontributor.core.events.PoisToUpdateLoadedEvent;
-import io.mapsquare.osmcontributor.sync.events.PleaseUploadPoiChangesEvent;
+import io.mapsquare.osmcontributor.sync.events.PleaseUploadPoiChangesByIdsEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNodeErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConnectionLostErrorEvent;
@@ -137,10 +137,15 @@ public class UploadActivity extends AppCompatActivity {
                 return true;
             }
 
+            if (!adapter.changedSelected()) {
+                Toast.makeText(this, R.string.nothing_selected, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
             String comment = editTextComment.getText().toString();
 
             if (!comment.isEmpty()) {
-                eventBus.post(new PleaseUploadPoiChangesEvent(comment));
+                eventBus.post(new PleaseUploadPoiChangesByIdsEvent(comment, adapter.getPoiToUpload(), adapter.getPoiNodeRefToUpload()));
                 ringProgressDialog = ProgressDialog.show(this, null, getString(R.string.saving), true);
                 ringProgressDialog.setCancelable(true);
             } else {
@@ -238,7 +243,7 @@ public class UploadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 snackbar.dismiss();
-                adapter.retriveLastReverted();
+                adapter.retrieveLastReverted();
             }
         });
 
@@ -254,7 +259,7 @@ public class UploadActivity extends AppCompatActivity {
                     }
                 }
                 if (action == DISMISS_EVENT_SWIPE) {
-                    adapter.retriveLastReverted();
+                    adapter.retrieveLastReverted();
                 }
             }
         });

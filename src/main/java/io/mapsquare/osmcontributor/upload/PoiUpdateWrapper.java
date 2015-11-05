@@ -45,6 +45,7 @@ public class PoiUpdateWrapper {
     private final Boolean isPoi;
     private List<PoiDiffWrapper> poiDiff = new ArrayList<>();
     private boolean open = false;
+    private boolean selected = true;
 
 
     public PoiUpdateWrapper(boolean isPoi, Poi newPoi, Poi oldPoi, PoiNodeRef nodeRef, PoiAction action) {
@@ -115,6 +116,13 @@ public class PoiUpdateWrapper {
         this.open = open;
     }
 
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 
     private void initDescriptions() {
         Collection<PoiTag> oldTags = oldPoi == null ? new ArrayList<PoiTag>() : oldPoi.getTags();

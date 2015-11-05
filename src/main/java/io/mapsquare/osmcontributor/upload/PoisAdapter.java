@@ -26,11 +26,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -148,6 +151,14 @@ public class PoisAdapter extends BaseAdapter {
             }
         });
 
+        holder.getCheckbox().setChecked(poiWrapper.isSelected());
+        holder.getCheckbox().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                poiWrapper.setSelected(isChecked);
+            }
+        });
+
         return view;
     }
 
@@ -172,6 +183,9 @@ public class PoisAdapter extends BaseAdapter {
 
         @InjectView(R.id.revert)
         Button revertBtn;
+
+        @InjectView(R.id.checkbox)
+        CheckBox checkbox;
 
 
         public TextView getPoiAction() {
@@ -200,6 +214,10 @@ public class PoisAdapter extends BaseAdapter {
 
         public Button getRevertBtn() {
             return revertBtn;
+        }
+
+        public CheckBox getCheckbox() {
+            return checkbox;
         }
 
         public PoiViewHolder(View view) {
@@ -259,12 +277,41 @@ public class PoisAdapter extends BaseAdapter {
         }
     }
 
-    public void retriveLastReverted() {
+    public void retrieveLastReverted() {
         if (lastReverted != null) {
             poisWrapper.add(lastRevertedPosition, lastReverted);
             notifyDataSetChanged();
         }
         lastReverted = null;
+    }
+
+    public List<Long> getPoiToUpload() {
+        List<Long> idsToUpload = new ArrayList<>();
+        for (PoiUpdateWrapper poiUpdateWrapper : poisWrapper) {
+            if (poiUpdateWrapper.isSelected() && poiUpdateWrapper.getIsPoi()) {
+                idsToUpload.add(poiUpdateWrapper.getId());
+            }
+        }
+        return idsToUpload;
+    }
+
+    public List<Long> getPoiNodeRefToUpload() {
+        List<Long> idsToUpload = new ArrayList<>();
+        for (PoiUpdateWrapper poiUpdateWrapper : poisWrapper) {
+            if (poiUpdateWrapper.isSelected() && !poiUpdateWrapper.getIsPoi()) {
+                idsToUpload.add(poiUpdateWrapper.getId());
+            }
+        }
+        return idsToUpload;
+    }
+
+    public boolean changedSelected() {
+        for (PoiUpdateWrapper poiUpdateWrapper : poisWrapper) {
+            if (poiUpdateWrapper.isSelected()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

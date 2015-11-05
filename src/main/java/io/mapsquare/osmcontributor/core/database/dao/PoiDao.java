@@ -214,6 +214,23 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
     }
 
     /**
+     * Query for POIs by their Ids.
+     *
+     * @param ids The ids.
+     * @return The List of POIs.
+     */
+    public List<Poi> queryForIds(final Collection<Long> ids) {
+        return DatabaseHelper.wrapException(new Callable<List<Poi>>() {
+            @Override
+            public List<Poi> call() throws Exception {
+                return queryBuilder()
+                        .where().in(Poi.ID, ids)
+                        .query();
+            }
+        });
+    }
+
+    /**
      * Query for POIs with a given backend Id.
      *
      * @param backendId The backend id.

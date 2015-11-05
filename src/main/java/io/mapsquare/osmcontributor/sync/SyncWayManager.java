@@ -18,6 +18,9 @@
  */
 package io.mapsquare.osmcontributor.sync;
 
+import java.util.List;
+
+import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.utils.Box;
 
 /**
@@ -34,10 +37,13 @@ public interface SyncWayManager {
     void syncDownloadWay(final Box box);
 
     /**
-     * Download the backend the POIs corresponding to the PoiNodeRefs to update.
+     * Download from the backend, the POIs corresponding to the PoiNodeRefs to update filtered by ids in params.
      * <p/>
      * Apply the new latitude and longitude to those POIs, set them as Updated=true and save them in the database.
      * Set the PoiNodeRefs as Updated=false and save them in the database.
+     *
+     * @param ids ids of PoiNodeRef to take in account for the modification.
+     * @return The corresponding modified Pois.
      */
-    void downloadPoiForWayEdition();
+    List<Poi> downloadPoiForWayEdition(List<Long> ids);
 }
