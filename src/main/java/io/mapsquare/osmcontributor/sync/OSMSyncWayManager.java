@@ -145,7 +145,7 @@ public class OSMSyncWayManager implements SyncWayManager {
 
                 poiNodeRef.setUpdated(false);
                 Long oldId = poiNodeRef.getOldPoiId();
-                if(oldId != null){
+                if (oldId != null) {
                     poiNodeRefDao.deleteById(oldId);
                 }
                 poiNodeRef.setOldPoiId(null);

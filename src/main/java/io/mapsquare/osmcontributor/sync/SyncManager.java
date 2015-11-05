@@ -34,6 +34,7 @@ import io.mapsquare.osmcontributor.core.events.PoisAndNotesDownloadedEvent;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiType;
+import io.mapsquare.osmcontributor.login.LoginManager;
 import io.mapsquare.osmcontributor.note.NoteManager;
 import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
@@ -43,6 +44,7 @@ import io.mapsquare.osmcontributor.sync.events.SyncDownloadWayEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncConflictingNodeErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncNewNodeErrorEvent;
+import io.mapsquare.osmcontributor.sync.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
@@ -62,12 +64,14 @@ public class SyncManager {
     Backend backend;
     SyncWayManager syncWayManager;
     SyncNoteManager syncNoteManager;
+    LoginManager loginManager;
 
     @Inject
-    public SyncManager(Application application, PoiManager poiManager, NoteManager noteManager, PoiDao poiDao, PoiTypeDao poiTypeDao, EventBus bus, Backend backend, SyncWayManager syncWayManager, SyncNoteManager syncNoteManager) {
+    public SyncManager(Application application, PoiManager poiManager, LoginManager loginManager, NoteManager noteManager, PoiDao poiDao, PoiTypeDao poiTypeDao, EventBus bus, Backend backend, SyncWayManager syncWayManager, SyncNoteManager syncNoteManager) {
         this.application = application;
         this.poiManager = poiManager;
         this.noteManager = noteManager;
+        this.loginManager = loginManager;
         this.poiDao = poiDao;
         this.poiTypeDao = poiTypeDao;
         this.bus = bus;
@@ -95,7 +99,11 @@ public class SyncManager {
     }
 
     public void onEventAsync(PleaseUploadPoiChangesByIdsEvent event) {
-        remoteAddOrUpdateOrDeletePois(event.getComment(), event.getPoiIds(), event.getPoiNodeRefIds());
+        if (loginManager.checkCredentials()) {
+            remoteAddOrUpdateOrDeletePois(event.getComment(), event.getPoiIds(), event.getPoiNodeRefIds());
+        } else {
+            bus.post(new SyncUnauthorizedEvent());
+        }
     }
 
     /**
