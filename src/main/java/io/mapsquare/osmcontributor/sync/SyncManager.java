@@ -291,6 +291,8 @@ public class SyncManager {
      */
     private boolean remoteUpdatePoi(final Poi poi, String changeSetId) {
         Backend.UpdateResult updateResult = backend.updatePoi(poi, changeSetId);
+        poiManager.deleteOldPoiAssociated(poi);
+
         switch (updateResult.getStatus()) {
             case SUCCESS:
                 poi.setVersion(updateResult.getVersion());
@@ -342,6 +344,8 @@ public class SyncManager {
      */
     private boolean remoteDeletePoi(final Poi poi, String changeSetId) {
         Backend.ModificationStatus modificationStatus = backend.deletePoi(poi, changeSetId);
+        poiManager.deleteOldPoiAssociated(poi);
+
         switch (modificationStatus) {
             case SUCCESS:
             case FAILURE_NOT_EXISTING:

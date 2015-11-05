@@ -200,5 +200,9 @@
     <!-- Upload -->
     <string name="position">Position :</string>
     <string name="changed">Changed</string>
+    <string name="revert">Revert</string>
+    <string name="revert_snack_bar">Revert changes</string>
+    <string name="undo_snack_bar">Undo</string>
+    <string name="node_ref_title">Point</string>
 
 </resources>

@@ -47,7 +47,6 @@ public class PoiUpdateWrapper {
     private boolean open = false;
 
 
-
     public PoiUpdateWrapper(boolean isPoi, Poi newPoi, Poi oldPoi, PoiNodeRef nodeRef, PoiAction action) {
         this.oldPoi = oldPoi;
         this.newPoi = newPoi;
@@ -63,6 +62,13 @@ public class PoiUpdateWrapper {
 
     public String getPoiType() {
         return newPoi == null ? oldPoi == null ? "" : oldPoi.getType().getName() : newPoi.getType().getName();
+    }
+
+    public Long getId() {
+        if (isPoi) {
+            return newPoi == null ? oldPoi == null ? null : oldPoi.getId() : newPoi.getId();
+        }
+        return nodeRef == null ? null : nodeRef.getId();
     }
 
     public Poi getNewPoi() {
@@ -109,14 +115,18 @@ public class PoiUpdateWrapper {
         this.open = open;
     }
 
+
     private void initDescriptions() {
         Collection<PoiTag> oldTags = oldPoi == null ? new ArrayList<PoiTag>() : oldPoi.getTags();
         Collection<PoiTag> newTags = newPoi == null ? new ArrayList<PoiTag>() : newPoi.getTags();
         Map<String, String> newTagsMap = new HashMap<>();
 
-        // add all new tags in a map
-        for (PoiTag poiTag : newTags) {
-            newTagsMap.put(poiTag.getKey(), poiTag.getValue());
+        //if the poi is deleted there is not any new values
+        if (action != PoiAction.DELETED) {
+            // add all new tags in a map
+            for (PoiTag poiTag : newTags) {
+                newTagsMap.put(poiTag.getKey(), poiTag.getValue());
+            }
         }
 
         // add all old tags with the new value if there is one

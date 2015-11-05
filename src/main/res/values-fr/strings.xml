@@ -180,5 +180,9 @@
     <!-- Upload -->
     <string name="position">Position :</string>
     <string name="changed">Modifiée</string>
+    <string name="revert">Annuler</string>
+    <string name="revert_snack_bar">Suppression des modifications</string>
+    <string name="undo_snack_bar">Annuler</string>
+    <string name="node_ref_title">Point</string>
 
 </resources>

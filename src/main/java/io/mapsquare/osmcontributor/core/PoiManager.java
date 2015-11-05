@@ -49,6 +49,8 @@ import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiForEditionEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiTypes;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoisEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoisToUpdateEvent;
+import io.mapsquare.osmcontributor.core.events.PleaseRevertPoiEvent;
+import io.mapsquare.osmcontributor.core.events.PleaseRevertPoiNodeRefEvent;
 import io.mapsquare.osmcontributor.core.events.PoiForEditionLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PoiTypesLoaded;
 import io.mapsquare.osmcontributor.core.events.PoisLoadedEvent;
@@ -64,6 +66,7 @@ import io.mapsquare.osmcontributor.map.events.LastUsePoiTypeLoaded;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadLastUsedPoiType;
 import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.upload.PoiUpdateWrapper;
+import io.mapsquare.osmcontributor.upload.events.RevertFinishedEvent;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 import timber.log.Timber;
@@ -136,7 +139,7 @@ public class PoiManager {
             allPois.add(new PoiUpdateWrapper(true, p, null, null, PoiUpdateWrapper.PoiAction.CREATE));
         }
         for (Poi p : toDeletePois) {
-            allPois.add(new PoiUpdateWrapper(true, null, poiDao.queryForId(p.getOldPoiId()), null, PoiUpdateWrapper.PoiAction.DELETED));
+            allPois.add(new PoiUpdateWrapper(true, p, poiDao.queryForId(p.getOldPoiId()), null, PoiUpdateWrapper.PoiAction.DELETED));
         }
         for (PoiNodeRef p : wayPoiNodeRef) {
             allPois.add(new PoiUpdateWrapper(false, null, null, p, PoiUpdateWrapper.PoiAction.UPDATE));
@@ -155,6 +158,16 @@ public class PoiManager {
 
     public void onEventAsync(ResetDatabaseEvent event) {
         bus.post(new DatabaseResetFinishedEvent(resetDatabase()));
+    }
+
+    public void onEventAsync(PleaseRevertPoiEvent event) {
+        revertPoi(event.getIdToRevert());
+        bus.post(new RevertFinishedEvent());
+    }
+
+    public void onEventAsync(PleaseRevertPoiNodeRefEvent event) {
+        revertPoiNodeRef(event.getIdToRevert());
+        bus.post(new RevertFinishedEvent());
     }
 
     // ********************************
@@ -701,5 +714,64 @@ public class PoiManager {
      */
     private void loadPois(PleaseLoadPoisEvent event) {
         bus.post(new PoisLoadedEvent(event.getBox(), queryForAllInRect(event.getBox())));
+    }
+
+    /**
+     * Get the backup data and put it back in the active Poi, at the end the backup Poi is deleted.
+     *
+     * @param poiId The Id of the Poi to revert.
+     */
+    private void revertPoi(Long poiId) {
+        Poi poi = poiDao.queryForId(poiId);
+        Poi backup;
+        Long oldPoiId = poi.getOldPoiId();
+
+        if (oldPoiId != null) {
+            backup = poiDao.queryForId(oldPoiId);
+
+            // we retrieve the backup data and put it back
+            backup.setOld(false);
+            backup.setId(poi.getId());
+            savePoi(backup);
+
+            //we prepare to delete the modifications
+            poi.setId(oldPoiId);
+        }
+
+        deletePoi(poi);
+    }
+
+    /**
+     * Get the backup data and put it back in the active NodeRefPoi
+     *
+     * @param poiNodeRefId The Id of the PoiNodeRef to revert.
+     */
+    private void revertPoiNodeRef(Long poiNodeRefId) {
+        PoiNodeRef poiNodeRef = poiNodeRefDao.queryForId(poiNodeRefId);
+        PoiNodeRef backup;
+        Long oldId = poiNodeRef.getOldPoiId();
+
+        if (oldId != null) {
+            backup = poiNodeRefDao.queryForId(oldId);
+            poiNodeRef.setLatitude(backup.getLatitude());
+            poiNodeRef.setLongitude(backup.getLongitude());
+            poiNodeRefDao.deleteById(oldId);
+        }
+
+        poiNodeRef.setUpdated(false);
+        poiNodeRef.setOld(false);
+        poiNodeRef.setOldPoiId(null);
+        poiNodeRefDao.createOrUpdate(poiNodeRef);
+    }
+
+    public void deleteOldPoiAssociated(Poi poi) {
+        Long oldId = poi.getOldPoiId();
+        if (oldId != null) {
+            Poi old = poiDao.queryForId(oldId);
+            if (old != null) {
+                deletePoi(old);
+            }
+            poi.setOldPoiId(null);
+        }
     }
 }

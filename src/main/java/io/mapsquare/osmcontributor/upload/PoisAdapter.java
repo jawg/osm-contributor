@@ -25,28 +25,35 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.R;
+import io.mapsquare.osmcontributor.upload.events.PleaseConfirmRevertEvent;
 import io.mapsquare.osmcontributor.utils.HtmlFontHelper;
 import io.mapsquare.osmcontributor.utils.ViewAnimation;
 
 public class PoisAdapter extends BaseAdapter {
 
-
     private List<PoiUpdateWrapper> poisWrapper = null;
+    private PoiUpdateWrapper lastReverted = null;
+    private int lastRevertedPosition;
     private LayoutInflater inflater;
     private Context context;
+    private EventBus eventBus;
 
-    public PoisAdapter(Context context, List<PoiUpdateWrapper> wrapper) {
+    public PoisAdapter(Context context, List<PoiUpdateWrapper> wrapper, EventBus eventBus) {
         this.poisWrapper = wrapper;
         this.context = context;
+        this.eventBus = eventBus;
         inflater = LayoutInflater.from(context);
     }
 
@@ -66,7 +73,7 @@ public class PoisAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(final int position, View view, ViewGroup parent) {
         final PoiViewHolder holder;
 
         if (view != null) {
@@ -79,10 +86,6 @@ public class PoisAdapter extends BaseAdapter {
 
         final PoiUpdateWrapper poiWrapper = poisWrapper.get(position);
 
-        holder.getPoiName().setText(poiWrapper.getName());
-        holder.getPoiType().setText(poiWrapper.getPoiType());
-
-        populateDiffs(holder, parent, poiWrapper);
 
         switch (poiWrapper.getAction()) {
             case CREATE:
@@ -99,8 +102,12 @@ public class PoisAdapter extends BaseAdapter {
         final LinearLayout wrapper = holder.getDetailsWrapper();
 
         if (poiWrapper.getIsPoi()) {
+            holder.getPoiType().setText(poiWrapper.getPoiType());
+            holder.getPoiName().setText(poiWrapper.getName());
             holder.getExpandBtn().setVisibility(View.VISIBLE);
-            holder.getExpandBtn().setOnClickListener(new View.OnClickListener() {
+            populateDiffs(holder, parent, poiWrapper);
+
+            View.OnClickListener expendCardnew = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     poiWrapper.setOpen(!poiWrapper.isOpen());
@@ -112,7 +119,10 @@ public class PoisAdapter extends BaseAdapter {
                         holder.getExpandBtn().setImageResource(R.drawable.chevron_down);
                     }
                 }
-            });
+            };
+
+            holder.getExpandBtn().setOnClickListener(expendCardnew);
+            holder.getHeader().setOnClickListener(expendCardnew);
 
             if (poiWrapper.isOpen()) {
                 wrapper.setVisibility(View.VISIBLE);
@@ -124,7 +134,19 @@ public class PoisAdapter extends BaseAdapter {
         } else {
             holder.getExpandBtn().setVisibility(View.GONE);
             wrapper.setVisibility(View.GONE);
+            holder.getPoiType().setText(context.getString(R.string.node_ref_title));
+            holder.getPoiName().setText("");
         }
+
+        holder.getRevertBtn().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lastReverted = poisWrapper.remove(position);
+                lastRevertedPosition = position;
+                eventBus.post(new PleaseConfirmRevertEvent(poiWrapper.getId(), poiWrapper.getIsPoi()));
+                notifyDataSetChanged();
+            }
+        });
 
         return view;
     }
@@ -142,8 +164,14 @@ public class PoisAdapter extends BaseAdapter {
         @InjectView(R.id.changes_details)
         LinearLayout detailsWrapper;
 
+        @InjectView(R.id.header)
+        RelativeLayout header;
+
         @InjectView(R.id.expend_button)
         ImageButton expandBtn;
+
+        @InjectView(R.id.revert)
+        Button revertBtn;
 
 
         public TextView getPoiAction() {
@@ -164,6 +192,14 @@ public class PoisAdapter extends BaseAdapter {
 
         public TextView getPoiType() {
             return poiType;
+        }
+
+        public RelativeLayout getHeader() {
+            return header;
+        }
+
+        public Button getRevertBtn() {
+            return revertBtn;
         }
 
         public PoiViewHolder(View view) {
@@ -221,6 +257,14 @@ public class PoisAdapter extends BaseAdapter {
 
             holder.getDetailsWrapper().addView(singleLine);
         }
+    }
+
+    public void retriveLastReverted() {
+        if (lastReverted != null) {
+            poisWrapper.add(lastRevertedPosition, lastReverted);
+            notifyDataSetChanged();
+        }
+        lastReverted = null;
     }
 }
 

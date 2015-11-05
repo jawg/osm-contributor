@@ -69,6 +69,7 @@ public class LocationMarker extends Marker {
 
     public void setPoi(Poi poi) {
         setRelatedObject(poi);
+        setPoint(new LatLng(poi.getLatitude(), poi.getLongitude()));
     }
 
     public void setNote(Note note) {

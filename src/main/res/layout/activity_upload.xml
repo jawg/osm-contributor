@@ -19,66 +19,70 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<LinearLayout
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/coordinatorLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="io.mapsquare.osmcontributor.upload.UploadActivity">
 
-
-    <include layout="@layout/toolbar_layout"/>
-
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="io.mapsquare.osmcontributor.edition.PickValueActivity">
+        android:orientation="vertical"
+        >
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/update_title"
-            android:textColor="@android:color/holo_blue_dark"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="16dp"
-            android:textSize="18sp"/>
+        <include layout="@layout/toolbar_layout"/>
 
-        <EditText
-            android:id="@+id/comment_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/title"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:inputType="text"
-            android:maxLength="1000"
-            android:maxLines="5"/>
 
-        <ListView
-            android:id="@+id/poi_list"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/comment_edit_text"
-            android:layout_marginTop="16dp"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            android:paddingRight="16dp"
-            android:paddingLeft="16dp"/>
+            tools:context="io.mapsquare.osmcontributor.edition.PickValueActivity">
 
-        <TextView
-            android:id="@+id/no_value_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/nothing_to_update"
-            android:textColor="@color/disable_text"
-            android:textSize="20sp"
-            android:visibility="gone"/>
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp"
+                android:text="@string/update_title"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="18sp"/>
 
+            <EditText
+                android:id="@+id/comment_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:inputType="text"
+                android:maxLength="1000"
+                android:maxLines="5"/>
 
-</LinearLayout>
+            <ListView
+                android:id="@+id/poi_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/comment_edit_text"
+                android:layout_marginTop="16dp"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"/>
+
+            <TextView
+                android:id="@+id/no_value_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/nothing_to_update"
+                android:textColor="@color/disable_text"
+                android:textSize="20sp"
+                android:visibility="gone"/>
+        </RelativeLayout>
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

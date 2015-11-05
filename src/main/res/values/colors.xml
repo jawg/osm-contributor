@@ -42,4 +42,7 @@
     <color name="list_item_bg">#ffffffff</color>
     <color name="list_swipe_bg">#32ff4a4a</color>
 
+    <!--Layout-->
+    <color name="divider">#BDBDBD</color>
+
 </resources>

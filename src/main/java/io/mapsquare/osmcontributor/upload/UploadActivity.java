@@ -19,7 +19,10 @@
 package io.mapsquare.osmcontributor.upload;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -42,6 +45,8 @@ import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoisToUpdateEvent;
+import io.mapsquare.osmcontributor.core.events.PleaseRevertPoiEvent;
+import io.mapsquare.osmcontributor.core.events.PleaseRevertPoiNodeRefEvent;
 import io.mapsquare.osmcontributor.core.events.PoisToUpdateLoadedEvent;
 import io.mapsquare.osmcontributor.sync.events.PleaseUploadPoiChangesEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncFinishUploadPoiEvent;
@@ -51,13 +56,14 @@ import io.mapsquare.osmcontributor.sync.events.error.SyncNewNodeErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadNoteRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadRetrofitErrorEvent;
+import io.mapsquare.osmcontributor.upload.events.PleaseConfirmRevertEvent;
 
 public class UploadActivity extends AppCompatActivity {
 
     private List<PoiUpdateWrapper> poisWrapper = new ArrayList<>();
     private PoisAdapter adapter;
     private ProgressDialog ringProgressDialog;
-
+    private Context context;
 
     @InjectView(R.id.comment_edit_text)
     EditText editTextComment;
@@ -71,12 +77,16 @@ public class UploadActivity extends AppCompatActivity {
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
 
+    @InjectView(R.id.coordinatorLayout)
+    CoordinatorLayout coordinatorLayout;
+
     @Inject
     EventBus eventBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this;
         setContentView(R.layout.activity_upload);
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
         ButterKnife.inject(this);
@@ -88,7 +98,7 @@ public class UploadActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        adapter = new PoisAdapter(this, poisWrapper);
+        adapter = new PoisAdapter(this, poisWrapper, eventBus);
         poisListView.setAdapter(adapter);
     }
 
@@ -214,5 +224,40 @@ public class UploadActivity extends AppCompatActivity {
         //get all pois not updated
         eventBus.post(new PleaseLoadPoisToUpdateEvent());
         editTextComment.setText("");
+    }
+
+
+    /*-----------------------------------------------------------
+    * Revert
+    *---------------------------------------------------------*/
+    public void onEventMainThread(final PleaseConfirmRevertEvent event) {
+
+        final Snackbar snackbar = Snackbar.make(coordinatorLayout, getString(R.string.revert_snack_bar), Snackbar.LENGTH_SHORT);
+
+        snackbar.setAction(getString(R.string.undo_snack_bar), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackbar.dismiss();
+                adapter.retriveLastReverted();
+            }
+        });
+
+        snackbar.setCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar snackbar, int action) {
+                super.onDismissed(snackbar, action);
+                if (action == DISMISS_EVENT_TIMEOUT || action == DISMISS_EVENT_CONSECUTIVE) {
+                    if (event.isPoi()) {
+                        eventBus.post(new PleaseRevertPoiEvent(event.getIdToRevert()));
+                    } else {
+                        eventBus.post(new PleaseRevertPoiNodeRefEvent(event.getIdToRevert()));
+                    }
+                }
+                if (action == DISMISS_EVENT_SWIPE) {
+                    adapter.retriveLastReverted();
+                }
+            }
+        });
+        snackbar.show();
     }
 }
