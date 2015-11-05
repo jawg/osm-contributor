@@ -96,4 +96,17 @@ public class NoteDao extends RuntimeExceptionDao<Note, Long> {
             }
         });
     }
+
+    /**
+     * Delete all the PoiNodeRefs in the database.
+     */
+    public void deleteAll() {
+        DatabaseHelper.wrapException(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                deleteBuilder().delete();
+                return null;
+            }
+        });
+    }
 }

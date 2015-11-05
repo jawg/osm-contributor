@@ -89,6 +89,13 @@
     <string name="summary_password">Please provide a password</string>
     <string name="error_login">Couldn’t connect with these credentials. Are you sure you have editing rights?</string>
     <string name="valid_login">Successfully connected</string>
+    <string name="reset_title">Reset the database</string>
+    <string name="reset_summary">Remove all the Pois from the database</string>
+    <string name="reset_dialog_message">Are you sure you want to reset the database? All your unsaved modifications will be lost.</string>
+    <string name="reset_dialog_positive_button">Yes</string>
+    <string name="reset_dialog_negative_button">Cancel</string>
+    <string name="reset_success">The database was successfully reset</string>
+    <string name="reset_failure">There was an error during the reset of the database</string>
 
     <!-- Shared preferences -->
     <string name="shared_prefs_login" translatable="false">SHARED_PREFS_LOGIN</string>
@@ -96,6 +103,7 @@
     <string name="shared_prefs_login_title_key" translatable="false">SHARED_PREFS_LOGIN_TITLE</string>
     <string name="shared_prefs_sync_title_key" translatable="false">SHARED_PREFS_SYNC_TITLE_KEY</string>
     <string name="shared_prefs_server_key" translatable="false">SHARED_PREFS_SERVER_KEY</string>
+    <string name="shared_prefs_reset" translatable="false">SHARED_PREFS_RESET</string>
     <string name="shared_prefs_login_title">Connection</string>
     <string name="shared_prefs_server">OSM Server</string>
 

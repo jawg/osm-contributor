@@ -107,4 +107,17 @@ public class PoiTagDao extends RuntimeExceptionDao<PoiTag, Long> {
             }
         });
     }
+
+    /**
+     * Delete all the POIs in the database.
+     */
+    public void deleteAll() {
+        DatabaseHelper.wrapException(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                deleteBuilder().delete();
+                return null;
+            }
+        });
+    }
 }

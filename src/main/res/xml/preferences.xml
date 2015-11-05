@@ -21,6 +21,11 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <Preference
+        android:key="@string/shared_prefs_reset"
+        android:summary="@string/reset_summary"
+        android:title="@string/reset_title"/>
+
     <PreferenceCategory
         android:key="@string/shared_prefs_login_title_key"
         android:title="@string/shared_prefs_login_title">

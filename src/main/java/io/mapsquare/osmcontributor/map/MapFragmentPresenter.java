@@ -241,7 +241,9 @@ public class MapFragmentPresenter {
         forceRefreshNotes = false;
         LocationMarker marker;
 
+        List<Long> noteIds = new ArrayList<>(notes.size());
         for (Note note : notes) {
+            noteIds.add(note.getId());
             if (mapFragment.getNote(note.getId()) == null) {
 
                 marker = new LocationMarker(note);
@@ -281,8 +283,9 @@ public class MapFragmentPresenter {
                     currentMarker.setIcon(new Icon(new BitmapDrawable(mapFragment.getResources(), bitmap)));
                 }
             }
-
         }
+
+        mapFragment.removeNoteMarkersNotIn(noteIds);
 
         if ((mapFragment.getMapMode() == MapMode.DEFAULT || mapFragment.getMapMode() == MapMode.POI_CREATION)) {
             mapFragment.reselectMarker();

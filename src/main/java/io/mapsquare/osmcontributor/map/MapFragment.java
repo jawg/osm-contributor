@@ -1059,6 +1059,15 @@ public class MapFragment extends Fragment {
         markersPoi.keySet().removeAll(idsToRemove);
     }
 
+    public void removeNoteMarkersNotIn(List<Long> noteIds) {
+        Set<Long> idsToRemove = new HashSet<>(markersNotes.keySet());
+        idsToRemove.removeAll(noteIds);
+        for (Long id : idsToRemove) {
+            removeMarker(markersNotes.get(id));
+        }
+        markersNotes.keySet().removeAll(idsToRemove);
+    }
+
     public Map<Long, LocationMarker> getMarkersPoi() {
         return markersPoi;
     }

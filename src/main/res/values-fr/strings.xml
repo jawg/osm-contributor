@@ -83,6 +83,13 @@
     <string name="summary_password">Veuillez saisir votre mot de passe</string>
     <string name="error_login">Impossible de se connecter avec ces identifiants. Etes-vous sûr d\'avoir les droits d\'édition?</string>
     <string name="valid_login">Connexion réussie</string>
+    <string name="reset_title">Réinitialiser la base de données</string>
+    <string name="reset_summary">Supprime tous les Pois de la base de données</string>
+    <string name="reset_dialog_message">Etes-vous sûr de vouloir réinitialiser la base de données? Tous vos changements non sauvegardés seront perdus.</string>
+    <string name="reset_dialog_positive_button">Oui</string>
+    <string name="reset_dialog_negative_button">Annuler</string>
+    <string name="reset_success">La base de données a été réinitialisée avec succès</string>
+    <string name="reset_failure">Une erreur est survenue durant la réinitialisation</string>
 
     <!-- Shared preferences -->
     <string name="shared_prefs_login_title">Connexion</string>

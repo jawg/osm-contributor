@@ -232,4 +232,17 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
             }
         });
     }
+
+    /**
+     * Delete all the POIs in the database.
+     */
+    public void deleteAll() {
+        DatabaseHelper.wrapException(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                deleteBuilder().delete();
+                return null;
+            }
+        });
+    }
 }

@@ -70,4 +70,17 @@ public class CommentDao extends RuntimeExceptionDao<Comment, Long> {
     public List<Comment> queryForAllNew() {
         return queryForEq(Comment.UPDATED, true);
     }
+
+    /**
+     * Delete all the PoiNodeRefs in the database.
+     */
+    public void deleteAll() {
+        DatabaseHelper.wrapException(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                deleteBuilder().delete();
+                return null;
+            }
+        });
+    }
 }

@@ -38,6 +38,7 @@ import io.mapsquare.osmcontributor.core.events.NoteSavedEvent;
 import io.mapsquare.osmcontributor.core.events.NotesLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNoteEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNotesEvent;
+import io.mapsquare.osmcontributor.core.events.ResetDatabaseEvent;
 import io.mapsquare.osmcontributor.core.model.Comment;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.login.LoginManager;
@@ -108,6 +109,10 @@ public class NoteManager {
         } else {
             bus.post(new ApplyNewCommentFailedEvent());
         }
+    }
+
+    public void onEventAsync(ResetDatabaseEvent event) {
+        resetDatabase();
     }
 
     // ********************************
@@ -288,6 +293,22 @@ public class NoteManager {
         newComment.setNote(note);
 
         return newComment;
+    }
+
+    /**
+     * Reset the database : delete all the Notes and Comments of the database.
+     *
+     * @return Whether the reset was successful.
+     */
+    public Boolean resetDatabase() {
+        return databaseHelper.callInTransaction(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                noteDao.deleteAll();
+                commentDao.deleteAll();
+                return true;
+            }
+        });
     }
 
     // *********************************

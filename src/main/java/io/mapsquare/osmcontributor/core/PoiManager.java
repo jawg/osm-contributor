@@ -41,6 +41,7 @@ import io.mapsquare.osmcontributor.core.database.dao.PoiNodeRefDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiTagDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiTypeDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiTypeTagDao;
+import io.mapsquare.osmcontributor.core.events.DatabaseResetFinishedEvent;
 import io.mapsquare.osmcontributor.core.events.NodeRefAroundLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNodeRefAround;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiForCreationEvent;
@@ -52,6 +53,7 @@ import io.mapsquare.osmcontributor.core.events.PoiForEditionLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PoiTypesLoaded;
 import io.mapsquare.osmcontributor.core.events.PoisLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PoisToUpdateLoadedEvent;
+import io.mapsquare.osmcontributor.core.events.ResetDatabaseEvent;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
 import io.mapsquare.osmcontributor.core.model.PoiTag;
@@ -149,6 +151,10 @@ public class PoiManager {
 
     public void onEventAsync(PleaseLoadLastUsedPoiType event) {
         bus.post(new LastUsePoiTypeLoaded(getPoiTypesSortedByLastUse()));
+    }
+
+    public void onEventAsync(ResetDatabaseEvent event) {
+        bus.post(new DatabaseResetFinishedEvent(resetDatabase()));
     }
 
     // ********************************
@@ -608,6 +614,23 @@ public class PoiManager {
             Timber.d("Update date of : %s", poiType);
             poiTypeDao.createOrUpdate(poiType);
         }
+    }
+
+    /**
+     * Reset the database : delete all the Pois, PoiTags and PoiNodeRefs of the database.
+     *
+     * @return Whether the reset was successful.
+     */
+    public Boolean resetDatabase() {
+        return databaseHelper.callInTransaction(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                poiDao.deleteAll();
+                poiNodeRefDao.deleteAll();
+                poiTagDao.deleteAll();
+                return true;
+            }
+        });
     }
 
     // *********************************

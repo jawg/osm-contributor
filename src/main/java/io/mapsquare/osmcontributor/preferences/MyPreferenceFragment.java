@@ -18,6 +18,8 @@
  */
 package io.mapsquare.osmcontributor.preferences;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -36,6 +38,8 @@ import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.ConfigManager;
+import io.mapsquare.osmcontributor.core.events.DatabaseResetFinishedEvent;
+import io.mapsquare.osmcontributor.core.events.ResetDatabaseEvent;
 import io.mapsquare.osmcontributor.login.events.AttemptLoginEvent;
 import io.mapsquare.osmcontributor.login.events.ErrorLoginEvent;
 import io.mapsquare.osmcontributor.login.events.ValidLoginEvent;
@@ -89,6 +93,27 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
 
         updateLoginSummary(getPreferenceScreen().getSharedPreferences());
         updatePasswordSummary(getPreferenceScreen().getSharedPreferences());
+
+        Preference resetPreference = findPreference(getString(R.string.shared_prefs_reset));
+        resetPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new AlertDialog.Builder(getActivity())
+                        .setMessage(R.string.reset_dialog_message)
+                        .setPositiveButton(R.string.reset_dialog_positive_button, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                bus.post(new ResetDatabaseEvent());
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(R.string.reset_dialog_negative_button, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        }).show();
+                return false;
+            }
+        });
     }
 
     @Override
@@ -181,5 +206,9 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
 
     public void onEventMainThread(ErrorLoginEvent event) {
         Toast.makeText(getActivity(), R.string.error_login, Toast.LENGTH_LONG).show();
+    }
+
+    public void onEventMainThread(DatabaseResetFinishedEvent event) {
+        Toast.makeText(getActivity(), event.isSuccess() ? R.string.reset_success : R.string.reset_failure, Toast.LENGTH_SHORT).show();
     }
 }
