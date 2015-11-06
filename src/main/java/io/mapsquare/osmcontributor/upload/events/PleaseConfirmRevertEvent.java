@@ -19,28 +19,13 @@
 package io.mapsquare.osmcontributor.upload.events;
 
 public class PleaseConfirmRevertEvent {
-    private final Long idToRevert;
-    private final boolean poi;
+    private int position;
 
-    /**
-     * @param idToRevert The Id of the object to revert
-     * @param poi        True if it's a POI and False for a PoiNodeRef
-     */
-    public PleaseConfirmRevertEvent(Long idToRevert, boolean poi) {
-        this.idToRevert = idToRevert;
-        this.poi = poi;
+    public PleaseConfirmRevertEvent(int position) {
+        this.position = position;
     }
 
-    public Long getIdToRevert() {
-        return idToRevert;
-    }
-
-    /**
-     * Used to know if it's a POI or PoiNodeRef
-     *
-     * @return True if it's a POI and False for a PoiNodeRef
-     */
-    public boolean isPoi() {
-        return poi;
+    public int getPosition() {
+        return position;
     }
 }

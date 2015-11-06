@@ -20,6 +20,7 @@ package io.mapsquare.osmcontributor.upload;
 
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nhaarman.listviewanimations.util.Insertable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,11 +47,9 @@ import io.mapsquare.osmcontributor.upload.events.PleaseConfirmRevertEvent;
 import io.mapsquare.osmcontributor.utils.HtmlFontHelper;
 import io.mapsquare.osmcontributor.utils.ViewAnimation;
 
-public class PoisAdapter extends BaseAdapter {
+public class PoisAdapter extends BaseAdapter implements Insertable<PoiUpdateWrapper> {
 
     private List<PoiUpdateWrapper> poisWrapper = null;
-    private PoiUpdateWrapper lastReverted = null;
-    private int lastRevertedPosition;
     private LayoutInflater inflater;
     private Context context;
     private EventBus eventBus;
@@ -144,10 +145,7 @@ public class PoisAdapter extends BaseAdapter {
         holder.getRevertBtn().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lastReverted = poisWrapper.remove(position);
-                lastRevertedPosition = position;
-                eventBus.post(new PleaseConfirmRevertEvent(poiWrapper.getId(), poiWrapper.getIsPoi()));
-                notifyDataSetChanged();
+                eventBus.post(new PleaseConfirmRevertEvent(position));
             }
         });
 
@@ -160,6 +158,18 @@ public class PoisAdapter extends BaseAdapter {
         });
 
         return view;
+    }
+
+    public PoiUpdateWrapper remove(int position) {
+        PoiUpdateWrapper reverted = poisWrapper.remove(position);
+        notifyDataSetChanged();
+        return reverted;
+    }
+
+    @Override
+    public void add(int index, @NonNull PoiUpdateWrapper item) {
+        poisWrapper.add(index, item);
+        notifyDataSetChanged();
     }
 
     static class PoiViewHolder {
@@ -275,14 +285,6 @@ public class PoisAdapter extends BaseAdapter {
 
             holder.getDetailsWrapper().addView(singleLine);
         }
-    }
-
-    public void retrieveLastReverted() {
-        if (lastReverted != null) {
-            poisWrapper.add(lastRevertedPosition, lastReverted);
-            notifyDataSetChanged();
-        }
-        lastReverted = null;
     }
 
     public List<Long> getPoiToUpload() {

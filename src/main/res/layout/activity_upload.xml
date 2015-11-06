@@ -63,7 +63,7 @@
                 android:maxLength="1000"
                 android:maxLines="5"/>
 
-            <ListView
+            <com.nhaarman.listviewanimations.itemmanipulation.DynamicListView
                 android:id="@+id/poi_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

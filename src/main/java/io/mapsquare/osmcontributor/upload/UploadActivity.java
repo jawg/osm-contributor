@@ -19,8 +19,8 @@
 package io.mapsquare.osmcontributor.upload;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -29,10 +29,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
+import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +66,6 @@ public class UploadActivity extends AppCompatActivity {
     private List<PoiUpdateWrapper> poisWrapper = new ArrayList<>();
     private PoisAdapter adapter;
     private ProgressDialog ringProgressDialog;
-    private Context context;
 
     @InjectView(R.id.comment_edit_text)
     EditText editTextComment;
@@ -72,7 +74,7 @@ public class UploadActivity extends AppCompatActivity {
     TextView noValues;
 
     @InjectView(R.id.poi_list)
-    ListView poisListView;
+    DynamicListView poisListView;
 
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
@@ -86,7 +88,6 @@ public class UploadActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = this;
         setContentView(R.layout.activity_upload);
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
         ButterKnife.inject(this);
@@ -99,6 +100,16 @@ public class UploadActivity extends AppCompatActivity {
         }
 
         adapter = new PoisAdapter(this, poisWrapper, eventBus);
+        poisListView.enableSwipeToDismiss(
+                new OnDismissCallback() {
+                    @Override
+                    public void onDismiss(@NonNull final ViewGroup listView, @NonNull final int[] reverseSortedPositions) {
+                        for (int position : reverseSortedPositions) {
+                            remove(position);
+                        }
+                    }
+                }
+        );
         poisListView.setAdapter(adapter);
     }
 
@@ -236,30 +247,30 @@ public class UploadActivity extends AppCompatActivity {
     * Revert
     *---------------------------------------------------------*/
     public void onEventMainThread(final PleaseConfirmRevertEvent event) {
+        poisListView.dismiss(event.getPosition());
+    }
+
+    private void remove(final int position) {
+        final PoiUpdateWrapper item = adapter.remove(position);
 
         final Snackbar snackbar = Snackbar.make(coordinatorLayout, getString(R.string.revert_snack_bar), Snackbar.LENGTH_SHORT);
-
         snackbar.setAction(getString(R.string.undo_snack_bar), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 snackbar.dismiss();
-                adapter.retrieveLastReverted();
+                poisListView.insert(position, item);
             }
         });
-
         snackbar.setCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int action) {
                 super.onDismissed(snackbar, action);
-                if (action == DISMISS_EVENT_TIMEOUT || action == DISMISS_EVENT_CONSECUTIVE) {
-                    if (event.isPoi()) {
-                        eventBus.post(new PleaseRevertPoiEvent(event.getIdToRevert()));
+                if (action == DISMISS_EVENT_TIMEOUT || action == DISMISS_EVENT_CONSECUTIVE || action == DISMISS_EVENT_SWIPE) {
+                    if (item.getIsPoi()) {
+                        eventBus.post(new PleaseRevertPoiEvent(item.getId()));
                     } else {
-                        eventBus.post(new PleaseRevertPoiNodeRefEvent(event.getIdToRevert()));
+                        eventBus.post(new PleaseRevertPoiNodeRefEvent(item.getId()));
                     }
-                }
-                if (action == DISMISS_EVENT_SWIPE) {
-                    adapter.retrieveLastReverted();
                 }
             }
         });
