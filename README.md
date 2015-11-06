@@ -85,4 +85,13 @@ This app is actively developed by:
  + [tonymanou](https://github.com/tonymanou)
  + [loicortola](https://github.com/loicortola)
 
+Translations
+
+This app is being translated by the community via the awesome tool Transifex.
+Want to help? [Add your language here](https://www.transifex.com/mapsquare/osm-contributor), and let us know on Twitter.
+ + English: Development team
+ + French: Development team
+ + Spanish: [Nacho](https://twitter.com/ignaciolep) (@ignaciolep)
+ + Spanish: [Marco Antonio](https://twitter.com/51114u9) (@51114u9)
+
 We welcome any contributors with issues / pull requests.

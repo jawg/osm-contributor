@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<resources>
+  <string name="title_activity_edit_poi">EditPoiActivity</string>
+  <string name="location_not_found">No se pudo encontrar su ubicación</string>
+  <!--EDITION-->
+  <string name="addValueDialogTitle">Modificar el valor de : \"%1$s\"</string>
+  <string name="addValueDialogAdd">Modificar</string>
+  <string name="addValueDialogCancel">Cancelar</string>
+  <string name="uncompleted_fields">Hay campos sin completar</string>
+  <string name="quit_edition_title">Abandonar edición</string>
+  <string name="quit_edition_message">¿Desea descartar los cambios?</string>
+  <string name="quit_edition_positive_btn">Sí</string>
+  <string name="quit_edition_negative_btn">Cancelar</string>
+  <string name="no_values_yet">No hay valores aún</string>
+  <string name="creation_title">Creación</string>
+  <string name="edition_title">Edición</string>
+  <string name="required">Requerido</string>
+  <string name="optional">Opcional</string>
+  <!--Map-->
+  <string name="no_poi_name">Este PDI no tiene nombre</string>
+  <string name="edit_position">Cambiar posición</string>
+  <string name="edit_poi">Editar PDI</string>
+  <string name="update_done">%1$s PDI actualizado(s) en OSM</string>
+  <string name="delete_done">%1$s PDI borrado(s) en OSM</string>
+  <string name="noderef_moved">%1$s punto(s) actualizado(s) en OSM, actualice el mapa en unos minutos para ver los cambios</string>
+  <string name="add_done">%1$s PDI agregado(s) en OSM</string>
+  <string name="couldnt_connect_retrofit">No se pudo añadir/actualizar. Compruebe su nombre de usuario / contraseña en las preferencias.</string>
+  <string name="couldnt_create_node">Se produjo un error durante la creación, se han revertido los cambios.</string>
+  <string name="couldnt_update_node">Se produjo un error durante la actualización, se han revertido los cambios.</string>
+  <string name="couldnt_download_retrofit">No se pudo descargar PDIs. Compruebe su conectividad.</string>
+  <string name="couldnt_upload_retrofit">No se pudo actualizar PDIs. Compruebe su conectividad.</string>
+  <string name="edit_poi_position">Cambiar posición del PDI</string>
+  <string name="edit_way_title">Editar vía</string>
+  <string name="edit_noderef_position_title">Editar posición</string>
+  <string name="poi_creation">Creación de PDI</string>
+  <string name="note_creation">Creación de Nota</string>
+  <string name="delete_poi">Borrar PDI</string>
+  <string name="add_poi">Agregar PDI</string>
+  <string name="delete_poi_title">Borrar PDI</string>
+  <string name="delete_poi_confirm_message">¿Realmente desea eliminar este PDI?</string>
+  <string name="delete_poi_positive_btn">Borrar</string>
+  <string name="delete_poi_negative_btn">Cancelar</string>
+  <string name="point_modification_forbidden">Esta versión no permite modificación de puntos</string>
+  <string name="licenses_title">Licencias</string>
+  <string name="osm_copyright">© Colaboradores de OpenStreetMap</string>
+  <string name="zoom_to_edit">Esta área es demasiado grande para cargar, acerquese más.</string>
+  <string name="download_in_progress">Descarga en curso de todos los PDIs y notas de la zona que se muestra</string>
+  <string name="switch_style">Vista de satélite</string>
+  <string name="zoom_more">Es necesario acercarse más para descargar PDIs</string>
+  <string name="search_poitype_hint">Buscar un tipo de PDI</string>
+  <!--Strings related to login-->
+  <string name="prompt_login">Iniciar sesión</string>
+  <string name="prompt_password">Contraseña</string>
+  <string name="splash_screen_message">Inicialización en progreso...</string>
+  <!--Preferences-->
+  <string name="title_activity_my_preferences">Parámetros</string>
+  <string name="summary_login">Proporcione un nombre de usuario</string>
+  <string name="summary_password">Ingrese su contraseña</string>
+  <string name="error_login">No se pudo conectar con estas credenciales. ¿Está seguro de que tiene permisos de edición?</string>
+  <string name="valid_login">Conectado con éxito</string>
+  <string name="reset_title">Reiniciar la base de datos</string>
+  <string name="reset_summary">Quita todos los PDIs de la base de datos</string>
+  <string name="reset_dialog_message">¿Está seguro que quiere reiniciar la base de datos? Todos sus modificaciones no guardadas se perderán.</string>
+  <string name="reset_dialog_positive_button">Sí</string>
+  <string name="reset_dialog_negative_button">Cancelar</string>
+  <string name="reset_success">La base de datos se reinició con éxito</string>
+  <string name="reset_failure">Se produjo un error durante el reinicio de la base de datos</string>
+  <!--Shared preferences-->
+  <string name="shared_prefs_login_title">Conexión</string>
+  <string name="shared_prefs_server">Servidor OSM</string>
+  <!--Tuto-->
+  <string name="tuto_title_press_create">Creación de PDI</string>
+  <string name="tuto_title_confirm">Validar los cambios</string>
+  <string name="tuto_title_cancel">Cancelar los cambios</string>
+  <string name="tuto_text_press_create">Haga clic aquí para añadir un nuevo punto</string>
+  <string name="tuto_text_choose_type">Elija el tipo de PDIdesea agregar</string>
+  <string name="tuto_text_poi_or_note">Elija agregar un PDI o una nota</string>
+  <string name="tuto_text_swipe_for_position">Deslice el mapa para establecer la posición de su nuevo punto</string>
+  <string name="tuto_text_confirm_position_creation">Haga clic para confirmar la posición, cualquier retorno descartará su creación.</string>
+  <string name="tuto_text_cancel_creation">Este botón o del dorso descartarán los cambios</string>
+  <string name="tuto_text_confirm_creation">Haga clic para finalizar la creación o edición.</string>
+  <string name="replay_tuto">Repetir tutorial</string>
+  <!--note-->
+  <string name="Note">Nota</string>
+  <string name="comment_text_hint">Escriba un comentario</string>
+  <string name="comment_label">Comentario</string>
+  <string name="action_label">Acción</string>
+  <string name="quit_note_title">Abandonar edición de comentario</string>
+  <string name="quit_note_message">¿Desea descartar los cambios?</string>
+  <string name="quit_note_positive_btn">Sí</string>
+  <string name="quit_note_negative_btn">Cancelar</string>
+  <string name="comment_text_cant_be_null">El texto del comentario no puede ser nulo</string>
+  <string name="comment_synchronizing">Espere a que la sincronización a finalice.</string>
+  <string name="save_note">Guardar</string>
+  <string name="synchronizing">Sincronizando...</string>
+  <string name="note_already_closed">La nota ya estaba cerrada</string>
+  <string name="title_activity_note">Nota</string>
+  <string name="note">Nota</string>
+  <string name="title_note">Nota (%s)</string>
+  <string name="title_creation_note">Nota</string>
+  <string name="create_note">Crear</string>
+  <string name="cancel">Cancelar</string>
+  <string name="note_spinner_element">Nota</string>
+  <string name="failed_apply_comment">Error al agregar el comentario, compruebe su conexión y sus credenciales</string>
+  <!--Filter drawer-->
+  <string name="filters">Filtros</string>
+  <string name="filter_notes">Notas</string>
+  <string name="filter_note_open">Abierto</string>
+  <string name="filter_note_closed">Cerrado</string>
+  <string name="filter_pois">PDIs</string>
+  <string name="filter_poi_all">Todo</string>
+  <!--Saving-->
+  <string name="save_now">Guardar...</string>
+  <string name="title_activity_upload">Guardar modificaciones</string>
+  <string name="couldnt_save_connectivity">No se pudo actualizar PDIs. Compruebe su conectividad.</string>
+  <string name="saving">Guardando...</string>
+  <!--Update-->
+  <string name="update_title">Añadir un comentario a sus cambios :</string>
+  <string name="need_a_comment">El comentario no puede estar vacío</string>
+  <string name="nothing_to_update">Usted no tiene nada para actualizar</string>
+  <string name="nothing_selected">No ha seleccionado ningún cambio</string>
+  <string name="created">Creado</string>
+  <string name="deleted">Borrado</string>
+  <string name="updated">Actualizado</string>
+  <!--About-->
+  <string name="title_activity_about">Acerca de</string>
+  <string name="about_title">Acerca de</string>
+  <!--edit way-->
+  <string name="edit_way">Editar vía</string>
+  <!--POI types/tags-->
+  <string name="manage_poi_types">Administrar tipos de PDI</string>
+  <string name="manage_poi_tags">Administrar etiquetas PDI</string>
+  <string name="tag_number">%1$s etiquetas</string>
+  <string name="new_poi_type">Nuevo tipo</string>
+  <string name="new_poi_tag">Nueva etiqueta</string>
+  <string name="edit_poi_type">El tipo no se puede editar</string>
+  <string name="edit_poi_tag">Editar etiqueta</string>
+  <string name="poi_type_name_hint">nombre</string>
+  <string name="poi_tag_key_hint">clave</string>
+  <string name="poi_tag_value_hint">valor</string>
+  <string name="poi_tag_mandatory">Obligatorio</string>
+  <!--Snackbar-->
+  <string name="item_removed">\"%1$s\" fue removido</string>
+  <string name="undo">Deshacer</string>
+  <!--Upload-->
+  <string name="position">Posición :</string>
+  <string name="changed">Cambiado</string>
+  <string name="revert">Revertir</string>
+  <string name="revert_snack_bar">Revertir cambios</string>
+  <string name="undo_snack_bar">Deshacer</string>
+  <string name="node_ref_title">Punto</string>
+</resources>
