@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    Copyright (C) 2015 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<resources>
+  <string name="title_activity_edit_poi">EditPoiActivity</string>
+  <string name="location_not_found">Não foi possível encontrar seu local</string>
+  <!--EDITION-->
+  <string name="addValueDialogTitle">Mudar valor para : \"%1$s\"</string>
+  <string name="addValueDialogAdd">Alterar</string>
+  <string name="addValueDialogCancel">Cancelar</string>
+  <string name="uncompleted_fields">Há campos não preenchidos ainda</string>
+  <string name="quit_edition_title">Sair da edição</string>
+  <string name="quit_edition_message">Você realmente quer descartar suas mudanças?</string>
+  <string name="quit_edition_positive_btn">Sim</string>
+  <string name="quit_edition_negative_btn">Cancelar</string>
+  <string name="no_values_yet">Sem valores ainda</string>
+  <string name="creation_title">Criação</string>
+  <string name="edition_title">Edição</string>
+  <string name="required">Necessário</string>
+  <string name="optional">Opcional</string>
+  <!--Map-->
+  <string name="no_poi_name">Este POI não tem nome</string>
+  <string name="edit_position">Mudar posição</string>
+  <string name="edit_poi">Editar POI</string>
+  <string name="update_done">%1$s Poi(s) atualizados no OSM</string>
+  <string name="delete_done">%1$s Poi(s) deletados no OSM</string>
+  <string name="noderef_moved">%1$s point(s) atualizados no OSM, atualize o mapa em alguns minutos para ver suas mudanças</string>
+  <string name="add_done">%1$s Poi(s) adicionados no OSM</string>
+  <string name="couldnt_connect_retrofit">Não foi possível adicionar/atualizar. Verifique seu login/senha nas preferências.</string>
+  <string name="couldnt_create_node">Houve um erro na criação, suas mudanças foram revertidas.</string>
+  <string name="couldnt_update_node">Houve um erro na atualização, suas mudanças foram revertidas.</string>
+  <string name="couldnt_download_retrofit">Não foi possível fazer o download dos POIs. Verifique sua conexão.</string>
+  <string name="couldnt_upload_retrofit">Não foi possível fazer o upload dos POIs. Verifique sua conexão.</string>
+  <string name="edit_poi_position">Mudar posição do POI</string>
+  <string name="edit_way_title">Editar caminho</string>
+  <string name="edit_noderef_position_title">Editar posição</string>
+  <string name="poi_creation">Criação de POI</string>
+  <string name="note_creation">Criação de Nota</string>
+  <string name="delete_poi">Deletar POI</string>
+  <string name="add_poi">Adicionar POI</string>
+  <string name="delete_poi_title">Deletar POI</string>
+  <string name="delete_poi_confirm_message">Você realmente quer deletar este POI?</string>
+  <string name="delete_poi_positive_btn">Deletar</string>
+  <string name="delete_poi_negative_btn">Cancelar</string>
+  <string name="point_modification_forbidden">Esta versão não permite modificação de pontos</string>
+  <string name="licenses_title">Licenças</string>
+  <string name="osm_copyright">© colaboradores do OpenStreetMap</string>
+  <string name="zoom_to_edit">Esta área é muito grande para fazer download, por favor aumente o zoom.</string>
+  <string name="download_in_progress">Download em progresso de todos os POIs e notas da zona mostrada</string>
+  <string name="switch_style">Vista de satélite</string>
+  <string name="zoom_more">Você precisa aumentar o zoom para fazer o download de POIs</string>
+  <string name="search_poitype_hint">Buscar um tipo de POI</string>
+  <!--Strings related to login-->
+  <string name="prompt_login">Login</string>
+  <string name="prompt_password">Senha</string>
+  <string name="splash_screen_message">Inicialização em progresso...</string>
+  <!--Preferences-->
+  <string name="title_activity_my_preferences">Parâmetros</string>
+  <string name="summary_login">Por favor, coloque seu login</string>
+  <string name="summary_password">Por favor, coloque sua senha</string>
+  <string name="error_login">Não foi possível conectar com esse login e senha. Você tem certeza de que tem direitos de edição?</string>
+  <string name="valid_login">Conexão efetuada com sucesso.</string>
+  <string name="reset_title">Resetar o Banco de Dados.</string>
+  <string name="reset_summary">Remover todos os POIs do Banco de Dados</string>
+  <string name="reset_dialog_message">Você tem certeza de que quer resetar o Banco de Dados? Todas as suas modificações não salvas serão perdidas.</string>
+  <string name="reset_dialog_positive_button">Sim</string>
+  <string name="reset_dialog_negative_button">Cancelar</string>
+  <string name="reset_success">O Banco de Dados foi resetado com sucesso.</string>
+  <string name="reset_failure">Houve um erro durante o reset do Banco de Dados</string>
+  <!--Shared preferences-->
+  <string name="shared_prefs_login_title">Conexão</string>
+  <string name="shared_prefs_server">Servidor OSM</string>
+  <!--Tuto-->
+  <string name="tuto_title_press_create">Criação de POI</string>
+  <string name="tuto_title_confirm">Verifique suas mudanças</string>
+  <string name="tuto_title_cancel">Cancele suas mudanças</string>
+  <string name="tuto_text_press_create">Clique aqui para adicionar um novo ponto</string>
+  <string name="tuto_text_choose_type">Escolha o tipo de POI que você quer adicionar</string>
+  <string name="tuto_text_poi_or_note">Escolha entre adicionar um POI ou uma nota</string>
+  <string name="tuto_text_swipe_for_position">Arraste o mapa para escolher a posição de seu novo ponto</string>
+  <string name="tuto_text_confirm_position_creation">Clique para confirmar a posição. Qualquer outro botão irá descartar sua criação.</string>
+  <string name="tuto_text_cancel_creation">Este botão ou o botão de retornar irão descartar suas mudanças.</string>
+  <string name="tuto_text_confirm_creation">Clique para finalizar sua criação ou edição.</string>
+  <string name="replay_tuto">Rever tutorial</string>
+  <!--note-->
+  <string name="Note">Nota</string>
+  <string name="comment_text_hint">Coloque um comentário</string>
+  <string name="comment_label">Comentário</string>
+  <string name="action_label">Ação</string>
+  <string name="quit_note_title">Sair da edição de comentário</string>
+  <string name="quit_note_message">Você realmente quer descartar suas mudanças?</string>
+  <string name="quit_note_positive_btn">Sim</string>
+  <string name="quit_note_negative_btn">Cancelar</string>
+  <string name="comment_text_cant_be_null">O texto de comentário não pode ficar vazio</string>
+  <string name="comment_synchronizing">Por favor aguarde enquanto a sincronização termina.</string>
+  <string name="save_note">Salvar</string>
+  <string name="synchronizing">Sincronizando...</string>
+  <string name="note_already_closed">Nota já foi fechada</string>
+  <string name="title_activity_note">Nota</string>
+  <string name="note">Nota</string>
+  <string name="title_note">Nota (%s)</string>
+  <string name="title_creation_note">Nota</string>
+  <string name="create_note">Criar</string>
+  <string name="cancel">Cancelar</string>
+  <string name="note_spinner_element">Nota</string>
+  <string name="failed_apply_comment">Adição de comentário falhou, verifique sua conexão e login e senha</string>
+  <!--Filter drawer-->
+  <string name="filters">Filtros</string>
+  <string name="filter_notes">Notas</string>
+  <string name="filter_note_open">Aberto</string>
+  <string name="filter_note_closed">Fechado</string>
+  <string name="filter_pois">POIs</string>
+  <string name="filter_poi_all">Todos</string>
+  <!--Saving-->
+  <string name="save_now">Salvar...</string>
+  <string name="title_activity_upload">Salvar modificações</string>
+  <string name="couldnt_save_connectivity">Não foi possível fazer o upload dos POIs. Verifique sua conexão.</string>
+  <string name="saving">Salvando...</string>
+  <!--Update-->
+  <string name="update_title">Adicione um comentário para suas mudanças:</string>
+  <string name="need_a_comment">O comentário não pode ser vazio</string>
+  <string name="nothing_to_update">Você não tem nada para atualizar</string>
+  <string name="nothing_selected">Você não selecionou nenhuma mudança</string>
+  <string name="created">Criado</string>
+  <string name="deleted">Deletado</string>
+  <string name="updated">Adicionado</string>
+  <!--About-->
+  <string name="title_activity_about">Sobre nós</string>
+  <string name="about_title">Sobre</string>
+  <!--edit way-->
+  <string name="edit_way">Editar caminho</string>
+  <!--POI types/tags-->
+  <string name="manage_poi_types">Gerenciar tipos de POI</string>
+  <string name="manage_poi_tags">Gerenciar tags de POI</string>
+  <string name="tag_number">%1$s tags</string>
+  <string name="new_poi_type">Novo tipo</string>
+  <string name="new_poi_tag">Nova tag</string>
+  <string name="edit_poi_type">Tipo não pode ser editado</string>
+  <string name="edit_poi_tag">Editar tag</string>
+  <string name="poi_type_name_hint">nome</string>
+  <string name="poi_tag_key_hint">chave</string>
+  <string name="poi_tag_value_hint">valor</string>
+  <string name="poi_tag_mandatory">Obrigatório</string>
+  <!--Snackbar-->
+  <string name="item_removed">\"%1$s\" foi removido</string>
+  <string name="undo">Desfazer</string>
+  <!--Upload-->
+  <string name="position">Posição :</string>
+  <string name="changed">Alterado</string>
+  <string name="revert">Revertido</string>
+  <string name="revert_snack_bar">Reverter mudanças</string>
+  <string name="undo_snack_bar">Desfazer</string>
+  <string name="node_ref_title">Ponto</string>
+</resources>

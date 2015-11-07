@@ -93,5 +93,6 @@ Want to help? [Add your language here](https://www.transifex.com/mapsquare/osm-c
  + French: Development team
  + Spanish: [Nacho](https://twitter.com/ignaciolep) (@ignaciolep)
  + Spanish: [Marco Antonio](https://twitter.com/51114u9) (@51114u9)
+ + Portuguese (BR): [Tiago Fassoni](https://github.com/tiagofassoni)
 
 We welcome any contributors with issues / pull requests.

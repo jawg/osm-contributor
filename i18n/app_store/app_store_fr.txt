@@ -1,0 +1,5 @@
+OSM Contributor est le tout dernier éditeur OpenStreetMap.
+L'application permet à tout contributeur d'enrichir la base de données.
+Elle permet aussi à des débutants de participer facilement, grâce à son ergonomie moderne.
+Fonctionnalités: - Ajout/Edition de Node - Ajout/Edition de Ways - Ajout/Edition de Notes - Gestion des data-types - Affichage d'overlays vectoriels au dessus du fond de carte - Mode hors-ligne, et gestion différée des changesets
+Le code source est disponible et exposé sur Github.

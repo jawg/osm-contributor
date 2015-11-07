@@ -1,0 +1,11 @@
+OSM Contributor é o mais novo editor mobile de OpenStreetMap.
+O app permite que cada colaborador adicione/edite o Banco de Dados do OSM.
+Também permite que iniciantes participem de forma fácil, graças à sua interface amigável baseada no Material Design.
+Features:
+- Adicionar/Editar Nós
+- Adicionar/Editar Caminhos
+- Adicionar/Editar Notas
+- Gerenciar tipos de dados
+- Mostrar camadas vetoriais em cima do mapa
+- Modo Offline
+O código é opensource e disponível no Github.

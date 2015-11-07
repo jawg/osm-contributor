@@ -93,11 +93,11 @@
   <string name="tuto_title_confirm">Validar los cambios</string>
   <string name="tuto_title_cancel">Cancelar los cambios</string>
   <string name="tuto_text_press_create">Haga clic aquí para añadir un nuevo punto</string>
-  <string name="tuto_text_choose_type">Elija el tipo de PDIdesea agregar</string>
+  <string name="tuto_text_choose_type">Elija el tipo de PDI que desea agregar</string>
   <string name="tuto_text_poi_or_note">Elija agregar un PDI o una nota</string>
   <string name="tuto_text_swipe_for_position">Deslice el mapa para establecer la posición de su nuevo punto</string>
   <string name="tuto_text_confirm_position_creation">Haga clic para confirmar la posición, cualquier retorno descartará su creación.</string>
-  <string name="tuto_text_cancel_creation">Este botón o del dorso descartarán los cambios</string>
+  <string name="tuto_text_cancel_creation">Este botón o el de volver descartarán los cambios</string>
   <string name="tuto_text_confirm_creation">Haga clic para finalizar la creación o edición.</string>
   <string name="replay_tuto">Repetir tutorial</string>
   <!--note-->
@@ -125,8 +125,8 @@
   <!--Filter drawer-->
   <string name="filters">Filtros</string>
   <string name="filter_notes">Notas</string>
-  <string name="filter_note_open">Abierto</string>
-  <string name="filter_note_closed">Cerrado</string>
+  <string name="filter_note_open">Abiertas</string>
+  <string name="filter_note_closed">Cerradas</string>
   <string name="filter_pois">PDIs</string>
   <string name="filter_poi_all">Todo</string>
   <!--Saving-->
