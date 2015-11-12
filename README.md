@@ -1,6 +1,6 @@
 ## OpenStreetMap Contributor Mapping Tool
 
-![Filters Drawer](/images/drawer.jpg)
+![Filters Drawer](/images/drawer.png)
 ![Menu](/images/menu.png)
 
 ### About the App
@@ -63,18 +63,20 @@ You can also reach us on Twitter:
 
 ### RoadMap
  + Performance enhancements coming soon to all flavors !
- + Stay tuned for a new workflow on points edition / modification on the store flavor in the next few
-weeks.
+ + Expert mode for poi types and tags handling.
 
 ### Changelog
 
 See the [CHANGELOG.md](/CHANGELOG.md) file.
 
-### More Screenshots
-![Notes on Map](/images/note.png)|
+### More Screenshots!
+![Poi creation](/images/poi_creation.png)|
 ![Ways edition](/images/ways.png)
-![Changeset Commit](/images/changeset.jpg)|
-![POI Creation](/images/note_discussion.jpg)
+![Ways edition satellite view](/images/ways_satellite.png)|
+![Changeset Commit](/images/changeset.png)
+![Changeset Commit ](/images/changeset_detail.png)|
+![Notes on Map](/images/note.png)
+![Note discussion](/images/note_discussion.jpg)
 
 ### Contributors
 This app is actively developed by:
@@ -85,7 +87,7 @@ This app is actively developed by:
  + [tonymanou](https://github.com/tonymanou)
  + [loicortola](https://github.com/loicortola)
 
-Translations
+### Translations
 
 This app is being translated by the community via the awesome tool Transifex.
 Want to help? [Add your language here](https://www.transifex.com/mapsquare/osm-contributor), and let us know on Twitter.
