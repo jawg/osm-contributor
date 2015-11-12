@@ -50,6 +50,12 @@
             android:title="@string/switch_style"/>
 
         <item
+            android:id="@+id/enable_3d"
+            android:title="@string/enable_3d"
+            android:checkable="true"
+            android:checked="true"/>
+
+        <item
             android:id="@+id/replay_tuto_menu"
             android:title="@string/replay_tuto"
             android:visible="false"/>

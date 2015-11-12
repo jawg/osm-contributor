@@ -18,6 +18,8 @@
  */
 package io.mapsquare.osmcontributor.core;
 
+import android.app.Application;
+
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import io.mapsquare.osmcontributor.core.database.dao.PoiTypeTagDao;
 import io.mapsquare.osmcontributor.core.events.DatabaseResetFinishedEvent;
 import io.mapsquare.osmcontributor.core.events.NodeRefAroundLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNodeRefAround;
+import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiForArpiEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiForCreationEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiForEditionEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiTypes;
@@ -55,11 +58,13 @@ import io.mapsquare.osmcontributor.core.events.PoisLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PoisToUpdateLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.ResetDatabaseEvent;
 import io.mapsquare.osmcontributor.core.events.ResetTypeDatabaseEvent;
+import io.mapsquare.osmcontributor.core.events.RevertFinishedEvent;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
 import io.mapsquare.osmcontributor.core.model.PoiTag;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
+import io.mapsquare.osmcontributor.map.BitmapHandler;
 import io.mapsquare.osmcontributor.map.events.ChangesInDB;
 import io.mapsquare.osmcontributor.map.events.LastUsePoiTypeLoaded;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadLastUsedPoiType;
@@ -68,7 +73,6 @@ import io.mapsquare.osmcontributor.sync.assets.PoiAssetLoader;
 import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
 import io.mapsquare.osmcontributor.upload.PoiUpdateWrapper;
-import io.mapsquare.osmcontributor.core.events.RevertFinishedEvent;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import io.mapsquare.osmcontributor.utils.StringUtils;
@@ -83,6 +87,8 @@ import static io.mapsquare.osmcontributor.core.database.DatabaseHelper.loadLazyF
  */
 public class PoiManager {
 
+    Application application;
+    BitmapHandler bitmapHandler;
     PoiDao poiDao;
     PoiTagDao poiTagDao;
     PoiNodeRefDao poiNodeRefDao;
@@ -94,7 +100,9 @@ public class PoiManager {
     PoiAssetLoader poiAssetLoader;
 
     @Inject
-    public PoiManager(PoiDao poiDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao, PoiTypeTagDao poiTypeTagDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, PoiAssetLoader poiAssetLoader) {
+    public PoiManager(Application application, BitmapHandler bitmapHandler, PoiDao poiDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao, PoiTypeTagDao poiTypeTagDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, PoiAssetLoader poiAssetLoader) {
+        this.application = application;
+        this.bitmapHandler = bitmapHandler;
         this.poiDao = poiDao;
         this.poiTagDao = poiTagDao;
         this.poiNodeRefDao = poiNodeRefDao;
@@ -186,6 +194,12 @@ public class PoiManager {
         revertPoiNodeRef(event.getIdToRevert());
         bus.post(new RevertFinishedEvent());
     }
+
+    public void onEventAsync(PleaseLoadPoiForArpiEvent event) {
+        List<Poi> pois = poiDao.queryForAllInRect(event.getBox());
+        bus.post(new PoisLoadedEvent(event.getBox(), pois));
+    }
+
 
     // ********************************
     // ************ public ************

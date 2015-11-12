@@ -34,6 +34,8 @@ import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.events.InitCredentialsEvent;
 import io.mapsquare.osmcontributor.login.events.SplashScreenTimerFinishedEvent;
 import io.mapsquare.osmcontributor.map.MapActivity;
+import io.mapsquare.osmcontributor.map.events.ArpiBitmapsPrecomputedEvent;
+import io.mapsquare.osmcontributor.map.events.PrecomputeArpiBitmapsEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
 import io.mapsquare.osmcontributor.utils.EventCountDownTimer;
@@ -70,6 +72,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         bus.post(new InitCredentialsEvent());
         bus.post(new InitDbEvent());
+        bus.post(new PrecomputeArpiBitmapsEvent());
     }
 
     @Override
@@ -90,6 +93,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void startMapActivity() {
         bus.removeStickyEvent(DbInitializedEvent.class);
         bus.removeStickyEvent(SplashScreenTimerFinishedEvent.class);
+        bus.removeStickyEvent(ArpiBitmapsPrecomputedEvent.class);
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
@@ -101,7 +105,8 @@ public class SplashScreenActivity extends AppCompatActivity {
      */
     private boolean shouldStartMapActivity() {
         return bus.getStickyEvent(DbInitializedEvent.class) != null &&
-                bus.getStickyEvent(SplashScreenTimerFinishedEvent.class) != null;
+                bus.getStickyEvent(SplashScreenTimerFinishedEvent.class) != null &&
+                bus.getStickyEvent(ArpiBitmapsPrecomputedEvent.class) != null;
     }
 
     public void onEventBackgroundThread(DbInitializedEvent event) {
@@ -111,6 +116,11 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     public void onEventBackgroundThread(SplashScreenTimerFinishedEvent event) {
         Timber.d("Timer finished");
+        startMapActivityIfNeeded();
+    }
+
+    public void onEventBackgroundThread(ArpiBitmapsPrecomputedEvent event) {
+        Timber.d("Arpi bitmaps precomputed");
         startMapActivityIfNeeded();
     }
 

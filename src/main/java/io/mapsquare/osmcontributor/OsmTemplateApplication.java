@@ -72,6 +72,7 @@ public class OsmTemplateApplication extends Application {
         bus.register(getOsmTemplateComponent().getTypeManager());
         bus.register(getOsmTemplateComponent().getGeocoder());
         bus.register(getOsmTemplateComponent().getEditVectorialWayManager());
+        bus.register(getOsmTemplateComponent().getArpiInitializer());
     }
 
     public OsmTemplateComponent getOsmTemplateComponent() {

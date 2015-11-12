@@ -37,6 +37,7 @@ import io.mapsquare.osmcontributor.core.events.NoteLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.NoteSavedEvent;
 import io.mapsquare.osmcontributor.core.events.NotesLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNoteEvent;
+import io.mapsquare.osmcontributor.core.events.PleaseLoadNoteForArpiEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNotesEvent;
 import io.mapsquare.osmcontributor.core.events.ResetDatabaseEvent;
 import io.mapsquare.osmcontributor.core.model.Comment;
@@ -113,6 +114,11 @@ public class NoteManager {
 
     public void onEventAsync(ResetDatabaseEvent event) {
         resetDatabase();
+    }
+
+    public void onEventAsync(PleaseLoadNoteForArpiEvent event) {
+        List<Note> notes = noteDao.queryForAllInRect(event.getBox());
+        bus.post(new NotesLoadedEvent(event.getBox(), notes));
     }
 
     // ********************************

@@ -50,11 +50,14 @@ import io.mapsquare.osmcontributor.about.AboutActivity;
 import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.map.events.ChangesInDB;
+import io.mapsquare.osmcontributor.map.events.MapCenterValueEvent;
 import io.mapsquare.osmcontributor.map.events.OnBackPressedMapEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseApplyNoteFilterEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseApplyPoiFilter;
 import io.mapsquare.osmcontributor.map.events.PleaseChangeToolbarColor;
 import io.mapsquare.osmcontributor.map.events.PleaseDisplayTutorialEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseGiveMeMapCenterEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseInitializeArpiEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchMapStyleEvent;
@@ -66,6 +69,11 @@ import io.mapsquare.osmcontributor.preferences.MyPreferencesActivity;
 import io.mapsquare.osmcontributor.type.TypeListActivity;
 import io.mapsquare.osmcontributor.upload.UploadActivity;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
+import mobi.designmyapp.arpigl.engine.ArpiGlController;
+import mobi.designmyapp.arpigl.provider.impl.NetworkTileProvider;
+import mobi.designmyapp.arpigl.sensor.GravitySensorTrigger;
+import mobi.designmyapp.arpigl.sensor.VisibilityTrigger;
+import mobi.designmyapp.arpigl.ui.ArpiGlFragment;
 import timber.log.Timber;
 
 public class MapActivity extends AppCompatActivity {
@@ -93,6 +101,17 @@ public class MapActivity extends AppCompatActivity {
 
     @Inject
     SharedPreferences sharedPreferences;
+
+    @Inject
+    ArpiPoiProvider poiProvider;
+
+    private ArpiGlController arpiController;
+
+    private ArpiGlFragment arpiGlFragment;
+
+    private GravitySensorTrigger visibilityTrigger;
+
+    private NetworkTileProvider networkTileProvider;
 
     private List<PoiTypeFilter> filters = new ArrayList<>();
 
@@ -191,6 +210,29 @@ public class MapActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        // Get the arpi fragment.
+        arpiGlFragment = (ArpiGlFragment) getFragmentManager().findFragmentById(R.id.engine_fragment);
+        // this module will toggle the arpiGlView visibility, with device's tilt.
+        visibilityTrigger = new GravitySensorTrigger(arpiGlFragment);
+        visibilityTrigger.show(false);
+        visibilityTrigger.setOnDisplayChangeListener(new VisibilityTrigger.OnDisplayChangeListener() {
+            @Override
+            public void beforeDisplayChange(boolean visible) {
+                eventBus.post(new PleaseGiveMeMapCenterEvent());
+                if (visible) {
+                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                } else {
+                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                }
+            }
+
+            @Override
+            public void afterDisplayChange(boolean b) {
+
+            }
+        });
+        getFragmentManager().beginTransaction().hide(arpiGlFragment).commit();
     }
 
     @Override
@@ -198,11 +240,13 @@ public class MapActivity extends AppCompatActivity {
         super.onResume();
         eventBus.register(this);
         navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
+        poiProvider.register();
     }
 
     @Override
     protected void onPause() {
         eventBus.unregister(this);
+        poiProvider.unregister();
         super.onPause();
     }
 
@@ -234,6 +278,29 @@ public class MapActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(filterView);
         } else {
             eventBus.post(new OnBackPressedMapEvent());
+        }
+    }
+
+    public void onEventMainThread(PleaseInitializeArpiEvent event) {
+        // Set engine into poi provider
+        poiProvider.setEngine(arpiGlFragment.getEngine());
+
+        // Create a controller to manage the arpi fragment
+        arpiController = new ArpiGlController(arpiGlFragment);
+
+        networkTileProvider = new NetworkTileProvider(configManager.getMapUrl()) {
+        };
+        // Add the OSM tile provider to the controller
+        arpiController.setTileProvider(networkTileProvider);
+        arpiController.addPoiProvider(poiProvider);
+        arpiController.setSkyBoxEnabled(true);
+        arpiController.setUserLocationEnabled(false);
+
+    }
+
+    public void onEventMainThread(MapCenterValueEvent event) {
+        if (arpiController != null) {
+            arpiController.setCameraPosition(event.getMapCenter().getLatitude(), event.getMapCenter().getLongitude());
         }
     }
 
@@ -362,6 +429,10 @@ public class MapActivity extends AppCompatActivity {
             case R.id.replay_tuto_menu:
                 replayTutorial();
                 break;
+            case R.id.enable_3d:
+                menuItem.setChecked(!menuItem.isChecked());
+                toggle3D();
+                break;
             case R.id.edit_way:
                 eventBus.post(new PleaseSwitchWayEditionModeEvent());
                 break;
@@ -376,6 +447,11 @@ public class MapActivity extends AppCompatActivity {
                 startAboutActivity();
                 break;
         }
+    }
+
+    private void toggle3D() {
+        visibilityTrigger.setEnabled(!visibilityTrigger.isEnabled());
+        getFragmentManager().beginTransaction().hide(arpiGlFragment).commit();
     }
 
     private void onOptionsSyncClick(MenuItem menuItem) {

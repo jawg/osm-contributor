@@ -46,6 +46,13 @@
 
     </LinearLayout>
 
+    <!-- The Augmented Reality Fragment -->
+    <fragment
+        android:id="@+id/engine_fragment"
+        android:name="mobi.designmyapp.arpigl.ui.ArpiGlFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <!-- The navigation drawer -->
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation"

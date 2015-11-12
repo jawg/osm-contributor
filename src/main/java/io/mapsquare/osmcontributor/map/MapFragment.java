@@ -97,6 +97,7 @@ import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.core.events.NodeRefAroundLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseDeletePoiEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNodeRefAround;
+import io.mapsquare.osmcontributor.core.events.PleaseRemoveArpiMarkerEvent;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
@@ -108,6 +109,7 @@ import io.mapsquare.osmcontributor.edition.events.PleaseApplyPoiPositionChange;
 import io.mapsquare.osmcontributor.map.events.AddressFoundEvent;
 import io.mapsquare.osmcontributor.map.events.EditionVectorialTilesLoadedEvent;
 import io.mapsquare.osmcontributor.map.events.LastUsePoiTypeLoaded;
+import io.mapsquare.osmcontributor.map.events.MapCenterValueEvent;
 import io.mapsquare.osmcontributor.map.events.NewNoteCreatedEvent;
 import io.mapsquare.osmcontributor.map.events.NewPoiTypeSelected;
 import io.mapsquare.osmcontributor.map.events.OnBackPressedMapEvent;
@@ -120,6 +122,8 @@ import io.mapsquare.osmcontributor.map.events.PleaseChangeValuesDetailPoiFragmen
 import io.mapsquare.osmcontributor.map.events.PleaseCreateNoTagPoiEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseDeletePoiFromMapEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseDisplayTutorialEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseGiveMeMapCenterEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseInitializeArpiEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadEditVectorialTileEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadLastUsedPoiType;
@@ -557,6 +561,7 @@ public class MapFragment extends Fragment {
         mapView.setUserLocationEnabled(true);
 
         eventBus.register(this);
+        eventBus.post(new PleaseInitializeArpiEvent());
         presenter.setForceRefreshPoi();
         presenter.setForceRefreshNotes();
         presenter.loadPoisIfNeeded();
@@ -833,6 +838,10 @@ public class MapFragment extends Fragment {
         }
     }
 
+    public void onEventMainThread(PleaseGiveMeMapCenterEvent event) {
+        eventBus.post(new MapCenterValueEvent(mapView.getCenter()));
+    }
+
 
     public MapMode getMapMode() {
         return mapMode;
@@ -1078,6 +1087,8 @@ public class MapFragment extends Fragment {
     private void removeMarker(LocationMarker marker) {
         if (marker != null) {
             mapView.removeMarker(marker);
+            Object poi = marker.getRelatedObject();
+            eventBus.post(new PleaseRemoveArpiMarkerEvent(poi));
         }
     }
 

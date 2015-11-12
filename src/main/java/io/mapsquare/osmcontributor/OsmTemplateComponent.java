@@ -26,6 +26,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import de.greenrobot.event.EventBus;
+import io.mapsquare.osmcontributor.core.ArpiInitializer;
 import io.mapsquare.osmcontributor.core.CoreModule;
 import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.database.DatabaseHelper;
@@ -130,6 +131,8 @@ public interface OsmTemplateComponent {
     EditVectorialWayManager getEditVectorialWayManager();
 
     Geocoder getGeocoder();
+
+    ArpiInitializer getArpiInitializer();
 
     // Database
 

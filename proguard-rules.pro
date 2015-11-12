@@ -114,3 +114,9 @@
 
 -dontwarn org.joda.convert.ToString
 -dontwarn org.joda.convert.FromString
+
+####################################################################################################
+## ArpiGl
+-keepclassmembers class mobi.designmyapp.arpigl.** { *; }
+
+####################################################################################################
