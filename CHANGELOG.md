@@ -1,4 +1,12 @@
 ## Changelog
+[2.1.0]
+
+ - Improving autocompletion on tags
+ - In the save interface, you can now see and revert the changes you made to a Poi
+ - It's now possible to select which modifications to send to OpenStreetMap
+ - Spanish translation
+ - Portuguese (Brazil) translation
+
 [2.0.1]
 
  - Download of Pois allowed at zoom level greater than 18
