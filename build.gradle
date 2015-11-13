@@ -129,6 +129,7 @@ dependencies {
     compile project(':fab')
     compile project(':navdrawer')
     compile project(':tileslayer')
+    compile project(':lib-manipulation')
     compile "com.android.support:appcompat-v7:$androidSupportVersion"
     // Dependency injection
     compile "com.google.dagger:dagger:$daggerVersion"
@@ -167,7 +168,6 @@ dependencies {
         transitive = true
     }
     compile "com.nhaarman.listviewanimations:lib-core:$listviewanimationsVersion@aar"
-    compile "com.nhaarman.listviewanimations:lib-manipulation:$listviewanimationsVersion@aar"
     compile "com.nhaarman.listviewanimations:lib-core-slh:$listviewanimationsVersion@aar"
     // tests
     testCompile 'junit:junit:4.12'
