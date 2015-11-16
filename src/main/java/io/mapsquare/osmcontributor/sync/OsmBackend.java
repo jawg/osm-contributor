@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.core.PoiManager;
@@ -40,7 +41,6 @@ import io.mapsquare.osmcontributor.sync.events.error.SyncUploadRetrofitErrorEven
 import io.mapsquare.osmcontributor.sync.rest.OsmRestClient;
 import io.mapsquare.osmcontributor.sync.rest.OverpassRestClient;
 import io.mapsquare.osmcontributor.utils.Box;
-import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import retrofit.RetrofitError;
 import retrofit.mime.TypedString;
 import timber.log.Timber;
@@ -66,7 +66,6 @@ public class OsmBackend implements Backend {
 
     EventBus bus;
 
-    public static final String[] KEYS = new String[]{"amenity", "shop", "highway", "tourism", "historic"};
     public static final String[] OBJECT_TYPES = new String[]{"node", "way"};
 
     public OsmBackend(EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient, OsmRestClient osmRestClient, PoiConverter poiConverter, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
@@ -150,10 +149,11 @@ public class OsmBackend implements Backend {
     private String generateOverpassRequest(Box box) {
         StringBuilder cmplReq = new StringBuilder("(");
 
-        // If we are in the Store flavor, download all the pois in the box
-        if (FlavorUtils.isStore()) {
+        Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
+        if (poiTypes.size() > 15) {
+            // we've got lots of pois, overpath will struggle with the finer request, download all the pois in the box
             for (String type : OBJECT_TYPES) {
-                for (String key : KEYS) {
+                for (String key : poiManager.loadPoiTypeKeysWithDefaultValues()) {
                     cmplReq.append(type)
                             .append("[\"")
                             .append(key)
@@ -170,7 +170,7 @@ public class OsmBackend implements Backend {
             // Download all the pois in the box who are of one of the PoiType contained in the database
             for (String type : OBJECT_TYPES) {
                 // For each poiTypes, add the corresponding part to the request
-                for (PoiType poiTypeDto : poiManager.loadPoiTypes().values()) {
+                for (PoiType poiTypeDto : poiTypes.values()) {
                     // Check for tags who have a value and add a ["key"~"value"] string to the request
                     boolean valid = false;
                     for (PoiTypeTag poiTypeTag : poiTypeDto.getTags()) {

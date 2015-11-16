@@ -581,6 +581,11 @@ public class PoiManager {
         return result;
     }
 
+
+    public List<String> loadPoiTypeKeysWithDefaultValues() {
+        return poiTypeTagDao.queryForTagKeysWithDefaultValues();
+    }
+
     /**
      * Get the PoiType with the given id.
      *

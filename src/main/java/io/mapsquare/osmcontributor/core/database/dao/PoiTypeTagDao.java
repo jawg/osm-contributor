@@ -19,9 +19,11 @@
 package io.mapsquare.osmcontributor.core.database.dao;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -67,6 +69,24 @@ public class PoiTypeTagDao extends RuntimeExceptionDao<PoiTypeTag, Long> {
                 DeleteBuilder<PoiTypeTag, Long> builder = deleteBuilder();
                 builder.where().eq(PoiTypeTag.POI_TYPE_ID, poiTypeId);
                 return builder.delete();
+            }
+        });
+    }
+
+    public List<String> queryForTagKeysWithDefaultValues() {
+        return DatabaseHelper.wrapException(new Callable<List<String>>() {
+            @Override
+            public List<String> call() throws Exception {
+                String statement = queryBuilder()
+                        .selectColumns(PoiTypeTag.KEY).distinct()
+                        .where().isNotNull(PoiTypeTag.VALUE)
+                        .prepare().getStatement();
+                return queryRaw(statement, new RawRowMapper<String>() {
+                    @Override
+                    public String mapRow(String[] columnNames, String[] resultColumns) throws SQLException {
+                        return resultColumns[0];
+                    }
+                }).getResults();
             }
         });
     }
