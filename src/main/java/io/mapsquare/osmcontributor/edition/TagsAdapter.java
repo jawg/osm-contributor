@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyTagChange;
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyTagChangeView;
 import io.mapsquare.osmcontributor.edition.holder.ViewHolderPoiTagFewValues;
+import io.mapsquare.osmcontributor.edition.holder.ViewHolderPoiTagImposed;
 import io.mapsquare.osmcontributor.edition.holder.ViewHolderPoiTagManyValues;
 import io.mapsquare.osmcontributor.edition.holder.ViewHolderSeparator;
 import io.mapsquare.osmcontributor.utils.StringUtils;
@@ -51,11 +53,13 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private EventBus eventBus;
     private ConfigManager configManager;
     private boolean change = false;
+    private boolean expertMode = false;
 
-    public TagsAdapter(Poi poi, List<CardModel> cardModelList, Context context, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager) {
+    public TagsAdapter(Poi poi, List<CardModel> cardModelList, Context context, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
         this.context = context;
         this.configManager = configManager;
+        this.expertMode = expertMode;
 
         if (cardModelList == null) {
             loadTags(poi.getTagsMap(), tagValueSuggestionsMap);
@@ -70,19 +74,32 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private void loadTags(Map<String, String> poiTags, Map<String, List<String>> tagValueSuggestionsMap) {
         int nbMandatory = 0;
+        int nbImposed = 0;
 
         for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
-            if (poiTypeTag.getValue() == null) { // tags already completed should not be displayed
+            // Tags not in the PoiType should not be displayed if we are not in expert mode
+            if (poiTypeTag.getValue() == null) {
                 String key = poiTypeTag.getKey();
-                if (poiTypeTag.getMandatory()) {
-                    add(key, poiTags.get(key), true, tagValueSuggestionsMap.get(key), nbMandatory, false);
+                // Display tags as mandatory if they are mandatory and we are not in expert mode
+                if (poiTypeTag.getMandatory() && !expertMode) {
+                    add(key, poiTags.remove(key), true, tagValueSuggestionsMap.get(key), nbMandatory + nbImposed, false, true);
                     nbMandatory++;
                 } else {
-                    add(key, poiTags.get(key), false, tagValueSuggestionsMap.get(key), this.getItemCount(), false);
+                    add(key, poiTags.remove(key), false, tagValueSuggestionsMap.get(key), this.getItemCount(), false, true);
                 }
+            } else if (expertMode) {
+                // Display the tags of the poi that are not in the PoiType
+                String key = poiTypeTag.getKey();
+                add(key, poiTags.remove(key), true, tagValueSuggestionsMap.get(key), nbImposed, false, false);
+                nbImposed++;
             }
         }
-        addSeparator(nbMandatory);
+        if (expertMode) {
+            for (String key : poiTags.keySet()) {
+                add(key, poiTags.get(key), false, Collections.singletonList(poiTags.get(key)), this.getItemCount(), false, true);
+            }
+        }
+        addSeparator(nbMandatory, nbImposed);
     }
 
     /**
@@ -114,6 +131,10 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         switch (CardModel.CardType.values()[viewType]) {
+            case TAG_IMPOSED:
+                View poiTagImposedLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_tag_imposed, parent, false);
+                return new ViewHolderPoiTagImposed(poiTagImposedLayout);
+
             case TAG_MANY_VALUES:
                 View poiTagFewValuesLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_tag_many_values_layout, parent, false);
                 return new ViewHolderPoiTagManyValues(poiTagFewValuesLayout);
@@ -215,6 +236,11 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    public void onBindViewHolder(ViewHolderPoiTagImposed holder, int position) {
+        final CardModel cardModel = cardModelList.get(position);
+        holder.getTextViewKey().setText(cardModel.getKey());
+        holder.getTextViewValue().setText(cardModel.getValue());
+    }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder,
@@ -226,6 +252,10 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             case TAG_FEW_VALUES:
                 onBindViewHolder((ViewHolderPoiTagFewValues) holder, position);
+                return;
+
+            case TAG_IMPOSED:
+                onBindViewHolder((ViewHolderPoiTagImposed) holder, position);
                 return;
 
             default:
@@ -244,22 +274,26 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return cardModelList.size();
     }
 
-    public void add(String key, String value, boolean mandatory, List<String> autocompleteValues, int position, boolean open) {
-        if (autocompleteValues.size() > NB_AUTOCOMPLETE_LIMIT) {
-            cardModelList.add(position, new CardModel(key, value, mandatory, autocompleteValues, open, CardModel.CardType.TAG_MANY_VALUES));
+    public void add(String key, String value, boolean mandatory, List<String> autocompleteValues, int position, boolean open, boolean updatable) {
+        if (!updatable) {
+            cardModelList.add(position, new CardModel(key, value, mandatory, autocompleteValues, open, CardModel.CardType.TAG_IMPOSED));
         } else {
-            cardModelList.add(position, new CardModel(key, value, mandatory, autocompleteValues, open, CardModel.CardType.TAG_FEW_VALUES));
+            if (autocompleteValues.size() > NB_AUTOCOMPLETE_LIMIT) {
+                cardModelList.add(position, new CardModel(key, value, mandatory, autocompleteValues, open, CardModel.CardType.TAG_MANY_VALUES));
+            } else {
+                cardModelList.add(position, new CardModel(key, value, mandatory, autocompleteValues, open, CardModel.CardType.TAG_FEW_VALUES));
+            }
         }
         notifyItemInserted(position);
     }
 
-    public void addSeparator(int nbMandatory) {
+    public void addSeparator(int nbMandatory, int nbImposed) {
         // if there is only mandatory or only optional tags we hide the separators
         if (nbMandatory != 0 && nbMandatory != this.getItemCount()) {
-            cardModelList.add(nbMandatory, new CardModel("", "", false, null, false, CardModel.CardType.HEADER_OPTIONAL));
-            cardModelList.add(0, new CardModel("", "", false, null, false, CardModel.CardType.HEADER_REQUIRED));
-            notifyItemInserted(nbMandatory);
-            notifyItemInserted(0);
+            cardModelList.add(nbMandatory + nbImposed, new CardModel("", "", false, null, false, CardModel.CardType.HEADER_OPTIONAL));
+            cardModelList.add(nbImposed, new CardModel("", "", false, null, false, CardModel.CardType.HEADER_REQUIRED));
+            notifyItemInserted(nbMandatory + nbImposed);
+            notifyItemInserted(nbImposed);
         }
     }
 

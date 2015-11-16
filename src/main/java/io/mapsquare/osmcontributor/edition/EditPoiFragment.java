@@ -311,7 +311,7 @@ public class EditPoiFragment extends Fragment {
             actionBar.setSubtitle(poi.getType().getName());
         }
 
-        tagsAdapter = new TagsAdapter(poi, cardModelList, getActivity(), event.getValuesMap(), configManager);
+        tagsAdapter = new TagsAdapter(poi, cardModelList, getActivity(), event.getValuesMap(), configManager, sharedPreferences.getBoolean(getString(R.string.shared_prefs_advance_mode), false));
         recyclerView.setAdapter(tagsAdapter);
     }
 

@@ -36,14 +36,12 @@ public class CardModel implements Parcelable {
         HEADER_OPTIONAL,
         HEADER_REQUIRED,
         TAG_FEW_VALUES,
-        TAG_MANY_VALUES
+        TAG_MANY_VALUES,
+        TAG_IMPOSED
     }
 
     public boolean isTag() {
-        if (type == CardType.TAG_FEW_VALUES || type == CardType.TAG_MANY_VALUES) {
-            return true;
-        }
-        return false;
+        return type == CardType.TAG_FEW_VALUES || type == CardType.TAG_MANY_VALUES || type == CardType.TAG_IMPOSED;
     }
 
     public CardModel(String key, String value, boolean mandatory, List<String> autocompleteValues, boolean open, CardType separator) {
