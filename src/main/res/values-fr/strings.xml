@@ -169,6 +169,7 @@
     <string name="manage_poi_tags">Gérer les tags de Poi</string>
     <string name="tag_number">%1$s tags</string>
     <string name="new_poi_type">Nouveau type</string>
+    <string name="edit_poi_name">Editer le nom du type</string>
     <string name="new_poi_tag">Nouveau tag</string>
     <string name="edit_poi_type">Les types ne peuvent pas être modifiés</string>
     <string name="edit_poi_tag">Modifier le tag</string>

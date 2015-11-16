@@ -63,6 +63,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.preferences.MyPreferencesActivity;
+import io.mapsquare.osmcontributor.type.TypeListActivity;
 import io.mapsquare.osmcontributor.upload.UploadActivity;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
@@ -182,12 +183,21 @@ public class MapActivity extends AppCompatActivity {
 
             }
         });
+
+        navigationView.getMenu().findItem(R.id.manage_poi_types).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                startPoiTypeEditionActivity();
+                return true;
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
+        navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(sharedPreferences.getBoolean(getString(R.string.shared_prefs_advance_mode), false));
     }
 
     @Override
@@ -375,6 +385,12 @@ public class MapActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
         }
+    }
+
+    private void startPoiTypeEditionActivity() {
+        drawerLayout.closeDrawer(navigationView);
+        Intent intent = new Intent(this, TypeListActivity.class);
+        startActivity(intent);
     }
 
     private void startPreferencesActivity() {

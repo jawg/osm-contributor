@@ -18,10 +18,8 @@
  */
 package io.mapsquare.osmcontributor.type.rest;
 
-import java.util.List;
-
-import io.mapsquare.osmcontributor.type.dto.Suggestions;
 import io.mapsquare.osmcontributor.type.dto.Combinations;
+import io.mapsquare.osmcontributor.type.dto.Suggestions;
 import io.mapsquare.osmcontributor.type.dto.Wiki;
 import retrofit.http.GET;
 import retrofit.http.Query;
@@ -36,17 +34,17 @@ public interface OsmTagInfoRestClient {
      * @param resultPerPage The number of results per page, if null return all the results.
      * @return The suggestions for the given query.
      */
-    @GET("/keys/all?qtype=key&sortname=count_ways&filter=characters_plain")
+    @GET("/keys/all?qtype=key&sortname=count_ways&sortorder=desc&filter=characters_plain")
     Suggestions getSuggestions(@Query("query") String query, @Query("page") Integer pageNumber, @Query("rp") Integer resultPerPage);
 
     /**
-     * Query for the wiki pages of a given key. There is a wiki page per language.
+     * Query for the wiki pages of a given key.
      *
      * @param key The requested wiki page.
-     * @return The wiki pages.
+     * @return The wiki page.
      */
     @GET("/key/wiki_pages")
-    List<Wiki> getWikiPages(@Query("key") String key);
+    Wiki getWikiPages(@Query("key") String key);
 
     /**
      * Query for the tags combinations of a given key.

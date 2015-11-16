@@ -20,56 +20,32 @@ package io.mapsquare.osmcontributor.type.dto;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Wiki {
 
-    String lang;
-    String title;
-    String description;
-    @SerializedName("tags_combination")
-    List<String> tagsCombination;
+    Integer total;
+    @SerializedName("data")
+    List<WikiData> datas;
 
-    public String getLang() {
-        return lang;
+    public Wiki() {
+        datas = new ArrayList<>();
     }
 
-    public void setLang(String lang) {
-        this.lang = lang;
+    public Integer getTotal() {
+        return total;
     }
 
-    public String getTitle() {
-        return title;
+    public void setTotal(Integer total) {
+        this.total = total;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public List<WikiData> getDatas() {
+        return datas;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<String> getTagsCombination() {
-        return tagsCombination;
-    }
-
-    public void setTagsCombination(List<String> tagsCombination) {
-        this.tagsCombination = tagsCombination;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Wiki{");
-        sb.append("lang='").append(lang).append('\'');
-        sb.append(", title='").append(title).append('\'');
-        sb.append(", description='").append(description).append('\'');
-        sb.append(", tagsCombination=").append(tagsCombination);
-        sb.append('}');
-        return sb.toString();
+    public void setDatas(List<WikiData> datas) {
+        this.datas = datas;
     }
 }

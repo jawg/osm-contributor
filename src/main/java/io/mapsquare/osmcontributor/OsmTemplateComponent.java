@@ -57,6 +57,7 @@ import io.mapsquare.osmcontributor.sync.SyncModule;
 import io.mapsquare.osmcontributor.sync.assets.PoiAssetLoader;
 import io.mapsquare.osmcontributor.type.EditPoiTagDialogFragment;
 import io.mapsquare.osmcontributor.type.EditPoiTypeDialogFragment;
+import io.mapsquare.osmcontributor.type.EditPoiTypeNameDialogFragment;
 import io.mapsquare.osmcontributor.type.TypeListActivity;
 import io.mapsquare.osmcontributor.type.TypeListActivityPresenter;
 import io.mapsquare.osmcontributor.type.TypeManager;
@@ -115,6 +116,8 @@ public interface OsmTemplateComponent {
     void inject(NoteCommentDialogFragment noteCommentDialogFragment);
 
     void inject(EditPoiTypeDialogFragment editPoiTypeDialogFragment);
+
+    void inject(EditPoiTypeNameDialogFragment editPoiTypeNameDialogFragment);
 
     void inject(EditPoiTagDialogFragment editPoiTagDialogFragment);
 

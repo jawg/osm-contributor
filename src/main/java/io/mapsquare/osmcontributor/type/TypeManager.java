@@ -22,6 +22,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.view.View.OnClickListener;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +41,7 @@ import io.mapsquare.osmcontributor.type.dto.Combinations;
 import io.mapsquare.osmcontributor.type.dto.CombinationsData;
 import io.mapsquare.osmcontributor.type.dto.Suggestions;
 import io.mapsquare.osmcontributor.type.dto.Wiki;
+import io.mapsquare.osmcontributor.type.dto.WikiData;
 import io.mapsquare.osmcontributor.type.event.BasePoiTagEvent;
 import io.mapsquare.osmcontributor.type.event.BasePoiTypeEvent;
 import io.mapsquare.osmcontributor.type.event.PleaseDownloadPoiTypeSuggestionEvent;
@@ -215,17 +218,18 @@ public class TypeManager {
             return null;
         }
 
-        List<Wiki> wikis = tagInfoRestClient.getWikiPages(key);
+        Wiki wiki = tagInfoRestClient.getWikiPages(key);
         PoiType poiType = new PoiType();
         poiType.setName(key);
         poiType.setIcon(key);
+        poiType.setLastUse(DateTime.now());
         int ordinal = 0;
         List<PoiTypeTag> poiTypeTags = new ArrayList<>();
 
         // Request for the English wiki and keep the tags of the tags_combination field.
-        for (Wiki wiki : wikis) {
-            if ("en".equals(wiki.getLang())) {
-                for (String tagCombination : wiki.getTagsCombination()) {
+        for (WikiData data : wiki.getDatas()) {
+            if ("en".equals(data.getLang())) {
+                for (String tagCombination : data.getTagsCombination()) {
                     String[] splitResult = tagCombination.split("=");
 
                     if (splitResult.length > 1) {

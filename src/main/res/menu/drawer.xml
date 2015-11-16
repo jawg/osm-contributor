@@ -36,6 +36,11 @@
         android:checkableBehavior="none">
 
         <item
+            android:id="@+id/manage_poi_types"
+            android:title="@string/manage_poi_types"
+            android:visible="false"/>
+
+        <item
             android:id="@+id/edit_way"
             android:title="@string/edit_way"
             android:visible="false"/>
