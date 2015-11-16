@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.sync.dto.osm;
 
 import org.joda.time.DateTime;
 import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
@@ -51,7 +52,7 @@ public class WayDto implements PoiDto {
     @Attribute(required = false)
     private String uid;
 
-    @Attribute(name = "center", required = false)
+    @Element(name = "center", required = false)
     private CenterDto center;
 
     @ElementList(inline = true, required = false)
