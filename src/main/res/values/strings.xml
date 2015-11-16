@@ -92,6 +92,8 @@
     <string name="valid_login">Successfully connected</string>
     <string name="reset_title">Reset the database</string>
     <string name="reset_summary">Remove all the Pois from the database</string>
+    <string name="advance_mode_summary">Allow you to manage Poi Types</string>
+    <string name="advance_mode_title">Advance mode</string>
     <string name="reset_dialog_message">Are you sure you want to reset the database? All your unsaved modifications will be lost.</string>
     <string name="reset_dialog_positive_button">Yes</string>
     <string name="reset_dialog_negative_button">Cancel</string>
@@ -105,6 +107,7 @@
     <string name="shared_prefs_sync_title_key" translatable="false">SHARED_PREFS_SYNC_TITLE_KEY</string>
     <string name="shared_prefs_server_key" translatable="false">SHARED_PREFS_SERVER_KEY</string>
     <string name="shared_prefs_reset" translatable="false">SHARED_PREFS_RESET</string>
+    <string name="shared_prefs_advance_mode" translatable="false">SHARED_PREFS_ADVANCE</string>
     <string name="shared_prefs_login_title">Connection</string>
     <string name="shared_prefs_server">OSM Server</string>
 

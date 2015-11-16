@@ -26,6 +26,11 @@
         android:summary="@string/reset_summary"
         android:title="@string/reset_title"/>
 
+    <CheckBoxPreference
+        android:key="@string/shared_prefs_advance_mode"
+        android:summary="@string/advance_mode_summary"
+        android:title="@string/advance_mode_title"/>
+
     <PreferenceCategory
         android:key="@string/shared_prefs_login_title_key"
         android:title="@string/shared_prefs_login_title">

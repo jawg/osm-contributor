@@ -85,6 +85,8 @@
     <string name="error_login">Impossible de se connecter avec ces identifiants. Etes-vous sûr d\'avoir les droits d\'édition?</string>
     <string name="valid_login">Connexion réussie</string>
     <string name="reset_title">Réinitialiser la base de données</string>
+    <string name="advance_mode_summary">Vous permet de gérer les types de pois</string>
+    <string name="advance_mode_title">Mode expert</string>
     <string name="reset_summary">Supprime tous les Pois de la base de données</string>
     <string name="reset_dialog_message">Etes-vous sûr de vouloir réinitialiser la base de données? Tous vos changements non sauvegardés seront perdus.</string>
     <string name="reset_dialog_positive_button">Oui</string>
