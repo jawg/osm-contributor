@@ -18,6 +18,9 @@
  */
 package io.mapsquare.osmcontributor.sync;
 
+import java.util.List;
+
+import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.utils.Box;
 
 /**
@@ -43,7 +46,8 @@ public class PoiStorageSyncWayManager implements SyncWayManager {
      * {@inheritDoc}
      */
     @Override
-    public void downloadPoiForWayEdition() {
+    public List<Poi> downloadPoiForWayEdition(List<Long> ids) {
         //TODO Implement method
+        return null;
     }
 }
