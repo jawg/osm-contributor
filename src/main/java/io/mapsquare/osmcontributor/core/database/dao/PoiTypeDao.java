@@ -88,4 +88,17 @@ public class PoiTypeDao extends RuntimeExceptionDao<PoiType, Long> {
             }
         });
     }
+
+    /**
+     * Delete all the PoiTypes in the database.
+     */
+    public void deleteAll() {
+        DatabaseHelper.wrapException(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                deleteBuilder().delete();
+                return null;
+            }
+        });
+    }
 }

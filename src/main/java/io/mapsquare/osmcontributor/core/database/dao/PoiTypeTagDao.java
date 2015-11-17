@@ -90,4 +90,17 @@ public class PoiTypeTagDao extends RuntimeExceptionDao<PoiTypeTag, Long> {
             }
         });
     }
+
+    /**
+     * Delete all the PoiTypeTags in the database.
+     */
+    public void deleteAll() {
+        DatabaseHelper.wrapException(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                deleteBuilder().delete();
+                return null;
+            }
+        });
+    }
 }

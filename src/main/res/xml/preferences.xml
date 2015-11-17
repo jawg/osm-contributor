@@ -21,15 +21,20 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <CheckBoxPreference
+        android:key="@string/shared_prefs_advance_mode"
+        android:summary="@string/advance_mode_summary"
+        android:title="@string/advance_mode_title"/>
+
     <Preference
         android:key="@string/shared_prefs_reset"
         android:summary="@string/reset_summary"
         android:title="@string/reset_title"/>
 
-    <CheckBoxPreference
-        android:key="@string/shared_prefs_advance_mode"
-        android:summary="@string/advance_mode_summary"
-        android:title="@string/advance_mode_title"/>
+    <Preference
+        android:key="@string/shared_prefs_reset_type"
+        android:summary="@string/reset_type_summary"
+        android:title="@string/reset_type_title"/>
 
     <PreferenceCategory
         android:key="@string/shared_prefs_login_title_key"

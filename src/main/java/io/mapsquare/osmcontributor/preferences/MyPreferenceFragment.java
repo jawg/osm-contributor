@@ -40,6 +40,7 @@ import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.core.events.DatabaseResetFinishedEvent;
 import io.mapsquare.osmcontributor.core.events.ResetDatabaseEvent;
+import io.mapsquare.osmcontributor.core.events.ResetTypeDatabaseEvent;
 import io.mapsquare.osmcontributor.login.events.AttemptLoginEvent;
 import io.mapsquare.osmcontributor.login.events.ErrorLoginEvent;
 import io.mapsquare.osmcontributor.login.events.ValidLoginEvent;
@@ -51,6 +52,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
     String passwordKey;
     Preference loginPref;
     Preference passwordPref;
+    Preference resetTypePref;
 
     private Tracker tracker;
 
@@ -114,6 +116,31 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
                 return false;
             }
         });
+
+        resetTypePref = findPreference(getString(R.string.shared_prefs_reset_type));
+        resetTypePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new AlertDialog.Builder(getActivity())
+                        .setMessage(R.string.reset_dialog_message)
+                        .setPositiveButton(R.string.reset_dialog_positive_button, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                bus.post(new ResetTypeDatabaseEvent());
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(R.string.reset_dialog_negative_button, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        }).show();
+                return false;
+            }
+        });
+
+        if (!sharedPreferences.getBoolean(getString(R.string.shared_prefs_advance_mode), false)) {
+            getPreferenceScreen().removePreference(resetTypePref);
+        }
     }
 
     @Override
@@ -143,6 +170,14 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         updatePrefsSummary(sharedPreferences, key);
+        // Show or hide the reset type preference depending on the value of the advance mode preference.
+        if (getString(R.string.shared_prefs_advance_mode).equals(key)) {
+            if (sharedPreferences.getBoolean(key, false)) {
+                getPreferenceScreen().addPreference(resetTypePref);
+            } else {
+                getPreferenceScreen().removePreference(resetTypePref);
+            }
+        }
     }
 
     private void updateLoginSummary(SharedPreferences sharedPreferences) {

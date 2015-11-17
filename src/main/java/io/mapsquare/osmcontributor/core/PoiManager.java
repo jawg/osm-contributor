@@ -54,6 +54,7 @@ import io.mapsquare.osmcontributor.core.events.PoiTypesLoaded;
 import io.mapsquare.osmcontributor.core.events.PoisLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PoisToUpdateLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.ResetDatabaseEvent;
+import io.mapsquare.osmcontributor.core.events.ResetTypeDatabaseEvent;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
 import io.mapsquare.osmcontributor.core.model.PoiTag;
@@ -172,6 +173,10 @@ public class PoiManager {
         bus.post(new DatabaseResetFinishedEvent(resetDatabase()));
     }
 
+    public void onEventAsync(ResetTypeDatabaseEvent event) {
+        bus.post(new DatabaseResetFinishedEvent(resetTypes()));
+    }
+
     public void onEventAsync(PleaseRevertPoiEvent event) {
         revertPoi(event.getIdToRevert());
         bus.post(new RevertFinishedEvent());
@@ -192,25 +197,38 @@ public class PoiManager {
     public void initDb() {
         if (!isDbInitialized()) {
             // No data, initializing from assets
-            List<PoiType> poiTypes = poiAssetLoader.loadPoiTypesFromAssets();
-            if (poiTypes != null) {
-                Timber.d("Loaded %s poiTypes, trying to insert them", poiTypes.size());
-                for (PoiType poiType : poiTypes) {
-                    Timber.d("saving poiType %s", poiType);
-                    savePoiType(poiType);
-                    Timber.d("poiType saved");
-                }
-            }
-
-            List<Poi> pois = poiAssetLoader.loadPoisFromAssets();
-            Timber.d("Loaded %s poi, trying to insert them", pois.size());
-            for (Poi poi : pois) {
-                Timber.d("saving poi %s", poi);
-                savePoi(poi);
-                Timber.d("poi saved");
-            }
+            savePoiTypesFromAssets();
+            savePoisFromAssets();
         }
         Timber.d("Database initialized");
+    }
+
+    /**
+     * Load poi types from assets and save them in the database.
+     */
+    public void savePoiTypesFromAssets() {
+        List<PoiType> poiTypes = poiAssetLoader.loadPoiTypesFromAssets();
+        if (poiTypes != null) {
+            Timber.d("Loaded %s poiTypes, trying to insert them", poiTypes.size());
+            for (PoiType poiType : poiTypes) {
+                Timber.d("saving poiType %s", poiType);
+                savePoiType(poiType);
+                Timber.d("poiType saved");
+            }
+        }
+    }
+
+    /**
+     * Load pois from assets and save them in the database.
+     */
+    public void savePoisFromAssets() {
+        List<Poi> pois = poiAssetLoader.loadPoisFromAssets();
+        Timber.d("Loaded %s poi, trying to insert them", pois.size());
+        for (Poi poi : pois) {
+            Timber.d("saving poi %s", poi);
+            savePoi(poi);
+            Timber.d("poi saved");
+        }
     }
 
     /**
@@ -705,6 +723,30 @@ public class PoiManager {
                 poiDao.deleteAll();
                 poiNodeRefDao.deleteAll();
                 poiTagDao.deleteAll();
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Reset the PoiTypes of the database : delete all the Pois, PoiTags, PoiNodeRefs, PoiTypes and PoiTypeTags of the database
+     * then reload and save the PoiTypes from the assets.
+     *
+     * @return Whether the reset was successful.
+     */
+    public Boolean resetTypes() {
+        return databaseHelper.callInTransaction(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                Timber.d("Resetting the PoiTypes of the database");
+                poiDao.deleteAll();
+                poiNodeRefDao.deleteAll();
+                poiTagDao.deleteAll();
+                poiTypeDao.deleteAll();
+                poiTypeTagDao.deleteAll();
+                Timber.d("All Pois en PoiTypes deleted from database");
+                savePoiTypesFromAssets();
+                Timber.d("Finished reloading and saving PoiTypes from assets");
                 return true;
             }
         });
