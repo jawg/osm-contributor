@@ -403,6 +403,12 @@ public class Poi implements Cloneable {
             if (newValue != null) {
                 if (newValue.trim().isEmpty()) {
                     tagsToDelete.add(poiTag);
+                    if ("name".equalsIgnoreCase(poiTag.getKey())) {
+                        setName("");
+                    }
+                    if ("level".equalsIgnoreCase(poiTag.getKey())) {
+                        setLevel("");
+                    }
                 } else if (!newValue.equals(poiTag.getValue())) {
                     poiTag.setValue(newValue);
                 }
