@@ -130,7 +130,7 @@ public abstract class DragSwipeRecyclerAdapter<T extends Comparable<T>>
         notifyDataSetChanged();
     }
 
-    public void addItem(T item) {
+    public int addItem(T item) {
         int oldPosition = data.indexOf(item);
         if (oldPosition == -1) {
             data.add(item);
@@ -147,6 +147,7 @@ public abstract class DragSwipeRecyclerAdapter<T extends Comparable<T>>
         } else {
             notifyItemInserted(position);
         }
+        return position;
     }
 
     @Override

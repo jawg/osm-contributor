@@ -226,11 +226,11 @@ public class TypeListActivity extends AppCompatActivity {
     }
 
     public void addNewPoiType(PoiType item) {
-        typesAdapter.addItem(item);
+        recyclerTypes.smoothScrollToPosition(typesAdapter.addItem(item));
     }
 
     public void addNewPoiTag(PoiTypeTag item) {
-        tagsAdapter.addItem(item);
+        recyclerTags.smoothScrollToPosition(tagsAdapter.addItem(item));
     }
 
     private void changeTitle(int title, CharSequence subtitle) {

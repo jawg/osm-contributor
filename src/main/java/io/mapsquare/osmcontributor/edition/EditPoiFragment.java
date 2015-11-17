@@ -330,7 +330,7 @@ public class EditPoiFragment extends Fragment {
     }
 
     public void onEventMainThread(NewPoiTagAddedEvent event) {
-        recyclerView.scrollToPosition(tagsAdapter.addLast(event.getTagKey(), event.getTagValue(), Collections.<String>emptyList(), false, true));
+        recyclerView.smoothScrollToPosition(tagsAdapter.addLast(event.getTagKey(), event.getTagValue(), Collections.<String>emptyList(), false, true));
     }
 
     public void onEventMainThread(PoiChangesApplyEvent event) {
