@@ -74,6 +74,7 @@ public class EditPoiTypeNameDialogFragment extends BaseOkCancelDialogFragment {
         dialog.setTitle(R.string.edit_poi_name);
 
         poiTypeName = (EditText) view.findViewById(R.id.poi_type_name);
+        poiTypeName.setText(poiType.getName());
         poiTypeName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

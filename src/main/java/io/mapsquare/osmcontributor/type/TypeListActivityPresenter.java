@@ -136,7 +136,7 @@ public class TypeListActivityPresenter {
         return new DragSwipeRecyclerAdapter.Callback<PoiTypeTag>() {
             @Override
             public void onItemClicked(PoiTypeTag item) {
-                // Not implemented
+                EditPoiTagDialogFragment.display(typeListActivity.getSupportFragmentManager(), item);
             }
 
             @Override
