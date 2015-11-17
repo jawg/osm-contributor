@@ -38,18 +38,21 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
@@ -59,6 +62,7 @@ import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiForCreationEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiForEditionEvent;
 import io.mapsquare.osmcontributor.core.events.PoiForEditionLoadedEvent;
 import io.mapsquare.osmcontributor.core.model.Poi;
+import io.mapsquare.osmcontributor.edition.events.NewPoiTagAddedEvent;
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyPoiChanges;
 import io.mapsquare.osmcontributor.edition.events.PoiChangesApplyEvent;
 
@@ -92,9 +96,6 @@ public class EditPoiFragment extends Fragment {
         }
     }
 
-    @InjectView(R.id.recycler_view)
-    android.support.v7.widget.RecyclerView recyclerView;
-
     @Inject
     EventBus eventBus;
 
@@ -103,6 +104,17 @@ public class EditPoiFragment extends Fragment {
 
     @Inject
     ConfigManager configManager;
+
+    @InjectView(R.id.fab_add)
+    FloatingActionButton fabAdd;
+
+    @InjectView(R.id.recycler_view)
+    android.support.v7.widget.RecyclerView recyclerView;
+
+    @OnClick(R.id.fab_add)
+    public void addTag() {
+        AddTagDialogFragment.display(((AppCompatActivity) getActivity()).getSupportFragmentManager());
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -149,6 +161,8 @@ public class EditPoiFragment extends Fragment {
             tracker.setScreenName("EditView");
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
+
+        fabAdd.setVisibility(sharedPreferences.getBoolean(getString(R.string.shared_prefs_advance_mode), false) ? View.VISIBLE : View.GONE);
 
         return rootView;
     }
@@ -313,6 +327,10 @@ public class EditPoiFragment extends Fragment {
 
         tagsAdapter = new TagsAdapter(poi, cardModelList, getActivity(), event.getValuesMap(), configManager, sharedPreferences.getBoolean(getString(R.string.shared_prefs_advance_mode), false));
         recyclerView.setAdapter(tagsAdapter);
+    }
+
+    public void onEventMainThread(NewPoiTagAddedEvent event) {
+        recyclerView.scrollToPosition(tagsAdapter.addLast(event.getTagKey(), event.getTagValue(), Collections.<String>emptyList(), false, true));
     }
 
     public void onEventMainThread(PoiChangesApplyEvent event) {

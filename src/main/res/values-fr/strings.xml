@@ -39,6 +39,10 @@
     <string name="edition_title">Edition</string>
     <string name="required">Obligatoire</string>
     <string name="optional">Facultatif</string>
+    <string name="add_tag">Ajouter un tag</string>
+    <string name="tag_key">Clé</string>
+    <string name="tag_value">Valeur</string>
+
 
     <!-- Map -->
     <string name="no_poi_name">Ce poi n\'a pas de nom</string>

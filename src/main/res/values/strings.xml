@@ -41,6 +41,9 @@
     <string name="edition_title">Edition</string>
     <string name="required">Required</string>
     <string name="optional">Optional</string>
+    <string name="add_tag">Add a tag</string>
+    <string name="tag_key">Key</string>
+    <string name="tag_value">Value</string>
 
     <!-- Map -->
     <string name="no_poi_name">This POI doesn\'t have a name</string>

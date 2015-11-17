@@ -287,6 +287,16 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyItemInserted(position);
     }
 
+    /**
+     * Add an element at the end of the List
+     *
+     * @return The position of the inserted element
+     */
+    public int addLast(String key, String value, List<String> autocompleteValues, boolean open, boolean updatable) {
+        add(key, value, false, autocompleteValues, cardModelList.size(), open, updatable);
+        return cardModelList.size() - 1;
+    }
+
     public void addSeparator(int nbMandatory, int nbImposed) {
         // if there is only mandatory or only optional tags we hide the separators
         if (nbMandatory != 0 && nbMandatory != this.getItemCount()) {
