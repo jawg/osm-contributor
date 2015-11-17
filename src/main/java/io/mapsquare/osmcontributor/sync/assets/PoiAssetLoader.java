@@ -34,19 +34,13 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.greenrobot.event.EventBus;
-import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiType;
-import io.mapsquare.osmcontributor.map.BitmapHandler;
-import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
-import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
 import io.mapsquare.osmcontributor.sync.converter.PoiConverter;
 import io.mapsquare.osmcontributor.sync.converter.PoiTypeConverter;
 import io.mapsquare.osmcontributor.sync.dto.dma.PoiTypeDto;
 import io.mapsquare.osmcontributor.sync.dto.osm.OsmDto;
 import io.mapsquare.osmcontributor.utils.CloseableUtils;
-import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import timber.log.Timber;
 
 @Singleton
@@ -57,55 +51,14 @@ public class PoiAssetLoader {
     Gson gson;
     Persister simple;
     PoiTypeConverter poiTypeConverter;
-    PoiManager poiManager;
-    EventBus bus;
-    BitmapHandler bitmapHandler;
 
     @Inject
-    public PoiAssetLoader(Application application, PoiConverter poiConverter, Gson gson, Persister simple, PoiTypeConverter poiTypeConverter, PoiManager poiManager, BitmapHandler bitmapHandler, EventBus bus) {
+    public PoiAssetLoader(Application application, PoiConverter poiConverter, Gson gson, Persister simple, PoiTypeConverter poiTypeConverter) {
         this.application = application;
         this.poiConverter = poiConverter;
         this.gson = gson;
         this.simple = simple;
         this.poiTypeConverter = poiTypeConverter;
-        this.poiManager = poiManager;
-        this.bus = bus;
-        this.bitmapHandler = bitmapHandler;
-    }
-
-    public void onEventBackgroundThread(InitDbEvent event) {
-        if (!FlavorUtils.isPoiStorage()) {
-            Timber.d("Initializing database ...");
-            initDb();
-            bus.postSticky(new DbInitializedEvent());
-        }
-    }
-
-    /**
-     * Initialize the database with the data from the assets files.
-     */
-    public void initDb() {
-        if (!poiManager.isDbInitialized()) {
-            // No data, initializing from assets
-            List<PoiType> poiTypes = loadPoiTypesFromAssets();
-            if (poiTypes != null) {
-                Timber.d("Loaded %s poiTypes, trying to insert them", poiTypes.size());
-                for (PoiType poiType : poiTypes) {
-                    Timber.d("saving poiType %s", poiType);
-                    poiManager.savePoiType(poiType);
-                    Timber.d("poiType saved");
-                }
-            }
-
-            List<Poi> pois = loadPoisFromAssets();
-            Timber.d("Loaded %s poi, trying to insert them", pois.size());
-            for (Poi poi : pois) {
-                Timber.d("saving poi %s", poi);
-                poiManager.savePoi(poi);
-                Timber.d("poi saved");
-            }
-        }
-        Timber.d("Database initialized");
     }
 
     /**

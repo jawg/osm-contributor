@@ -18,8 +18,6 @@
  */
 package io.mapsquare.osmcontributor.core;
 
-import android.app.Application;
-
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -65,9 +63,13 @@ import io.mapsquare.osmcontributor.map.events.ChangesInDB;
 import io.mapsquare.osmcontributor.map.events.LastUsePoiTypeLoaded;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadLastUsedPoiType;
 import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
+import io.mapsquare.osmcontributor.sync.assets.PoiAssetLoader;
+import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
+import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
 import io.mapsquare.osmcontributor.upload.PoiUpdateWrapper;
 import io.mapsquare.osmcontributor.upload.events.RevertFinishedEvent;
 import io.mapsquare.osmcontributor.utils.Box;
+import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 import timber.log.Timber;
 
@@ -88,9 +90,10 @@ public class PoiManager {
     DatabaseHelper databaseHelper;
     ConfigManager configManager;
     EventBus bus;
+    PoiAssetLoader poiAssetLoader;
 
     @Inject
-    public PoiManager(PoiDao poiDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao, PoiTypeTagDao poiTypeTagDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, Application application) {
+    public PoiManager(PoiDao poiDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao, PoiTypeTagDao poiTypeTagDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, PoiAssetLoader poiAssetLoader) {
         this.poiDao = poiDao;
         this.poiTagDao = poiTagDao;
         this.poiNodeRefDao = poiNodeRefDao;
@@ -99,11 +102,20 @@ public class PoiManager {
         this.databaseHelper = databaseHelper;
         this.configManager = configManager;
         this.bus = bus;
+        this.poiAssetLoader = poiAssetLoader;
     }
 
     // ********************************
     // ************ Events ************
     // ********************************
+
+    public void onEventBackgroundThread(InitDbEvent event) {
+        if (!FlavorUtils.isPoiStorage()) {
+            Timber.d("Initializing database ...");
+            initDb();
+            bus.postSticky(new DbInitializedEvent());
+        }
+    }
 
     public void onEventAsync(PleaseLoadNodeRefAround event) {
         bus.post(new NodeRefAroundLoadedEvent(poiNodeRefDao.queryAllInRect(event.getLat(), event.getLng())));
@@ -173,6 +185,33 @@ public class PoiManager {
     // ********************************
     // ************ public ************
     // ********************************
+
+    /**
+     * Initialize the database with the data from the assets files.
+     */
+    public void initDb() {
+        if (!isDbInitialized()) {
+            // No data, initializing from assets
+            List<PoiType> poiTypes = poiAssetLoader.loadPoiTypesFromAssets();
+            if (poiTypes != null) {
+                Timber.d("Loaded %s poiTypes, trying to insert them", poiTypes.size());
+                for (PoiType poiType : poiTypes) {
+                    Timber.d("saving poiType %s", poiType);
+                    savePoiType(poiType);
+                    Timber.d("poiType saved");
+                }
+            }
+
+            List<Poi> pois = poiAssetLoader.loadPoisFromAssets();
+            Timber.d("Loaded %s poi, trying to insert them", pois.size());
+            for (Poi poi : pois) {
+                Timber.d("saving poi %s", poi);
+                savePoi(poi);
+                Timber.d("poi saved");
+            }
+        }
+        Timber.d("Database initialized");
+    }
 
     /**
      * Method saving a poi and all the associated foreign collections.
