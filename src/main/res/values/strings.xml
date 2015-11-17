@@ -31,6 +31,7 @@
     <string name="addValueDialogCancel">Cancel</string>
     <string name="title_activity_pick_value" translatable="false">PickValueActivity</string>
     <string name="uncompleted_fields">There are uncompleted fields</string>
+    <string name="not_any_changes">There is not any changes</string>
     <string name="quit_edition_title">Quit edition</string>
     <string name="quit_edition_message">Do you really want to discard your changes ?</string>
     <string name="quit_edition_positive_btn">Yes</string>

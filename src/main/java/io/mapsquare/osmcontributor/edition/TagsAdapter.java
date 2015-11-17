@@ -40,6 +40,7 @@ import io.mapsquare.osmcontributor.edition.events.PleaseApplyTagChangeView;
 import io.mapsquare.osmcontributor.edition.holder.ViewHolderPoiTagFewValues;
 import io.mapsquare.osmcontributor.edition.holder.ViewHolderPoiTagManyValues;
 import io.mapsquare.osmcontributor.edition.holder.ViewHolderSeparator;
+import io.mapsquare.osmcontributor.utils.StringUtils;
 import io.mapsquare.osmcontributor.utils.ViewAnimation;
 
 public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -92,7 +93,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         for (CardModel cardModel : cardModelList) {
             if (cardModel.isTag()) {
                 // Only mandatory tags and optional tags that have been changed are saved
-                if (cardModel.isMandatory() || (cardModel.getValue() != null && !cardModel.getValue().isEmpty())) {
+                if (cardModel.isMandatory() || cardModel.getValue() != null) {
                     result.getTagsMap().put(cardModel.getKey(), cardModel.getValue());
                 }
             }
@@ -283,6 +284,15 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             position++;
         }
+    }
+
+    public boolean isValidChanges() {
+        for (CardModel cardModel : cardModelList) {
+            if (cardModel.isTag() && cardModel.isMandatory() && StringUtils.isEmpty(cardModel.getValue())) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 

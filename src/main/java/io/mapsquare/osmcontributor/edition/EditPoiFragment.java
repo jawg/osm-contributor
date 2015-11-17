@@ -225,16 +225,20 @@ public class EditPoiFragment extends Fragment {
 
         if (id == R.id.action_confirm_edit) {
             finishTuto();
-            if (isValidChanges()) {
-                if (creation) {
-                    getActivity().setResult(EditPoiActivity.POI_CREATED, null);
-                    eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges()));
+            if (tagsAdapter.isChange()) {
+                if (tagsAdapter.isValidChanges()) {
+                    if (creation) {
+                        getActivity().setResult(EditPoiActivity.POI_CREATED, null);
+                        eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges()));
+                    } else {
+                        getActivity().setResult(EditPoiActivity.POI_EDITED, null);
+                        eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges()));
+                    }
                 } else {
-                    getActivity().setResult(EditPoiActivity.POI_EDITED, null);
-                    eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges()));
+                    Toast.makeText(getActivity(), R.string.uncompleted_fields, Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(getActivity(), R.string.uncompleted_fields, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.not_any_changes, Toast.LENGTH_SHORT).show();
             }
             return true;
         }
@@ -290,15 +294,6 @@ public class EditPoiFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private boolean isValidChanges() {
-        for (String tag : tagsAdapter.getPoiChanges().getTagsMap().values()) {
-            if (tag == null || tag.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override

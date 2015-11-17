@@ -29,6 +29,7 @@
     <string name="addValueDialogAdd">Modifier</string>
     <string name="addValueDialogCancel">Annuler</string>
     <string name="uncompleted_fields">Certains champs ne sont pas remplis</string>
+    <string name="not_any_changes">Aucun champs n\'a été modifié</string>
     <string name="quit_edition_title">Quitter l\'édition</string>
     <string name="quit_edition_message">Etes-vous sûr de vouloir abandonner vos modifications?</string>
     <string name="quit_edition_positive_btn">Oui</string>

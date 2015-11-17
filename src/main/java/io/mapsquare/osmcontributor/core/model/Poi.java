@@ -395,13 +395,21 @@ public class Poi implements Cloneable {
             tags = new ArrayList<>();
         }
 
+        List<PoiTag> tagsToDelete = new ArrayList<>();
+
         // Apply the new values to the existing tags
         for (PoiTag poiTag : tags) {
             String newValue = tagsMap.remove(poiTag.getKey());
-            if (newValue != null && !newValue.equals(poiTag.getValue())) {
-                poiTag.setValue(newValue);
+            if (newValue != null) {
+                if (newValue.trim().isEmpty()) {
+                    tagsToDelete.add(poiTag);
+                } else if (!newValue.equals(poiTag.getValue())) {
+                    poiTag.setValue(newValue);
+                }
             }
         }
+
+        tags.removeAll(tagsToDelete);
 
         // Add the new tags to the Poi
         for (Map.Entry<String, String> tagToAdd : tagsMap.entrySet()) {
