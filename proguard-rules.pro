@@ -10,6 +10,10 @@
     *;
 }
 
+-keep class io.mapsquare.osmcontributor.sync.dto.osm.* {
+    *;
+}
+
 -keepclasseswithmembernames class io.mapsquare.osmcontributor.utils.Box { *; }
 
 

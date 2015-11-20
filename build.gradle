@@ -85,7 +85,7 @@ android {
         applicationId "io.mapsquare.osmcontributor"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 11
+        versionCode 12
         versionName appVersion
     }
     buildTypes {

@@ -1,4 +1,8 @@
 ## Changelog
+[2.1.1]
+
+ - Fixed and issue during authentication
+
 [2.1.0]
 
  - Improving autocompletion on tags
