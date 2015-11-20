@@ -23,7 +23,6 @@ ext {
     dbinspectorVersion = '3.1.0'
     showcaseviewVersion = '5.0.0'
     licensesdialogVersion = '1.7.0'
-    advrecyclerviewVersion = '0.7.4'
     listviewanimationsVersion = '3.1.0'
 }
 
@@ -164,9 +163,6 @@ dependencies {
     compile "com.github.amlcurran.showcaseview:library:$showcaseviewVersion"
     compile("com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion@aar") { transitive = true }
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"
-    compile("com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:$advrecyclerviewVersion@aar") {
-        transitive = true
-    }
     compile "com.nhaarman.listviewanimations:lib-core:$listviewanimationsVersion@aar"
     compile "com.nhaarman.listviewanimations:lib-core-slh:$listviewanimationsVersion@aar"
     // tests

@@ -33,11 +33,12 @@ import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.database.DatabaseHelper;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
-import io.mapsquare.osmcontributor.type.adapter.DragSwipeRecyclerAdapter;
 import io.mapsquare.osmcontributor.type.adapter.PoiTypeAdapter;
+import io.mapsquare.osmcontributor.type.adapter.PoiTypeTagAdapter;
 import io.mapsquare.osmcontributor.type.event.PleaseSavePoiTag;
 import io.mapsquare.osmcontributor.type.event.PoiTagCreatedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTagDeletedEvent;
+import io.mapsquare.osmcontributor.type.event.PoiTagsUpdatedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTypeCreatedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTypeDeletedEvent;
 import timber.log.Timber;
@@ -126,15 +127,15 @@ public class TypeListActivityPresenter {
         };
     }
 
-    public DragSwipeRecyclerAdapter.Callback<PoiTypeTag> getListTagsCallback() {
-        return new DragSwipeRecyclerAdapter.Callback<PoiTypeTag>() {
+    public PoiTypeTagAdapter.PoiTypeTagAdapterListener getPoiTypeTagAdapterListener() {
+        return new PoiTypeTagAdapter.PoiTypeTagAdapterListener() {
             @Override
-            public void onItemClicked(PoiTypeTag item) {
+            public void onItemClick(PoiTypeTag item) {
                 EditPoiTagDialogFragment.display(typeListActivity.getSupportFragmentManager(), item);
             }
 
             @Override
-            public void onItemLongClicked(PoiTypeTag item) {
+            public void onItemLongClick(PoiTypeTag item) {
                 EditPoiTagDialogFragment.display(typeListActivity.getSupportFragmentManager(), item);
             }
 
@@ -181,7 +182,7 @@ public class TypeListActivityPresenter {
                 item.setOrdinal(toPosition);
                 Timber.d("Moved poi tag %d from %d to %d", item.getId(), fromPosition, toPosition);
 
-                typeManager.savePoiType(currentPoiType);
+                typeManager.updatePoiTags(currentPoiType);
             }
         };
     }
@@ -302,6 +303,11 @@ public class TypeListActivityPresenter {
     public void onEventMainThread(PoiTagCreatedEvent event) {
         typeManager.finishLastDeletionJob();
         typeListActivity.addNewPoiTag(event.getPoiTypeTag());
+    }
+
+    public void onEventMainThread(PoiTagsUpdatedEvent event) {
+        typeManager.finishLastDeletionJob();
+        typeListActivity.refreshPoiTag(event.getPoiType());
     }
 
     public void onEventMainThread(PoiTypeDeletedEvent event) {

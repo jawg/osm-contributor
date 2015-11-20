@@ -47,6 +47,7 @@ import io.mapsquare.osmcontributor.type.event.BasePoiTypeEvent;
 import io.mapsquare.osmcontributor.type.event.PleaseDownloadPoiTypeSuggestionEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTagCreatedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTagDeletedEvent;
+import io.mapsquare.osmcontributor.type.event.PoiTagsUpdatedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTypeCreatedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTypeDeletedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTypeSuggestedDownloadedEvent;
@@ -94,6 +95,12 @@ public class TypeManager {
         bus.post(new PoiTagCreatedEvent(poiTypeTag));
     }
 
+    public void onEventBackgroundThread(InternalUpdatePoiTagsEvent event) {
+        PoiType poiType = event.getPoiType();
+        poiManager.savePoiType(poiType);
+        bus.post(new PoiTagsUpdatedEvent(poiType));
+    }
+
     public void onEventBackgroundThread(InternalRemovePoiTypeEvent event) {
         PoiType poiType = event.getPoiType();
         poiManager.deletePoiType(poiType);
@@ -135,6 +142,15 @@ public class TypeManager {
      */
     public void savePoiTag(PoiTypeTag poiTypeTag) {
         bus.post(new InternalSavePoiTagEvent(poiTypeTag));
+    }
+
+
+    /**
+     * Update the poi tags of a poiType
+     * @param currentPoiType
+     */
+    public void updatePoiTags(PoiType poiType) {
+        bus.post(new InternalUpdatePoiTagsEvent(poiType));
     }
 
     /**
@@ -334,6 +350,12 @@ public class TypeManager {
     private class InternalSavePoiTagEvent extends BasePoiTagEvent {
         public InternalSavePoiTagEvent(PoiTypeTag poiTypeTag) {
             super(poiTypeTag);
+        }
+    }
+
+    private class InternalUpdatePoiTagsEvent extends BasePoiTypeEvent {
+        public InternalUpdatePoiTagsEvent(PoiType poiType) {
+            super(poiType);
         }
     }
 

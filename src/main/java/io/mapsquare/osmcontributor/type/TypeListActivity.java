@@ -53,12 +53,12 @@ import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.map.BitmapHandler;
 import io.mapsquare.osmcontributor.type.adapter.PoiTypeAdapter;
 import io.mapsquare.osmcontributor.type.adapter.PoiTypeTagAdapter;
-import io.mapsquare.osmcontributor.type.helper.DragSwipeRecyclerHelper;
+import io.mapsquare.osmcontributor.type.helper.DragSwipeItemTouchHelperCallback;
 import io.mapsquare.osmcontributor.type.helper.SwipeItemTouchHelperCallback;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 import timber.log.Timber;
 
-public class TypeListActivity extends AppCompatActivity {
+public class TypeListActivity extends AppCompatActivity implements PoiTypeTagAdapter.OnStartDragListener {
 
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
@@ -94,8 +94,8 @@ public class TypeListActivity extends AppCompatActivity {
 
     private PoiTypeAdapter typesAdapter;
 
-    private DragSwipeRecyclerHelper tagsHelper;
     private PoiTypeTagAdapter tagsAdapter;
+    private ItemTouchHelper dragSwipeItemTouchHelper;
 
     private SearchView searchView;
     private String filterConstraint;
@@ -126,8 +126,16 @@ public class TypeListActivity extends AppCompatActivity {
         ItemTouchHelper swipeItemTouchHelper = new ItemTouchHelper(callback);
         swipeItemTouchHelper.attachToRecyclerView(recyclerTypes);
 
-        tagsAdapter = new PoiTypeTagAdapter(presenter.getListTagsCallback());
-        tagsHelper = new DragSwipeRecyclerHelper(recyclerTags, tagsAdapter);
+        tagsAdapter = new PoiTypeTagAdapter(new ArrayList<PoiTypeTag>());
+        tagsAdapter.setPoiTypeTagAdapterListener(presenter.getPoiTypeTagAdapterListener());
+        tagsAdapter.setOnStartDragListener(this);
+
+        recyclerTags.setAdapter(tagsAdapter);
+        recyclerTags.setLayoutManager(new LinearLayoutManager(this));
+
+        ItemTouchHelper.Callback dragSwipeCallback = new DragSwipeItemTouchHelperCallback(tagsAdapter);
+        dragSwipeItemTouchHelper = new ItemTouchHelper(dragSwipeCallback);
+        dragSwipeItemTouchHelper.attachToRecyclerView(recyclerTags);
 
         listSwitcher.prepareViews(showingTypes);
 
@@ -174,14 +182,12 @@ public class TypeListActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        tagsHelper.onPause();
         presenter.onPause();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        tagsHelper.onDestroy();
         super.onDestroy();
     }
 
@@ -242,7 +248,7 @@ public class TypeListActivity extends AppCompatActivity {
     void showTags(Collection<PoiTypeTag> poiTypeTags, PoiType poiType) {
         showingTypes = false;
 
-        tagsAdapter.clearAndAddAll(poiTypeTags);
+        tagsAdapter.setPoiTypeTags(poiTypeTags);
         changeTitle(R.string.manage_poi_tags, poiType.getName());
         showContent();
         listSwitcher.showView(recyclerTags);
@@ -299,12 +305,21 @@ public class TypeListActivity extends AppCompatActivity {
         recyclerTags.smoothScrollToPosition(tagsAdapter.addItem(item));
     }
 
+    public void refreshPoiTag(PoiType item) {
+        tagsAdapter.setPoiTypeTags(item.getTags());
+    }
+
     private void changeTitle(int title, CharSequence subtitle) {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(title);
             actionBar.setSubtitle(subtitle);
         }
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        dragSwipeItemTouchHelper.startDrag(viewHolder);
     }
 }
 
