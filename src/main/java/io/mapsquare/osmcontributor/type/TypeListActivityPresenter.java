@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,8 +34,8 @@ import io.mapsquare.osmcontributor.core.database.DatabaseHelper;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.type.adapter.DragSwipeRecyclerAdapter;
+import io.mapsquare.osmcontributor.type.adapter.PoiTypeAdapter;
 import io.mapsquare.osmcontributor.type.event.PleaseSavePoiTag;
-import io.mapsquare.osmcontributor.type.event.PleaseSavePoiType;
 import io.mapsquare.osmcontributor.type.event.PoiTagCreatedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTagDeletedEvent;
 import io.mapsquare.osmcontributor.type.event.PoiTypeCreatedEvent;
@@ -99,17 +98,17 @@ public class TypeListActivityPresenter {
         }
     }
 
-    public DragSwipeRecyclerAdapter.Callback<PoiType> getListTypesCallback() {
-        return new DragSwipeRecyclerAdapter.Callback<PoiType>() {
+    public PoiTypeAdapter.PoiTypeAdapterListener getPoiTypeAdapterListener() {
+        return new PoiTypeAdapter.PoiTypeAdapterListener() {
             @Override
-            public void onItemClicked(PoiType item) {
+            public void onItemClick(final PoiType item) {
                 currentPoiType = item;
                 typeManager.finishLastDeletionJob();
                 bus.post(new InternalPleaseLoadEvent(item.getId()));
             }
 
             @Override
-            public void onItemLongClicked(PoiType item) {
+            public void onItemLongClick(final PoiType item) {
                 EditPoiTypeNameDialogFragment.display(typeListActivity.getSupportFragmentManager(), item);
             }
 
@@ -123,11 +122,6 @@ public class TypeListActivityPresenter {
                         Timber.i("Undone poi type %d removal", item.getId());
                     }
                 });
-            }
-
-            @Override
-            public void onItemMoved(PoiType item, int fromPosition, int toPosition) {
-                throw new UnsupportedOperationException();
             }
         };
     }
@@ -265,28 +259,6 @@ public class TypeListActivityPresenter {
     }
 
     /* ========== POI type/tag edition ========== */
-
-    public void onEventMainThread(PleaseSavePoiType event) {
-        PoiType poiType;
-
-        Long id = event.getId();
-        if (id != null) {
-            // We edit an existing type, so find it in the list...
-            poiType = typeListActivity.getPoiTypeById(id);
-            if (poiType == null) {
-                throw new IllegalStateException("Edited type not found");
-            }
-        } else {
-            // Create a new type
-            poiType = new PoiType();
-            poiType.setTags(new ArrayList<PoiTypeTag>());
-        }
-
-        String name = event.getName();
-        poiType.setName(name);
-        poiType.setIcon(name);
-        typeManager.savePoiType(poiType);
-    }
 
     public void onEventMainThread(PleaseSavePoiTag event) {
         PoiTypeTag poiTypeTag = null;

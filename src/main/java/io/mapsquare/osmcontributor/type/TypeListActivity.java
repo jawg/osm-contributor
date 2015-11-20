@@ -23,14 +23,21 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.ViewSwitcher;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -46,13 +53,15 @@ import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.map.BitmapHandler;
 import io.mapsquare.osmcontributor.type.adapter.PoiTypeAdapter;
 import io.mapsquare.osmcontributor.type.adapter.PoiTypeTagAdapter;
+import io.mapsquare.osmcontributor.type.helper.DragSwipeRecyclerHelper;
+import io.mapsquare.osmcontributor.type.helper.SwipeItemTouchHelperCallback;
+import io.mapsquare.osmcontributor.utils.StringUtils;
 import timber.log.Timber;
 
 public class TypeListActivity extends AppCompatActivity {
 
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
-
     @InjectView(R.id.progress_content_switcher)
     ViewSwitcher viewSwitcher;
 
@@ -77,15 +86,19 @@ public class TypeListActivity extends AppCompatActivity {
     @Inject
     BitmapHandler bitmapHandler;
 
+    private static final String FILTER_CONSTRAINT = "FILTER_CONSTRAINT";
+
     private TypeListActivityPresenter presenter;
 
     private boolean showingTypes = true;
 
-    private DragSwipeRecyclerHelper typesHelper;
     private PoiTypeAdapter typesAdapter;
 
     private DragSwipeRecyclerHelper tagsHelper;
     private PoiTypeTagAdapter tagsAdapter;
+
+    private SearchView searchView;
+    private String filterConstraint;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,13 +116,54 @@ public class TypeListActivity extends AppCompatActivity {
 
         presenter = new TypeListActivityPresenter(this, savedInstanceState);
 
-        typesAdapter = new PoiTypeAdapter(presenter.getListTypesCallback(), bitmapHandler);
-        typesHelper = new DragSwipeRecyclerHelper(recyclerTypes, typesAdapter);
+        typesAdapter = new PoiTypeAdapter(new ArrayList<PoiType>(), bitmapHandler);
+        typesAdapter.setPoiTypeAdapterListener(presenter.getPoiTypeAdapterListener());
+
+        recyclerTypes.setAdapter(typesAdapter);
+        recyclerTypes.setLayoutManager(new LinearLayoutManager(this));
+
+        ItemTouchHelper.Callback callback = new SwipeItemTouchHelperCallback(typesAdapter);
+        ItemTouchHelper swipeItemTouchHelper = new ItemTouchHelper(callback);
+        swipeItemTouchHelper.attachToRecyclerView(recyclerTypes);
 
         tagsAdapter = new PoiTypeTagAdapter(presenter.getListTagsCallback());
         tagsHelper = new DragSwipeRecyclerHelper(recyclerTags, tagsAdapter);
 
         listSwitcher.prepareViews(showingTypes);
+
+        if (savedInstanceState != null) {
+            filterConstraint = savedInstanceState.getString(FILTER_CONSTRAINT);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_manage_poi, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                onQueryTextChange(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                typesAdapter.getFilter().filter(newText);
+                filterConstraint = newText;
+                return true;
+            }
+        });
+        if (!showingTypes) {
+            searchView.setVisibility(View.GONE);
+        }
+        if (showingTypes && !StringUtils.isEmpty(filterConstraint)) {
+            searchView.setIconified(false);
+            searchView.setQuery(filterConstraint, true);
+        }
+        return true;
     }
 
     @Override
@@ -120,7 +174,6 @@ public class TypeListActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        typesHelper.onPause();
         tagsHelper.onPause();
         presenter.onPause();
         super.onPause();
@@ -128,7 +181,6 @@ public class TypeListActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        typesHelper.onDestroy();
         tagsHelper.onDestroy();
         super.onDestroy();
     }
@@ -137,6 +189,9 @@ public class TypeListActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         presenter.onSaveInstanceState(outState);
+        if (!StringUtils.isEmpty(filterConstraint)) {
+            outState.putString(FILTER_CONSTRAINT, filterConstraint);
+        }
     }
 
     @Override
@@ -167,13 +222,20 @@ public class TypeListActivity extends AppCompatActivity {
         }
     }
 
-    void showTypes(Collection<PoiType> poiTypes) {
+    void showTypes(List<PoiType> poiTypes) {
         showingTypes = true;
 
-        typesAdapter.clearAndAddAll(poiTypes);
+        typesAdapter.setPoiTypes(poiTypes);
         changeTitle(R.string.manage_poi_types, null);
         showContent();
         listSwitcher.showView(recyclerTypes);
+        if (searchView != null) {
+            searchView.setVisibility(View.VISIBLE);
+            // If there was a search, relaunch it
+            if (searchView.getQuery() != null && searchView.getQuery().length() > 0) {
+                searchView.setQuery(searchView.getQuery(), true);
+            }
+        }
         Timber.d("just loaded %s types ", poiTypes.size());
     }
 
@@ -184,6 +246,7 @@ public class TypeListActivity extends AppCompatActivity {
         changeTitle(R.string.manage_poi_tags, poiType.getName());
         showContent();
         listSwitcher.showView(recyclerTags);
+        searchView.setVisibility(View.GONE);
         Timber.d("just loaded %s tags ", poiTypeTags.size());
     }
 
@@ -226,7 +289,10 @@ public class TypeListActivity extends AppCompatActivity {
     }
 
     public void addNewPoiType(PoiType item) {
-        recyclerTypes.smoothScrollToPosition(typesAdapter.addItem(item));
+        int position = typesAdapter.addItem(item);
+        if (position != -1) {
+            recyclerTypes.smoothScrollToPosition(position);
+        }
     }
 
     public void addNewPoiTag(PoiTypeTag item) {

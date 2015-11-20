@@ -16,31 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.type.event;
+package io.mapsquare.osmcontributor.type.helper;
 
-public class PleaseSavePoiType {
+public interface SwipeItemTouchHelperAdapter {
 
-    private final Long id;
-    private final String name;
-
-    private PleaseSavePoiType(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public static PleaseSavePoiType newType(String name) {
-        return new PleaseSavePoiType(null, name);
-    }
-
-    public static PleaseSavePoiType editType(Long id, String name) {
-        return new PleaseSavePoiType(id, name);
-    }
+    /**
+     * Called when an item has been dismissed by a swipe.
+     *
+     * @param position The position of the item dismissed.
+     * @see android.support.v7.widget.RecyclerView#getAdapterPositionFor(android.support.v7.widget.RecyclerView.ViewHolder)
+     * @see android.support.v7.widget.RecyclerView.ViewHolder#getAdapterPosition()
+     */
+    void onItemDismiss(int position);
 }

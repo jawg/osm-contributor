@@ -19,40 +19,45 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_item_height"
-    android:background="@color/list_item_bg"
-    android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:background="@color/list_item_bg">
 
-    <ImageView
-        android:id="@+id/poi_type_icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="8dp"
-        android:scaleType="center"
-        tools:src="@drawable/bus_stop"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/poi_type_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="?android:textColorPrimary"
-        tools:text="Bus stop"/>
+        <ImageView
+            android:id="@+id/poi_type_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
+            android:scaleType="center"
+            tools:src="@drawable/bus_stop"/>
 
-    <TextView
-        android:id="@+id/poi_type_details"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        tools:text="6 tags"/>
+        <TextView
+            android:id="@+id/poi_type_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:textColorPrimary"
+            tools:text="Bus stop"/>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/poi_type_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="6 tags"/>
+    </LinearLayout>
+</RelativeLayout>

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.type;
+package io.mapsquare.osmcontributor.type.helper;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -32,6 +32,7 @@ import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchAct
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 
 import io.mapsquare.osmcontributor.R;
+import io.mapsquare.osmcontributor.type.ItemDividerDecoration;
 import io.mapsquare.osmcontributor.type.adapter.DragSwipeRecyclerAdapter;
 
 public class DragSwipeRecyclerHelper {

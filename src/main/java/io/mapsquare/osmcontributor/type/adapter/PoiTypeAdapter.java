@@ -18,47 +18,146 @@
  */
 package io.mapsquare.osmcontributor.type.adapter;
 
-
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.map.BitmapHandler;
+import io.mapsquare.osmcontributor.type.helper.SwipeItemTouchHelperAdapter;
+import io.mapsquare.osmcontributor.type.helper.ItemTouchHelperViewHolder;
+import timber.log.Timber;
 
-public class PoiTypeAdapter extends DragSwipeRecyclerAdapter<PoiType> {
+public class PoiTypeAdapter extends RecyclerView.Adapter<PoiTypeAdapter.PoiTypeViewHolder> implements SwipeItemTouchHelperAdapter, Filterable {
 
+    private ItemFilter filter = new ItemFilter();
     private BitmapHandler bitmapHandler;
+    private List<PoiType> originalValues = null;
+    private List<PoiType> filteredValues = null;
+    private PoiTypeAdapterListener listener = null;
 
-    public PoiTypeAdapter(Callback<PoiType> listener, BitmapHandler bitmapHandler) {
-        super(listener, new ArrayList<PoiType>());
+    private PoiType lastRemovedItem = null;
+
+    public PoiTypeAdapter(List<PoiType> poiTypes, BitmapHandler bitmapHandler) {
+        this.originalValues = poiTypes;
+        this.filteredValues = new ArrayList<>(poiTypes);
         this.bitmapHandler = bitmapHandler;
     }
 
     @Override
-    protected ViewHolder onCreateNewViewHolder(ViewGroup parent, int viewType) {
+    public PoiTypeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final View v = inflater.inflate(R.layout.single_poi_type, parent, false);
-        return new ViewHolder(v);
+        return new PoiTypeViewHolder(v);
     }
 
     @Override
-    protected void onViewHolderBound(BaseViewHolder<PoiType> holder, PoiType item) {
-        ((ViewHolder) holder).icon.setImageDrawable(bitmapHandler.getDrawable(item.getIcon()));
+    public void onBindViewHolder(PoiTypeViewHolder holder, int position) {
+        holder.onBind(filteredValues.get(position));
     }
 
     @Override
-    public long getItemId(PoiType item) {
-        return item.getId();
+    public int getItemCount() {
+        return filteredValues.size();
     }
 
-    // FIXME quick hack, implement in-memory type edition to get rid of this heresy
+    @Override
+    public long getItemId(int position) {
+        return filteredValues.get(position).getId();
+    }
+
+    public PoiType getItem(int position) {
+        return filteredValues.get(position);
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        lastRemovedItem = getItem(position);
+        originalValues.remove(lastRemovedItem);
+        filteredValues.remove(lastRemovedItem);
+        if (listener != null) {
+            listener.onItemRemoved(lastRemovedItem);
+        }
+        notifyItemRemoved(position);
+    }
+
+    public void setPoiTypes(List<PoiType> poiTypes) {
+        originalValues = poiTypes;
+        filteredValues = poiTypes;
+        notifyDataSetChanged();
+    }
+
+    public PoiType getItemById(Long id) {
+        if (id != null) {
+            for (PoiType poiType : originalValues) {
+                if (id.equals(poiType.getId())) {
+                    return poiType;
+                }
+            }
+        }
+        return null;
+    }
+
+    public int addItem(PoiType item) {
+        int insertedIndex = -1;
+        // If the item was not in the adapter, add it
+        if (originalValues.indexOf(item) == -1) {
+            originalValues.add(item);
+            Collections.sort(originalValues);
+
+            // Check if the new item should be displayed with the current filter
+            if (item.getName() != null && filter.lastFilterConstraint != null && item.getName().toLowerCase().contains(filter.lastFilterConstraint)) {
+                filteredValues.add(item);
+                Collections.sort(filteredValues);
+                insertedIndex = filteredValues.indexOf(item);
+                notifyItemInserted(insertedIndex);
+            }
+        } else {
+            // The item is already in the adapter, we must update the view
+            Collections.sort(originalValues);
+
+            filteredValues.remove(item);
+
+            // Display the item depending on the filter
+            if (item.getName() != null && filter.lastFilterConstraint != null && item.getName().toLowerCase().contains(filter.lastFilterConstraint)) {
+                filteredValues.add(item);
+                Collections.sort(filteredValues);
+                insertedIndex = filteredValues.indexOf(item);
+            }
+            notifyDataSetChanged();
+        }
+
+        return insertedIndex;
+    }
+
+    public void undoLastRemoval() {
+        final PoiType item = lastRemovedItem;
+
+        if (item != null) {
+            lastRemovedItem = null;
+            addItem(item);
+        }
+    }
+
+    public void notifyLastRemovalDone(PoiType poiType) {
+        if (lastRemovedItem != null && lastRemovedItem.equals(poiType)) {
+            lastRemovedItem = null;
+        }
+    }
+
     public void notifyTagRemoved(PoiTypeTag poiTypeTag) {
         PoiType poiType = poiTypeTag.getPoiType();
         Long id = poiType != null ? poiType.getId() : null;
@@ -70,30 +169,121 @@ public class PoiTypeAdapter extends DragSwipeRecyclerAdapter<PoiType> {
         if (poiType != null) {
             poiType.getTags().remove(poiTypeTag);
 
-            int position = getItemPosition(poiType);
+            int position = filteredValues.indexOf(poiType);
             if (position != -1) {
                 notifyItemChanged(position);
             }
         }
     }
 
-    private static class ViewHolder extends BaseViewHolder<PoiType> {
+    @Override
+    public Filter getFilter() {
+        return filter;
+    }
 
-        public final ImageView icon;
-        private final TextView text;
-        private final TextView details;
+    public void setPoiTypeAdapterListener(PoiTypeAdapterListener listener) {
+        this.listener = listener;
+    }
 
-        public ViewHolder(View itemView) {
-            super(itemView, 0);
-            icon = (ImageView) itemView.findViewById(R.id.poi_type_icon);
-            text = (TextView) itemView.findViewById(R.id.poi_type_name);
-            details = (TextView) itemView.findViewById(R.id.poi_type_details);
+    public class PoiTypeViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder, View.OnClickListener, View.OnLongClickListener {
+
+        View poiTypeLayout;
+        @InjectView(R.id.poi_type_icon)
+        ImageView icon;
+        @InjectView(R.id.poi_type_name)
+        TextView text;
+        @InjectView(R.id.poi_type_details)
+        TextView details;
+
+        public PoiTypeViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.inject(this, itemView);
+            poiTypeLayout = itemView;
+            poiTypeLayout.setOnClickListener(this);
+            poiTypeLayout.setOnLongClickListener(this);
         }
 
         @Override
+        public void onItemSelected() {
+
+        }
+
+        @Override
+        public void onItemClear() {
+
+        }
+
         public void onBind(PoiType item) {
             text.setText(item.getName());
             details.setText(itemView.getContext().getString(R.string.tag_number, item.getTags().size()));
+            icon.setImageDrawable(bitmapHandler.getDrawable(item.getIcon()));
         }
+
+        @Override
+        public void onClick(View view) {
+            Timber.d("Clicked : " + getAdapterPosition());
+            if (listener != null) {
+                listener.onItemClick(getItem(getAdapterPosition()));
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            Timber.d("Long Clicked : " + getAdapterPosition());
+            if (listener != null) {
+                listener.onItemLongClick(getItem(getAdapterPosition()));
+            }
+            return false;
+        }
+    }
+
+    private class ItemFilter extends Filter {
+
+        private String lastFilterConstraint = "";
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+
+            String filterString = constraint.toString().toLowerCase();
+            lastFilterConstraint = filterString;
+            FilterResults results = new FilterResults();
+
+            if (filterString.isEmpty()) {
+                results.values = originalValues;
+                results.count = originalValues.size();
+                return results;
+            }
+
+            final List<PoiType> list = originalValues;
+
+            final ArrayList<PoiType> newValuesList = new ArrayList<>();
+
+            for (int i = 0; i < list.size(); i++) {
+                String filterableString = list.get(i).getKeyWords() + " " + list.get(i).getName();
+                if (filterableString.toLowerCase().contains(filterString) || filterableString.equalsIgnoreCase(filterString)) {
+                    newValuesList.add(list.get(i));
+                }
+            }
+
+            results.values = newValuesList;
+            results.count = newValuesList.size();
+
+            return results;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            filteredValues = (ArrayList<PoiType>) results.values;
+            notifyDataSetChanged();
+        }
+    }
+
+    public interface PoiTypeAdapterListener {
+        void onItemClick(PoiType item);
+
+        void onItemLongClick(PoiType item);
+
+        void onItemRemoved(PoiType item);
     }
 }

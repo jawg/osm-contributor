@@ -34,8 +34,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -62,7 +60,6 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
     public PoiTypePickerAdapter(Context context, List<PoiType> values, EditText editText, EventBus eventBus, BitmapHandler bitmapHandler) {
         this.filteredValues = values;
         this.lastUseValues = values;
-        Collections.sort(filteredValues, new SortIgnoreCase()); // sorting values ignoring case
         this.originalValues = filteredValues;
         this.editText = editText;
         this.context = context;
@@ -209,14 +206,6 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
             notifyDataSetChanged();
         }
 
-    }
-
-    public class SortIgnoreCase implements Comparator<Object> {
-        public int compare(Object o1, Object o2) {
-            String s1 = (String) o1;
-            String s2 = (String) o2;
-            return s1.toLowerCase().compareTo(s2.toLowerCase());
-        }
     }
 
     private void showPoiTypeInfo(PoiType poiType) {
