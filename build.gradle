@@ -23,7 +23,6 @@ ext {
     dbinspectorVersion = '3.1.0'
     showcaseviewVersion = '5.0.0'
     licensesdialogVersion = '1.7.0'
-    listviewanimationsVersion = '3.1.0'
 }
 
 buildscript {
@@ -128,7 +127,6 @@ dependencies {
     compile project(':fab')
     compile project(':navdrawer')
     compile project(':tileslayer')
-    compile project(':lib-manipulation')
     compile "com.android.support:appcompat-v7:$androidSupportVersion"
     // Dependency injection
     compile "com.google.dagger:dagger:$daggerVersion"
@@ -163,8 +161,6 @@ dependencies {
     compile "com.github.amlcurran.showcaseview:library:$showcaseviewVersion"
     compile("com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion@aar") { transitive = true }
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"
-    compile "com.nhaarman.listviewanimations:lib-core:$listviewanimationsVersion@aar"
-    compile "com.nhaarman.listviewanimations:lib-core-slh:$listviewanimationsVersion@aar"
     // tests
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'

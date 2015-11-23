@@ -37,8 +37,8 @@ import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.map.BitmapHandler;
-import io.mapsquare.osmcontributor.type.helper.SwipeItemTouchHelperAdapter;
-import io.mapsquare.osmcontributor.type.helper.ItemTouchHelperViewHolder;
+import io.mapsquare.osmcontributor.utils.helper.SwipeItemTouchHelperAdapter;
+import io.mapsquare.osmcontributor.utils.helper.ItemTouchHelperViewHolder;
 import timber.log.Timber;
 
 public class PoiTypeAdapter extends RecyclerView.Adapter<PoiTypeAdapter.PoiTypeViewHolder> implements SwipeItemTouchHelperAdapter, Filterable {

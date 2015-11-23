@@ -35,8 +35,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
-import io.mapsquare.osmcontributor.type.helper.DragSwipeItemTouchHelperAdapter;
-import io.mapsquare.osmcontributor.type.helper.ItemTouchHelperViewHolder;
+import io.mapsquare.osmcontributor.utils.helper.DragSwipeItemTouchHelperAdapter;
+import io.mapsquare.osmcontributor.utils.helper.ItemTouchHelperViewHolder;
 import timber.log.Timber;
 
 public class PoiTypeTagAdapter extends RecyclerView.Adapter<PoiTypeTagAdapter.PoiTypeTagViewHolder> implements DragSwipeItemTouchHelperAdapter {

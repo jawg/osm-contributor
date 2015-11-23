@@ -46,7 +46,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseChangeValuesDetailNoteFragme
 import io.mapsquare.osmcontributor.map.events.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeDrawer;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadPoisAndNotesEvent;
-import io.mapsquare.osmcontributor.upload.events.RevertFinishedEvent;
+import io.mapsquare.osmcontributor.core.events.RevertFinishedEvent;
 import io.mapsquare.osmcontributor.utils.Box;
 import timber.log.Timber;
 

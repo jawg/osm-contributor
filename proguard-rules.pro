@@ -114,7 +114,3 @@
 
 -dontwarn org.joda.convert.ToString
 -dontwarn org.joda.convert.FromString
-
-####################################################################################################
-## ListViewAnimation
--dontwarn se.emilsjolander.stickylistheaders.**

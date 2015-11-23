@@ -68,7 +68,7 @@ import io.mapsquare.osmcontributor.sync.assets.PoiAssetLoader;
 import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
 import io.mapsquare.osmcontributor.upload.PoiUpdateWrapper;
-import io.mapsquare.osmcontributor.upload.events.RevertFinishedEvent;
+import io.mapsquare.osmcontributor.core.events.RevertFinishedEvent;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import io.mapsquare.osmcontributor.utils.StringUtils;

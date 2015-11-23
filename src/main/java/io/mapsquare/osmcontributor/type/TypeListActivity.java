@@ -53,8 +53,8 @@ import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.map.BitmapHandler;
 import io.mapsquare.osmcontributor.type.adapter.PoiTypeAdapter;
 import io.mapsquare.osmcontributor.type.adapter.PoiTypeTagAdapter;
-import io.mapsquare.osmcontributor.type.helper.DragSwipeItemTouchHelperCallback;
-import io.mapsquare.osmcontributor.type.helper.SwipeItemTouchHelperCallback;
+import io.mapsquare.osmcontributor.utils.helper.DragSwipeItemTouchHelperCallback;
+import io.mapsquare.osmcontributor.utils.helper.SwipeItemTouchHelperCallback;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 import timber.log.Timber;
 

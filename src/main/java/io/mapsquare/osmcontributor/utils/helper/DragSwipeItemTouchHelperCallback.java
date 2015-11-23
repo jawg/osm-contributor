@@ -16,16 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.type.helper;
+package io.mapsquare.osmcontributor.utils.helper;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
-public class SwipeItemTouchHelperCallback extends ItemTouchHelper.Callback {
+public class DragSwipeItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
-    private final SwipeItemTouchHelperAdapter adapter;
+    private final DragSwipeItemTouchHelperAdapter adapter;
+    private Integer fromPosition = null;
+    private Integer toPosition = null;
 
-    public SwipeItemTouchHelperCallback(SwipeItemTouchHelperAdapter adapter) {
+    public DragSwipeItemTouchHelperCallback(DragSwipeItemTouchHelperAdapter adapter) {
         this.adapter = adapter;
     }
 
@@ -41,13 +43,26 @@ public class SwipeItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
         final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-        return makeMovementFlags(0, swipeFlags);
+        return makeMovementFlags(dragFlags, swipeFlags);
     }
 
     @Override
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-        return false;
+    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder source, RecyclerView.ViewHolder target) {
+        if (source.getItemViewType() != target.getItemViewType()) {
+            return false;
+        }
+
+        // remember FIRST from position
+        if (fromPosition == null) {
+            fromPosition = source.getAdapterPosition();
+        }
+        toPosition = target.getAdapterPosition();
+
+        // Notify the adapter of the move
+        adapter.onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
+        return true;
     }
 
     @Override
@@ -71,6 +86,13 @@ public class SwipeItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
         ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
         itemViewHolder.onItemClear();
+
+        if (fromPosition != null && toPosition != null) {
+            adapter.onItemDrop(fromPosition, toPosition);
+        }
+
+        // clear saved positions
+        fromPosition = null;
+        toPosition = null;
     }
 }
-

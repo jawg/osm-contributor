@@ -20,22 +20,20 @@ package io.mapsquare.osmcontributor.upload;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
-import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,9 +57,9 @@ import io.mapsquare.osmcontributor.sync.events.error.SyncNewNodeErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadNoteRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUploadRetrofitErrorEvent;
-import io.mapsquare.osmcontributor.upload.events.PleaseConfirmRevertEvent;
+import io.mapsquare.osmcontributor.utils.helper.SwipeItemTouchHelperCallback;
 
-public class UploadActivity extends AppCompatActivity {
+public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnItemRemovedListener {
 
     private List<PoiUpdateWrapper> poisWrapper = new ArrayList<>();
     private PoisAdapter adapter;
@@ -74,7 +72,7 @@ public class UploadActivity extends AppCompatActivity {
     TextView noValues;
 
     @InjectView(R.id.poi_list)
-    DynamicListView poisListView;
+    RecyclerView poisListView;
 
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
@@ -99,18 +97,14 @@ public class UploadActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        adapter = new PoisAdapter(this, poisWrapper, eventBus);
-        poisListView.enableSwipeToDismiss(
-                new OnDismissCallback() {
-                    @Override
-                    public void onDismiss(@NonNull final ViewGroup listView, @NonNull final int[] reverseSortedPositions) {
-                        for (int position : reverseSortedPositions) {
-                            remove(position);
-                        }
-                    }
-                }
-        );
+        adapter = new PoisAdapter(this, poisWrapper);
+        adapter.setOnStartSwipeListener(this);
         poisListView.setAdapter(adapter);
+        poisListView.setLayoutManager(new LinearLayoutManager(this));
+
+        ItemTouchHelper.Callback callback = new SwipeItemTouchHelperCallback(adapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(poisListView);
     }
 
     @Override
@@ -242,23 +236,23 @@ public class UploadActivity extends AppCompatActivity {
         editTextComment.setText("");
     }
 
-
     /*-----------------------------------------------------------
     * Revert
     *---------------------------------------------------------*/
-    public void onEventMainThread(final PleaseConfirmRevertEvent event) {
-        poisListView.dismiss(event.getPosition());
+
+    @Override
+    public void onItemRemoved(PoiUpdateWrapper poiUpdateWrapper, int position) {
+        remove(poiUpdateWrapper, position);
     }
 
-    private void remove(final int position) {
-        final PoiUpdateWrapper item = adapter.remove(position);
-
+    private void remove(final PoiUpdateWrapper removedItem, final int position) {
         final Snackbar snackbar = Snackbar.make(coordinatorLayout, getString(R.string.revert_snack_bar), Snackbar.LENGTH_SHORT);
         snackbar.setAction(getString(R.string.undo_snack_bar), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 snackbar.dismiss();
-                poisListView.insert(position, item);
+                adapter.insert(position, removedItem);
+                poisListView.smoothScrollToPosition(position);
             }
         });
         snackbar.setCallback(new Snackbar.Callback() {
@@ -266,10 +260,10 @@ public class UploadActivity extends AppCompatActivity {
             public void onDismissed(Snackbar snackbar, int action) {
                 super.onDismissed(snackbar, action);
                 if (action == DISMISS_EVENT_TIMEOUT || action == DISMISS_EVENT_CONSECUTIVE || action == DISMISS_EVENT_SWIPE) {
-                    if (item.getIsPoi()) {
-                        eventBus.post(new PleaseRevertPoiEvent(item.getId()));
+                    if (removedItem.getIsPoi()) {
+                        eventBus.post(new PleaseRevertPoiEvent(removedItem.getId()));
                     } else {
-                        eventBus.post(new PleaseRevertPoiNodeRefEvent(item.getId()));
+                        eventBus.post(new PleaseRevertPoiNodeRefEvent(removedItem.getId()));
                     }
                 }
             }

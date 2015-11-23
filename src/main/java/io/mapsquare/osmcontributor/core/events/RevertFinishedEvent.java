@@ -16,16 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.upload.events;
+package io.mapsquare.osmcontributor.core.events;
 
-public class PleaseConfirmRevertEvent {
-    private int position;
-
-    public PleaseConfirmRevertEvent(int position) {
-        this.position = position;
-    }
-
-    public int getPosition() {
-        return position;
-    }
+public class RevertFinishedEvent {
 }

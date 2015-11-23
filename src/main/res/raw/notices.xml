@@ -69,12 +69,6 @@
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
-        <name>ListViewAnimations</name>
-        <url>https://github.com/nhaarman/ListViewAnimations</url>
-        <copyright>Copyright 2014 Niek Haarman</copyright>
-        <license>Apache Software License 2.0</license>
-    </notice>
-    <notice>
         <name>Mapbox</name>
         <url>https://www.mapbox.com/mapbox-android-sdk/</url>
         <copyright/>

@@ -18,14 +18,12 @@
  */
 package io.mapsquare.osmcontributor.upload;
 
-
 import android.content.Context;
-import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -34,72 +32,49 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.nhaarman.listviewanimations.util.Insertable;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.upload.events.PleaseConfirmRevertEvent;
+import io.mapsquare.osmcontributor.utils.helper.ItemTouchHelperViewHolder;
+import io.mapsquare.osmcontributor.utils.helper.SwipeItemTouchHelperAdapter;
 import io.mapsquare.osmcontributor.utils.HtmlFontHelper;
 import io.mapsquare.osmcontributor.utils.ViewAnimation;
 
-public class PoisAdapter extends BaseAdapter implements Insertable<PoiUpdateWrapper> {
+public class PoisAdapter extends RecyclerView.Adapter<PoisAdapter.PoiViewHolder> implements SwipeItemTouchHelperAdapter {
 
     private List<PoiUpdateWrapper> poisWrapper = null;
     private LayoutInflater inflater;
     private Context context;
-    private EventBus eventBus;
+    private OnItemRemovedListener OnRemoveListener;
 
-    public PoisAdapter(Context context, List<PoiUpdateWrapper> wrapper, EventBus eventBus) {
+    public PoisAdapter(Context context, List<PoiUpdateWrapper> wrapper) {
         this.poisWrapper = wrapper;
         this.context = context;
-        this.eventBus = eventBus;
-        inflater = LayoutInflater.from(context);
+        this.inflater = LayoutInflater.from(context);
     }
 
     @Override
-    public int getCount() {
-        return poisWrapper.size();
+    public PoiViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        final View view = inflater.inflate(R.layout.single_poi_layout, parent, false);
+        return new PoiViewHolder(view);
     }
 
     @Override
-    public Object getItem(int position) {
-        return poisWrapper.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(final int position, View view, ViewGroup parent) {
-        final PoiViewHolder holder;
-
-        if (view != null) {
-            holder = (PoiViewHolder) view.getTag();
-        } else {
-            view = inflater.inflate(R.layout.single_poi_layout, parent, false);
-            holder = new PoiViewHolder(view);
-            view.setTag(holder);
-        }
-
+    public void onBindViewHolder(final PoiViewHolder holder, final int position) {
         final PoiUpdateWrapper poiWrapper = poisWrapper.get(position);
-
 
         switch (poiWrapper.getAction()) {
             case CREATE:
-                holder.getPoiAction().setText(view.getContext().getString(R.string.created));
+                holder.getPoiAction().setText(context.getString(R.string.created));
                 break;
             case DELETED:
-                holder.getPoiAction().setText(view.getContext().getString(R.string.deleted));
+                holder.getPoiAction().setText(context.getString(R.string.deleted));
                 break;
             case UPDATE:
-                holder.getPoiAction().setText(view.getContext().getString(R.string.updated));
+                holder.getPoiAction().setText(context.getString(R.string.updated));
                 break;
         }
 
@@ -109,7 +84,7 @@ public class PoisAdapter extends BaseAdapter implements Insertable<PoiUpdateWrap
             holder.getPoiType().setText(poiWrapper.getPoiType());
             holder.getPoiName().setText(poiWrapper.getName());
             holder.getExpandBtn().setVisibility(View.VISIBLE);
-            populateDiffs(holder, parent, poiWrapper);
+            populateDiffs(holder, holder.getDetailsWrapper(), poiWrapper);
 
             View.OnClickListener expendCardnew = new View.OnClickListener() {
                 @Override
@@ -145,7 +120,7 @@ public class PoisAdapter extends BaseAdapter implements Insertable<PoiUpdateWrap
         holder.getRevertBtn().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                eventBus.post(new PleaseConfirmRevertEvent(position));
+                remove(poisWrapper.indexOf(poiWrapper));
             }
         });
 
@@ -156,112 +131,29 @@ public class PoisAdapter extends BaseAdapter implements Insertable<PoiUpdateWrap
                 poiWrapper.setSelected(isChecked);
             }
         });
-
-        return view;
-    }
-
-    public PoiUpdateWrapper remove(int position) {
-        PoiUpdateWrapper reverted = poisWrapper.remove(position);
-        notifyDataSetChanged();
-        return reverted;
     }
 
     @Override
-    public void add(int index, @NonNull PoiUpdateWrapper item) {
-        poisWrapper.add(index, item);
-        notifyDataSetChanged();
+    public int getItemCount() {
+        return poisWrapper.size();
     }
 
-    static class PoiViewHolder {
-        @InjectView(R.id.poi_action)
-        TextView poiAction;
-
-        @InjectView(R.id.poi_name)
-        TextView poiName;
-
-        @InjectView(R.id.poi_type)
-        TextView poiType;
-
-        @InjectView(R.id.changes_details)
-        LinearLayout detailsWrapper;
-
-        @InjectView(R.id.header)
-        RelativeLayout header;
-
-        @InjectView(R.id.expend_button)
-        ImageButton expandBtn;
-
-        @InjectView(R.id.revert)
-        Button revertBtn;
-
-        @InjectView(R.id.checkbox)
-        CheckBox checkbox;
-
-
-        public TextView getPoiAction() {
-            return poiAction;
-        }
-
-        public TextView getPoiName() {
-            return poiName;
-        }
-
-        public LinearLayout getDetailsWrapper() {
-            return detailsWrapper;
-        }
-
-        public ImageButton getExpandBtn() {
-            return expandBtn;
-        }
-
-        public TextView getPoiType() {
-            return poiType;
-        }
-
-        public RelativeLayout getHeader() {
-            return header;
-        }
-
-        public Button getRevertBtn() {
-            return revertBtn;
-        }
-
-        public CheckBox getCheckbox() {
-            return checkbox;
-        }
-
-        public PoiViewHolder(View view) {
-            ButterKnife.inject(this, view);
-        }
+    @Override
+    public void onItemDismiss(int position) {
+        remove(position);
     }
 
-    static class TagChangeViewHolder {
-        @InjectView(R.id.old_tag)
-        TextView oldTag;
+    public void insert(int position, PoiUpdateWrapper poiUpdateWrapper) {
+        poisWrapper.add(position, poiUpdateWrapper);
+        notifyItemInserted(position);
+    }
 
-        @InjectView(R.id.new_tag)
-        TextView newTag;
-
-
-        public TextView getOldTag() {
-            return oldTag;
+    public void remove(int position) {
+        PoiUpdateWrapper wrapper = poisWrapper.remove(position);
+        if (OnRemoveListener != null) {
+            OnRemoveListener.onItemRemoved(wrapper, position);
         }
-
-        public void setOldTag(TextView oldTag) {
-            this.oldTag = oldTag;
-        }
-
-        public TextView getNewTag() {
-            return newTag;
-        }
-
-        public void setNewTag(TextView newTag) {
-            this.newTag = newTag;
-        }
-
-        public TagChangeViewHolder(View view) {
-            ButterKnife.inject(this, view);
-        }
+        notifyItemRemoved(position);
     }
 
     private void populateDiffs(PoiViewHolder holder, ViewGroup parent, PoiUpdateWrapper poiWrapper) {
@@ -315,5 +207,120 @@ public class PoisAdapter extends BaseAdapter implements Insertable<PoiUpdateWrap
         }
         return false;
     }
-}
 
+    public void setOnStartSwipeListener(OnItemRemovedListener swipeListener) {
+        this.OnRemoveListener = swipeListener;
+    }
+
+    public static class PoiViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+        @InjectView(R.id.poi_action)
+        TextView poiAction;
+
+        @InjectView(R.id.poi_name)
+        TextView poiName;
+
+        @InjectView(R.id.poi_type)
+        TextView poiType;
+
+        @InjectView(R.id.changes_details)
+        LinearLayout detailsWrapper;
+
+        @InjectView(R.id.header)
+        RelativeLayout header;
+
+        @InjectView(R.id.expend_button)
+        ImageButton expandBtn;
+
+        @InjectView(R.id.revert)
+        Button revertBtn;
+
+        @InjectView(R.id.checkbox)
+        CheckBox checkbox;
+
+        public PoiViewHolder(View view) {
+            super(view);
+            ButterKnife.inject(this, view);
+        }
+
+        public TextView getPoiAction() {
+            return poiAction;
+        }
+
+        public TextView getPoiName() {
+            return poiName;
+        }
+
+        public LinearLayout getDetailsWrapper() {
+            return detailsWrapper;
+        }
+
+        public ImageButton getExpandBtn() {
+            return expandBtn;
+        }
+
+        public TextView getPoiType() {
+            return poiType;
+        }
+
+        public RelativeLayout getHeader() {
+            return header;
+        }
+
+        public Button getRevertBtn() {
+            return revertBtn;
+        }
+
+        public CheckBox getCheckbox() {
+            return checkbox;
+        }
+
+        @Override
+        public void onItemSelected() {
+
+        }
+
+        @Override
+        public void onItemClear() {
+
+        }
+    }
+
+    static class TagChangeViewHolder {
+        @InjectView(R.id.old_tag)
+        TextView oldTag;
+
+        @InjectView(R.id.new_tag)
+        TextView newTag;
+
+
+        public TextView getOldTag() {
+            return oldTag;
+        }
+
+        public void setOldTag(TextView oldTag) {
+            this.oldTag = oldTag;
+        }
+
+        public TextView getNewTag() {
+            return newTag;
+        }
+
+        public void setNewTag(TextView newTag) {
+            this.newTag = newTag;
+        }
+
+        public TagChangeViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
+    }
+
+    public interface OnItemRemovedListener {
+        /**
+         * Called when and item is removed
+         *
+         * @param poiUpdateWrapper Removed object.
+         * @param position         Position of the removed object in the adapter.
+         */
+        void onItemRemoved(PoiUpdateWrapper poiUpdateWrapper, int position);
+    }
+}
