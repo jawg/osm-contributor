@@ -37,6 +37,7 @@ public class PoiType implements Comparable<PoiType> {
     public static final String BACKEND_ID = "BACKEND_ID";
     public static final String EN = "en";
     public static final String NAME = "NAME";
+    public static final String TECHNICAL_NAME = "TECHNICAL_NAME";
     public static final String DESCRIPTION = "DESCRIPTION";
     public static final String USAGE_COUNT = "USAGE_COUNT";
     public static final String LAST_USE = "LAST_USE";
@@ -62,6 +63,9 @@ public class PoiType implements Comparable<PoiType> {
 
     @DatabaseField(columnName = NAME, canBeNull = false)
     private String name;
+
+    @DatabaseField(columnName = TECHNICAL_NAME, canBeNull = false)
+    private String technicalName;
 
     @DatabaseField(columnName = LAST_USE, canBeNull = false)
     private DateTime lastUse;
@@ -117,6 +121,14 @@ public class PoiType implements Comparable<PoiType> {
         return name;
     }
 
+    public String getTechnicalName() {
+        return technicalName;
+    }
+
+    public void setTechnicalName(String technicalName) {
+        this.technicalName = technicalName;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -151,6 +163,7 @@ public class PoiType implements Comparable<PoiType> {
                 ", tags=" + tags +
                 ", description='" + description + '\'' +
                 ", name='" + name + '\'' +
+                ", technicalName='" + technicalName + '\'' +
                 ", lastUse=" + lastUse +
                 ", keyWords=" + keyWords +
                 '}';

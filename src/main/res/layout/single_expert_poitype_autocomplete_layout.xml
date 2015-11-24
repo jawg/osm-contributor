@@ -38,19 +38,31 @@
         android:id="@+id/name_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:textSize="16sp"
-        android:ellipsize="end"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="5dp"
+        android:layout_toLeftOf="@+id/info"
         android:layout_toRightOf="@+id/icon"
-        android:layout_toLeftOf="@+id/info"/>
+        android:ellipsize="end"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/technical_name_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
+        android:layout_toLeftOf="@+id/info"
+        android:layout_toRightOf="@+id/icon"
+        android:ellipsize="end"
+        android:textSize="16sp"/>
 
     <ImageView
         android:id="@+id/info"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:src="@drawable/info"/>
 </RelativeLayout>

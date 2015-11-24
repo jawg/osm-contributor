@@ -146,8 +146,8 @@ public class TypeManager {
 
 
     /**
-     * Update the poi tags of a poiType
-     * @param currentPoiType
+     * Update the poi tags of a poiType.
+     * @param poiType Update the tags of this PoiType.
      */
     public void updatePoiTags(PoiType poiType) {
         bus.post(new InternalUpdatePoiTagsEvent(poiType));

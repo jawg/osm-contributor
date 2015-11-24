@@ -57,6 +57,7 @@ public class PoiTypeConverter {
     private PoiType convert(PoiTypeDto dto) {
         PoiType type = new PoiType();
         type.setName(getTranslationFormJson(dto.getLabels(), getName(dto.getName())));
+        type.setTechnicalName(dto.getName());
         type.setDescription(getTranslationFormJson(dto.getDescription(), ""));
         type.setKeyWords(getKeywordsFormJson(dto.getKeyWords()));
         type.setIcon(getName(dto.getName()));

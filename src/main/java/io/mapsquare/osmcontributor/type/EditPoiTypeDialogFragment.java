@@ -120,6 +120,7 @@ public class EditPoiTypeDialogFragment extends BaseOkCancelDialogFragment {
         if (poiType == null) {
             poiType = new PoiType();
             poiType.setName(modelText.getText().toString());
+            poiType.setTechnicalName(poiType.getName());
             poiType.setLastUse(DateTime.now());
             poiType.setTags(new ArrayList<PoiTypeTag>());
         }

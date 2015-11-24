@@ -26,26 +26,35 @@
     android:layout_height="@dimen/list_item_height"
     android:background="@color/list_item_bg">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/selectableItemBackground"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/poi_type_icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:layout_margin="8dp"
+            android:gravity="center_vertical"
             android:scaleType="center"
             tools:src="@drawable/bus_stop"/>
 
         <TextView
             android:id="@+id/poi_type_name"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="15dp"
+            android:layout_toEndOf="@id/poi_type_icon"
+            android:layout_toLeftOf="@+id/poi_type_details"
+            android:layout_toRightOf="@+id/poi_type_icon"
+            android:layout_toStartOf="@id/poi_type_details"
             android:ellipsize="end"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -53,11 +62,29 @@
             tools:text="Bus stop"/>
 
         <TextView
+            android:id="@+id/poi_type_technical_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="15dp"
+            android:layout_toEndOf="@id/poi_type_icon"
+            android:layout_toLeftOf="@+id/poi_type_details"
+            android:layout_toRightOf="@+id/poi_type_icon"
+            android:layout_toStartOf="@id/poi_type_details"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="highway=bus_stop"/>
+
+        <TextView
             android:id="@+id/poi_type_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:layout_margin="8dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="6 tags"/>
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

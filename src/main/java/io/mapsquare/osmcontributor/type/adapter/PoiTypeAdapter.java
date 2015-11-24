@@ -192,6 +192,8 @@ public class PoiTypeAdapter extends RecyclerView.Adapter<PoiTypeAdapter.PoiTypeV
         ImageView icon;
         @InjectView(R.id.poi_type_name)
         TextView text;
+        @InjectView(R.id.poi_type_technical_name)
+        TextView technicalName;
         @InjectView(R.id.poi_type_details)
         TextView details;
 
@@ -215,6 +217,7 @@ public class PoiTypeAdapter extends RecyclerView.Adapter<PoiTypeAdapter.PoiTypeV
 
         public void onBind(PoiType item) {
             text.setText(item.getName());
+            technicalName.setText(item.getTechnicalName());
             details.setText(itemView.getContext().getString(R.string.tag_number, item.getTags().size()));
             icon.setImageDrawable(bitmapHandler.getDrawable(item.getIcon()));
         }
@@ -259,7 +262,7 @@ public class PoiTypeAdapter extends RecyclerView.Adapter<PoiTypeAdapter.PoiTypeV
             final ArrayList<PoiType> newValuesList = new ArrayList<>();
 
             for (int i = 0; i < list.size(); i++) {
-                String filterableString = list.get(i).getKeyWords() + " " + list.get(i).getName();
+                String filterableString = list.get(i).getKeyWords() + " " + list.get(i).getName() + " " + list.get(i).getTechnicalName();
                 if (filterableString.toLowerCase().contains(filterString) || filterableString.equalsIgnoreCase(filterString)) {
                     newValuesList.add(list.get(i));
                 }

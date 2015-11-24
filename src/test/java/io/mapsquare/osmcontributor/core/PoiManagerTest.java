@@ -123,6 +123,7 @@ public class PoiManagerTest {
         poiTypeTag.setMandatory(true);
         poiType.setTags(Collections.singletonList(poiTypeTag));
         poiType.setName("PoiType");
+        poiType.setTechnicalName("technical=name");
         poiType.setLastUse(new DateTime());
         poiType.setKeyWords("");
         return poiType;

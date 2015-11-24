@@ -561,6 +561,9 @@ public class MapFragment extends Fragment {
         presenter.setForceRefreshNotes();
         presenter.loadPoisIfNeeded();
         eventBus.post(new PleaseInitializeNoteDrawerEvent(displayOpenNotes, displayClosedNotes));
+        if (poiTypePickerAdapter != null) {
+            poiTypePickerAdapter.setExpertMode(sharedPreferences.getBoolean(getString(R.string.shared_prefs_advance_mode), false));
+        }
     }
 
     @Override
@@ -1755,7 +1758,7 @@ public class MapFragment extends Fragment {
     private List<PoiType> autocompletePoiTypeValues = new ArrayList<>();
 
     private void instantiatePoiTypePicker() {
-        poiTypePickerAdapter = new PoiTypePickerAdapter(getActivity(), autocompletePoiTypeValues, poiTypeEditText, eventBus, bitmapHandler);
+        poiTypePickerAdapter = new PoiTypePickerAdapter(getActivity(), autocompletePoiTypeValues, poiTypeEditText, eventBus, bitmapHandler, sharedPreferences.getBoolean(getString(R.string.shared_prefs_advance_mode), false));
         poiTypeListView.setAdapter(poiTypePickerAdapter);
 
         // Add Text Change Listener to EditText

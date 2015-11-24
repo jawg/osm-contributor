@@ -53,11 +53,12 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
     private EditText editText;
     private Context context;
     private BitmapHandler bitmapHandler;
+    private boolean expertMode;
 
 
     EventBus eventBus;
 
-    public PoiTypePickerAdapter(Context context, List<PoiType> values, EditText editText, EventBus eventBus, BitmapHandler bitmapHandler) {
+    public PoiTypePickerAdapter(Context context, List<PoiType> values, EditText editText, EventBus eventBus, BitmapHandler bitmapHandler, boolean expertMode) {
         this.filteredValues = values;
         this.lastUseValues = values;
         this.originalValues = filteredValues;
@@ -65,6 +66,7 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
         this.context = context;
         this.eventBus = eventBus;
         this.bitmapHandler = bitmapHandler;
+        this.expertMode = expertMode;
         inflater = LayoutInflater.from(context);
     }
 
@@ -85,27 +87,28 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
-        ViewHolder holder;
+        ViewHolder holder = null;
 
         if (view != null) {
             holder = (ViewHolder) view.getTag();
-        } else {
-            view = inflater.inflate(R.layout.single_poitype_autocomplete_layout, parent, false);
-            holder = new ViewHolder(view);
+            if (holder instanceof ExpertViewHolder ^ expertMode) {
+                holder = null;
+            }
+        }
+        if (holder == null) {
+            if (expertMode) {
+                view = inflater.inflate(R.layout.single_expert_poitype_autocomplete_layout, parent, false);
+                holder = new ExpertViewHolder(view);
+            } else {
+                view = inflater.inflate(R.layout.single_poitype_autocomplete_layout, parent, false);
+                holder = new ViewHolder(view);
+            }
             view.setTag(holder);
         }
 
+
         final PoiType value = filteredValues.get(position);
-        //Capitalize the first letter
-        String cap = value.getName().substring(0, 1).toUpperCase() + value.getName().substring(1);
-        holder.getTextView().setText(cap);
-        holder.getIcon().setImageDrawable(bitmapHandler.getDrawable(value.getIcon()));
-        holder.getInfo().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPoiTypeInfo(value);
-            }
-        });
+        holder.onBind(value);
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,14 +131,18 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
         notifyDataSetChanged();
     }
 
+    public void setExpertMode(boolean expertMode) {
+        this.expertMode = expertMode;
+    }
+
     private void closeKeyboard() {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
     }
 
-    static class ViewHolder {
-        @InjectView(R.id.text_view)
-        TextView textView;
+    class ViewHolder {
+        @InjectView(R.id.name_text)
+        TextView nameView;
 
         @InjectView(R.id.icon)
         ImageView icon;
@@ -143,14 +150,13 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
         @InjectView(R.id.info)
         ImageView info;
 
-        public TextView getTextView() {
-            return textView;
+        public TextView getNameView() {
+            return nameView;
         }
 
         public ImageView getIcon() {
             return icon;
         }
-
 
         public ImageView getInfo() {
             return info;
@@ -158,6 +164,38 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);
+        }
+
+        public void onBind(final PoiType poiType) {
+            String cap = poiType.getName().substring(0, 1).toUpperCase() + poiType.getName().substring(1);
+            nameView.setText(cap);
+            icon.setImageDrawable(bitmapHandler.getDrawable(poiType.getIcon()));
+            info.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showPoiTypeInfo(poiType);
+                }
+            });
+        }
+    }
+
+    class ExpertViewHolder extends ViewHolder {
+
+        @InjectView((R.id.technical_name_text))
+        TextView technicalNameView;
+
+        public TextView getTechnicalNameView() {
+            return technicalNameView;
+        }
+
+        public ExpertViewHolder(View view) {
+            super(view);
+        }
+
+        @Override
+        public void onBind(final PoiType poiType) {
+            super.onBind(poiType);
+            technicalNameView.setText(poiType.getTechnicalName());
         }
     }
 
@@ -187,7 +225,7 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
             }
 
             for (int i = 0; i < count; i++) {
-                String filterableString = list.get(i).getKeyWords() + " " + list.get(i).getName();
+                String filterableString = list.get(i).getKeyWords() + " " + list.get(i).getName() + " " + list.get(i).getTechnicalName();
                 if (filterableString.toLowerCase().contains(filterString) || filterableString.toLowerCase().equals(filterString)) {
                     newValuesList.add(list.get(i));
                 }
