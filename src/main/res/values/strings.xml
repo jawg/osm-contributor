@@ -177,6 +177,7 @@
     <string name="osm_url" translatable="false">https://wiki.openstreetmap.org/wiki/Main_Page</string>
     <string name="ebiz_url" translatable="false">http://www.ebusinessinformation.fr/</string>
     <string name="dma_url" translatable="false">https://concept.designmyapp.mobi/</string>
+    <string name="version_format" translatable="false">v%s</string>
 
     <!--edit way-->
     <string name="edit_way">Edit way</string>

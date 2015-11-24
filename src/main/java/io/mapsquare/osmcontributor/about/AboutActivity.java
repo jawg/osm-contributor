@@ -32,6 +32,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import de.psdev.licensesdialog.LicensesDialog;
+import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.R;
 
 public class AboutActivity extends AppCompatActivity {
@@ -51,6 +52,9 @@ public class AboutActivity extends AppCompatActivity {
     @InjectView(R.id.mapsquare)
     TextView mapsquare;
 
+    @InjectView(R.id.version_text)
+    TextView version;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +72,7 @@ public class AboutActivity extends AppCompatActivity {
         contributeTo.setText(Html.fromHtml(getString(R.string.contribute_to)));
         editBy.setText(Html.fromHtml(getString(R.string.splash_screen_edited_by)));
         poweredBy.setText(Html.fromHtml(getString(R.string.splash_screen_powered_by)));
+        version.setText(getString(R.string.version_format, BuildConfig.VERSION_NAME));
     }
 
     @Override

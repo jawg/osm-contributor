@@ -26,18 +26,22 @@
     android:layout_height="match_parent"
     tools:context="io.mapsquare.osmcontributor.about.AboutActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <include layout="@layout/toolbar_layout"/>
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar_layout"/>
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:shadowRadius="2"
             android:text="@string/template_name"
@@ -48,12 +52,16 @@
             android:id="@+id/mapsquare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/title"
+            android:layout_centerHorizontal="true"
             android:textSize="24sp"/>
 
         <ImageView
             android:id="@+id/splash_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/mapsquare"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:src="@drawable/splash"/>
 
@@ -61,6 +69,8 @@
             android:id="@+id/contribute_to"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/splash_image"
+            android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:drawableEnd="@drawable/logo_osm"
             android:drawablePadding="5dp"
@@ -72,6 +82,8 @@
             android:id="@+id/edited_by"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/contribute_to"
+            android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:drawableEnd="@drawable/logo_ebusiness"
             android:drawablePadding="5dp"
@@ -83,6 +95,8 @@
             android:id="@+id/powered_by"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/edited_by"
+            android:layout_centerHorizontal="true"
             android:drawableEnd="@drawable/logo_dma"
             android:drawablePadding="5dp"
             android:drawableRight="@drawable/logo_dma"
@@ -93,8 +107,21 @@
             android:id="@+id/licenses_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/powered_by"
+            android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginTop="10dp"
             android:text="@string/licenses_title"/>
-    </LinearLayout>
+
+        <TextView
+            android:id="@+id/version_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/licenses_button"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="5dp"/>
+    </RelativeLayout>
 </ScrollView>
