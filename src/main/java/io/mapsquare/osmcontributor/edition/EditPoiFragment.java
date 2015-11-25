@@ -162,7 +162,7 @@ public class EditPoiFragment extends Fragment {
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
 
-        fabAdd.setVisibility(sharedPreferences.getBoolean(getString(R.string.shared_prefs_advance_mode), false) ? View.VISIBLE : View.GONE);
+        fabAdd.setVisibility(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false) ? View.VISIBLE : View.GONE);
 
         return rootView;
     }
@@ -325,7 +325,7 @@ public class EditPoiFragment extends Fragment {
             actionBar.setSubtitle(poi.getType().getName());
         }
 
-        tagsAdapter = new TagsAdapter(poi, cardModelList, getActivity(), event.getValuesMap(), configManager, sharedPreferences.getBoolean(getString(R.string.shared_prefs_advance_mode), false));
+        tagsAdapter = new TagsAdapter(poi, cardModelList, getActivity(), event.getValuesMap(), configManager, sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
         recyclerView.setAdapter(tagsAdapter);
     }
 

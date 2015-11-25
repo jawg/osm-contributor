@@ -138,7 +138,24 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
             }
         });
 
-        if (!sharedPreferences.getBoolean(getString(R.string.shared_prefs_advance_mode), false)) {
+        findPreference(getString(R.string.shared_prefs_expert_mode)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                if (sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false)) {
+                    new AlertDialog.Builder(getActivity())
+                            .setCancelable(false)
+                            .setMessage(getString(R.string.expert_mode_dialog))
+                            .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).show();
+                }
+                return false;
+            }
+        });
+        if (!sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false)) {
             getPreferenceScreen().removePreference(resetTypePref);
         }
     }
@@ -170,8 +187,8 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         updatePrefsSummary(sharedPreferences, key);
-        // Show or hide the reset type preference depending on the value of the advance mode preference.
-        if (getString(R.string.shared_prefs_advance_mode).equals(key)) {
+        // Show or hide the reset type preference depending on the value of the expert mode preference.
+        if (getString(R.string.shared_prefs_expert_mode).equals(key)) {
             if (sharedPreferences.getBoolean(key, false)) {
                 getPreferenceScreen().addPreference(resetTypePref);
             } else {

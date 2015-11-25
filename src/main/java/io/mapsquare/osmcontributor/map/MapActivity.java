@@ -197,7 +197,7 @@ public class MapActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-        navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(sharedPreferences.getBoolean(getString(R.string.shared_prefs_advance_mode), false));
+        navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
     }
 
     @Override
