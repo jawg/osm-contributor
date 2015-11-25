@@ -185,6 +185,7 @@ public class BitmapHandler {
         icons.put("townhall", R.drawable.townhall);
         icons.put("track", R.drawable.street);
         icons.put("village", R.drawable.town);
+        icons.put("phone", R.drawable.sos);
     }
 
     /**
