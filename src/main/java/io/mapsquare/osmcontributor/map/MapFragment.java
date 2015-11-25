@@ -1459,7 +1459,7 @@ public class MapFragment extends Fragment {
         if (display) {
 
             if (markerSelected != null) {
-                eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(markerSelected.getPoi().getType().getName(), markerSelected.getPoi().getName()));
+                eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(markerSelected.getPoi().getType().getName(), markerSelected.getPoi().getName(), markerSelected.getPoi().getWay()));
             }
 
             if (poiDetailWrapper.getVisibility() != View.VISIBLE) {

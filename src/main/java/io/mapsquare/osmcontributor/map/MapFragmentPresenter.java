@@ -216,7 +216,7 @@ public class MapFragmentPresenter {
 
                 //update the detail banner data
                 if (selected && mapFragment.getMapMode() == MapMode.DETAIL_POI) {
-                    eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(poi.getType().getName(), poi.getName()));
+                    eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(poi.getType().getName(), poi.getName(), poi.getWay()));
                 }
             }
 

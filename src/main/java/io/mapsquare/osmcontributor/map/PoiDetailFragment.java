@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import javax.inject.Inject;
@@ -63,7 +64,10 @@ public class PoiDetailFragment extends Fragment {
     FloatingActionsMenu floatingActionMenu;
 
     @InjectView(R.id.edit_poi_detail)
-    com.getbase.floatingactionbutton.FloatingActionButton floatingButtonEditPoi;
+    FloatingActionButton floatingButtonEditPoi;
+
+    @InjectView(R.id.edit_poi_position)
+    FloatingActionButton floatingButtonEditPosition;
 
     public PoiDetailFragment() {
     }
@@ -151,8 +155,13 @@ public class PoiDetailFragment extends Fragment {
         }
     }
 
+    private void showMovePoi(boolean showing) {
+        floatingButtonEditPosition.setVisibility(showing ? View.VISIBLE : View.GONE);
+    }
+
     public void onEventMainThread(PleaseChangeValuesDetailPoiFragmentEvent event) {
         setPoiType(event.getPoiType());
         setPoiName(event.getPoiName());
+        showMovePoi(!event.isWay());
     }
 }
