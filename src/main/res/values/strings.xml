@@ -77,7 +77,7 @@
     <string name="switch_style">Satellite view</string>
     <string name="zoom_more">You need to zoom more in order to download Pois</string>
     <string name="search_poitype_hint">Search a Poi type</string>
-    <string name="enable_3d">Enable 3D view</string>
+    <string name="title_3d_view">3D view</string>
 
 
     <!-- Strings related to login -->

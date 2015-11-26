@@ -81,6 +81,9 @@ public enum MapMode {
             .zoomOutLimited()
             .lockDrawer()),
 
+    ARPIGL(new MapModeProperties("ArpiGl view")
+            .lockDrawer()),
+
     DEFAULT(new MapModeProperties("Default mode")
             .showAddPoiFab()
             .showDownloadArea()
@@ -114,7 +117,6 @@ public enum MapMode {
         private boolean editColor = false;
         private boolean menuBtn = false;
         private int title = R.string.name;
-
 
         public MapModeProperties unSelectIcon() {
             this.unSelectIcon = true;

@@ -31,7 +31,7 @@
     tools:context=".MapActivity">
 
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -42,16 +42,17 @@
             android:id="@+id/map_fragment"
             android:name="io.mapsquare.osmcontributor.map.MapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_below="@id/toolbar"/>
 
-    </LinearLayout>
+        <fragment
+            android:id="@+id/engine_fragment"
+            android:name="mobi.designmyapp.arpigl.ui.ArpiGlFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/toolbar"/>
+    </RelativeLayout>
 
-    <!-- The Augmented Reality Fragment -->
-    <fragment
-        android:id="@+id/engine_fragment"
-        android:name="mobi.designmyapp.arpigl.ui.ArpiGlFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
     <!-- The navigation drawer -->
     <android.support.design.widget.NavigationView

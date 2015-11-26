@@ -49,6 +49,7 @@ import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.about.AboutActivity;
 import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.core.model.PoiType;
+import io.mapsquare.osmcontributor.map.events.ChangeMapModeEvent;
 import io.mapsquare.osmcontributor.map.events.ChangesInDB;
 import io.mapsquare.osmcontributor.map.events.MapCenterValueEvent;
 import io.mapsquare.osmcontributor.map.events.OnBackPressedMapEvent;
@@ -63,6 +64,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchMapStyleEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
+import io.mapsquare.osmcontributor.map.events.PleaseToggleArpiEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.preferences.MyPreferencesActivity;
@@ -70,9 +72,8 @@ import io.mapsquare.osmcontributor.type.TypeListActivity;
 import io.mapsquare.osmcontributor.upload.UploadActivity;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import mobi.designmyapp.arpigl.engine.ArpiGlController;
+import mobi.designmyapp.arpigl.listener.PoiSelectionListener;
 import mobi.designmyapp.arpigl.provider.impl.NetworkTileProvider;
-import mobi.designmyapp.arpigl.sensor.GravitySensorTrigger;
-import mobi.designmyapp.arpigl.sensor.VisibilityTrigger;
 import mobi.designmyapp.arpigl.ui.ArpiGlFragment;
 import timber.log.Timber;
 
@@ -108,8 +109,6 @@ public class MapActivity extends AppCompatActivity {
     private ArpiGlController arpiController;
 
     private ArpiGlFragment arpiGlFragment;
-
-    private GravitySensorTrigger visibilityTrigger;
 
     private NetworkTileProvider networkTileProvider;
 
@@ -213,25 +212,6 @@ public class MapActivity extends AppCompatActivity {
 
         // Get the arpi fragment.
         arpiGlFragment = (ArpiGlFragment) getFragmentManager().findFragmentById(R.id.engine_fragment);
-        // this module will toggle the arpiGlView visibility, with device's tilt.
-        visibilityTrigger = new GravitySensorTrigger(arpiGlFragment);
-        visibilityTrigger.show(false);
-        visibilityTrigger.setOnDisplayChangeListener(new VisibilityTrigger.OnDisplayChangeListener() {
-            @Override
-            public void beforeDisplayChange(boolean visible) {
-                eventBus.post(new PleaseGiveMeMapCenterEvent());
-                if (visible) {
-                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                } else {
-                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                }
-            }
-
-            @Override
-            public void afterDisplayChange(boolean b) {
-
-            }
-        });
         getFragmentManager().beginTransaction().hide(arpiGlFragment).commit();
     }
 
@@ -429,12 +409,11 @@ public class MapActivity extends AppCompatActivity {
             case R.id.replay_tuto_menu:
                 replayTutorial();
                 break;
-            case R.id.enable_3d:
-                menuItem.setChecked(!menuItem.isChecked());
-                toggle3D();
-                break;
             case R.id.edit_way:
                 eventBus.post(new PleaseSwitchWayEditionModeEvent());
+                break;
+            case R.id.arpi_view:
+                toggleArpiGl();
                 break;
             case R.id.switch_style:
                 eventBus.post(new PleaseSwitchMapStyleEvent());
@@ -447,11 +426,6 @@ public class MapActivity extends AppCompatActivity {
                 startAboutActivity();
                 break;
         }
-    }
-
-    private void toggle3D() {
-        visibilityTrigger.setEnabled(!visibilityTrigger.isEnabled());
-        getFragmentManager().beginTransaction().hide(arpiGlFragment).commit();
     }
 
     private void onOptionsSyncClick(MenuItem menuItem) {
@@ -503,5 +477,20 @@ public class MapActivity extends AppCompatActivity {
 
     public void onEventMainThread(ChangesInDB event) {
         navigationView.getMenu().findItem(R.id.save_changes).setEnabled(event.hasChanges()).setChecked(event.hasChanges());
+    }
+
+    public void onEventMainThread(PleaseToggleArpiEvent event) {
+        toggleArpiGl();
+    }
+
+    public void toggleArpiGl() {
+        if (arpiGlFragment.isVisible()) {
+            getFragmentManager().beginTransaction().hide(arpiGlFragment).commit();
+            eventBus.post(new ChangeMapModeEvent(MapMode.DEFAULT));
+        } else {
+            getFragmentManager().beginTransaction().show(arpiGlFragment).commit();
+            eventBus.post(new PleaseGiveMeMapCenterEvent());
+            eventBus.post(new ChangeMapModeEvent(MapMode.ARPIGL));
+        }
     }
 }

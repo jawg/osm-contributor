@@ -107,6 +107,7 @@ import io.mapsquare.osmcontributor.edition.EditPoiActivity;
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyNodeRefPositionChange;
 import io.mapsquare.osmcontributor.edition.events.PleaseApplyPoiPositionChange;
 import io.mapsquare.osmcontributor.map.events.AddressFoundEvent;
+import io.mapsquare.osmcontributor.map.events.ChangeMapModeEvent;
 import io.mapsquare.osmcontributor.map.events.EditionVectorialTilesLoadedEvent;
 import io.mapsquare.osmcontributor.map.events.LastUsePoiTypeLoaded;
 import io.mapsquare.osmcontributor.map.events.MapCenterValueEvent;
@@ -131,6 +132,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseOpenEditionEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSelectNodeRefByID;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchMapStyleEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseToggleArpiEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.map.events.PoiNoTypeCreated;
@@ -805,12 +807,10 @@ public class MapFragment extends Fragment {
             closeTuto();
         } else {
             switch (mapMode) {
-
                 case POI_POSITION_EDITION:
                     mapView.addMarker(markerSelected);
                     switchMode(MapMode.DEFAULT);
                     break;
-
 
                 case NODE_REF_POSITION_EDITION:
                     switchMode(MapMode.WAY_EDITION);
@@ -831,6 +831,10 @@ public class MapFragment extends Fragment {
                     imm.hideSoftInputFromWindow(mapView.getWindowToken(), 0);
                     break;
 
+                case ARPIGL:
+                    switchMode(MapMode.DEFAULT);
+                    eventBus.post(new PleaseToggleArpiEvent());
+                    break;
                 default:
                     getActivity().finish();
                     break;
@@ -1546,6 +1550,10 @@ public class MapFragment extends Fragment {
                 .setCategory(Category.GeoLocation.getValue())
                 .setAction("Center map on user geolocation")
                 .build());
+    }
+
+    public void onEventMainThread(ChangeMapModeEvent event) {
+        switchMode(event.getMapMode());
     }
 
 

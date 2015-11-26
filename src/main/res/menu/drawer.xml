@@ -46,14 +46,12 @@
             android:visible="false"/>
 
         <item
-            android:id="@+id/switch_style"
-            android:title="@string/switch_style"/>
+            android:id="@+id/arpi_view"
+            android:title="@string/title_3d_view"/>
 
         <item
-            android:id="@+id/enable_3d"
-            android:title="@string/enable_3d"
-            android:checkable="true"
-            android:checked="true"/>
+            android:id="@+id/switch_style"
+            android:title="@string/switch_style"/>
 
         <item
             android:id="@+id/replay_tuto_menu"
