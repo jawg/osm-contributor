@@ -54,6 +54,7 @@ import io.mapsquare.osmcontributor.core.events.PleaseRevertPoiEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseRevertPoiNodeRefEvent;
 import io.mapsquare.osmcontributor.core.events.PoiForEditionLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PoiTypesLoaded;
+import io.mapsquare.osmcontributor.core.events.PoisArpiLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PoisLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PoisToUpdateLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.ResetDatabaseEvent;
@@ -197,7 +198,7 @@ public class PoiManager {
 
     public void onEventAsync(PleaseLoadPoiForArpiEvent event) {
         List<Poi> pois = poiDao.queryForAllInRect(event.getBox());
-        bus.post(new PoisLoadedEvent(event.getBox(), pois));
+        bus.post(new PoisArpiLoadedEvent(pois));
     }
 
 

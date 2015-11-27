@@ -160,7 +160,6 @@ public class BitmapHandler {
         icons.put("place_of_worship", R.drawable.place_of_worship);
         icons.put("police", R.drawable.police);
         icons.put("political", R.drawable.administrative);
-        icons.put("post_office", R.drawable.administrative);
         icons.put("primary", R.drawable.street);
         icons.put("prison", R.drawable.prison);
         icons.put("pub", R.drawable.pub);

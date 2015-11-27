@@ -67,30 +67,35 @@ public class ArpiInitializer {
      */
     public void precomputeArpiBitmaps() {
         try {
-            ArpiGlInstaller.getInstance(application.getApplicationContext()).install();
+            if (!ArpiGlInstaller.getInstance(application.getApplicationContext()).isInstalled()) {
+                ArpiGlInstaller.getInstance(application.getApplicationContext()).install();
 
-            Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
+                Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
 
-            for (Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
-                Integer id = bitmapHandler.getIconDrawableId(entry.getValue());
-                if (id != null && id > 0) {
-                    Drawable d = application.getApplicationContext().getResources().getDrawableForDensity(id, DisplayMetrics.DENSITY_XXHIGH);
-                    int width = d.getIntrinsicWidth();
-                    int height = d.getIntrinsicHeight();
-                    Bitmap bitmap = Bitmap.createBitmap(2 * width, 2 * height, Bitmap.Config.ARGB_8888);
-                    Canvas c = new Canvas(bitmap);
-                    d.setBounds(width / 2, height / 2, width + width / 2, height + height / 2);
-                    d.draw(c);
-                    File dest = new File(application.getApplicationContext().getFilesDir(), ArpiGlInstaller.INSTALLATION_DIR + "/" + ArpiGlInstaller.TEXTURE_ICONS_SUBDIR + "/" + entry.getValue().getIcon() + ".png");
-                    dest.getParentFile().mkdirs();
-                    dest.createNewFile();
-                    OutputStream stream = new FileOutputStream(dest);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    stream.close();
-                    bitmap.recycle();
+                for (Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
+                    Integer id = bitmapHandler.getIconDrawableId(entry.getValue());
+                    if (id != null && id > 0) {
+                        Drawable d = application.getApplicationContext().getResources().getDrawableForDensity(id, DisplayMetrics.DENSITY_XXHIGH);
+                        int width = d.getIntrinsicWidth();
+                        int height = d.getIntrinsicHeight();
+                        Bitmap bitmap = Bitmap.createBitmap(2 * width, 2 * height, Bitmap.Config.ARGB_8888);
+                        Canvas c = new Canvas(bitmap);
+                        d.setBounds(width / 2, height / 2, width + width / 2, height + height / 2);
+                        d.draw(c);
+                        File dest = new File(application.getApplicationContext().getFilesDir(), ArpiGlInstaller.INSTALLATION_DIR + "/" + ArpiGlInstaller.TEXTURE_ICONS_SUBDIR + "/" + entry.getValue().getIcon() + ".png");
+                        dest.getParentFile().mkdirs();
+
+                        if (dest.exists()) {
+                            dest.delete();
+                        }
+                        dest.createNewFile();
+                        OutputStream stream = new FileOutputStream(dest);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        stream.close();
+                        bitmap.recycle();
+                    }
                 }
             }
-
         } catch (IOException | JSONException e) {
             Timber.e("Error while initializing ArpiGl library: {}", e.getMessage());
         }

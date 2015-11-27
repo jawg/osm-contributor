@@ -267,6 +267,17 @@ public class MapActivity extends AppCompatActivity {
 
         // Create a controller to manage the arpi fragment
         arpiController = new ArpiGlController(arpiGlFragment);
+        arpiController.setPoiSelectionListener(new PoiSelectionListener() {
+            @Override
+            public void onPoiSelected(String s) {
+
+            }
+
+            @Override
+            public void onPoiDeselected(String s) {
+
+            }
+        });
 
         networkTileProvider = new NetworkTileProvider(configManager.getMapUrl()) {
         };

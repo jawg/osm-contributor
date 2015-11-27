@@ -24,18 +24,17 @@ import java.util.List;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import io.mapsquare.osmcontributor.core.events.NotesLoadedEvent;
+import io.mapsquare.osmcontributor.core.events.NotesArpiLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNoteForArpiEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiForArpiEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseRemoveArpiMarkerEvent;
-import io.mapsquare.osmcontributor.core.events.PoisLoadedEvent;
+import io.mapsquare.osmcontributor.core.events.PoisArpiLoadedEvent;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.utils.Box;
 import mobi.designmyapp.arpigl.engine.Engine;
 import mobi.designmyapp.arpigl.event.PoiEvent;
 import mobi.designmyapp.arpigl.mapper.PoiMapper;
 import mobi.designmyapp.arpigl.model.Poi;
-import mobi.designmyapp.arpigl.model.Shape;
 import mobi.designmyapp.arpigl.model.Tile;
 import mobi.designmyapp.arpigl.provider.PoiProvider;
 import mobi.designmyapp.arpigl.util.ProjectionUtils;
@@ -44,11 +43,15 @@ public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributo
 
     EventBus eventBus;
     private Engine engine;
+    private ArpiPoiMapper poiMapper;
+    private ArpiNoteMapper noteMapper;
 
     @Inject
     public ArpiPoiProvider(EventBus eventBus) {
         super(ArpiPoiMapper.class);
         this.eventBus = eventBus;
+        this.poiMapper = new ArpiPoiMapper();
+        this.noteMapper = new ArpiNoteMapper();
     }
 
     public void register() {
@@ -70,39 +73,32 @@ public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributo
         double[] coords2 = ProjectionUtils.tile2latLon(tile.x + 3, tile.y + 3, tile.z);
 
         Box b = new Box(coords1[0], coords2[1], coords2[0], coords1[1]);
-        eventBus.postSticky(new PleaseLoadPoiForArpiEvent(b));
-        eventBus.postSticky(new PleaseLoadNoteForArpiEvent(b));
+        eventBus.post(new PleaseLoadPoiForArpiEvent(b));
+        eventBus.post(new PleaseLoadNoteForArpiEvent(b));
     }
 
     public void onEventBackgroundThread(PleaseRemoveArpiMarkerEvent event) {
         if (engine != null) {
             Object poi = event.getPoi();
             if (poi instanceof io.mapsquare.osmcontributor.core.model.Poi) {
-                engine.removePoi(new ArpiPoiMapper().convert((io.mapsquare.osmcontributor.core.model.Poi) poi));
+                engine.removePoi(poiMapper.convert((io.mapsquare.osmcontributor.core.model.Poi) poi));
             } else if (poi instanceof Note) {
-                engine.removePoi(new ArpiNoteMapper().convert((Note) poi));
+                engine.removePoi(noteMapper.convert((Note) poi));
             }
         }
     }
 
-    public void onEventBackgroundThread(PoisLoadedEvent event) {
-        PleaseLoadPoiForArpiEvent stickyBox = eventBus.getStickyEvent(PleaseLoadPoiForArpiEvent.class);
-        // If sticky box or event box is null, it means the event is not for our system.
-        // If event.getBox is not for the latest box request, we simply ignore it.
-        if (stickyBox != null && event.getBox() != null && event.getBox().equals(stickyBox.getBox())) {
-            postEvent(new PoiEvent(new ArpiPoiMapper().convert(event.getPois())));
-            eventBus.removeStickyEvent(PleaseLoadPoiForArpiEvent.class);
+    public void onEventBackgroundThread(PoisArpiLoadedEvent event) {
+        ArrayList<Poi> toRemove = new ArrayList<>();
+        postEvent(new PoiEvent(poiMapper.convert(event.getPois(), toRemove)));
+        for (Poi poi : toRemove) {
+            engine.removePoi(poi);
         }
+
     }
 
-    public void onEventBackgroundThread(NotesLoadedEvent event) {
-        PleaseLoadNoteForArpiEvent stickyBox = eventBus.getStickyEvent(PleaseLoadNoteForArpiEvent.class);
-        // If sticky box or event box is null, it means the event is not for our system.
-        // If event.getBox is not for the latest box request, we simply ignore it.
-        if (stickyBox != null && event.getBox() != null && event.getBox().equals(stickyBox.getBox())) {
-            postEvent(new PoiEvent(new ArpiNoteMapper().convert(event.getNotes())));
-            eventBus.removeStickyEvent(PleaseLoadNoteForArpiEvent.class);
-        }
+    public void onEventBackgroundThread(NotesArpiLoadedEvent event) {
+        postEvent(new PoiEvent(noteMapper.convert(event.getNotes())));
     }
 
 
@@ -110,13 +106,13 @@ public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributo
 
         public Poi convert(io.mapsquare.osmcontributor.core.model.Poi source) {
             return Poi.builder()
-                    .id(source.getBackendId())
+                    .id(source.getId().toString())
                     .latitude(source.getLatitude())
                     .longitude(source.getLongitude())
-                    .color(0xFF00BB55)
+                    .color(0xFFAAAAAA)
                     .icon(source.getType().getIcon())
                     .altitude(1.5)
-                    .shape(Shape.Default.BALLOON)
+                    .shape("POI_balloon")
                     .build();
         }
 
@@ -127,11 +123,29 @@ public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributo
             }
             List<Poi> result = new ArrayList<>(sources.size());
             for (io.mapsquare.osmcontributor.core.model.Poi poi : sources) {
-                result.add(convert(poi));
+                if (!poi.getToDelete() && !poi.getOld()) {
+                    result.add(convert(poi));
+                }
             }
             return result;
         }
 
+        public List<Poi> convert(List<io.mapsquare.osmcontributor.core.model.Poi> sources, List<Poi> toRemove) {
+            if (sources == null) {
+                return null;
+            }
+            List<Poi> result = new ArrayList<>(sources.size());
+            Poi poi;
+            for (io.mapsquare.osmcontributor.core.model.Poi source : sources) {
+                poi = convert(source);
+                if (!source.getToDelete() && !source.getOld()) {
+                    result.add(poi);
+                } else {
+                    toRemove.add(poi);
+                }
+            }
+            return result;
+        }
     }
 
     public static class ArpiNoteMapper implements PoiMapper<List<Note>> {
