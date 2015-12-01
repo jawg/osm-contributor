@@ -199,4 +199,7 @@
     <string name="undo_snack_bar">Annuler</string>
     <string name="node_ref_title">Point</string>
 
+    <!-- Easter Egg -->
+    <string name="easter_egg_activation">La 3D activé tu as!</string>
+
 </resources>

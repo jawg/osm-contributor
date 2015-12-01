@@ -130,6 +130,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseLoadEditVectorialTileEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadLastUsedPoiType;
 import io.mapsquare.osmcontributor.map.events.PleaseOpenEditionEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSelectNodeRefByID;
+import io.mapsquare.osmcontributor.map.events.PleaseShowMeArpiglEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchMapStyleEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleArpiEvent;
@@ -1326,6 +1327,7 @@ public class MapFragment extends Fragment {
                 if (isTuto) {
                     nextTutoStep();
                 }
+                easterEgg();
             }
         });
     }
@@ -1554,6 +1556,34 @@ public class MapFragment extends Fragment {
 
     public void onEventMainThread(ChangeMapModeEvent event) {
         switchMode(event.getMapMode());
+    }
+
+
+    /*-----------------------------------------------------------
+    * EASTER EGG
+    *---------------------------------------------------------*/
+    Long previousTime = System.currentTimeMillis();
+    int nbClick = 0;
+
+
+    private void easterEgg() {
+
+        Long time = System.currentTimeMillis();
+
+        if (time - previousTime < 500) {
+            if (++nbClick == 4) {
+                eventBus.post(new PleaseShowMeArpiglEvent());
+                eventBus.post(new PleaseToggleArpiEvent());
+                Toast.makeText(getActivity(), getString(R.string.easter_egg_activation), Toast.LENGTH_SHORT).show();
+                sharedPreferences.edit().putBoolean(getString(R.string.easter_egg), true).apply();
+                nbClick = 0;
+            }
+        } else {
+            nbClick = 0;
+        }
+
+        previousTime = time;
+
     }
 
 

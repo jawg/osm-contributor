@@ -61,6 +61,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseGiveMeMapCenterEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeArpiEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseShowMeArpiglEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchMapStyleEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
@@ -213,6 +214,10 @@ public class MapActivity extends AppCompatActivity {
         // Get the arpi fragment.
         arpiGlFragment = (ArpiGlFragment) getFragmentManager().findFragmentById(R.id.engine_fragment);
         getFragmentManager().beginTransaction().hide(arpiGlFragment).commit();
+
+        if (sharedPreferences.getBoolean(getString(R.string.easter_egg), false)) {
+            navigationView.getMenu().findItem(R.id.arpi_view).setVisible(true);
+        }
     }
 
     @Override
@@ -294,6 +299,10 @@ public class MapActivity extends AppCompatActivity {
         arpiController.setSkyBoxEnabled(true);
         arpiController.setUserLocationEnabled(false);
 
+    }
+
+    public void onEventMainThread(PleaseShowMeArpiglEvent event) {
+        navigationView.getMenu().findItem(R.id.arpi_view).setVisible(true);
     }
 
     public void onEventMainThread(MapCenterValueEvent event) {
