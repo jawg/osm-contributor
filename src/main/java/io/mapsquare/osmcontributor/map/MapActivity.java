@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.map;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -34,6 +35,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,6 +97,9 @@ public class MapActivity extends AppCompatActivity {
 
     @InjectView(R.id.filter)
     NavigationView2 filterView;
+
+    @InjectView(R.id.AR_screenshot)
+    ImageView arpiScreenshot;
 
     @Inject
     BitmapHandler bitmapHandler;
@@ -511,13 +517,26 @@ public class MapActivity extends AppCompatActivity {
     }
 
     public void toggleArpiGl() {
-        if (arpiGlFragment.isVisible()) {
-            getFragmentManager().beginTransaction().hide(arpiGlFragment).commit();
-            eventBus.post(new ChangeMapModeEvent(MapMode.DEFAULT));
+        PackageManager pm = getPackageManager();
+        // Switch to ArpiGl fragment if the sensors are present. IF they aren't, just display a screenshot of ArpiGl view
+        if (pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_GYROSCOPE) && pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
+            if (arpiGlFragment.isVisible()) {
+                getFragmentManager().beginTransaction().hide(arpiGlFragment).commit();
+                eventBus.post(new ChangeMapModeEvent(MapMode.DEFAULT));
+            } else {
+                getFragmentManager().beginTransaction().show(arpiGlFragment).commit();
+                eventBus.post(new PleaseGiveMeMapCenterEvent());
+                eventBus.post(new ChangeMapModeEvent(MapMode.ARPIGL));
+            }
         } else {
-            getFragmentManager().beginTransaction().show(arpiGlFragment).commit();
-            eventBus.post(new PleaseGiveMeMapCenterEvent());
-            eventBus.post(new ChangeMapModeEvent(MapMode.ARPIGL));
+            if (arpiScreenshot.getVisibility() == View.GONE) {
+                arpiScreenshot.setVisibility(View.VISIBLE);
+                eventBus.post(new ChangeMapModeEvent(MapMode.ARPIGL));
+                Toast.makeText(this, R.string.arpi_not_supported, Toast.LENGTH_LONG).show();
+            } else {
+                arpiScreenshot.setVisibility(View.GONE);
+                eventBus.post(new ChangeMapModeEvent(MapMode.DEFAULT));
+            }
         }
     }
 }
