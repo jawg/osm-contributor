@@ -19,26 +19,25 @@
 package io.mapsquare.osmcontributor.sync.assets;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.simpleframework.xml.core.Persister;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.sync.converter.PoiConverter;
 import io.mapsquare.osmcontributor.sync.converter.PoiTypeConverter;
-import io.mapsquare.osmcontributor.sync.dto.dma.PoiTypeDto;
+import io.mapsquare.osmcontributor.sync.dto.dma.H2GeoDto;
 import io.mapsquare.osmcontributor.sync.dto.osm.OsmDto;
 import io.mapsquare.osmcontributor.utils.CloseableUtils;
 import timber.log.Timber;
@@ -51,14 +50,16 @@ public class PoiAssetLoader {
     Gson gson;
     Persister simple;
     PoiTypeConverter poiTypeConverter;
+    SharedPreferences sharedPreferences;
 
     @Inject
-    public PoiAssetLoader(Application application, PoiConverter poiConverter, Gson gson, Persister simple, PoiTypeConverter poiTypeConverter) {
+    public PoiAssetLoader(Application application, PoiConverter poiConverter, Gson gson, Persister simple, PoiTypeConverter poiTypeConverter, SharedPreferences sharedPreferences) {
         this.application = application;
         this.poiConverter = poiConverter;
         this.gson = gson;
         this.simple = simple;
         this.poiTypeConverter = poiTypeConverter;
+        this.sharedPreferences = sharedPreferences;
     }
 
     /**
@@ -70,9 +71,13 @@ public class PoiAssetLoader {
         Reader reader = null;
         try {
             reader = new InputStreamReader(application.getAssets().open("h2geo.json"));
-            Type poiTypesType = new TypeToken<ArrayList<PoiTypeDto>>() { } .getType();
-            List<PoiTypeDto> poiTypesDto = gson.fromJson(reader, poiTypesType);
-            return poiTypeConverter.convert(poiTypesDto);
+            H2GeoDto h2GeoDto = gson.fromJson(reader, H2GeoDto.class);
+            // Save the h2Geo version and generation date in the shared preferences.
+            sharedPreferences.edit()
+                    .putString(application.getString(R.string.shared_prefs_h2geo_version), h2GeoDto.getH2GeoVersion())
+                    .putString(application.getString(R.string.shared_prefs_h2geo_date), h2GeoDto.getGenerationDate())
+                    .apply();
+            return poiTypeConverter.convert(h2GeoDto.getData());
         } catch (Exception e) {
             Timber.e(e, "Error while loading POI Types from assets");
             throw new RuntimeException(e);

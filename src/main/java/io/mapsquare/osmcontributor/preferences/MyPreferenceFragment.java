@@ -96,6 +96,10 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
         updateLoginSummary(getPreferenceScreen().getSharedPreferences());
         updatePasswordSummary(getPreferenceScreen().getSharedPreferences());
 
+        Preference h2geoPreference = findPreference(getString(R.string.shared_prefs_h2geo_version));
+        h2geoPreference.setTitle(sharedPreferences.getString(getString(R.string.shared_prefs_h2geo_version), ""));
+        h2geoPreference.setSummary(sharedPreferences.getString(getString(R.string.shared_prefs_h2geo_date), ""));
+
         Preference resetPreference = findPreference(getString(R.string.shared_prefs_reset));
         resetPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

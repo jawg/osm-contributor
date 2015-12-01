@@ -37,7 +37,15 @@
         android:title="@string/reset_type_title"/>
 
     <PreferenceCategory
-        android:key="@string/shared_prefs_login_title_key"
+        android:title="@string/shared_prefs_h2geo_title">
+
+        <Preference
+            android:inputType="none"
+            android:key="@string/shared_prefs_h2geo_version"
+            android:title="Version"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/shared_prefs_login_title">
 
         <EditTextPreference
@@ -55,7 +63,6 @@
         <Preference
             android:inputType="none"
             android:key="@string/shared_prefs_server_key"
-            android:summary="@string/summary_login"
             android:title="@string/shared_prefs_server"/>
     </PreferenceCategory>
 
