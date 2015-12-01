@@ -62,8 +62,7 @@ You can also reach us on Twitter:
 [@DesignMyApp](https://twitter.com/DesignMyApp)
 
 ### RoadMap
- + Performance enhancements coming soon to all flavors !
- + Expert mode for poi types and tags handling.
+ + Add more options for edition of ways.
 
 ### Changelog
 
@@ -76,7 +75,8 @@ See the [CHANGELOG.md](/CHANGELOG.md) file.
 ![Changeset Commit](/images/changeset.png)
 ![Changeset Commit ](/images/changeset_detail.png)|
 ![Notes on Map](/images/note.png)
-![Note discussion](/images/note_discussion.jpg)
+![Note discussion](/images/note_discussion.jpg)|
+![Augmented reality](/images/augmented_reality.png)
 
 ### Contributors
 This app is actively developed by:

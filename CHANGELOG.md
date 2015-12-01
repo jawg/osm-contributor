@@ -1,7 +1,13 @@
 ## Changelog
+[2.2.0]
+
+ - Added an expert mode allowing the user to manage it's Poi Types and edit the pois without restraints
+ - Added an augmented reality display of the map and the pois and notes
+ - Update of poi types and icons
+
 [2.1.1]
 
- - Fixed and issue during authentication
+ - Fixed an issue during authentication
 
 [2.1.0]
 
