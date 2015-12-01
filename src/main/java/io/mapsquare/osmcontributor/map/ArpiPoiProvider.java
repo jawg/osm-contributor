@@ -45,6 +45,9 @@ public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributo
     private Engine engine;
     private ArpiPoiMapper poiMapper;
     private ArpiNoteMapper noteMapper;
+    public static final int POI_COLOR = 0xFFAAAAAA;
+    public static final int NOTE_COLOR = 0xFFCC0052;
+    public static final int SELECTED_COLOR = 0xFF2196F3;
 
     @Inject
     public ArpiPoiProvider(EventBus eventBus) {
@@ -106,10 +109,10 @@ public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributo
 
         public Poi convert(io.mapsquare.osmcontributor.core.model.Poi source) {
             return Poi.builder()
-                    .id(source.getId().toString())
+                    .id("POI:" + source.getId().toString())
                     .latitude(source.getLatitude())
                     .longitude(source.getLongitude())
-                    .color(0xFFAAAAAA)
+                    .color(POI_COLOR)
                     .icon(source.getType().getIcon())
                     .altitude(1.5)
                     .shape("POI_balloon")
@@ -152,10 +155,10 @@ public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributo
 
         public Poi convert(io.mapsquare.osmcontributor.core.model.Note source) {
             return Poi.builder()
-                    .id(source.getBackendId())
+                    .id("NOTE:" + source.getBackendId())
                     .latitude(source.getLatitude())
                     .longitude(source.getLongitude())
-                    .color(0xFFCC0052)
+                    .color(NOTE_COLOR)
                     .icon("note")
                     .altitude(1.5)
                     .shape("note")

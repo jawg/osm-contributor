@@ -269,13 +269,20 @@ public class MapActivity extends AppCompatActivity {
         arpiController = new ArpiGlController(arpiGlFragment);
         arpiController.setPoiSelectionListener(new PoiSelectionListener() {
             @Override
-            public void onPoiSelected(String s) {
-
+            public void onPoiSelected(String id) {
+                arpiController.setPoiColor(id, ArpiPoiProvider.SELECTED_COLOR);
             }
 
             @Override
-            public void onPoiDeselected(String s) {
-
+            public void onPoiDeselected(String id) {
+                switch (id.split(":")[0]) {
+                    case "POI":
+                        arpiController.setPoiColor(id, ArpiPoiProvider.POI_COLOR);
+                        break;
+                    case "NOTE":
+                        arpiController.setPoiColor(id, ArpiPoiProvider.NOTE_COLOR);
+                        break;
+                }
             }
         });
 
