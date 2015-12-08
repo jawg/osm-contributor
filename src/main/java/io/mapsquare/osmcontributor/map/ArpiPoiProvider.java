@@ -114,7 +114,7 @@ public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributo
                     .longitude(source.getLongitude())
                     .color(POI_COLOR)
                     .icon(source.getType().getIcon())
-                    .altitude(1.5)
+                    .altitude(2)
                     .shape("POI_balloon")
                     .build();
         }

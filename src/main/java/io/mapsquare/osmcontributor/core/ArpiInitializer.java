@@ -78,10 +78,11 @@ public class ArpiInitializer {
                         Drawable d = application.getApplicationContext().getResources().getDrawableForDensity(id, DisplayMetrics.DENSITY_XXHIGH);
                         int width = d.getIntrinsicWidth();
                         int height = d.getIntrinsicHeight();
-                        Bitmap bitmap = Bitmap.createBitmap(2 * width, 2 * height, Bitmap.Config.ARGB_8888);
+                        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                         Canvas c = new Canvas(bitmap);
-                        d.setBounds(width / 2, height / 2, width + width / 2, height + height / 2);
+                        d.setBounds(0, 0, width, height);
                         d.draw(c);
+
                         File dest = new File(application.getApplicationContext().getFilesDir(), ArpiGlInstaller.INSTALLATION_DIR + "/" + ArpiGlInstaller.TEXTURE_ICONS_SUBDIR + "/" + entry.getValue().getIcon() + ".png");
                         dest.getParentFile().mkdirs();
 
