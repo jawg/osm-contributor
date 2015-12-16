@@ -75,6 +75,7 @@
 -keep class retrofit.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
+-keep class io.mapsquare.osmcontributor.sync.rest.BODY_DELETE { *; }
 
 
 ####################################################################################################
