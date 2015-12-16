@@ -239,15 +239,39 @@ public class EditPoiFragment extends Fragment {
 
         if (id == R.id.action_confirm_edit) {
             finishTuto();
+
+            // If we are in expert mode, directly create or update the Poi
+            if (sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false)) {
+                if (creation) {
+                    getActivity().setResult(EditPoiActivity.POI_CREATED, null);
+                    eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges()));
+                } else if (tagsAdapter.isChange()) {
+                    getActivity().setResult(EditPoiActivity.POI_EDITED, null);
+                    eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges()));
+                } else {
+                    Toast.makeText(getActivity(), R.string.not_any_changes, Toast.LENGTH_SHORT).show();
+                }
+
+                return true;
+            }
+
+            // In creation mode, check if there are mandatory tags. If there aren't any, proceed,
+            // else check if all mandatory tags are completed.
+            if (creation) {
+                if (!poi.getType().hasMandatoryTags() || tagsAdapter.isValidChanges()) {
+                    getActivity().setResult(EditPoiActivity.POI_CREATED, null);
+                    eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges()));
+                } else {
+                    Toast.makeText(getActivity(), R.string.uncompleted_fields, Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+
+            // In edit mode, check if there are changes then check if all the mandatory tags are completed.
             if (tagsAdapter.isChange()) {
                 if (tagsAdapter.isValidChanges()) {
-                    if (creation) {
-                        getActivity().setResult(EditPoiActivity.POI_CREATED, null);
-                        eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges()));
-                    } else {
-                        getActivity().setResult(EditPoiActivity.POI_EDITED, null);
-                        eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges()));
-                    }
+                    getActivity().setResult(EditPoiActivity.POI_EDITED, null);
+                    eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges()));
                 } else {
                     Toast.makeText(getActivity(), R.string.uncompleted_fields, Toast.LENGTH_SHORT).show();
                 }
