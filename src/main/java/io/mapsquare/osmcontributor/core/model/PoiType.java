@@ -202,4 +202,20 @@ public class PoiType implements Comparable<PoiType> {
         result = 31 * result + (backendId != null ? backendId.hashCode() : 0);
         return result;
     }
+
+    /**
+     * Return true if the PoiType has at least one mandatory tag.
+     *
+     * @return true if the PoiType has at least one mandatory tag.
+     */
+    public boolean hasMandatoryTags() {
+        if (tags != null) {
+            for (PoiTypeTag poiTypeTag : tags) {
+                if (poiTypeTag.getMandatory()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
