@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -46,7 +46,10 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.events.NoteLoadedEvent;
@@ -207,7 +210,8 @@ public class NoteActivity extends AppCompatActivity {
         outState.putLong(NOTE_ID, noteId);
     }
 
-    public void onEventMainThread(NoteLoadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNoteLoadedEvent(NoteLoadedEvent event) {
         note = event.getNote();
         if (note.getComments() != null) {
             adapter.addAll(note.getComments());
@@ -220,26 +224,31 @@ public class NoteActivity extends AppCompatActivity {
         }
     }
 
-    public void onEventMainThread(SyncFinishUploadNote event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncFinishUploadNote(SyncFinishUploadNote event) {
         refreshView(event.getNote());
     }
 
-    public void onEventMainThread(ApplyNewCommentFailedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onApplyNewCommentFailedEvent(ApplyNewCommentFailedEvent event) {
         Toast.makeText(this, getString(R.string.failed_apply_comment), Toast.LENGTH_LONG).show();
     }
 
-    public void onEventMainThread(SyncConflictingNoteErrorEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncConflictingNoteErrorEvent(SyncConflictingNoteErrorEvent event) {
         if (event.getNote().getBackendId().equals(note.getBackendId())) {
             Toast.makeText(this, getResources().getString(R.string.note_already_closed), Toast.LENGTH_SHORT).show();
             refreshView(event.getNote());
         }
     }
 
-    public void onEventMainThread(SyncUnauthorizedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUnauthorizedEvent(SyncUnauthorizedEvent event) {
         Toast.makeText(this, R.string.couldnt_connect_retrofit, Toast.LENGTH_LONG).show();
     }
 
-    public void onEventMainThread(NoteSavedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNoteSavedEvent(NoteSavedEvent event) {
         refreshView(event.getNote());
     }
 

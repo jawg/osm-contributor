@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -21,15 +21,13 @@ package io.mapsquare.osmcontributor;
 
 import android.app.Application;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.leakcanary.LeakCanary;
 
 import java.util.HashMap;
 
-import de.greenrobot.event.EventBus;
-import io.mapsquare.osmcontributor.crashlytics.CrashContextWrapper;
+import org.greenrobot.eventbus.EventBus;
 import io.mapsquare.osmcontributor.crashlytics.CrashlyticsTree;
 import timber.log.Timber;
 
@@ -54,7 +52,6 @@ public class OsmTemplateApplication extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         } else {
-            Crashlytics.start(new CrashContextWrapper(this, BuildConfig.CRASHLYTICS_PACKAGE_NAME));
             Timber.plant(new CrashlyticsTree());
         }
 

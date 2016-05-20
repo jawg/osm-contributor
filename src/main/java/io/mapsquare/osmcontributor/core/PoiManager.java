@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -20,6 +20,9 @@ package io.mapsquare.osmcontributor.core;
 
 import android.app.Application;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -34,7 +37,6 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.core.database.DatabaseHelper;
 import io.mapsquare.osmcontributor.core.database.dao.PoiDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiNodeRefDao;
@@ -119,7 +121,8 @@ public class PoiManager {
     // ************ Events ************
     // ********************************
 
-    public void onEventBackgroundThread(InitDbEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onInitDbEvent(InitDbEvent event) {
         if (!FlavorUtils.isPoiStorage()) {
             Timber.d("Initializing database ...");
             initDb();
@@ -127,27 +130,33 @@ public class PoiManager {
         }
     }
 
-    public void onEventAsync(PleaseLoadNodeRefAround event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadNodeRefAround(PleaseLoadNodeRefAround event) {
         bus.post(new NodeRefAroundLoadedEvent(poiNodeRefDao.queryAllInRect(event.getLat(), event.getLng())));
     }
 
-    public void onEventAsync(PleaseLoadPoiForEditionEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadPoiForEditionEvent(PleaseLoadPoiForEditionEvent event) {
         loadPoiForEdition(event.getPoiId());
     }
 
-    public void onEventAsync(PleaseLoadPoiForCreationEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadPoiForCreationEvent(PleaseLoadPoiForCreationEvent event) {
         loadPoiForCreation(event);
     }
 
-    public void onEventAsync(PleaseLoadPoisEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadPoisEvent(PleaseLoadPoisEvent event) {
         loadPois(event);
     }
 
-    public void onEventAsync(PleaseTellIfDbChanges event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseTellIfDbChanges(PleaseTellIfDbChanges event) {
         bus.post(new ChangesInDB(poiDao.countForAllChanges() > 0 || poiNodeRefDao.countAllToUpdate() > 0));
     }
 
-    public void onEventAsync(PleaseLoadPoisToUpdateEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadPoisToUpdateEvent(PleaseLoadPoisToUpdateEvent event) {
         List<Poi> updatedPois = poiDao.queryForAllUpdated();
         List<Poi> newPois = poiDao.queryForAllNew();
         List<Poi> toDeletePois = poiDao.queryToDelete();
@@ -170,33 +179,40 @@ public class PoiManager {
         bus.post(new PoisToUpdateLoadedEvent(allPois));
     }
 
-    public void onEventAsync(PleaseLoadPoiTypes event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadPoiTypes(PleaseLoadPoiTypes event) {
         bus.postSticky(new PoiTypesLoaded(getPoiTypesSortedByName()));
     }
 
-    public void onEventAsync(PleaseLoadLastUsedPoiType event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadLastUsedPoiType(PleaseLoadLastUsedPoiType event) {
         bus.post(new LastUsePoiTypeLoaded(getPoiTypesSortedByLastUse()));
     }
 
-    public void onEventAsync(ResetDatabaseEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onResetDatabaseEvent(ResetDatabaseEvent event) {
         bus.post(new DatabaseResetFinishedEvent(resetDatabase()));
     }
 
-    public void onEventAsync(ResetTypeDatabaseEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onResetTypeDatabaseEvent(ResetTypeDatabaseEvent event) {
         bus.post(new DatabaseResetFinishedEvent(resetTypes()));
     }
 
-    public void onEventAsync(PleaseRevertPoiEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseRevertPoiEvent(PleaseRevertPoiEvent event) {
         revertPoi(event.getIdToRevert());
         bus.post(new RevertFinishedEvent());
     }
 
-    public void onEventAsync(PleaseRevertPoiNodeRefEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseRevertPoiNodeRefEvent(PleaseRevertPoiNodeRefEvent event) {
         revertPoiNodeRef(event.getIdToRevert());
         bus.post(new RevertFinishedEvent());
     }
 
-    public void onEventAsync(PleaseLoadPoiForArpiEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadPoiForArpiEvent(PleaseLoadPoiForArpiEvent event) {
         List<Poi> pois = poiDao.queryForAllInRect(event.getBox());
         bus.post(new PoisArpiLoadedEvent(pois));
     }

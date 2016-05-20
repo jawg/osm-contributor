@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -90,7 +90,10 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.ConfigManager;
@@ -802,7 +805,8 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void onEventMainThread(OnBackPressedMapEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onOnBackPressedMapEvent(OnBackPressedMapEvent event) {
         Timber.d("Received event OnBackPressedMap");
         if (isTuto) {
             closeTuto();
@@ -843,7 +847,8 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void onEventMainThread(PleaseGiveMeMapCenterEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseGiveMeMapCenterEvent(PleaseGiveMeMapCenterEvent event) {
         eventBus.post(new MapCenterValueEvent(mapView.getCenter()));
     }
 
@@ -976,7 +981,8 @@ public class MapFragment extends Fragment {
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    public void onEventMainThread(PleaseSwitchWayEditionModeEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseSwitchWayEditionModeEvent(PleaseSwitchWayEditionModeEvent event) {
         if (getZoomLevel() < zoomVectorial) {
             mapView.setZoom(zoomVectorial);
         }
@@ -1174,7 +1180,8 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void onEventMainThread(NodeRefAroundLoadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNodeRefAroundLoadedEvent(NodeRefAroundLoadedEvent event) {
         List<PoiNodeRef> poiNodeRefsSelected = event.getPoiNodeRefs();
         if (poiNodeRefsSelected != null && poiNodeRefsSelected.size() > 0) {
             //todo let the user precise his choice
@@ -1248,7 +1255,8 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void onEventMainThread(PoiNoTypeCreated event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoiNoTypeCreated(PoiNoTypeCreated event) {
         presenter.setForceRefreshPoi();
         presenter.loadPoisIfNeeded();
     }
@@ -1262,7 +1270,8 @@ public class MapFragment extends Fragment {
         valueAnimator.start();
     }
 
-    public void onEventMainThread(NewPoiTypeSelected event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewPoiTypeSelected(NewPoiTypeSelected event) {
         Timber.d("Received event NewPoiTypeSelected");
         if (isTuto) {
             nextTutoStep();
@@ -1427,7 +1436,8 @@ public class MapFragment extends Fragment {
     * POI EDITION
     *---------------------------------------------------------*/
 
-    public void onEventMainThread(PleaseOpenEditionEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseOpenEditionEvent(PleaseOpenEditionEvent event) {
         Timber.d("Received event PleaseOpenEdition");
         Intent intent = new Intent(getActivity(), EditPoiActivity.class);
         intent.putExtra(EditPoiActivity.CREATION_MODE, false);
@@ -1435,7 +1445,8 @@ public class MapFragment extends Fragment {
         startActivity(intent);
     }
 
-    public void onEventMainThread(PleaseChangePoiPosition event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseChangePoiPosition(PleaseChangePoiPosition event) {
         Timber.d("Received event PleaseChangePoiPosition");
         if (configManager.hasPoiModification()) {
             switchMode(MapMode.POI_POSITION_EDITION);
@@ -1463,7 +1474,8 @@ public class MapFragment extends Fragment {
     * POI DELETION
     *---------------------------------------------------------*/
 
-    public void onEventMainThread(PleaseDeletePoiFromMapEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseDeletePoiFromMapEvent(PleaseDeletePoiFromMapEvent event) {
         Poi poi = markerSelected.getPoi();
         poi.setToDelete(true);
         markersPoi.remove(poi.getId());
@@ -1554,7 +1566,8 @@ public class MapFragment extends Fragment {
                 .build());
     }
 
-    public void onEventMainThread(ChangeMapModeEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChangeMapModeEvent(ChangeMapModeEvent event) {
         switchMode(event.getMapMode());
     }
 
@@ -1591,7 +1604,8 @@ public class MapFragment extends Fragment {
     * SYNC
     *---------------------------------------------------------*/
 
-    public void onEventMainThread(SyncFinishUploadPoiEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncFinishUploadPoiEvent(SyncFinishUploadPoiEvent event) {
         boolean forceRefresh = false;
 
         if (event.getSuccessfullyAddedPoisCount() > 0) {
@@ -1613,7 +1627,8 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void onEventMainThread(NewNoteCreatedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewNoteCreatedEvent(NewNoteCreatedEvent event) {
         // a note has been created, select it
         markerSelectedId = event.getNoteId();
         markerSelected = null;
@@ -1622,7 +1637,8 @@ public class MapFragment extends Fragment {
         presenter.loadPoisIfNeeded();
     }
 
-    public void onEventMainThread(ApplyNewCommentFailedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onApplyNewCommentFailedEvent(ApplyNewCommentFailedEvent event) {
         Toast.makeText(getActivity(), getString(R.string.failed_apply_comment), Toast.LENGTH_SHORT).show();
         markerSelectedId = null;
         markerSelected = null;
@@ -1630,31 +1646,37 @@ public class MapFragment extends Fragment {
         switchMode(MapMode.DEFAULT);
     }
 
-    public void onEventMainThread(SyncUnauthorizedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUnauthorizedEvent(SyncUnauthorizedEvent event) {
         Toast.makeText(getActivity(), R.string.couldnt_connect_retrofit, Toast.LENGTH_LONG).show();
     }
 
-    public void onEventMainThread(SyncDownloadRetrofitErrorEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncDownloadRetrofitErrorEvent(SyncDownloadRetrofitErrorEvent event) {
         Toast.makeText(getActivity(), R.string.couldnt_download_retrofit, Toast.LENGTH_SHORT).show();
         showProgressBar(false);
     }
 
-    public void onEventMainThread(SyncConflictingNodeErrorEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncConflictingNodeErrorEvent(SyncConflictingNodeErrorEvent event) {
         Toast.makeText(getActivity(), R.string.couldnt_update_node, Toast.LENGTH_LONG).show();
         removePoiMarkerInError(event.getPoiIdInError());
     }
 
-    public void onEventMainThread(SyncNewNodeErrorEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncNewNodeErrorEvent(SyncNewNodeErrorEvent event) {
         Toast.makeText(getActivity(), R.string.couldnt_create_node, Toast.LENGTH_LONG).show();
         removePoiMarkerInError(event.getPoiIdInError());
     }
 
-    public void onEventMainThread(SyncUploadRetrofitErrorEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUploadRetrofitErrorEvent(SyncUploadRetrofitErrorEvent event) {
         Toast.makeText(getActivity(), R.string.couldnt_upload_retrofit, Toast.LENGTH_SHORT).show();
         removePoiMarkerInError(event.getPoiIdInError());
     }
 
-    public void onEventMainThread(SyncUploadNoteRetrofitErrorEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUploadNoteRetrofitErrorEvent(SyncUploadNoteRetrofitErrorEvent event) {
         Toast.makeText(getActivity(), R.string.couldnt_upload_retrofit, Toast.LENGTH_SHORT).show();
         removeNoteMarkerInError(event.getNoteIdInError());
     }
@@ -1691,7 +1713,8 @@ public class MapFragment extends Fragment {
     private LocationMarker.MarkerType selectedMarkerType = LocationMarker.MarkerType.NONE;
     private int zoomVectorial;
 
-    public void onEventMainThread(EditionVectorialTilesLoadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEditionVectorialTilesLoadedEvent(EditionVectorialTilesLoadedEvent event) {
         if (event.isRefreshFromOverpass()) {
             progressBar.setVisibility(View.GONE);
         }
@@ -1762,7 +1785,8 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void onEventMainThread(TooManyRequestsEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTooManyRequestsEvent(TooManyRequestsEvent event) {
         progressBar.setVisibility(View.GONE);
     }
 
@@ -1904,7 +1928,8 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void onEventMainThread(LastUsePoiTypeLoaded event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLastUsePoiTypeLoaded(LastUsePoiTypeLoaded event) {
         poiTypePickerAdapter.addAllLastUse(event.getAutocompleteLastUsePoiTypeValues());
         poiTypeListView.setSelectionAfterHeaderView();
     }
@@ -1918,7 +1943,8 @@ public class MapFragment extends Fragment {
     @Inject
     Geocoder geocoder;
 
-    public void onEventMainThread(AddressFoundEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAddressFoundEvent(AddressFoundEvent event) {
         Timber.d("Received event AddressFound");
         if (getZoomLevel() >= zoomVectorial) {
             addressView.setVisibility(View.VISIBLE);
@@ -1939,13 +1965,15 @@ public class MapFragment extends Fragment {
         return poiTypeHidden;
     }
 
-    public void onEventMainThread(PleaseApplyPoiFilter event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseApplyPoiFilter(PleaseApplyPoiFilter event) {
         Timber.d("filtering Pois by type");
         poiTypeHidden = event.getPoiTypeIdsToHide();
         applyPoiFilter();
     }
 
-    public void onEventMainThread(PleaseApplyNoteFilterEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseApplyNoteFilterEvent(PleaseApplyNoteFilterEvent event) {
         Timber.d("filtering Notes");
         displayOpenNotes = event.isDisplayOpenNotes();
         displayClosedNotes = event.isDisplayClosedNotes();
@@ -1995,7 +2023,8 @@ public class MapFragment extends Fragment {
     private int showcaseCounter = 0;
     private boolean isTuto = false;
 
-    public void onEventMainThread(PleaseDisplayTutorialEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseDisplayTutorialEvent(PleaseDisplayTutorialEvent event) {
         switchMode(MapMode.DEFAULT);
         displayTutorial(true);
     }
@@ -2211,7 +2240,8 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void onEventMainThread(PleaseSwitchMapStyleEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseSwitchMapStyleEvent(PleaseSwitchMapStyleEvent event) {
         switchTileSource();
     }
 }

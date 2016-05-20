@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -38,6 +38,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +50,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.about.AboutActivity;
@@ -272,7 +275,8 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
-    public void onEventMainThread(PleaseInitializeArpiEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseInitializeArpiEvent(PleaseInitializeArpiEvent event) {
         // Set engine into poi provider
         poiProvider.setEngine(arpiGlFragment.getEngine());
 
@@ -304,20 +308,22 @@ public class MapActivity extends AppCompatActivity {
         arpiController.addPoiProvider(poiProvider);
         arpiController.setSkyBoxEnabled(true);
         arpiController.setUserLocationEnabled(false);
-
     }
 
-    public void onEventMainThread(PleaseShowMeArpiglEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseShowMeArpiglEvent(PleaseShowMeArpiglEvent event) {
         navigationView.getMenu().findItem(R.id.arpi_view).setVisible(true);
     }
 
-    public void onEventMainThread(MapCenterValueEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMapCenterValueEvent(MapCenterValueEvent event) {
         if (arpiController != null) {
             arpiController.setCameraPosition(event.getMapCenter().getLatitude(), event.getMapCenter().getLongitude());
         }
     }
 
-    public void onEventMainThread(PleaseInitializeDrawer event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseInitializeDrawer(PleaseInitializeDrawer event) {
         Timber.d("initializing drawer with poiType");
 
         if (filtersItemList == null) {
@@ -350,7 +356,8 @@ public class MapActivity extends AppCompatActivity {
         selectAllMenuItem.setChecked(poiTypesHidden.isEmpty());
     }
 
-    public void onEventMainThread(PleaseInitializeNoteDrawerEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseInitializeNoteDrawerEvent(PleaseInitializeNoteDrawerEvent event) {
         Menu menu = filterView.getMenu();
         if (!FlavorUtils.isPoiStorage()) {
             displayOpenNotes = event.isDisplayOpenNotes();
@@ -363,12 +370,14 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
-    public void onEventMainThread(PleaseToggleDrawer event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseToggleDrawer(PleaseToggleDrawer event) {
         Timber.d("Opening Drawer");
         drawerLayout.openDrawer(navigationView);
     }
 
-    public void onEventMainThread(PleaseChangeToolbarColor event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseChangeToolbarColor(PleaseChangeToolbarColor event) {
         if (toolbar != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 changeNotificationToolbarColor(event.isCreation());
@@ -397,7 +406,8 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
-    public void onEventMainThread(PleaseToggleDrawerLock event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseToggleDrawerLock(PleaseToggleDrawerLock event) {
         if (event.isLock()) {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         } else {
@@ -508,11 +518,13 @@ public class MapActivity extends AppCompatActivity {
         eventBus.post(new PleaseApplyNoteFilterEvent(displayOpenNotes, displayClosedNotes));
     }
 
-    public void onEventMainThread(ChangesInDB event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChangesInDB(ChangesInDB event) {
         navigationView.getMenu().findItem(R.id.save_changes).setEnabled(event.hasChanges()).setChecked(event.hasChanges());
     }
 
-    public void onEventMainThread(PleaseToggleArpiEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseToggleArpiEvent(PleaseToggleArpiEvent event) {
         toggleArpiGl();
     }
 

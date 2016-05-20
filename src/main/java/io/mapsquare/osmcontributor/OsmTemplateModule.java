@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -29,7 +29,6 @@ import dagger.Provides;
 @Module
 @Singleton
 public class OsmTemplateModule {
-
     private Application application;
 
     public OsmTemplateModule(Application application) {

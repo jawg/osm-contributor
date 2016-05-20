@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -34,7 +34,10 @@ import com.google.android.gms.analytics.Tracker;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.ConfigManager;
@@ -256,15 +259,18 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
         return sharedPreferences.getString(passwordKey, null);
     }
 
-    public void onEventMainThread(ValidLoginEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onValidLoginEvent(ValidLoginEvent event) {
         Toast.makeText(getActivity(), R.string.valid_login, Toast.LENGTH_SHORT).show();
     }
 
-    public void onEventMainThread(ErrorLoginEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onErrorLoginEvent(ErrorLoginEvent event) {
         Toast.makeText(getActivity(), R.string.error_login, Toast.LENGTH_LONG).show();
     }
 
-    public void onEventMainThread(DatabaseResetFinishedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDatabaseResetFinishedEvent(DatabaseResetFinishedEvent event) {
         Toast.makeText(getActivity(), event.isSuccess() ? R.string.reset_success : R.string.reset_failure, Toast.LENGTH_SHORT).show();
     }
 }

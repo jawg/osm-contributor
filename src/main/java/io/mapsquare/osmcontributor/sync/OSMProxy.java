@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -18,9 +18,10 @@
  */
 package io.mapsquare.osmcontributor.sync;
 
+import org.greenrobot.eventbus.EventBus;
+
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.sync.events.error.ServerNotAvailableEvent;
 import io.mapsquare.osmcontributor.sync.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.sync.events.error.TooManyRequestsEvent;

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -28,7 +28,10 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.events.InitCredentialsEvent;
@@ -78,7 +81,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        bus.registerSticky(this);
+        bus.register(this);
     }
 
     @Override
@@ -109,17 +112,20 @@ public class SplashScreenActivity extends AppCompatActivity {
                 bus.getStickyEvent(ArpiBitmapsPrecomputedEvent.class) != null;
     }
 
-    public void onEventBackgroundThread(DbInitializedEvent event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC)
+    public void onDbInitializedEvent(DbInitializedEvent event) {
         Timber.d("Database initialized");
         startMapActivityIfNeeded();
     }
 
-    public void onEventBackgroundThread(SplashScreenTimerFinishedEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onSplashScreenTimerFinishedEvent(SplashScreenTimerFinishedEvent event) {
         Timber.d("Timer finished");
         startMapActivityIfNeeded();
     }
 
-    public void onEventBackgroundThread(ArpiBitmapsPrecomputedEvent event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC)
+    public void onArpiBitmapsPrecomputedEvent(ArpiBitmapsPrecomputedEvent event) {
         Timber.d("Arpi bitmaps precomputed");
         startMapActivityIfNeeded();
     }

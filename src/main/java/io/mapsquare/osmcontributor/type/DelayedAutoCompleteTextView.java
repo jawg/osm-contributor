@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -23,7 +23,10 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.widget.AutoCompleteTextView;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.utils.EventCountDownTimer;
 import timber.log.Timber;
 
@@ -85,7 +88,8 @@ public class DelayedAutoCompleteTextView extends AutoCompleteTextView {
         bus.register(this);
     }
 
-    public void onEventMainThread(PleasePerformFiltering event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleasePerformFiltering(PleasePerformFiltering event) {
         super.performFiltering(event.getText(), event.getKeyCode());
     }
 

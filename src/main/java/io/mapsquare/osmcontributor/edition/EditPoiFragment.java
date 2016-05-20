@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -53,7 +53,10 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.ConfigManager;
@@ -340,7 +343,8 @@ public class EditPoiFragment extends Fragment {
         savedState.putParcelableArrayList(CHANGES_KEY, new ArrayList<>(tagsAdapter.getCardModelList()));
     }
 
-    public void onEventMainThread(PoiForEditionLoadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoiForEditionLoadedEvent(PoiForEditionLoadedEvent event) {
         poi = event.getPoi();
 
         //Set the poitype name in the action bar
@@ -353,11 +357,13 @@ public class EditPoiFragment extends Fragment {
         recyclerView.setAdapter(tagsAdapter);
     }
 
-    public void onEventMainThread(NewPoiTagAddedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewPoiTagAddedEvent(NewPoiTagAddedEvent event) {
         recyclerView.smoothScrollToPosition(tagsAdapter.addLast(event.getTagKey(), event.getTagValue(), Collections.<String>emptyList(), false, true));
     }
 
-    public void onEventMainThread(PoiChangesApplyEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoiChangesApplyEvent(PoiChangesApplyEvent event) {
         if (creation) {
             tracker.send(new HitBuilders.EventBuilder()
                     .setCategory(Category.Creation.getValue())

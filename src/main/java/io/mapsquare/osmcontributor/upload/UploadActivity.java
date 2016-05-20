@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -42,7 +42,10 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoisToUpdateEvent;
@@ -161,7 +164,8 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         return super.onOptionsItemSelected(item);
     }
 
-    public void onEventMainThread(PoisToUpdateLoadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoisToUpdateLoadedEvent(PoisToUpdateLoadedEvent event) {
         poisWrapper.clear();
         poisWrapper.addAll(event.getPoiUpdateWrappers());
         adapter.notifyDataSetChanged();
@@ -179,7 +183,8 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
     * SYNC EVENT
     *---------------------------------------------------------*/
 
-    public void onEventMainThread(SyncFinishUploadPoiEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncFinishUploadPoiEvent(SyncFinishUploadPoiEvent event) {
         String result;
 
         if (event.getSuccessfullyAddedPoisCount() > 0) {
@@ -199,32 +204,38 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         }
     }
 
-    public void onEventMainThread(SyncUnauthorizedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUnauthorizedEvent(SyncUnauthorizedEvent event) {
         Toast.makeText(this, R.string.couldnt_connect_retrofit, Toast.LENGTH_LONG).show();
         resultReceived();
     }
 
-    public void onEventMainThread(SyncConflictingNodeErrorEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncConflictingNodeErrorEvent(SyncConflictingNodeErrorEvent event) {
         Toast.makeText(this, R.string.couldnt_update_node, Toast.LENGTH_LONG).show();
         resultReceived();
     }
 
-    public void onEventMainThread(SyncNewNodeErrorEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncNewNodeErrorEvent(SyncNewNodeErrorEvent event) {
         Toast.makeText(this, R.string.couldnt_create_node, Toast.LENGTH_LONG).show();
         resultReceived();
     }
 
-    public void onEventMainThread(SyncUploadRetrofitErrorEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUploadRetrofitErrorEvent(SyncUploadRetrofitErrorEvent event) {
         Toast.makeText(this, R.string.couldnt_upload_retrofit, Toast.LENGTH_SHORT).show();
         resultReceived();
     }
 
-    public void onEventMainThread(SyncUploadNoteRetrofitErrorEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncUploadNoteRetrofitErrorEvent(SyncUploadNoteRetrofitErrorEvent event) {
         Toast.makeText(this, R.string.couldnt_upload_retrofit, Toast.LENGTH_SHORT).show();
         resultReceived();
     }
 
-    public void onEventMainThread(SyncConnectionLostErrorEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncConnectionLostErrorEvent(SyncConnectionLostErrorEvent event) {
         Toast.makeText(this, R.string.couldnt_save_connectivity, Toast.LENGTH_SHORT).show();
         resultReceived();
     }

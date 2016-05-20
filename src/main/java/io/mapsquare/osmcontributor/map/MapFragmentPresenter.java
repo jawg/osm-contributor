@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -29,7 +29,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.core.events.NotesLoadedEvent;
@@ -69,7 +72,7 @@ public class MapFragmentPresenter {
     }
 
     public void register() {
-        eventBus.registerSticky(this);
+        eventBus.register(this);
     }
 
     public void unregister() {
@@ -90,7 +93,8 @@ public class MapFragmentPresenter {
         return poiTypes.get(id);
     }
 
-    public void onEventMainThread(PoiTypesLoaded event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onPoiTypesLoaded(PoiTypesLoaded event) {
         Timber.d("Received event PoiTypesLoaded");
         poiTypes = event.getPoiTypes();
         setForceRefreshPoi();
@@ -102,7 +106,8 @@ public class MapFragmentPresenter {
         eventBus.removeStickyEvent(event);
     }
 
-    public void onEventMainThread(RevertFinishedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRevertFinishedEvent(RevertFinishedEvent event) {
         Timber.d("Received event RevertFinishedEvent");
         setForceRefreshPoi();
         loadPoisIfNeeded();
@@ -174,13 +179,15 @@ public class MapFragmentPresenter {
         eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromBoundingBox(enlarge(mapFragment.getViewBoundingBox(), 1.75))));
     }
 
-    public void onEventMainThread(PoisAndNotesDownloadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoisAndNotesDownloadedEvent(PoisAndNotesDownloadedEvent event) {
         mapFragment.showProgressBar(false);
         forceRefreshPoi = true;
         loadPoisIfNeeded();
     }
 
-    public void onEventMainThread(PoisLoadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoisLoadedEvent(PoisLoadedEvent event) {
         List<Poi> pois = event.getPois();
         Timber.d("Received event PoisLoaded  : " + pois.size());
         forceRefreshPoi = false;
@@ -242,7 +249,8 @@ public class MapFragmentPresenter {
         mapFragment.invalidateMap();
     }
 
-    public void onEventMainThread(NotesLoadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNotesLoadedEvent(NotesLoadedEvent event) {
         Timber.d("Showing notes : " + event.getNotes().size());
         List<Note> notes = event.getNotes();
         forceRefreshNotes = false;

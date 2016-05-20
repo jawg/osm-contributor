@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -32,7 +32,10 @@ import java.util.TreeSet;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.database.dao.PoiNodeRefDao;
@@ -105,12 +108,14 @@ public class EditVectorialWayManager {
     }
 
 
-    public void onEventAsync(PleaseLoadEditVectorialTileEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadEditVectorialTileEvent(PleaseLoadEditVectorialTileEvent event) {
         List<Poi> poisFromDB = poiManager.queryForAllWays();
         buildEditionVectorialObject(poisFromDB, event.isRefreshFromOverpass());
     }
 
-    public void onEventAsync(PleaseSelectNodeRefByID event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseSelectNodeRefByID(PleaseSelectNodeRefByID event) {
         List<PoiNodeRef> poisFromDB = new ArrayList<>();
         poisFromDB.add(poiNodeRefDao.queryForId(event.getNodeRefSelectedId()));
         bus.post(new NodeRefAroundLoadedEvent(poisFromDB));

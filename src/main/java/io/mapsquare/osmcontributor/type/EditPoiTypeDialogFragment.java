@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -29,13 +29,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.model.PoiType;
@@ -128,7 +130,8 @@ public class EditPoiTypeDialogFragment extends BaseOkCancelDialogFragment {
 
     }
 
-    public void onEventMainThread(PoiTypeSuggestedDownloadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoiTypeSuggestedDownloadedEvent(PoiTypeSuggestedDownloadedEvent event) {
         poiType = event.getPoiType();
         detailsText.setVisibility(View.VISIBLE);
         detailsText.setText(getContext().getString(R.string.tag_number, poiType.getTags().size()));

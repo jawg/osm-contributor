@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -18,7 +18,10 @@
  */
 package io.mapsquare.osmcontributor.login;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.core.events.InitCredentialsEvent;
 import io.mapsquare.osmcontributor.login.events.AttemptLoginEvent;
 import io.mapsquare.osmcontributor.login.events.ErrorLoginEvent;
@@ -37,7 +40,8 @@ public abstract class LoginManager {
         this.loginPreferences = loginPreferences;
     }
 
-    public void onEventAsync(final AttemptLoginEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onAttemptLoginEvent(final AttemptLoginEvent event) {
         if (isValidLogin(event.getLogin(), event.getPassword())) {
             bus.post(new ValidLoginEvent());
         } else {
@@ -45,7 +49,8 @@ public abstract class LoginManager {
         }
     }
 
-    public void onEventAsync(InitCredentialsEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onInitCredentialsEvent(InitCredentialsEvent event) {
         initializeCredentials();
     }
 

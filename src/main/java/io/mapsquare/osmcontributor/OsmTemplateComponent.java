@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -25,7 +25,7 @@ import com.google.gson.Gson;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
 import io.mapsquare.osmcontributor.core.ArpiInitializer;
 import io.mapsquare.osmcontributor.core.CoreModule;
 import io.mapsquare.osmcontributor.core.PoiManager;

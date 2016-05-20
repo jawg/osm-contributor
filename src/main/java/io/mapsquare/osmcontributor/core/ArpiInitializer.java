@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -24,6 +24,8 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 
 import java.io.File;
@@ -34,7 +36,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 import io.mapsquare.osmcontributor.map.BitmapHandler;
 import io.mapsquare.osmcontributor.map.events.ArpiBitmapsPrecomputedEvent;
@@ -57,7 +59,8 @@ public class ArpiInitializer {
         this.eventBus = eventBus;
     }
 
-    public void onEventBackgroundThread(PrecomputeArpiBitmapsEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPrecomputeArpiBitmapsEvent(PrecomputeArpiBitmapsEvent event) {
         precomputeArpiBitmaps();
         eventBus.postSticky(new ArpiBitmapsPrecomputedEvent());
     }

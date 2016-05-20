@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -20,10 +20,11 @@ package io.mapsquare.osmcontributor.utils;
 
 import android.os.CountDownTimer;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+
 
 /**
- * {@link android.os.CountDownTimer} who posts events (sticky or not) on the default {@link de.greenrobot.event.EventBus}
+ * {@link android.os.CountDownTimer} who posts events (sticky or not) on the default {@link org.greenrobot.eventbus.EventBus}
  * on finish.
  */
 public class EventCountDownTimer extends CountDownTimer {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -20,7 +20,7 @@ package io.mapsquare.osmcontributor.login;
 
 import android.app.Application;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.sync.dto.osm.OsmDto;
 import io.mapsquare.osmcontributor.sync.dto.osm.PermissionDto;

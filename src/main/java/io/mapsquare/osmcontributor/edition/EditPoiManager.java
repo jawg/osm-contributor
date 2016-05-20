@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -28,7 +28,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.database.dao.PoiNodeRefDao;
 import io.mapsquare.osmcontributor.core.events.PleaseCreatePoiEvent;
@@ -60,7 +63,8 @@ public class EditPoiManager {
         this.eventBus = eventBus;
     }
 
-    public void onEventAsync(PleaseApplyPoiChanges event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseApplyPoiChanges(PleaseApplyPoiChanges event) {
         Timber.d("please apply poi changes");
         Poi editPoi = poiManager.queryForId(event.getPoiChanges().getId());
 
@@ -78,7 +82,8 @@ public class EditPoiManager {
         eventBus.post(new PoiChangesApplyEvent());
     }
 
-    public void onEventAsync(PleaseApplyPoiPositionChange event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseApplyPoiPositionChange(PleaseApplyPoiPositionChange event) {
         Timber.d("Please apply poi position change");
         Poi editPoi = poiManager.queryForId(event.getPoiId());
 
@@ -91,7 +96,8 @@ public class EditPoiManager {
         poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
     }
 
-    public void onEventAsync(PleaseApplyNodeRefPositionChange event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseApplyNodeRefPositionChange(PleaseApplyNodeRefPositionChange event) {
         Timber.d("Please apply noderef position change");
         LatLng newLatLng = event.getPoiPosition();
 
@@ -106,7 +112,8 @@ public class EditPoiManager {
         poiNodeRefDao.createOrUpdate(poiNodeRef);
     }
 
-    public void onEventAsync(PleaseCreatePoiEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseCreatePoiEvent(PleaseCreatePoiEvent event) {
         Timber.d("Please create poi");
         Poi poi = event.getPoi();
         poi.setUpdated(true);
@@ -116,7 +123,8 @@ public class EditPoiManager {
         eventBus.post(new PoiChangesApplyEvent());
     }
 
-    public void onEventAsync(PleaseDeletePoiEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseDeletePoiEvent(PleaseDeletePoiEvent event) {
         Timber.d("Please delete poi");
         Poi poi = event.getPoi();
         if (poi.getId() != null) {
@@ -132,8 +140,8 @@ public class EditPoiManager {
         }
     }
 
-    public void onEventAsync(PleaseCreateNoTagPoiEvent event) {
-
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseCreateNoTagPoiEvent(PleaseCreateNoTagPoiEvent event) {
         Poi poi = new Poi();
         LatLng latLng = event.getLatLng();
 

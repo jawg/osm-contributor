@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -31,7 +31,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.core.model.Poi;
@@ -69,7 +72,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         this.eventBus = EventBus.getDefault();
-        eventBus.registerSticky(this);
+        eventBus.register(this);
     }
 
     private void loadTags(Map<String, String> poiTags, Map<String, List<String>> tagValueSuggestionsMap) {
@@ -307,6 +310,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC)
     public void onEventBackgroundThread(PleaseApplyTagChange event) {
         eventBus.removeStickyEvent(event);
         for (CardModel cardModel : cardModelList) {
@@ -317,7 +321,8 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public void onEventMainThread(PleaseApplyTagChangeView event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onPleaseApplyTagChangeView(PleaseApplyTagChangeView event) {
         eventBus.removeStickyEvent(event);
         int position = 0;
         for (CardModel cardModel : cardModelList) {

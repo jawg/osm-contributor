@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -36,7 +36,10 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.ConfigManager;
@@ -159,7 +162,8 @@ public class PoiDetailFragment extends Fragment {
         floatingButtonEditPosition.setVisibility(showing ? View.VISIBLE : View.GONE);
     }
 
-    public void onEventMainThread(PleaseChangeValuesDetailPoiFragmentEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseChangeValuesDetailPoiFragmentEvent(PleaseChangeValuesDetailPoiFragmentEvent event) {
         setPoiType(event.getPoiType());
         setPoiName(event.getPoiName());
         showMovePoi(!event.isWay());

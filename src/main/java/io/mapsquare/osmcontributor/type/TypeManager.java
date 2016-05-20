@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -22,6 +22,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.view.View.OnClickListener;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -31,7 +34,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.events.PoiTypesLoaded;
@@ -82,26 +84,30 @@ public class TypeManager {
     // ************ Events ************
     // ********************************
 
-    public void onEventBackgroundThread(InternalSavePoiTypeEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onInternalSavePoiTypeEvent(InternalSavePoiTypeEvent event) {
         PoiType poiType = event.getPoiType();
         poiManager.savePoiType(poiType);
         bus.post(new PoiTypeCreatedEvent(poiType));
     }
 
-    public void onEventBackgroundThread(InternalSavePoiTagEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onInternalSavePoiTagEvent(InternalSavePoiTagEvent event) {
         PoiTypeTag poiTypeTag = event.getPoiTypeTag();
         PoiType poiType = poiTypeTag.getPoiType();
         poiManager.savePoiType(poiType);
         bus.post(new PoiTagCreatedEvent(poiTypeTag));
     }
 
-    public void onEventBackgroundThread(InternalUpdatePoiTagsEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onInternalUpdatePoiTagsEvent(InternalUpdatePoiTagsEvent event) {
         PoiType poiType = event.getPoiType();
         poiManager.savePoiType(poiType);
         bus.post(new PoiTagsUpdatedEvent(poiType));
     }
 
-    public void onEventBackgroundThread(InternalRemovePoiTypeEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onInternalRemovePoiTypeEvent(InternalRemovePoiTypeEvent event) {
         PoiType poiType = event.getPoiType();
         poiManager.deletePoiType(poiType);
         Timber.i("Removed poi type %d", poiType.getId());
@@ -109,16 +115,18 @@ public class TypeManager {
         bus.post(new PoiTypesLoaded(poiManager.getPoiTypesSortedByName()));
     }
 
-    public void onEventBackgroundThread(InternalRemovePoiTagEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onInternalRemovePoiTagEvent(InternalRemovePoiTagEvent event) {
         PoiTypeTag poiTypeTag = event.getPoiTypeTag();
-        PoiType poiType = poiTypeTag.getPoiType(); // FIXME clone POI type to avoid border effects?
+        PoiType poiType = poiTypeTag.getPoiType(); // FIXME clone POI type to avoid border effects?;
         poiType.getTags().remove(poiTypeTag);
         poiManager.savePoiType(poiType);
         Timber.i("Removed poi tag %d", poiTypeTag.getId());
         bus.post(new PoiTagDeletedEvent(poiTypeTag));
     }
 
-    public void onEventBackgroundThread(PleaseDownloadPoiTypeSuggestionEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseDownloadPoiTypeSuggestionEvent(PleaseDownloadPoiTypeSuggestionEvent event) {
         bus.post(new PoiTypeSuggestedDownloadedEvent(getPoiTypeSuggested(event.getPoiTypeName())));
     }
 

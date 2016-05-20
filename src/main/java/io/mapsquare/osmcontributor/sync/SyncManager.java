@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -25,7 +25,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.database.dao.PoiDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiTypeDao;
@@ -85,7 +88,8 @@ public class SyncManager {
     // ************ Events ************
     // ********************************
 
-    public void onEventAsync(SyncDownloadPoisAndNotesEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onSyncDownloadPoisAndNotesEvent(SyncDownloadPoisAndNotesEvent event) {
         syncDownloadPoiBox(event.getBox());
         List<Note> notes = syncNoteManager.syncDownloadNotesInBox(event.getBox());
         if (notes != null && notes.size() > 0) {
@@ -94,11 +98,13 @@ public class SyncManager {
         bus.post(new PoisAndNotesDownloadedEvent());
     }
 
-    public void onEventAsync(SyncDownloadWayEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onSyncDownloadWayEvent(SyncDownloadWayEvent event) {
         syncWayManager.syncDownloadWay(event.getBox());
     }
 
-    public void onEventAsync(PleaseUploadPoiChangesByIdsEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseUploadPoiChangesByIdsEvent(PleaseUploadPoiChangesByIdsEvent event) {
         if (loginManager.checkCredentials()) {
             remoteAddOrUpdateOrDeletePois(event.getComment(), event.getPoiIds(), event.getPoiNodeRefIds());
         } else {
@@ -111,7 +117,8 @@ public class SyncManager {
      *
      * @param event The initialization event.
      */
-    public void onEventBackgroundThread(InitDbEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onInitDbEvent(InitDbEvent event) {
         if (FlavorUtils.isPoiStorage()) {
             Timber.d("Initializing database ...");
             syncDownloadPoiTypes();

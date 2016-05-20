@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -28,7 +28,10 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.core.database.DatabaseHelper;
 import io.mapsquare.osmcontributor.core.database.dao.CommentDao;
@@ -88,16 +91,19 @@ public class NoteManager {
     // ************ Events ************
     // ********************************
 
-    public void onEventAsync(PleaseLoadNoteEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadNoteEvent(PleaseLoadNoteEvent event) {
         bus.post(new NoteLoadedEvent(queryForId(event.getNoteId())));
     }
 
-    public void onEventAsync(PleaseLoadNotesEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadNotesEvent(PleaseLoadNotesEvent event) {
         loadNotes(event);
     }
 
 
-    public void onEventAsync(PleaseApplyNewComment event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseApplyNewComment(PleaseApplyNewComment event) {
         Timber.d("please apply new comment");
 
         if (loginManager.checkCredentials()) {
@@ -113,11 +119,13 @@ public class NoteManager {
         }
     }
 
-    public void onEventAsync(ResetDatabaseEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onResetDatabaseEvent(ResetDatabaseEvent event) {
         resetDatabase();
     }
 
-    public void onEventAsync(PleaseLoadNoteForArpiEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadNoteForArpiEvent(PleaseLoadNoteForArpiEvent event) {
         List<Note> notes = noteDao.queryForAllInRect(event.getBox());
         bus.post(new NotesArpiLoadedEvent(notes));
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -17,10 +17,6 @@
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
 package io.mapsquare.osmcontributor.crashlytics;
-
-import android.util.Log;
-
-import com.crashlytics.android.Crashlytics;
 
 import timber.log.Timber;
 
@@ -76,7 +72,6 @@ public class CrashlyticsTree implements Timber.Tree {
         if (args.length > 0) {
             message = String.format(message, args);
         }
-        Crashlytics.log(Log.ERROR, "Android", message);
     }
 
     @Override

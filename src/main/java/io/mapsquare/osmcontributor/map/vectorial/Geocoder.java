@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -22,6 +22,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,7 +32,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
 import io.mapsquare.osmcontributor.map.events.AddressFoundEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseFindAddressEvent;
 import io.mapsquare.osmcontributor.utils.EventCountDownTimer;
@@ -59,7 +61,8 @@ public class Geocoder {
         timer.start();
     }
 
-    public void onEventBackgroundThread(PleaseFindAddressEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseFindAddressEvent(PleaseFindAddressEvent event) {
         String address = reverseGeocoding(event.getLat(), event.getLng());
         if (!address.isEmpty()) {
             eventBus.post(new AddressFoundEvent(address));

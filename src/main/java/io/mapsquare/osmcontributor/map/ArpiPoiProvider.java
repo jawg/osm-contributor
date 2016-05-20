@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -23,7 +23,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.mapsquare.osmcontributor.core.events.NotesArpiLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNoteForArpiEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiForArpiEvent;
@@ -40,7 +43,6 @@ import mobi.designmyapp.arpigl.provider.PoiProvider;
 import mobi.designmyapp.arpigl.util.ProjectionUtils;
 
 public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributor.core.model.Poi>> {
-
     EventBus eventBus;
     private Engine engine;
     private ArpiPoiMapper poiMapper;
@@ -58,7 +60,7 @@ public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributo
     }
 
     public void register() {
-        eventBus.registerSticky(this);
+        eventBus.register(this);
     }
 
     public void unregister() {
@@ -80,7 +82,8 @@ public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributo
         eventBus.post(new PleaseLoadNoteForArpiEvent(b));
     }
 
-    public void onEventBackgroundThread(PleaseRemoveArpiMarkerEvent event) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC)
+    public void onPleaseRemoveArpiMarkerEvent(PleaseRemoveArpiMarkerEvent event) {
         if (engine != null) {
             Object poi = event.getPoi();
             if (poi instanceof io.mapsquare.osmcontributor.core.model.Poi) {
@@ -91,16 +94,17 @@ public class ArpiPoiProvider extends PoiProvider<List<io.mapsquare.osmcontributo
         }
     }
 
-    public void onEventBackgroundThread(PoisArpiLoadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPoisArpiLoadedEvent(PoisArpiLoadedEvent event) {
         ArrayList<Poi> toRemove = new ArrayList<>();
         postEvent(new PoiEvent(poiMapper.convert(event.getPois(), toRemove)));
         for (Poi poi : toRemove) {
             engine.removePoi(poi);
         }
-
     }
 
-    public void onEventBackgroundThread(NotesArpiLoadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onNotesArpiLoadedEvent(NotesArpiLoadedEvent event) {
         postEvent(new PoiEvent(noteMapper.convert(event.getNotes())));
     }
 

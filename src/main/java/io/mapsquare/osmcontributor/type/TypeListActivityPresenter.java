@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -22,12 +22,15 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.database.DatabaseHelper;
@@ -205,7 +208,8 @@ public class TypeListActivityPresenter {
         }
     }
 
-    public void onEventBackgroundThread(InternalPleaseLoadEvent event) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onInternalPleaseLoadEvent(InternalPleaseLoadEvent event) {
         List<PoiType> poiTypesAlphabeticallySorted = poiManager.getPoiTypesSortedByName();
         for (PoiType type : poiTypesAlphabeticallySorted) {
             type.setTags(DatabaseHelper.loadLazyForeignCollection(type.getTags()));
@@ -246,7 +250,8 @@ public class TypeListActivityPresenter {
         }
     }
 
-    public void onEventMainThread(InternalTypesLoadedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onInternalTypesLoadedEvent(InternalTypesLoadedEvent event) {
         List<PoiType> currentPoiTypes = event.getPoiTypes();
         PoiType currentPoiType = event.getCurrentPoiType();
 
@@ -261,7 +266,8 @@ public class TypeListActivityPresenter {
 
     /* ========== POI type/tag edition ========== */
 
-    public void onEventMainThread(PleaseSavePoiTag event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseSavePoiTag(PleaseSavePoiTag event) {
         PoiTypeTag poiTypeTag = null;
         PoiType poiType = currentPoiType;
         if (poiType == null) {
@@ -295,26 +301,31 @@ public class TypeListActivityPresenter {
         typeManager.savePoiTag(poiTypeTag);
     }
 
-    public void onEventMainThread(PoiTypeCreatedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoiTypeCreatedEvent(PoiTypeCreatedEvent event) {
         typeManager.finishLastDeletionJob();
         typeListActivity.addNewPoiType(event.getPoiType());
     }
 
-    public void onEventMainThread(PoiTagCreatedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoiTagCreatedEvent(PoiTagCreatedEvent event) {
         typeManager.finishLastDeletionJob();
         typeListActivity.addNewPoiTag(event.getPoiTypeTag());
     }
 
-    public void onEventMainThread(PoiTagsUpdatedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoiTagsUpdatedEvent(PoiTagsUpdatedEvent event) {
         typeManager.finishLastDeletionJob();
         typeListActivity.refreshPoiTag(event.getPoiType());
     }
 
-    public void onEventMainThread(PoiTypeDeletedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoiTypeDeletedEvent(PoiTypeDeletedEvent event) {
         typeListActivity.notifyPoiTypeDefinitivelyRemoved(event.getPoiType());
     }
 
-    public void onEventMainThread(PoiTagDeletedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoiTagDeletedEvent(PoiTagDeletedEvent event) {
         typeListActivity.notifyPoiTagDefinitivelyRemoved(event.getPoiTypeTag());
     }
 }

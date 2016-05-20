@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 eBusiness Information
+ * Copyright (C) 2016 eBusiness Information
  *
  * This file is part of OSM Contributor.
  *
@@ -24,6 +24,7 @@ package io.mapsquare.osmcontributor;
 public class TestApplication extends OsmTemplateApplication {
     @Override
     public void onCreate() {
+        super.onCreate();
         // nothing here... we don't want all the things done here  to be active in tests (leak canary for example)
     }
 }
