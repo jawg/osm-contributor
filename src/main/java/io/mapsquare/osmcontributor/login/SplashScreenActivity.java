@@ -61,8 +61,10 @@ public class SplashScreenActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
+        ButterKnife.setDebug(true);
+
         ButterKnife.bind(this);
+        ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
 
         mapsquare.setText(Html.fromHtml(getString(R.string.mapsquare)));
         editBy.setText(Html.fromHtml(getString(R.string.splash_screen_edited_by)));
@@ -75,6 +77,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         bus.post(new InitCredentialsEvent());
         bus.post(new InitDbEvent());
         bus.post(new PrecomputeArpiBitmapsEvent());
+
     }
 
     @Override

@@ -35,7 +35,6 @@ import io.mapsquare.osmcontributor.crashlytics.CrashlyticsTree;
 import timber.log.Timber;
 
 public class OsmTemplateApplication extends Application {
-
     private static final String ANALYTICS_PROPERTY_ID = "UA-63422911-1";
 
     public enum TrackerName {

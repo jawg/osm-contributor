@@ -41,7 +41,7 @@ buildscript {
         if(!project.hasProperty('foss')) {
             classpath "io.fabric.tools:gradle:1.+"
         }
-        classpath "com.neenbedankt.gradle.plugins:android-apt:1.4"
+        classpath "com.neenbedankt.gradle.plugins:android-apt:1.8"
 
         // this plugin is provided as a jar as atm there is no relase with android support
         classpath "nl.javadude.gradle.plugins:license-gradle-plugin:0.11.1-SNAPSHOT"
@@ -149,6 +149,8 @@ dependencies {
     provided "org.glassfish:javax.annotation:$javaxAnnotationVersion"
     // core
     compile "com.jakewharton:butterknife:$butterknifeVersion"
+    apt "com.jakewharton:butterknife-compiler:$butterknifeVersion"
+
     compile "com.jakewharton.timber:timber:$timberVersion"
     compile "org.greenrobot:eventbus:$eventbusVersion"
     compile "com.j256.ormlite:ormlite-android:$ormliteVersion"
