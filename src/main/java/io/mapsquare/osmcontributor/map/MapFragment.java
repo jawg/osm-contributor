@@ -35,6 +35,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -490,6 +491,10 @@ public class MapFragment extends Fragment {
         maxPoiType = (int) ((dpHeight - toolbarSize - 160) / 80) - 1;
     }
 
+    /**
+     * Click on marker
+     * @param marker
+     */
     void onPoiMarkerClick(LocationMarker marker) {
         unselectIcon();
         markerSelected = (marker);
@@ -886,7 +891,6 @@ public class MapFragment extends Fragment {
     }
 
     private void switchMode(MapMode mode) {
-
         mapMode = mode;
         Bitmap bitmap;
 
@@ -915,7 +919,6 @@ public class MapFragment extends Fragment {
                 .build());
 
         switch (mode) {
-
             case DETAIL_POI:
             case DETAIL_NOTE:
                 break;
@@ -1323,10 +1326,9 @@ public class MapFragment extends Fragment {
             }
         } else {
             if (floatingBtnWrapper.getVisibility() == View.VISIBLE) {
-                Animation bottomUp = AnimationUtils.loadAnimation(getActivity(),
+                Animation upDown = AnimationUtils.loadAnimation(getActivity(),
                         R.anim.anim_down_detail);
-
-                floatingBtnWrapper.startAnimation(bottomUp);
+                floatingBtnWrapper.startAnimation(upDown);
                 floatingBtnWrapper.setVisibility(View.GONE);
             }
         }
@@ -1493,7 +1495,6 @@ public class MapFragment extends Fragment {
     *---------------------------------------------------------*/
     private void displayPoiDetailBanner(boolean display) {
         if (display) {
-
             if (markerSelected != null) {
                 eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(markerSelected.getPoi().getType().getName(), markerSelected.getPoi().getName(), markerSelected.getPoi().getWay()));
             }
@@ -1510,10 +1511,9 @@ public class MapFragment extends Fragment {
 
 
             if (poiDetailWrapper.getVisibility() == View.VISIBLE) {
-                Animation bottomUp = AnimationUtils.loadAnimation(getActivity(),
+                Animation upDown = AnimationUtils.loadAnimation(getActivity(),
                         R.anim.anim_down_detail);
-
-                poiDetailWrapper.startAnimation(bottomUp);
+                poiDetailWrapper.startAnimation(upDown);
                 poiDetailWrapper.setVisibility(View.GONE);
             }
         }

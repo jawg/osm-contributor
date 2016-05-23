@@ -48,9 +48,11 @@ import io.mapsquare.osmcontributor.map.events.PleaseChangeValuesDetailPoiFragmen
 import io.mapsquare.osmcontributor.map.events.PleaseDeletePoiFromMapEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseOpenEditionEvent;
 
-
+/**
+ * Fragment to display when the user click on marker
+ * and want to see details.
+ */
 public class PoiDetailFragment extends Fragment {
-
     @Inject
     EventBus eventBus;
 

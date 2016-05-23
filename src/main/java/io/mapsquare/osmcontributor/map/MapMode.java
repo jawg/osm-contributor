@@ -59,7 +59,6 @@ public enum MapMode {
 
     POI_POSITION_EDITION(new MapModeProperties("Poi Position edition mode")
             .title(R.string.edit_poi_position)
-            .showDownloadArea()
             .showCreationPin()
             .showConfirmBtn()
             .lockDrawer()
