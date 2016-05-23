@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.leakcanary.LeakCanary;
@@ -28,6 +29,8 @@ import com.squareup.leakcanary.LeakCanary;
 import java.util.HashMap;
 
 import org.greenrobot.eventbus.EventBus;
+import io.fabric.sdk.android.Fabric;
+import io.mapsquare.osmcontributor.crashlytics.CrashContextWrapper;
 import io.mapsquare.osmcontributor.crashlytics.CrashlyticsTree;
 import timber.log.Timber;
 
@@ -52,6 +55,7 @@ public class OsmTemplateApplication extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         } else {
+            Fabric.with(new CrashContextWrapper(this, getPackageName()), new Crashlytics());
             Timber.plant(new CrashlyticsTree());
         }
 

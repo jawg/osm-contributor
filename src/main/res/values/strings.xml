@@ -87,7 +87,7 @@
     <string name="splash_screen_message">Initialization in progress&#8230;</string>
     <string name="splash_screen_edited_by" translatable="false"><![CDATA[Edited by <font color=\"#1565C0\">eBusiness Information</font>]]></string>
     <string name="splash_screen_powered_by" translatable="false"><![CDATA[Powered by <font color=\"#1565C0\">DesignMyApp</font>]]></string>
-    <string name="mapsquare" translatable="false"><![CDATA[By map<font color=\"#2099fd\">square</font>]]></string>
+    <string name="mapsquare" translatable="false"><![CDATA[By jawg<font color=\"#2099fd\">maps</font>]]></string>
 
     <!-- Preferences -->
     <string name="title_activity_my_preferences">Parameters</string>
@@ -187,7 +187,7 @@
     <string name="about_title">About</string>
     <string name="template_name" translatable="false">OSM Contributor</string>
     <string name="contribute_to" translatable="false"><![CDATA[All data contributed to <font color=\"#1565C0\">OpenStreetMap</font>]]></string>
-    <string name="mapsquare_url" translatable="false">http://mapsquare.io</string>
+    <string name="mapsquare_url" translatable="false">http://jawg.io</string>
     <string name="osm_dma_url" translatable="false">https://osm.designmyapp.mobi/</string>
     <string name="osm_url" translatable="false">https://wiki.openstreetmap.org/wiki/Main_Page</string>
     <string name="ebiz_url" translatable="false">http://www.ebusinessinformation.fr/</string>
