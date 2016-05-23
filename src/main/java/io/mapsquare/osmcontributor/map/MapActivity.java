@@ -49,7 +49,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.about.AboutActivity;
@@ -89,19 +89,19 @@ public class MapActivity extends AppCompatActivity {
     @Inject
     EventBus eventBus;
 
-    @InjectView(R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
 
-    @InjectView(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @InjectView(R.id.navigation)
+    @BindView(R.id.navigation)
     NavigationView navigationView;
 
-    @InjectView(R.id.filter)
+    @BindView(R.id.filter)
     NavigationView2 filterView;
 
-    @InjectView(R.id.AR_screenshot)
+    @BindView(R.id.AR_screenshot)
     ImageView arpiScreenshot;
 
     @Inject
@@ -139,7 +139,7 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_map);
 
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 

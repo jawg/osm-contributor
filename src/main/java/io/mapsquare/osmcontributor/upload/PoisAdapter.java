@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.utils.helper.ItemTouchHelperViewHolder;
 import io.mapsquare.osmcontributor.utils.helper.SwipeItemTouchHelperAdapter;
@@ -213,33 +213,33 @@ public class PoisAdapter extends RecyclerView.Adapter<PoisAdapter.PoiViewHolder>
     }
 
     public static class PoiViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
-        @InjectView(R.id.poi_action)
+        @BindView(R.id.poi_action)
         TextView poiAction;
 
-        @InjectView(R.id.poi_name)
+        @BindView(R.id.poi_name)
         TextView poiName;
 
-        @InjectView(R.id.poi_type)
+        @BindView(R.id.poi_type)
         TextView poiType;
 
-        @InjectView(R.id.changes_details)
+        @BindView(R.id.changes_details)
         LinearLayout detailsWrapper;
 
-        @InjectView(R.id.header)
+        @BindView(R.id.header)
         RelativeLayout header;
 
-        @InjectView(R.id.expend_button)
+        @BindView(R.id.expend_button)
         ImageButton expandBtn;
 
-        @InjectView(R.id.revert)
+        @BindView(R.id.revert)
         Button revertBtn;
 
-        @InjectView(R.id.checkbox)
+        @BindView(R.id.checkbox)
         CheckBox checkbox;
 
         public PoiViewHolder(View view) {
             super(view);
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
 
         public TextView getPoiAction() {
@@ -286,10 +286,10 @@ public class PoisAdapter extends RecyclerView.Adapter<PoisAdapter.PoiViewHolder>
     }
 
     static class TagChangeViewHolder {
-        @InjectView(R.id.old_tag)
+        @BindView(R.id.old_tag)
         TextView oldTag;
 
-        @InjectView(R.id.new_tag)
+        @BindView(R.id.new_tag)
         TextView newTag;
 
 
@@ -310,7 +310,7 @@ public class PoisAdapter extends RecyclerView.Adapter<PoisAdapter.PoiViewHolder>
         }
 
         public TagChangeViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 

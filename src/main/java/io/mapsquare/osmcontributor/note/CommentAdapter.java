@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.model.Comment;
 
@@ -115,16 +115,16 @@ public class CommentAdapter extends BaseAdapter {
     }
 
     static class ViewHolder {
-        @InjectView(R.id.comment_content_text)
+        @BindView(R.id.comment_content_text)
         TextView commentContentTextView;
-        @InjectView(R.id.date)
+        @BindView(R.id.date)
         TextView dateTextView;
-        @InjectView(R.id.action)
+        @BindView(R.id.action)
         TextView actionTextView;
 
 
         public ViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
 
         public TextView getCommentContentTextView() {

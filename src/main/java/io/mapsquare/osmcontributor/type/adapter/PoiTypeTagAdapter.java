@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
 import io.mapsquare.osmcontributor.utils.helper.DragSwipeItemTouchHelperAdapter;
@@ -170,20 +170,20 @@ public class PoiTypeTagAdapter extends RecyclerView.Adapter<PoiTypeTagAdapter.Po
 
     public class PoiTypeTagViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder, View.OnClickListener, View.OnLongClickListener {
 
-        @InjectView(R.id.poi_tag_key)
+        @BindView(R.id.poi_tag_key)
         TextView key;
-        @InjectView(R.id.poi_tag_value)
+        @BindView(R.id.poi_tag_value)
         TextView value;
-        @InjectView(R.id.poi_tag_ordinal)
+        @BindView(R.id.poi_tag_ordinal)
         TextView ordinal;
-        @InjectView(R.id.poi_tag_mandatory)
+        @BindView(R.id.poi_tag_mandatory)
         View mandatory;
-        @InjectView(R.id.handle)
+        @BindView(R.id.handle)
         ImageView handle;
 
         public PoiTypeTagViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }

@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 
@@ -51,16 +51,16 @@ public class PickValueActivity extends AppCompatActivity {
     private SearchableAdapter adapter;
 
 
-    @InjectView(R.id.title)
+    @BindView(R.id.title)
     TextView title;
 
-    @InjectView(R.id.value)
+    @BindView(R.id.value)
     EditText editTextValue;
 
-    @InjectView(R.id.autocomplete_list)
+    @BindView(R.id.autocomplete_list)
     ListView autocompleteListView;
 
-    @InjectView(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
     @Override
@@ -68,7 +68,7 @@ public class PickValueActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_value);
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
 

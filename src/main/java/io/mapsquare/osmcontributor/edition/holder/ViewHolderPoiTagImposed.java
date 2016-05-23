@@ -23,23 +23,23 @@ import android.view.View;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import io.mapsquare.osmcontributor.R;
 
 public class ViewHolderPoiTagImposed extends RecyclerView.ViewHolder {
     public View poiTagLayout;
 
-    @InjectView(R.id.poi_key)
+    @BindView(R.id.poi_key)
     TextView textViewKey;
 
-    @InjectView(R.id.poi_value)
+    @BindView(R.id.poi_value)
     TextView textViewValue;
 
 
     public ViewHolderPoiTagImposed(View v) {
         super(v);
         poiTagLayout = v;
-        ButterKnife.inject(this, v);
+        ButterKnife.bind(this, v);
     }
 
     public View getPoiTagLayout() {

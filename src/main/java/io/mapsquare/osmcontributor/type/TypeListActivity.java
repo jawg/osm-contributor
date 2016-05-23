@@ -43,8 +43,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
@@ -61,24 +61,24 @@ import timber.log.Timber;
 
 public class TypeListActivity extends AppCompatActivity implements PoiTypeTagAdapter.OnStartDragListener {
 
-    @InjectView(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @InjectView(R.id.progress_content_switcher)
+    @BindView(R.id.progress_content_switcher)
     ViewSwitcher viewSwitcher;
 
-    @InjectView(R.id.content)
+    @BindView(R.id.content)
     RelativeLayout content;
 
-    @InjectView(R.id.progressbar)
+    @BindView(R.id.progressbar)
     ProgressBar progressBar;
 
-    @InjectView(R.id.list_switcher)
+    @BindView(R.id.list_switcher)
     HorizontalViewSwitcher listSwitcher;
 
-    @InjectView(R.id.list_poi_types)
+    @BindView(R.id.list_poi_types)
     RecyclerView recyclerTypes;
 
-    @InjectView(R.id.list_poi_tags)
+    @BindView(R.id.list_poi_tags)
     RecyclerView recyclerTags;
 
     @Inject
@@ -106,7 +106,7 @@ public class TypeListActivity extends AppCompatActivity implements PoiTypeTagAda
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_type_list);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
 
         setSupportActionBar(toolbar);

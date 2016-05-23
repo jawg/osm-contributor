@@ -29,6 +29,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -88,12 +89,13 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import butterknife.OnClick;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import butterknife.Unbinder;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.ConfigManager;
@@ -197,22 +199,24 @@ public class MapFragment extends Fragment {
     private ButteryProgressBar progressBar;
     MapFragmentPresenter presenter;
 
+    private Unbinder unbinder;
+
     @Inject
     BitmapHandler bitmapHandler;
 
-    @InjectView(R.id.mapview)
+    @BindView(R.id.mapview)
     MapView mapView;
 
     @Inject
     EventBus eventBus;
 
-    @InjectView(R.id.poi_detail_wrapper)
+    @BindView(R.id.poi_detail_wrapper)
     RelativeLayout poiDetailWrapper;
 
-    @InjectView(R.id.progressbar)
+    @BindView(R.id.progressbar)
     RelativeLayout progressbarWrapper;
 
-    @InjectView(R.id.note_detail_wrapper)
+    @BindView(R.id.note_detail_wrapper)
     RelativeLayout noteDetailWrapper;
 
     @Inject
@@ -223,7 +227,7 @@ public class MapFragment extends Fragment {
 
     //olduv
     //For testing purpose
-    @InjectView(R.id.zoom_level)
+    @BindView(R.id.zoom_level)
     TextView zoomLevelText;
 
     @Override
@@ -248,7 +252,7 @@ public class MapFragment extends Fragment {
         markersNodeRef = new HashMap<>();
 
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
-        ButterKnife.inject(this, rootView);
+        unbinder = ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
 
         zoomVectorial = configManager.getZoomVectorial();
@@ -601,7 +605,7 @@ public class MapFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         progressBar.removeListeners();
-        ButterKnife.reset(this);
+        unbinder.unbind();
     }
 
     @Override
@@ -1137,7 +1141,7 @@ public class MapFragment extends Fragment {
     * WAY EDITION
     *---------------------------------------------------------*/
 
-    @InjectView(R.id.edit_way_elemnt_position)
+    @BindView(R.id.edit_way_elemnt_position)
     FloatingActionButton editNodeRefPosition;
 
 
@@ -1214,16 +1218,16 @@ public class MapFragment extends Fragment {
     * POI CREATION
     *---------------------------------------------------------*/
 
-    @InjectView(R.id.hand)
+    @BindView(R.id.hand)
     ImageView handImageView;
 
-    @InjectView(R.id.add_poi_few_values)
+    @BindView(R.id.add_poi_few_values)
     FloatingActionsMenu floatingMenuAddFewValues;
 
-    @InjectView(R.id.floating_btn_wrapper)
+    @BindView(R.id.floating_btn_wrapper)
     RelativeLayout floatingBtnWrapper;
 
-    @InjectView(R.id.pin)
+    @BindView(R.id.pin)
     ImageButton creationPin;
 
     ValueAnimator valueAnimator;
@@ -1372,8 +1376,8 @@ public class MapFragment extends Fragment {
             for (final PoiType poiType : presenter.getPoiTypes()) {
                 floatingActionButton = new FloatingActionButton(getActivity());
                 floatingActionButton.setTitle(poiType.getName());
-                floatingActionButton.setColorPressed(getResources().getColor(R.color.material_blue_grey_800));
-                floatingActionButton.setColorNormal(getResources().getColor(R.color.material_blue_500));
+                floatingActionButton.setColorPressed(ContextCompat.getColor(getActivity(), R.color.material_blue_grey_800));
+                floatingActionButton.setColorNormal(ContextCompat.getColor(getActivity(), R.color.material_blue_500));
                 floatingActionButton.setSize(FloatingActionButton.SIZE_MINI);
                 floatingActionButton.setIconDrawable(bitmapHandler.getIconWhite(poiType));
                 floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -1548,7 +1552,7 @@ public class MapFragment extends Fragment {
     /*-----------------------------------------------------------
     * MAP UTILS
     *---------------------------------------------------------*/
-    @InjectView(R.id.localisation)
+    @BindView(R.id.localisation)
     FloatingActionButton floatingButtonLocalisation;
 
     @OnClick(R.id.localisation)
@@ -1703,7 +1707,7 @@ public class MapFragment extends Fragment {
     * VECTORIAL
     *---------------------------------------------------------*/
 
-    @InjectView(R.id.level_bar)
+    @BindView(R.id.level_bar)
     LevelBar levelBar;
 
     private VectorialOverlay vectorialOverlay;
@@ -1795,19 +1799,19 @@ public class MapFragment extends Fragment {
     * PoiType picker
     *---------------------------------------------------------*/
 
-    @InjectView(R.id.poi_type_value)
+    @BindView(R.id.poi_type_value)
     EditText poiTypeEditText;
 
-    @InjectView(R.id.poi_type)
+    @BindView(R.id.poi_type)
     TextView poiTypeTextView;
 
-    @InjectView(R.id.edit_poi_type)
+    @BindView(R.id.edit_poi_type)
     ImageButton editPoiTypeBtn;
 
-    @InjectView(R.id.autocomplete_list)
+    @BindView(R.id.autocomplete_list)
     ListView poiTypeListView;
 
-    @InjectView(R.id.poi_type_value_wrapper)
+    @BindView(R.id.poi_type_value_wrapper)
     RelativeLayout poiTypeHeaderWrapper;
 
     @OnClick(R.id.edit_poi_type)
@@ -1937,7 +1941,7 @@ public class MapFragment extends Fragment {
     /*-----------------------------------------------------------
     * ADDRESS
     *---------------------------------------------------------*/
-    @InjectView(R.id.addressView)
+    @BindView(R.id.addressView)
     TextView addressView;
 
     @Inject

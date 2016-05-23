@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import org.greenrobot.eventbus.EventBus;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.model.PoiType;
@@ -141,13 +141,13 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
     }
 
     class ViewHolder {
-        @InjectView(R.id.name_text)
+        @BindView(R.id.name_text)
         TextView nameView;
 
-        @InjectView(R.id.icon)
+        @BindView(R.id.icon)
         ImageView icon;
 
-        @InjectView(R.id.info)
+        @BindView(R.id.info)
         ImageView info;
 
         public TextView getNameView() {
@@ -163,7 +163,7 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
         }
 
         public ViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
 
         public void onBind(final PoiType poiType) {
@@ -181,7 +181,7 @@ public class PoiTypePickerAdapter extends BaseAdapter implements Filterable {
 
     class ExpertViewHolder extends ViewHolder {
 
-        @InjectView((R.id.technical_name_text))
+        @BindView((R.id.technical_name_text))
         TextView technicalNameView;
 
         public TextView getTechnicalNameView() {

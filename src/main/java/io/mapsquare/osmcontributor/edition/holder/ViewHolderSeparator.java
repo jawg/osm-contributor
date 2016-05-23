@@ -24,7 +24,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import io.mapsquare.osmcontributor.R;
 
 public class ViewHolderSeparator extends RecyclerView.ViewHolder {
@@ -33,12 +33,12 @@ public class ViewHolderSeparator extends RecyclerView.ViewHolder {
         REQUIRED
     }
 
-    @InjectView(R.id.text_view)
+    @BindView(R.id.text_view)
     TextView textViewValue;
 
     public ViewHolderSeparator(View view, SeparatorType type) {
         super(view);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
 
         if (type == SeparatorType.OPTIONAL) {
             textViewValue.setText(view.getContext().getString(R.string.optional));

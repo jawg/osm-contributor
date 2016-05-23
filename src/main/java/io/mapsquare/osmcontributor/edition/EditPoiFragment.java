@@ -51,12 +51,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import butterknife.OnClick;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import butterknife.Unbinder;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.ConfigManager;
@@ -84,6 +85,8 @@ public class EditPoiFragment extends Fragment {
     // ANALYTICS ATTRIBUTES
     private Tracker tracker;
 
+    private Unbinder unbinder;
+
     private enum Category {
         Creation("Creation POI"),
         Edition("Edition POI");
@@ -108,10 +111,10 @@ public class EditPoiFragment extends Fragment {
     @Inject
     ConfigManager configManager;
 
-    @InjectView(R.id.fab_add)
+    @BindView(R.id.fab_add)
     FloatingActionButton fabAdd;
 
-    @InjectView(R.id.recycler_view)
+    @BindView(R.id.recycler_view)
     android.support.v7.widget.RecyclerView recyclerView;
 
     @OnClick(R.id.fab_add)
@@ -135,7 +138,7 @@ public class EditPoiFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_edit_poi, container, false);
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
-        ButterKnife.inject(this, rootView);
+        unbinder = ButterKnife.bind(this, rootView);
 
         Bundle args = getArguments();
         creation = args.getBoolean(EditPoiActivity.CREATION_MODE);
@@ -206,7 +209,7 @@ public class EditPoiFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.reset(this);
+        unbinder.unbind();
     }
 
     @Override

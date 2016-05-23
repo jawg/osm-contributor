@@ -24,25 +24,25 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import io.mapsquare.osmcontributor.R;
 
 public class ViewHolderPoiTagManyValues extends RecyclerView.ViewHolder {
     public View poiTagLayout;
 
-    @InjectView(R.id.poi_key)
+    @BindView(R.id.poi_key)
     TextView textViewKey;
 
-    @InjectView(R.id.poi_value)
+    @BindView(R.id.poi_value)
     TextView textViewValue;
 
-    @InjectView(R.id.edit_btn)
+    @BindView(R.id.edit_btn)
     ImageButton editButton;
 
     public ViewHolderPoiTagManyValues(View v) {
         super(v);
         poiTagLayout = v;
-        ButterKnife.inject(this, v);
+        ButterKnife.bind(this, v);
     }
 
     public View getPoiTagLayout() {

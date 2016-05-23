@@ -29,7 +29,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import butterknife.OnClick;
 import de.psdev.licensesdialog.LicensesDialog;
 import io.mapsquare.osmcontributor.BuildConfig;
@@ -37,29 +37,29 @@ import io.mapsquare.osmcontributor.R;
 
 public class AboutActivity extends AppCompatActivity {
 
-    @InjectView(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @InjectView(R.id.edited_by)
+    @BindView(R.id.edited_by)
     TextView editBy;
 
-    @InjectView(R.id.powered_by)
+    @BindView(R.id.powered_by)
     TextView poweredBy;
 
-    @InjectView(R.id.contribute_to)
+    @BindView(R.id.contribute_to)
     TextView contributeTo;
 
-    @InjectView(R.id.mapsquare)
+    @BindView(R.id.mapsquare)
     TextView mapsquare;
 
-    @InjectView(R.id.version_text)
+    @BindView(R.id.version_text)
     TextView version;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
 

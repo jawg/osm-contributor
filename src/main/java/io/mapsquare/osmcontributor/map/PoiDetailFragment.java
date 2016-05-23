@@ -34,7 +34,7 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import butterknife.OnClick;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -57,19 +57,19 @@ public class PoiDetailFragment extends Fragment {
     @Inject
     ConfigManager configManager;
 
-    @InjectView(R.id.poi_name)
+    @BindView(R.id.poi_name)
     TextView editTextPoiName;
 
-    @InjectView(R.id.poi_type_name)
+    @BindView(R.id.poi_type_name)
     TextView editTextPoiTypeName;
 
-    @InjectView(R.id.floating_action_menu)
+    @BindView(R.id.floating_action_menu)
     FloatingActionsMenu floatingActionMenu;
 
-    @InjectView(R.id.edit_poi_detail)
+    @BindView(R.id.edit_poi_detail)
     FloatingActionButton floatingButtonEditPoi;
 
-    @InjectView(R.id.edit_poi_position)
+    @BindView(R.id.edit_poi_position)
     FloatingActionButton floatingButtonEditPosition;
 
     public PoiDetailFragment() {
@@ -80,7 +80,7 @@ public class PoiDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_poi_detail, container, false);
 
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
 
         if (!configManager.hasPoiModification()) {
             floatingButtonEditPoi.setIcon(R.drawable.eye);

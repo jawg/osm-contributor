@@ -36,7 +36,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import io.mapsquare.osmcontributor.R;
 
 public class SearchableAdapter extends BaseAdapter implements Filterable {
@@ -102,7 +102,7 @@ public class SearchableAdapter extends BaseAdapter implements Filterable {
     }
 
     static class ViewHolder {
-        @InjectView(R.id.text_view)
+        @BindView(R.id.text_view)
         TextView textView;
 
         public TextView getTextView() {
@@ -110,7 +110,7 @@ public class SearchableAdapter extends BaseAdapter implements Filterable {
         }
 
         public ViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 

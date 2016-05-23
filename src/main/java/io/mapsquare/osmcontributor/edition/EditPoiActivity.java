@@ -29,7 +29,7 @@ import android.view.Menu;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import org.greenrobot.eventbus.EventBus;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
@@ -51,7 +51,7 @@ public class EditPoiActivity extends AppCompatActivity {
     @Inject
     EventBus eventBus;
 
-    @InjectView(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
     @Override
@@ -59,7 +59,7 @@ public class EditPoiActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_poi);
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
 

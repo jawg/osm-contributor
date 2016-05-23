@@ -44,7 +44,6 @@ import io.mapsquare.osmcontributor.R;
  * explicitly. (It will use the given height as the bar's shadow height.)
  */
 public class ButteryProgressBar extends View {
-
     private final GradientDrawable mShadow;
     private final ValueAnimator mAnimator;
 

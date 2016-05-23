@@ -41,7 +41,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -68,19 +68,19 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
     private PoisAdapter adapter;
     private ProgressDialog ringProgressDialog;
 
-    @InjectView(R.id.comment_edit_text)
+    @BindView(R.id.comment_edit_text)
     EditText editTextComment;
 
-    @InjectView(R.id.no_value_text)
+    @BindView(R.id.no_value_text)
     TextView noValues;
 
-    @InjectView(R.id.poi_list)
+    @BindView(R.id.poi_list)
     RecyclerView poisListView;
 
-    @InjectView(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @InjectView(R.id.coordinatorLayout)
+    @BindView(R.id.coordinatorLayout)
     CoordinatorLayout coordinatorLayout;
 
     @Inject
@@ -91,7 +91,7 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
 

@@ -44,7 +44,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import butterknife.OnClick;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -80,19 +80,19 @@ public class NoteActivity extends AppCompatActivity {
     @Inject
     EventBus eventBus;
 
-    @InjectView(R.id.comments)
+    @BindView(R.id.comments)
     ListView commentsListView;
 
-    @InjectView(R.id.send_comment)
+    @BindView(R.id.send_comment)
     Button addCommentButton;
 
-    @InjectView(R.id.comment_edit_text)
+    @BindView(R.id.comment_edit_text)
     EditText newCommentEditText;
 
-    @InjectView(R.id.action_spinner)
+    @BindView(R.id.action_spinner)
     Spinner newCommentActionSpinner;
 
-    @InjectView(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
     // ANALYTICS ATTRIBUTES
@@ -130,7 +130,7 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         tracker = ((OsmTemplateApplication) getApplication()).getTracker(OsmTemplateApplication.TrackerName.APP_TRACKER);
         tracker.setScreenName("NoteActivity");

@@ -218,7 +218,6 @@
             application:fab_addButtonPlusIconColor="@color/white"
             application:fab_labelStyle="@style/menu_labels_style"
             application:fab_labelsPosition="left"
-            application:fab_menu_type="plus"
             application:fab_plusIconColor="@color/white"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton

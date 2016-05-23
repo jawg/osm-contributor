@@ -34,7 +34,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import butterknife.OnClick;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -55,13 +55,13 @@ public class NoteDetailFragment extends Fragment {
     @Inject
     EventBus eventBus;
 
-    @InjectView(R.id.status)
+    @BindView(R.id.status)
     TextView textViewNoteStatus;
 
-    @InjectView(R.id.comment_text)
+    @BindView(R.id.comment_text)
     TextView textViewCommentText;
 
-    @InjectView(R.id.edit_note_detail)
+    @BindView(R.id.edit_note_detail)
     FloatingActionButton floatingActionButtonEditNote;
 
     @OnClick(R.id.edit_note_detail)
@@ -82,7 +82,7 @@ public class NoteDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_note_detail, container, false);
 
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
 
         return rootView;
     }

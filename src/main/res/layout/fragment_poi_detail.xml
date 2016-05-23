@@ -84,7 +84,6 @@
         fab:fab_addButtonPlusIconColor="@color/white"
         fab:fab_labelStyle="@style/menu_labels_style"
         fab:fab_labelsPosition="left"
-        fab:fab_menu_type="burger"
         fab:fab_plusIconColor="@color/white">
 
         <com.getbase.floatingactionbutton.FloatingActionButton

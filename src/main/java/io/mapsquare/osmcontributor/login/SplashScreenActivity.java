@@ -27,7 +27,7 @@ import android.widget.TextView;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.BindView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -45,17 +45,16 @@ import io.mapsquare.osmcontributor.utils.EventCountDownTimer;
 import timber.log.Timber;
 
 public class SplashScreenActivity extends AppCompatActivity {
-
     @Inject
     EventBus bus;
 
-    @InjectView(R.id.edited_by)
+    @BindView(R.id.edited_by)
     TextView editBy;
 
-    @InjectView(R.id.powered_by)
+    @BindView(R.id.powered_by)
     TextView poweredBy;
 
-    @InjectView(R.id.mapsquare)
+    @BindView(R.id.mapsquare)
     TextView mapsquare;
 
     @Override
@@ -63,7 +62,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         mapsquare.setText(Html.fromHtml(getString(R.string.mapsquare)));
         editBy.setText(Html.fromHtml(getString(R.string.splash_screen_edited_by)));
