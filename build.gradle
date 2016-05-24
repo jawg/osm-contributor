@@ -14,7 +14,7 @@ ext {
     timberVersion = '2.7.1'
     ormliteVersion = '4.48'
     jodatimeVersion = '2.7'
-    mapboxVersion = '0.7.3'
+    mapboxVersion = '4.0.1'
     retrofitVersion = '1.9.0'
     okhttpVersion = '2.3.0'
     simplexmlRetrofitVersion = '1.1'
@@ -140,7 +140,7 @@ configurations {
 dependencies {
     compile project(':fab')
     compile project(':navdrawer')
-    compile project(':tileslayer')
+//    compile project(':tileslayer')
     compile "com.android.support:appcompat-v7:$androidSupportVersion"
     // Dependency injection
     compile "com.google.dagger:dagger:$daggerVersion"
@@ -177,6 +177,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$androidSupportVersion"
     compile "com.android.support:design:$androidSupportVersion"
     compile "com.github.amlcurran.showcaseview:library:$showcaseviewVersion"
+
     compile("com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion@aar") { transitive = true }
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"
     compile(name:"arpigl-release-$arpiglVersion", ext:"aar")

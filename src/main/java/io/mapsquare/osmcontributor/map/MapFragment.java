@@ -35,7 +35,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -67,11 +66,11 @@ import com.mapbox.mapboxsdk.events.ScrollEvent;
 import com.mapbox.mapboxsdk.events.ZoomEvent;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.overlay.Icon;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.Overlay;
 import com.mapbox.mapboxsdk.tileprovider.tilesource.TileLayer;
-import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.views.MapViewListener;
 import com.mapbox.mapboxsdk.views.util.TilesLoadedListener;
 
@@ -2141,10 +2140,10 @@ public class MapFragment extends Fragment {
         isTuto = false;
         sharedPreferences.edit().putBoolean(TUTORIAL_CREATION_FINISH, true).apply();
     }
-
-    /*-----------------------------------------------------------
+/*
+    *//*-----------------------------------------------------------
     * TILE SOURCES
-    *---------------------------------------------------------*/
+    *---------------------------------------------------------*//*
     private static final String TILE_SOURCE = "TILE_SOURCE";
     private static final String OSM_MBTILES_FILE = "osm.mbtiles";
     private static final String BING_MBTILES_FILE = "satellite.mbtiles";
@@ -2161,18 +2160,18 @@ public class MapFragment extends Fragment {
 
     private BoundingBox scrollableAreaLimit = null;
 
-    /**
+    *//**
      * Switch the tile source between the osm tile source and the bing aerial vue tile source.
-     */
+     *//*
     private void switchTileSource() {
         switchToTileSource(BING_TILE_SOURCE.equals(currentTileLayer) ? OSM_TILE_SOURCE : BING_TILE_SOURCE);
     }
 
-    /**
+    *//**
      * Change the tile source of the mapView.
      *
      * @param tileSourceId The id of the new tile source.
-     */
+     *//*
     private void switchToTileSource(String tileSourceId) {
         Timber.d("Switch tileSource to %s", tileSourceId);
         switch (tileSourceId) {
@@ -2190,9 +2189,9 @@ public class MapFragment extends Fragment {
         mapView.setScrollableAreaLimit(scrollableAreaLimit);
     }
 
-    /**
+    *//**
      * Instantiate the different tiles sources used by the map.
-     */
+     *//*
     private void instantiateTileSources() {
         if (FlavorUtils.isTemplate()) {
             try {
@@ -2242,7 +2241,7 @@ public class MapFragment extends Fragment {
             scrollableAreaLimit = Box.enlarge(configManager.getBoundingBox(), 2);
             drawBounds();
         }
-    }
+    }*/
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPleaseSwitchMapStyleEvent(PleaseSwitchMapStyleEvent event) {
