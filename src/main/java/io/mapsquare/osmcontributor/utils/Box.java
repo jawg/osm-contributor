@@ -18,7 +18,8 @@
  */
 package io.mapsquare.osmcontributor.utils;
 
-import com.mapbox.mapboxsdk.geometry.BoundingBox;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 
 /**
  * Class representing a box delimited by north, east, south and west bounds.
@@ -73,46 +74,46 @@ public class Box {
     }
 
     /**
-     * Convert a {@link com.mapbox.mapboxsdk.geometry.BoundingBox} to a box.
+     * Convert a {@link com.mapbox.mapboxsdk.geometry.LatLngBounds} to a box.
      *
-     * @param boundingBox The boundingBox to convert.
+     * @param latLngBounds The boundingBox to convert.
      * @return The box.
      */
-    public static Box convertFromBoundingBox(BoundingBox boundingBox) {
+    public static Box convertFromLatLngBounds(LatLngBounds latLngBounds) {
         Box box = new Box();
-        box.setEast(boundingBox.getLonEast());
-        box.setNorth(boundingBox.getLatNorth());
-        box.setSouth(boundingBox.getLatSouth());
-        box.setWest(boundingBox.getLonWest());
+        box.setEast(latLngBounds.getLonEast());
+        box.setNorth(latLngBounds.getLatNorth());
+        box.setSouth(latLngBounds.getLatSouth());
+        box.setWest(latLngBounds.getLonWest());
         return box;
     }
 
     /**
-     * Convert the box to a {@link com.mapbox.mapboxsdk.geometry.BoundingBox}.
+     * Convert the box to a {@link com.mapbox.mapboxsdk.geometry.LatLngBounds}.
      *
      * @return boundingBox The boundingBox to convert.
      */
-    public BoundingBox getBoundingBox() {
-        return new BoundingBox(north, east, south, west);
+    public LatLngBounds getLatLngBounds() {
+        return new LatLngBounds.Builder().include(new LatLng(north, east)).include(new LatLng(south, west)).build();
     }
 
     /**
      * Enlarge the Box.
      *
-     * @param viewBoundingBox The box to enlarge.
+     * @param viewLatLngBounds The box to enlarge.
      * @param factor The factor to enlarge the box.
      * @return Box the Box enlarged.
      */
-    public static BoundingBox enlarge(BoundingBox viewBoundingBox, double factor) {
-        double n = viewBoundingBox.getLatNorth();
-        double e = viewBoundingBox.getLonEast();
-        double s = viewBoundingBox.getLatSouth();
-        double w = viewBoundingBox.getLonWest();
+    public static LatLngBounds enlarge(LatLngBounds viewLatLngBounds, double factor) {
+        double n = viewLatLngBounds.getLatNorth();
+        double e = viewLatLngBounds.getLonEast();
+        double s = viewLatLngBounds.getLatSouth();
+        double w = viewLatLngBounds.getLonWest();
         double f = (factor - 1) / 2;
-        return new BoundingBox(n + f * (n - s),
-                e + f * (e - w),
-                s - f * (n - s),
-                w - f * (e - w));
+        return new LatLngBounds.Builder()
+                .include(new LatLng(n + f * (n - s), e + f * (e - w)))
+                .include(new LatLng(s - f * (n - s), w - f * (e - w)))
+                .build();
     }
 
 }

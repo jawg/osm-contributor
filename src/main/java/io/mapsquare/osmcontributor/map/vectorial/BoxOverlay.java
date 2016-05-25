@@ -22,12 +22,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-import com.mapbox.mapboxsdk.geometry.BoundingBox;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
+import com.mapbox.mapboxsdk.maps.Projection;
 import com.mapbox.mapboxsdk.overlay.SafeDrawOverlay;
-import com.mapbox.mapboxsdk.views.MapView;
-import com.mapbox.mapboxsdk.views.safecanvas.ISafeCanvas;
-import com.mapbox.mapboxsdk.views.safecanvas.SafePaint;
-import com.mapbox.mapboxsdk.views.util.Projection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +40,7 @@ public class BoxOverlay extends SafeDrawOverlay {
     private XY nw, ne, se, sw;
 
 
-    public BoxOverlay(BoundingBox box) {
+    public BoxOverlay(LatLngBounds box) {
         clipper = new Clipper();
         paint = new SafePaint();
 

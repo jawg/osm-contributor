@@ -18,6 +18,7 @@
  */
 package io.mapsquare.osmcontributor.map;
 
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
 

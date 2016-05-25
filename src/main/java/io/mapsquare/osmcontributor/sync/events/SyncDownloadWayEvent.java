@@ -18,16 +18,15 @@
  */
 package io.mapsquare.osmcontributor.sync.events;
 
-import com.mapbox.mapboxsdk.geometry.BoundingBox;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 
 import io.mapsquare.osmcontributor.utils.Box;
 
 public class SyncDownloadWayEvent {
     private Box box;
 
-    public SyncDownloadWayEvent(BoundingBox boundingBox) {
-        this.box = Box.convertFromBoundingBox(boundingBox);
-
+    public SyncDownloadWayEvent(LatLngBounds latLngBounds) {
+        this.box = Box.convertFromLatLngBounds(latLngBounds);
     }
 
     public Box getBox() {

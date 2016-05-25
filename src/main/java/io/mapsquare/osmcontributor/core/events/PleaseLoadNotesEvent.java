@@ -19,16 +19,15 @@
 package io.mapsquare.osmcontributor.core.events;
 
 
-import com.mapbox.mapboxsdk.geometry.BoundingBox;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 
 import io.mapsquare.osmcontributor.utils.Box;
 
 public class PleaseLoadNotesEvent {
-
     private Box box;
 
-    public PleaseLoadNotesEvent(BoundingBox boundingBox) {
-        this.box = Box.convertFromBoundingBox(boundingBox);
+    public PleaseLoadNotesEvent(LatLngBounds latLngBounds) {
+        this.box = Box.convertFromLatLngBounds(latLngBounds);
     }
 
     public PleaseLoadNotesEvent(Box box) {

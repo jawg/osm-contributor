@@ -19,7 +19,7 @@
 package io.mapsquare.osmcontributor.core.events;
 
 
-import com.mapbox.mapboxsdk.geometry.BoundingBox;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 
 import io.mapsquare.osmcontributor.utils.Box;
 
@@ -27,8 +27,8 @@ public class PleaseLoadPoisEvent {
 
     private Box box;
 
-    public PleaseLoadPoisEvent(BoundingBox boundingBox) {
-        this.box = Box.convertFromBoundingBox(boundingBox);
+    public PleaseLoadPoisEvent(LatLngBounds latLngBounds) {
+        this.box = Box.convertFromLatLngBounds(latLngBounds);
     }
 
     public PleaseLoadPoisEvent(Box box) {

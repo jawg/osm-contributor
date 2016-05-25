@@ -18,8 +18,8 @@
  */
 package io.mapsquare.osmcontributor.core;
 
-import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 
 import javax.inject.Singleton;
 
@@ -67,7 +67,7 @@ public class StoreConfigManager implements ConfigManager {
     }
 
     @Override
-    public BoundingBox getBoundingBox() {
+    public LatLngBounds getLatLngBounds() {
         return null;
     }
 

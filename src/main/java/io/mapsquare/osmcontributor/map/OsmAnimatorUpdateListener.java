@@ -20,8 +20,9 @@ package io.mapsquare.osmcontributor.map;
 
 import android.animation.ValueAnimator;
 
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.views.MapView;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 
 public class OsmAnimatorUpdateListener implements ValueAnimator.AnimatorUpdateListener {
     public static final int STEPS_CENTER_ANIMATION = 150;
@@ -30,12 +31,12 @@ public class OsmAnimatorUpdateListener implements ValueAnimator.AnimatorUpdateLi
     final LatLng destinationPos;
     final Double latStep;
     final Double lngStep;
-    MapView mapView;
+    MapboxMap mapboxMap;
 
-    public OsmAnimatorUpdateListener(LatLng originPos, LatLng destinationPos, MapView mapView) {
+    public OsmAnimatorUpdateListener(LatLng originPos, LatLng destinationPos, MapboxMap mapboxMap) {
         this.originPos = originPos;
         this.destinationPos = destinationPos;
-        this.mapView = mapView;
+        this.mapboxMap = mapboxMap;
         latStep = (destinationPos.getLatitude() - originPos.getLatitude()) / STEPS_CENTER_ANIMATION;
         lngStep = (destinationPos.getLongitude() - originPos.getLongitude()) / STEPS_CENTER_ANIMATION;
     }
@@ -46,6 +47,6 @@ public class OsmAnimatorUpdateListener implements ValueAnimator.AnimatorUpdateLi
         Double lat = originPos.getLatitude() + latStep * animatedValue;
         Double lng = originPos.getLongitude() + lngStep * animatedValue;
 
-        mapView.setCenter(new LatLng(lat, lng));
+        mapboxMap.setCameraPosition(new CameraPosition.Builder().target(new LatLng(lat, lng)).build());
     }
 }

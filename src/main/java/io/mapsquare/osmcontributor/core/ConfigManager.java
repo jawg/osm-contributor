@@ -18,8 +18,8 @@
  */
 package io.mapsquare.osmcontributor.core;
 
-import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 
 /**
  * Manager allowing to get all the information of the application configuration.
@@ -80,7 +80,7 @@ public interface ConfigManager {
      *
      * @return The BoundingBox of the map.
      */
-    BoundingBox getBoundingBox();
+    LatLngBounds getLatLngBounds();
 
     /**
      * Get the default center of the map at startup.

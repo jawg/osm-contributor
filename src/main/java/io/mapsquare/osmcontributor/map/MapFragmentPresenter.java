@@ -19,10 +19,10 @@
 package io.mapsquare.osmcontributor.map;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 
-import com.mapbox.mapboxsdk.geometry.BoundingBox;
-import com.mapbox.mapboxsdk.overlay.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,22 +114,23 @@ public class MapFragmentPresenter {
     }
 
     private Float previousZoom;
-    private BoundingBox triggerReloadPoiBoundingBox;
+    private LatLngBounds triggerReloadPoiLatLngBounds;
 
     public void loadPoisIfNeeded() {
         if (poiTypes == null) {
             Timber.v("PleaseLoadPoiTypes");
             eventBus.post(new PleaseLoadPoiTypes());
         }
-        BoundingBox viewBoundingBox = mapFragment.getViewBoundingBox();
-        if (viewBoundingBox != null) {
+
+        LatLngBounds viewLatLngBounds = mapFragment.getViewLatLngBounds();
+        if (viewLatLngBounds != null) {
             if (mapFragment.getZoomLevel() > 15) {
-                if (shouldReload(viewBoundingBox)) {
+                if (shouldReload(viewLatLngBounds)) {
                     Timber.d("Reloading pois");
                     previousZoom = mapFragment.getZoomLevel();
-                    triggerReloadPoiBoundingBox = enlarge(viewBoundingBox, 1.5);
-                    eventBus.post(new PleaseLoadPoisEvent(enlarge(viewBoundingBox, 1.75)));
-                    eventBus.post(new PleaseLoadNotesEvent(enlarge(viewBoundingBox, 1.75)));
+                    triggerReloadPoiLatLngBounds = enlarge(viewLatLngBounds, 1.5);
+                    eventBus.post(new PleaseLoadPoisEvent(enlarge(viewLatLngBounds, 1.75)));
+                    eventBus.post(new PleaseLoadNotesEvent(enlarge(viewLatLngBounds, 1.75)));
                 }
             } else {
                 if (mapFragment.hasMarkers()) {
@@ -149,7 +150,7 @@ public class MapFragmentPresenter {
         this.forceRefreshNotes = true;
     }
 
-    private boolean shouldReload(BoundingBox viewBoundingBox) {
+    private boolean shouldReload(LatLngBounds viewLatLngBounds) {
         if (forceRefreshPoi || forceRefreshNotes) {
             forceRefreshPoi = false;
             forceRefreshNotes = false;
@@ -158,25 +159,25 @@ public class MapFragmentPresenter {
         if (previousZoom != null && previousZoom < 15) {
             return true;
         }
-        return triggerReloadPoiBoundingBox == null
-                || !triggerReloadPoiBoundingBox.union(viewBoundingBox).equals(triggerReloadPoiBoundingBox);
+        return triggerReloadPoiLatLngBounds == null
+                || !triggerReloadPoiLatLngBounds.union(viewLatLngBounds).equals(triggerReloadPoiLatLngBounds);
     }
 
-    BoundingBox enlarge(BoundingBox viewBoundingBox, double factor) {
-        double n = viewBoundingBox.getLatNorth();
-        double e = viewBoundingBox.getLonEast();
-        double s = viewBoundingBox.getLatSouth();
-        double w = viewBoundingBox.getLonWest();
+    LatLngBounds enlarge(LatLngBounds viewLatLngBounds, double factor) {
+        double n = viewLatLngBounds.getLatNorth();
+        double e = viewLatLngBounds.getLonEast();
+        double s = viewLatLngBounds.getLatSouth();
+        double w = viewLatLngBounds.getLonWest();
         double f = (factor - 1) / 2;
-        return new BoundingBox(n + f * (n - s),
-                e + f * (e - w),
-                s - f * (n - s),
-                w - f * (e - w));
+        return new LatLngBounds.Builder()
+        .include(new LatLng(n + f * (n - s), e + f * (e - w)))
+                .include(new LatLng(s - f * (n - s), w - f * (e - w)))
+                .build();
     }
 
     public void downloadAreaPoisAndNotes() {
         mapFragment.showProgressBar(true);
-        eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromBoundingBox(enlarge(mapFragment.getViewBoundingBox(), 1.75))));
+        eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromLatLngBounds(enlarge(mapFragment.getViewLatLngBounds(), 1.75))));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -231,7 +232,7 @@ public class MapFragmentPresenter {
             Bitmap bitmap = mapFragment.getBitmapHandler().getMarkerBitmap(poi.getType(), Poi.computeState(selected, false, poi.getUpdated()));
 
             if (bitmap != null) {
-                locationMarker.setIcon(new Icon(new BitmapDrawable(mapFragment.getResources(), bitmap)));
+                locationMarker.setIcon(IconFactory.getInstance(mapFragment.getActivity()).fromBitmap(bitmap));
             }
         }
 
@@ -272,7 +273,7 @@ public class MapFragmentPresenter {
                 }
 
                 if (bitmap != null) {
-                    marker.setIcon(new Icon(new BitmapDrawable(mapFragment.getResources(), bitmap)));
+                    marker.setIcon(IconFactory.getInstance(mapFragment.getActivity()).fromBitmap(bitmap));
                 }
                 mapFragment.addNote(marker);
             } else {
@@ -295,7 +296,7 @@ public class MapFragmentPresenter {
                 // refresh the icon
                 Bitmap bitmap = mapFragment.getBitmapHandler().getNoteBitmap(Note.computeState(note, selected, false));
                 if (bitmap != null) {
-                    currentMarker.setIcon(new Icon(new BitmapDrawable(mapFragment.getResources(), bitmap)));
+                    currentMarker.setIcon(IconFactory.getInstance(mapFragment.getActivity()).fromBitmap(bitmap));
                 }
             }
         }

@@ -27,7 +27,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 
-import com.mapbox.mapboxsdk.views.MapView;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 
 public class OsmCreationAnimatorUpdateListener implements ValueAnimator.AnimatorUpdateListener, ValueAnimator.AnimatorListener {
     public static final int STEPS_CENTER_ANIMATION = 100;
@@ -36,12 +37,12 @@ public class OsmCreationAnimatorUpdateListener implements ValueAnimator.Animator
     int screenWidth;
     float previousStep = 0f;
 
-    MapView mapView;
+    MapboxMap mapboxMap;
     Context context;
     ImageView handImageView;
 
-    public OsmCreationAnimatorUpdateListener(MapView mapView, ImageView handImageView, Context context) {
-        this.mapView = mapView;
+    public OsmCreationAnimatorUpdateListener(MapboxMap mapboxMap, ImageView handImageView, Context context) {
+        this.mapboxMap = mapboxMap;
         this.context = context;
         this.handImageView = handImageView;
 
@@ -65,8 +66,7 @@ public class OsmCreationAnimatorUpdateListener implements ValueAnimator.Animator
             pixelToMove = -pixelToMove;
         }
 
-        mapView.panBy(pixelToMove, 0);
-
+        mapboxMap.moveCamera(CameraUpdateFactory.scrollBy(pixelToMove, 0));
 
         float left = handImageView.getX() + pixelToMove;
         handImageView.setX(left);
