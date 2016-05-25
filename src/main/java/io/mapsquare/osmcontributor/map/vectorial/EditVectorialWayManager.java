@@ -22,7 +22,6 @@ import android.app.Application;
 import android.graphics.Paint;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.views.util.Projection;
 
 import java.util.ArrayList;
 import java.util.HashSet;

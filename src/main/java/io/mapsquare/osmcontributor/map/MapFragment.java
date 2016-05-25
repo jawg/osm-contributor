@@ -61,6 +61,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.Polyline;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
@@ -1161,7 +1162,7 @@ public class MapFragment extends Fragment {
         switchMode(MapMode.NODE_REF_POSITION_EDITION);
     }
 
-    private List<Overlay> overlays = new ArrayList<>();
+    private List<Polyline> polylines = new ArrayList<>();
     Set<VectorialObject> vectorialObjectsEdition = new HashSet<>();
 
     //get data from overpass
@@ -1189,8 +1190,8 @@ public class MapFragment extends Fragment {
             removeMarker(locationMarker);
         }
         markersNodeRef.clear();
-        for (Overlay overlay : overlays) {
-            mapView.removeOverlay(overlay);
+        for (Polyline polyline : polylines) {
+            mapboxMap.removePolyline(polyline);
         }
     }
 
@@ -1764,9 +1765,9 @@ public class MapFragment extends Fragment {
             vectorialObjects.addAll(vectorialObjectsEdition);
 
             vectorialOverlay = new VectorialOverlay(zoomVectorial, vectorialObjects, levels, getResources().getDisplayMetrics().scaledDensity);
-            mapView.addOverlay(vectorialOverlay);
+            /** TODO **/
+            //mapView.addOverlay(vectorialOverlay);
         } else {
-
             Set<VectorialObject> vectorialObjects = new HashSet<>();
             vectorialObjects.addAll(vectorialObjectsBackground);
             vectorialObjects.addAll(vectorialObjectsEdition);
