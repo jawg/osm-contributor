@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.core.model;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import timber.log.Timber;
 
@@ -114,6 +115,10 @@ public class PoiNodeRef implements Cloneable {
 
     public Double getLatitude() {
         return latitude;
+    }
+
+    public LatLng getPosition() {
+        return new LatLng(latitude, longitude);
     }
 
     public Boolean getUpdated() {

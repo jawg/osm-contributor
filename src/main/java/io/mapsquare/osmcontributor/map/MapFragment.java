@@ -64,7 +64,6 @@ import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
-import com.mapbox.mapboxsdk.geometry.VisibleRegion;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
@@ -126,12 +125,13 @@ import io.mapsquare.osmcontributor.map.events.PleaseLoadLastUsedPoiType;
 import io.mapsquare.osmcontributor.map.events.PleaseOpenEditionEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSelectNodeRefByID;
 import io.mapsquare.osmcontributor.map.events.PleaseShowMeArpiglEvent;
-import io.mapsquare.osmcontributor.map.events.PleaseSwitchMapStyleEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleArpiEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.map.events.PoiNoTypeCreated;
+import io.mapsquare.osmcontributor.map.marker.LocationMarker;
+import io.mapsquare.osmcontributor.map.marker.LocationMarkerOptions;
 import io.mapsquare.osmcontributor.map.vectorial.Geocoder;
 import io.mapsquare.osmcontributor.map.vectorial.LevelBar;
 import io.mapsquare.osmcontributor.map.vectorial.VectorialObject;
@@ -151,7 +151,7 @@ import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 import timber.log.Timber;
 
-
+@SuppressWarnings("all")
 public class MapFragment extends Fragment {
 
     public static final String MAP_FRAGMENT_TAG = "MAP_FRAGMENT_TAG";
@@ -494,10 +494,10 @@ public class MapFragment extends Fragment {
      * Click on marker
      * @param marker
      */
-    void onPoiMarkerClick(LocationMarker marker) {
+    void onPoiMarkerClick(LocationMarker<Poi> marker) {
         unselectIcon();
-        markerSelected = (marker);
-        Bitmap bitmap = bitmapHandler.getMarkerBitmap(markerSelected.getPoi().getType(), Poi.computeState(true, false, false));
+        markerSelected = marker;
+        Bitmap bitmap = bitmapHandler.getMarkerBitmap(((Poi) markerSelected.getRelatedObject()).getType(), Poi.computeState(true, false, false));
         if (bitmap != null) {
             markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmap));
         }
@@ -511,7 +511,7 @@ public class MapFragment extends Fragment {
     }
 
 
-    private void onNodeRefClick(LocationMarker marker) {
+    private void onNodeRefClick(LocationMarker<PoiNodeRef> marker) {
         editNodeRefPosition.setVisibility(View.VISIBLE);
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, OsmAnimatorUpdateListener.STEPS_CENTER_ANIMATION);
         valueAnimator.setDuration(500);
@@ -519,12 +519,13 @@ public class MapFragment extends Fragment {
         valueAnimator.start();
     }
 
-    private void onNoteMarkerClick(LocationMarker marker) {
+    private void onNoteMarkerClick(LocationMarker<Note> marker) {
         unselectIcon();
         markerSelected = (marker);
         selectedMarkerType = LocationMarker.MarkerType.NOTE;
 
-        Bitmap bitmap = bitmapHandler.getNoteBitmap(Note.computeState(markerSelected.getNote(), true, false));
+        Bitmap bitmap = bitmapHandler.getNoteBitmap(
+                Note.computeState(((Note) markerSelected.getRelatedObject()), true, false));
         if (bitmap != null) {
             markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmap));
         }
@@ -630,13 +631,13 @@ public class MapFragment extends Fragment {
         if (markerSelected != null) {
             switch (markerSelected.getType()) {
                 case POI:
-                    markerSelectedId = markerSelected.getPoi().getId();
+                    markerSelectedId = ((Poi) markerSelected.getRelatedObject()).getId();
                     break;
                 case NODE_REF:
-                    markerSelectedId = markerSelected.getNodeRef().getId();
+                    markerSelectedId = ((PoiNodeRef) markerSelected.getRelatedObject()).getId();
                     break;
                 case NOTE:
-                    markerSelectedId = markerSelected.getNote().getId();
+                    markerSelectedId = ((Note) markerSelected.getRelatedObject()).getId();
                     break;
             }
         } else {
@@ -705,7 +706,7 @@ public class MapFragment extends Fragment {
     }
 
     public void onMarkerClick(LocationMarker marker) {
-        if (marker.isPoi()) {
+        if (marker.getType().equals(LocationMarker.MarkerType.POI)) {
             onPoiMarkerClick(marker);
         } else {
             onNoteMarkerClick(marker);
@@ -758,10 +759,11 @@ public class MapFragment extends Fragment {
                 break;
 
             case POI_POSITION_EDITION:
+                Poi poi = (Poi) markerSelected.getRelatedObject();
                 newPoiPosition = mapboxMap.getCameraPosition().target;
-                eventBus.post(new PleaseApplyPoiPositionChange(newPoiPosition, markerSelected.getPoi().getId()));
-                markerSelected.setPoint(newPoiPosition);
-                markerSelected.getPoi().setUpdated(true);
+                eventBus.post(new PleaseApplyPoiPositionChange(newPoiPosition, poi.getId()));
+                markerSelected.setPosition(newPoiPosition);
+                poi.setUpdated(true);
                 mapboxMap.updateMarker(markerSelected);
                 switchMode(MapMode.DETAIL_POI);
                 tracker.send(new HitBuilders.EventBuilder()
@@ -771,9 +773,10 @@ public class MapFragment extends Fragment {
                 break;
 
             case NODE_REF_POSITION_EDITION:
+                PoiNodeRef poiNodeRef = (PoiNodeRef) markerSelected.getRelatedObject();
                 newPoiPosition = mapboxMap.getCameraPosition().target;
-                eventBus.post(new PleaseApplyNodeRefPositionChange(newPoiPosition, markerSelected.getNodeRef().getId()));
-                markerSelected.setPoint(newPoiPosition);
+                eventBus.post(new PleaseApplyNodeRefPositionChange(newPoiPosition, poiNodeRef.getId()));
+                markerSelected.setPosition(newPoiPosition);
                 switchMode(MapMode.WAY_EDITION);
                 tracker.send(new HitBuilders.EventBuilder()
                         .setCategory(Category.Edition.getValue())
@@ -941,7 +944,7 @@ public class MapFragment extends Fragment {
 
             case POI_POSITION_EDITION:
                 // This marker is being moved
-                bitmap = bitmapHandler.getMarkerBitmap(markerSelected.getPoi().getType(), Poi.computeState(false, true, false));
+                bitmap = bitmapHandler.getMarkerBitmap(((Poi) markerSelected.getRelatedObject()).getType(), Poi.computeState(false, true, false));
                 creationPin.setImageBitmap(bitmap);
                 break;
 
@@ -1031,11 +1034,12 @@ public class MapFragment extends Fragment {
 
             switch (markerSelected.getType()) {
                 case POI:
-                    bitmap = bitmapHandler.getMarkerBitmap(markerSelected.getPoi().getType(), Poi.computeState(false, false, markerSelected.getPoi().getUpdated()));
+                    Poi poi = (Poi) markerSelected.getRelatedObject();
+                    bitmap = bitmapHandler.getMarkerBitmap(poi.getType(), Poi.computeState(false, false, poi.getUpdated()));
                     break;
 
                 case NOTE:
-                    bitmap = bitmapHandler.getNoteBitmap(Note.computeState(markerSelected.getNote(), false, false));
+                    bitmap = bitmapHandler.getNoteBitmap(Note.computeState((Note) markerSelected.getRelatedObject(), false, false));
                     break;
 
                 case NODE_REF:
@@ -1124,8 +1128,8 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void addMarker(LocationMarker marker) {
-        markersPoi.put(marker.getPoi().getId(), marker);
+    public void addMarker(LocationMarker<Poi> marker) {
+        markersPoi.put(marker.getRelatedObject().getId(), marker);
         addPoiMarkerDependingOnFilters(marker);
     }
 
@@ -1133,8 +1137,8 @@ public class MapFragment extends Fragment {
         mapView.invalidate();
     }
 
-    public void addNote(LocationMarker marker) {
-        markersNotes.put(marker.getNote().getId(), marker);
+    public void addNote(LocationMarker<Note> marker) {
+        markersNotes.put(marker.getRelatedObject().getId(), marker);
         // add the note to the map
         addNoteMarkerDependingOnFilters(marker);
     }
@@ -1153,7 +1157,7 @@ public class MapFragment extends Fragment {
 
     @OnClick(R.id.edit_way_elemnt_position)
     public void setEditNodeRefPosition() {
-        vectorialOverlay.setMovingObjectId(markerSelected.getNodeRef().getNodeBackendId());
+        vectorialOverlay.setMovingObjectId(((PoiNodeRef) markerSelected.getRelatedObject()).getNodeBackendId());
         switchMode(MapMode.NODE_REF_POSITION_EDITION);
     }
 
@@ -1201,7 +1205,10 @@ public class MapFragment extends Fragment {
             }
             unselectIcon();
             PoiNodeRef poiNodeRef = poiNodeRefsSelected.get(0);
-            LocationMarker locationMarker = new LocationMarker(poiNodeRef);
+            LocationMarkerOptions<PoiNodeRef> locationMarkerOptions = new LocationMarkerOptions<>()
+                            .position(poiNodeRef.getPosition());
+
+
             markerSelected = locationMarker;
             vectorialOverlay.setSelectedObjectId(poiNodeRef.getNodeBackendId());
             onNodeRefClick(locationMarker);
