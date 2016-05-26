@@ -302,6 +302,7 @@ public class MapFragment extends Fragment {
         mapboxMap.setMyLocationEnabled(true);
         // Set the map center and zoom to the saved values or use the default values
         Location myLocation = mapboxMap.getMyLocation();
+        mapboxMap.setMyLocationEnabled(false);
         CameraPosition.Builder cameraBuilder = new CameraPosition.Builder();
 
         if (savedInstanceState == null) {
@@ -580,12 +581,10 @@ public class MapFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        presenter.register();
+//        presenter.register();
 
         //enable geolocation of user
         if (mapboxMap != null) {
-            mapboxMap.setMyLocationEnabled(true);
-
             eventBus.register(this);
             eventBus.post(new PleaseInitializeArpiEvent());
             presenter.setForceRefreshPoi();
