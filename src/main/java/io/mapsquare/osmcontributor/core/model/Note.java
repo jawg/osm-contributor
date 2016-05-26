@@ -22,6 +22,7 @@ package io.mapsquare.osmcontributor.core.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.joda.time.DateTime;
 
@@ -171,6 +172,10 @@ public class Note {
 
     public void setUpdated(Boolean updated) {
         this.updated = updated;
+    }
+
+    public LatLng getPosition() {
+        return new LatLng(latitude, longitude);
     }
 }
 

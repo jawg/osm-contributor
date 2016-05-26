@@ -22,6 +22,7 @@ package io.mapsquare.osmcontributor.core.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.joda.time.DateTime;
 
@@ -266,6 +267,10 @@ public class Poi implements Cloneable {
 
     public void setOldPoiId(Long oldPoiId) {
         this.oldPoiId = oldPoiId;
+    }
+
+    public LatLng getPosition() {
+        return new LatLng(latitude, longitude);
     }
 
     //fill levels set if there isn't any levels adding level 0
