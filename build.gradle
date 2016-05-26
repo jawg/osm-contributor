@@ -143,8 +143,6 @@ configurations {
 
 dependencies {
     compile project(':fab')
-    compile project(':navdrawer')
-//    compile project(':tileslayer')
     compile "com.android.support:appcompat-v7:$androidSupportVersion"
     // Dependency injection
     compile "com.google.dagger:dagger:$daggerVersion"
