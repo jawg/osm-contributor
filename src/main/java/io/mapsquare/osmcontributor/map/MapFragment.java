@@ -176,9 +176,9 @@ public class MapFragment extends Fragment {
     private boolean isMenuLoaded = false;
     private boolean pleaseSwitchToPoiSelected = false;
 
-    private Map<Long, LocationMarker> markersPoi;
-    private Map<Long, LocationMarker> markersNotes;
-    private Map<Long, LocationMarker> markersNodeRef;
+    private Map<Long, LocationMarkerOptions<Poi>> markersPoi;
+    private Map<Long, LocationMarkerOptions<Note>> markersNotes;
+    private Map<Long, LocationMarkerOptions<PoiNodeRef>> markersNodeRef;
 
     private int maxPoiType;
     private PoiType poiTypeSelected;
@@ -1106,14 +1106,14 @@ public class MapFragment extends Fragment {
         markersNotes.keySet().removeAll(idsToRemove);
     }
 
-    public Map<Long, LocationMarker> getMarkersPoi() {
+    public Map<Long, LocationMarkerOptions<Poi>> getMarkersPoi() {
         return markersPoi;
     }
 
-    private void removeMarker(LocationMarker marker) {
+    private void removeMarker(LocationMarkerOptions marker) {
         if (marker != null) {
-            mapboxMap.removeMarker(marker);
-            Object poi = marker.getRelatedObject();
+            mapboxMap.removeMarker(marker.getMarker());
+            Object poi = marker.getMarker().getRelatedObject();
             eventBus.post(new PleaseRemoveArpiMarkerEvent(poi));
         }
     }
@@ -1129,8 +1129,8 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void addMarker(LocationMarker<Poi> marker) {
-        markersPoi.put(marker.getRelatedObject().getId(), marker);
+    public void addMarker(LocationMarkerOptions<Poi> marker) {
+        markersPoi.put(marker.getMarker().getRelatedObject().getId(), marker);
         addPoiMarkerDependingOnFilters(marker);
     }
 
@@ -1138,13 +1138,13 @@ public class MapFragment extends Fragment {
         mapView.invalidate();
     }
 
-    public void addNote(LocationMarker<Note> marker) {
-        markersNotes.put(marker.getRelatedObject().getId(), marker);
+    public void addNote(LocationMarkerOptions<Note> marker) {
+        markersNotes.put(marker.getMarker().getRelatedObject().getId(), marker);
         // add the note to the map
         addNoteMarkerDependingOnFilters(marker);
     }
 
-    public LocationMarker getNote(Long id) {
+    public LocationMarkerOptions<Note> getNote(Long id) {
         return markersNotes.get(id);
     }
 
@@ -1186,7 +1186,7 @@ public class MapFragment extends Fragment {
     }
 
     private void clearAllNodeRef() {
-        for (LocationMarker locationMarker : markersNodeRef.values()) {
+        for (LocationMarkerOptions locationMarker : markersNodeRef.values()) {
             removeMarker(locationMarker);
         }
         markersNodeRef.clear();
@@ -1202,17 +1202,19 @@ public class MapFragment extends Fragment {
             //todo let the user precise his choice
             //lets says it the first one
             if (markerSelected != null) {
-                removeMarker(markerSelected);
+                removeMarker(markersNodeRef.get(markerSelected));
             }
             unselectIcon();
             PoiNodeRef poiNodeRef = poiNodeRefsSelected.get(0);
-            LocationMarkerOptions<PoiNodeRef> locationMarkerOptions = new LocationMarkerOptions<>()
-                            .position(poiNodeRef.getPosition());
+            LocationMarkerOptions<PoiNodeRef> locationMarkerOptions
+                    = new LocationMarkerOptions<PoiNodeRef>()
+                    .position(poiNodeRef.getPosition())
+                    .relatedObject(poiNodeRef);
 
 
-            markerSelected = locationMarker;
+            markerSelected = locationMarkerOptions.getMarker();
             vectorialOverlay.setSelectedObjectId(poiNodeRef.getNodeBackendId());
-            onNodeRefClick(locationMarker);
+            onNodeRefClick(locationMarkerOptions.getMarker());
             mapView.invalidate();
 
         } else {
@@ -1458,7 +1460,7 @@ public class MapFragment extends Fragment {
         Timber.d("Received event PleaseOpenEdition");
         Intent intent = new Intent(getActivity(), EditPoiActivity.class);
         intent.putExtra(EditPoiActivity.CREATION_MODE, false);
-        intent.putExtra(EditPoiActivity.POI_ID, markerSelected.getPoi().getId());
+        intent.putExtra(EditPoiActivity.POI_ID, ((Poi) markerSelected.getRelatedObject()).getId());
         startActivity(intent);
     }
 
@@ -1477,7 +1479,7 @@ public class MapFragment extends Fragment {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     creationPin.setVisibility(View.VISIBLE);
-                    removeMarker(markerSelected);
+                    removeMarker(markersPoi.get(markerSelected));
                 }
             });
 
@@ -1493,10 +1495,10 @@ public class MapFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPleaseDeletePoiFromMapEvent(PleaseDeletePoiFromMapEvent event) {
-        Poi poi = markerSelected.getPoi();
+        Poi poi = (Poi) markerSelected.getRelatedObject();
         poi.setToDelete(true);
         markersPoi.remove(poi.getId());
-        removeMarker(markerSelected);
+        removeMarker(markersPoi.get(poi.getId()));
         eventBus.post(new PleaseDeletePoiEvent(poi));
         switchMode(MapMode.DEFAULT);
     }
@@ -1507,10 +1509,11 @@ public class MapFragment extends Fragment {
     private void displayPoiDetailBanner(boolean display) {
         if (display) {
             if (markerSelected != null) {
+                Poi poi = (Poi) markerSelected.getRelatedObject();
                 eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(
-                        markerSelected.getPoi().getType().getName(),
-                        markerSelected.getPoi().getName(),
-                        markerSelected.getPoi().getWay()));
+                        poi.getType().getName(),
+                        poi.getName(),
+                        poi.getWay()));
             }
 
             if (poiDetailWrapper.getVisibility() != View.VISIBLE) {
@@ -1538,8 +1541,9 @@ public class MapFragment extends Fragment {
     *---------------------------------------------------------*/
     private void displayNoteDetailBanner(boolean display) {
         if (display) {
-            if (markerSelected != null && !markerSelected.isPoi()) {
-                eventBus.post(new PleaseChangeValuesDetailNoteFragmentEvent(markerSelected.getNote()));
+            if (markerSelected != null && !markerSelected.getType().equals(LocationMarker.MarkerType.POI)) {
+                eventBus.post(new PleaseChangeValuesDetailNoteFragmentEvent(
+                        (Note) markerSelected.getRelatedObject()));
             }
 
             if (noteDetailWrapper.getVisibility() != View.VISIBLE) {
@@ -1701,7 +1705,7 @@ public class MapFragment extends Fragment {
 
     // markers were added on the map the sync failed we remove them
     private void removePoiMarkerInError(Long id) {
-        Marker m = markersPoi.remove(id);
+        Marker m = markersPoi.remove(id).getMarker();
         if (m != null) {
             mapboxMap.removeMarker(m);
         }
@@ -1710,7 +1714,7 @@ public class MapFragment extends Fragment {
 
     // note was added on the map the sync failed we remove it
     private void removeNoteMarkerInError(Long id) {
-        Marker m = markersNotes.remove(id);
+        Marker m = markersNotes.remove(id).getMarker();
         if (m != null) {
             mapboxMap.removeMarker(m);
         }
@@ -1743,10 +1747,10 @@ public class MapFragment extends Fragment {
             vectorialObjectsEdition.addAll(event.getVectorialObjects());
             updateVectorial(event.getLevels());
 
-            if (getMarkerSelected() != null && getMarkerSelected().isNodeRef()) {
+            if (getMarkerSelected() != null && markerSelected.getType().equals(LocationMarker.MarkerType.NODE_REF)) {
                 boolean reselectMaker = false;
                 for (VectorialObject v : vectorialObjectsEdition) {
-                    if (v.getId().equals(getMarkerSelected().getNodeRef().getNodeBackendId())) {
+                    if (v.getId().equals(((PoiNodeRef) markerSelected.getRelatedObject()).getNodeBackendId())) {
                         reselectMaker = true;
                     }
                 }
@@ -1999,35 +2003,35 @@ public class MapFragment extends Fragment {
     }
 
     private void applyNoteFilter() {
-        for (LocationMarker marker : markersNotes.values()) {
+        for (LocationMarkerOptions marker : markersNotes.values()) {
             removeMarker(marker);
             addNoteMarkerDependingOnFilters(marker);
         }
     }
 
     private void applyPoiFilter() {
-        for (LocationMarker marker : markersPoi.values()) {
+        for (LocationMarkerOptions marker : markersPoi.values()) {
             removeMarker(marker);
             addPoiMarkerDependingOnFilters(marker);
         }
     }
 
-    private void addNoteMarkerDependingOnFilters(LocationMarker marker) {
-        Note note = marker.getNote();
+    private void addNoteMarkerDependingOnFilters(LocationMarkerOptions<Note> marker) {
+        Note note = marker.getMarker().getRelatedObject();
 
         if ((displayOpenNotes && Note.STATUS_OPEN.equals(note.getStatus())) || Note.STATUS_SYNC.equals(note.getStatus()) || (displayClosedNotes && Note.STATUS_CLOSE.equals(note.getStatus()))) {
             mapboxMap.addMarker(marker);
-        } else if (mapMode.equals(MapMode.DETAIL_NOTE) && markerSelected.getNote().getId().equals(note.getId())) {
+        } else if (mapMode.equals(MapMode.DETAIL_NOTE) && ((Note) markerSelected.getRelatedObject()).getId().equals(note.getId())) {
             switchMode(MapMode.DEFAULT);
         }
     }
 
-    private void addPoiMarkerDependingOnFilters(LocationMarker marker) {
-        Poi poi = marker.getPoi();
+    private void addPoiMarkerDependingOnFilters(LocationMarkerOptions<Poi> marker) {
+        Poi poi = marker.getMarker().getRelatedObject();
         //if we are in vectorial mode we hide all poi not at the current level
         if (poi.getType() != null && !poiTypeHidden.contains(poi.getType().getId()) && (!isVectorial || poi.isAtLevel(currentLevel) || !poi.isOnLevels(levelBar.getLevels()))) {
             mapboxMap.addMarker(marker);
-        } else if (mapMode.equals(MapMode.DETAIL_POI) && markerSelected.getPoi().getId().equals(poi.getId())) {
+        } else if (mapMode.equals(MapMode.DETAIL_POI) && ((Poi) markerSelected.getRelatedObject()).getId().equals(poi.getId())) {
             //if the poi selected is hidden close the detail mode
             switchMode(MapMode.DEFAULT);
         }
