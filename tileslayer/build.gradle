@@ -23,5 +23,5 @@ repositories {
 }
 
 dependencies {
-    compile 'com.mapbox.mapboxsdk:mapbox-android-sdk:4.0.1@aar'
+    //compile 'com.mapbox.mapboxsdk:mapbox-android-sdk:4.0.1@aar'
 }

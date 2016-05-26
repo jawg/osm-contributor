@@ -84,6 +84,8 @@
             android:name=".about.AboutActivity"
             android:label="@string/title_activity_about"/>
 
+        <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService"/>
+
     </application>
 
 </manifest>

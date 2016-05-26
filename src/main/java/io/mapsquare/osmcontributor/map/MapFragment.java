@@ -69,6 +69,10 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,13 +83,9 @@ import java.util.TreeSet;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import butterknife.Unbinder;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
@@ -298,17 +298,35 @@ public class MapFragment extends Fragment {
         });
     }
 
-    private void instantiateMapBox() {
+    private void instantiateMapBox(Bundle savedInstanceState) {
+        mapboxMap.setMyLocationEnabled(true);
+        // Set the map center and zoom to the saved values or use the default values
+        Location myLocation = mapboxMap.getMyLocation();
+        CameraPosition.Builder cameraBuilder = new CameraPosition.Builder();
 
+        if (savedInstanceState == null) {
+            cameraBuilder.target((FlavorUtils.isStore() && myLocation != null) ?
+                    new LatLng(myLocation.getLatitude(), myLocation.getLongitude()) : configManager.getDefaultCenter())
+                    .zoom(configManager.getDefaultZoom());
+        } else {
+            cameraBuilder.target((LatLng) savedInstanceState.getParcelable(LOCATION))
+                    .zoom(savedInstanceState.getFloat(ZOOM_LEVEL));
+        }
+
+        mapboxMap.setCameraPosition(cameraBuilder.build());
+        onResume();
+        switchMode(MapMode.DEFAULT);
     }
 
-    private void instantiateMapView(Bundle savedInstanceState) {
+    private void instantiateMapView(final Bundle savedInstanceState) {
+
         if (mapView != null) {
+            mapView.onCreate(savedInstanceState);
             mapView.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(MapboxMap mapboxMap) {
                     MapFragment.this.mapboxMap = mapboxMap;
-                    instantiateMapBox();
+                    instantiateMapBox(savedInstanceState);
                 }
             });
         }
@@ -326,21 +344,6 @@ public class MapFragment extends Fragment {
         // Enable disk cache
 //        mapboxMap.setDiskCacheEnabled(true);
 
-        mapboxMap.setMyLocationEnabled(true);
-        // Set the map center and zoom to the saved values or use the default values
-        Location myLocation = mapboxMap.getMyLocation();
-        CameraPosition.Builder cameraBuilder = new CameraPosition.Builder();
-
-        if (savedInstanceState == null) {
-            cameraBuilder.target((FlavorUtils.isStore() && myLocation != null) ?
-                    new LatLng(myLocation.getLatitude(), myLocation.getLongitude()) : configManager.getDefaultCenter())
-            .zoom(configManager.getDefaultZoom());
-        } else {
-            cameraBuilder.target((LatLng) savedInstanceState.getParcelable(LOCATION))
-            .zoom(savedInstanceState.getFloat(ZOOM_LEVEL));
-        }
-
-        mapboxMap.setCameraPosition(cameraBuilder.build());
 
 //        mapView.setOnTilesLoadedListener(new TilesLoadedListener() {
 //            @Override
@@ -580,16 +583,18 @@ public class MapFragment extends Fragment {
         presenter.register();
 
         //enable geolocation of user
-        mapboxMap.setMyLocationEnabled(true);
+        if (mapboxMap != null) {
+            mapboxMap.setMyLocationEnabled(true);
 
-        eventBus.register(this);
-        eventBus.post(new PleaseInitializeArpiEvent());
-        presenter.setForceRefreshPoi();
-        presenter.setForceRefreshNotes();
-        presenter.loadPoisIfNeeded();
-        eventBus.post(new PleaseInitializeNoteDrawerEvent(displayOpenNotes, displayClosedNotes));
-        if (poiTypePickerAdapter != null) {
-            poiTypePickerAdapter.setExpertMode(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
+            eventBus.register(this);
+            eventBus.post(new PleaseInitializeArpiEvent());
+            presenter.setForceRefreshPoi();
+            presenter.setForceRefreshNotes();
+            presenter.loadPoisIfNeeded();
+            eventBus.post(new PleaseInitializeNoteDrawerEvent(displayOpenNotes, displayClosedNotes));
+            if (poiTypePickerAdapter != null) {
+                poiTypePickerAdapter.setExpertMode(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
+            }
         }
     }
 
@@ -708,7 +713,7 @@ public class MapFragment extends Fragment {
             pleaseSwitchToPoiSelected = false;
             onMarkerClick(markerSelected);
         } else {
-            switchMode(mapMode);
+            //switchMode(mapMode);
         }
     }
 

@@ -23,14 +23,14 @@
     xmlns:application="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:mapbox="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-    <com.mapbox.mapboxsdk.views.MapView
+    <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        mapbox:rotate_enabled="false"/>
+        application:access_token="pk.eyJ1IjoiYmVyaHVnIiwiYSI6ImNpb2VmdjRraDAwMmZ2Z2x4bDJ5bmJlY3YifQ.CGm3KMpBeX5fSD-kzZUS8Q"
+        application:rotate_enabled="false"/>
 
 
     <RelativeLayout

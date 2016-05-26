@@ -92,6 +92,10 @@ android {
         targetSdkVersion 23
         versionCode 15
         versionName appVersion
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
+
     }
 
     lintOptions {

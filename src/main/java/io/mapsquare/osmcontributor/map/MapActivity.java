@@ -26,7 +26,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.NavigationView2;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -48,8 +47,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.about.AboutActivity;
@@ -99,7 +98,7 @@ public class MapActivity extends AppCompatActivity {
     NavigationView navigationView;
 
     @BindView(R.id.filter)
-    NavigationView2 filterView;
+    NavigationView filterView;
 
     @BindView(R.id.AR_screenshot)
     ImageView arpiScreenshot;
@@ -159,7 +158,7 @@ public class MapActivity extends AppCompatActivity {
                 return true;
             }
         });
-        filterView.setNavigationItemSelectedListener(new NavigationView2.OnNavigationItemSelectedListener() {
+        filterView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 switch (menuItem.getGroupId()) {

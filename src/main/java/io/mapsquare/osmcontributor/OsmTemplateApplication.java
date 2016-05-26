@@ -26,9 +26,10 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.leakcanary.LeakCanary;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.HashMap;
 
-import org.greenrobot.eventbus.EventBus;
 import io.fabric.sdk.android.Fabric;
 import io.mapsquare.osmcontributor.crashlytics.CrashContextWrapper;
 import io.mapsquare.osmcontributor.crashlytics.CrashlyticsTree;
@@ -48,7 +49,6 @@ public class OsmTemplateApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         LeakCanary.install(this);
 
         if (BuildConfig.DEBUG) {
@@ -71,7 +71,7 @@ public class OsmTemplateApplication extends Application {
         bus.register(getOsmTemplateComponent().getSyncManager());
         bus.register(getOsmTemplateComponent().getTypeManager());
         bus.register(getOsmTemplateComponent().getGeocoder());
-        bus.register(getOsmTemplateComponent().getEditVectorialWayManager());
+//        bus.register(getOsmTemplateComponent().getEditVectorialWayManager());
         bus.register(getOsmTemplateComponent().getArpiInitializer());
     }
 
