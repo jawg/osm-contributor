@@ -61,6 +61,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.Polyline;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
@@ -123,7 +124,6 @@ import io.mapsquare.osmcontributor.map.events.PleaseInitializeNoteDrawerEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadEditVectorialTileEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadLastUsedPoiType;
 import io.mapsquare.osmcontributor.map.events.PleaseOpenEditionEvent;
-import io.mapsquare.osmcontributor.map.events.PleaseSelectNodeRefByID;
 import io.mapsquare.osmcontributor.map.events.PleaseShowMeArpiglEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleArpiEvent;
@@ -135,7 +135,6 @@ import io.mapsquare.osmcontributor.map.marker.LocationMarkerOptions;
 import io.mapsquare.osmcontributor.map.vectorial.Geocoder;
 import io.mapsquare.osmcontributor.map.vectorial.LevelBar;
 import io.mapsquare.osmcontributor.map.vectorial.VectorialObject;
-import io.mapsquare.osmcontributor.map.vectorial.VectorialOverlay;
 import io.mapsquare.osmcontributor.note.NoteCommentDialogFragment;
 import io.mapsquare.osmcontributor.note.events.ApplyNewCommentFailedEvent;
 import io.mapsquare.osmcontributor.sync.events.SyncDownloadWayEvent;
@@ -280,13 +279,13 @@ public class MapFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Timber.v("onProgressChanged");
-                if (vectorialOverlay != null) {
-                    LevelBar lvl = (LevelBar) seekBar;
-                    currentLevel = lvl.getLevel();
-                    vectorialOverlay.setLevel(currentLevel);
-                    invalidateMap();
-                    applyPoiFilter();
-                }
+//                if (vectorialOverlay != null) {
+//                    LevelBar lvl = (LevelBar) seekBar;
+//                    currentLevel = lvl.getLevel();
+//                    vectorialOverlay.setLevel(currentLevel);
+//                    invalidateMap();
+//                    applyPoiFilter();
+//                }
             }
 
             @Override
@@ -314,27 +313,35 @@ public class MapFragment extends Fragment {
             });
         }
 
-//        // Instantiate the different tiles sources
-//        instantiateTileSources();
-//        // Set the tile source has the Osm tile source
+        // Instantiate the different tiles sources
+        //instantiateTileSources();
+
+
+
+        // Set the tile source has the Osm tile source
 //        switchToTileSource(OSM_TILE_SOURCE);
-//
-//        // disable rotation of the map
-//        mapView.setMapRotationEnabled(false);
-//
-//        // Enable disk cache
-//        mapView.setDiskCacheEnabled(true);
-//
-//        mapView.setUserLocationEnabled(true);
-//        // Set the map center and zoom to the saved values or use the default values
-//        if (savedInstanceState == null) {
-//            mapView.setCenter((FlavorUtils.isStore() && mapView.getUserLocation() != null) ? mapView.getUserLocation() : configManager.getDefaultCenter());
-//            mapView.setZoom(configManager.getDefaultZoom());
-//        } else {
-//            mapView.setCenter((LatLng) savedInstanceState.getParcelable(LOCATION));
-//            mapView.setZoom(savedInstanceState.getFloat(ZOOM_LEVEL));
-//        }
-//
+
+
+
+        // Enable disk cache
+//        mapboxMap.setDiskCacheEnabled(true);
+
+        mapboxMap.setMyLocationEnabled(true);
+        // Set the map center and zoom to the saved values or use the default values
+        Location myLocation = mapboxMap.getMyLocation();
+        CameraPosition.Builder cameraBuilder = new CameraPosition.Builder();
+
+        if (savedInstanceState == null) {
+            cameraBuilder.target((FlavorUtils.isStore() && myLocation != null) ?
+                    new LatLng(myLocation.getLatitude(), myLocation.getLongitude()) : configManager.getDefaultCenter())
+            .zoom(configManager.getDefaultZoom());
+        } else {
+            cameraBuilder.target((LatLng) savedInstanceState.getParcelable(LOCATION))
+            .zoom(savedInstanceState.getFloat(ZOOM_LEVEL));
+        }
+
+        mapboxMap.setCameraPosition(cameraBuilder.build());
+
 //        mapView.setOnTilesLoadedListener(new TilesLoadedListener() {
 //            @Override
 //            public boolean onTilesLoaded() {
@@ -953,12 +960,13 @@ public class MapFragment extends Fragment {
 
             case WAY_EDITION:
                 loadAreaForEdition();
-                if (vectorialOverlay != null) {
-                    vectorialOverlay.setMovingObjectId(null);
-                    vectorialOverlay.setSelectedObjectId(null);
-                } else if (markerSelected == null && markerSelectedId != -1) {
-                    eventBus.post(new PleaseSelectNodeRefByID(markerSelectedId));
-                }
+//                if (vectorialOverlay != null) {
+//                    vectorialOverlay.setMovingObjectId(null);
+//                    vectorialOverlay.setSelectedObjectId(null);
+//                }
+//                else if (markerSelected == null && markerSelectedId != -1) {
+//                    eventBus.post(new PleaseSelectNodeRefByID(markerSelectedId));
+//                }
                 break;
 
             default:
@@ -1157,12 +1165,12 @@ public class MapFragment extends Fragment {
 
     @OnClick(R.id.edit_way_elemnt_position)
     public void setEditNodeRefPosition() {
-        vectorialOverlay.setMovingObjectId(((PoiNodeRef) markerSelected.getRelatedObject()).getNodeBackendId());
+//        vectorialOverlay.setMovingObjectId(((PoiNodeRef) markerSelected.getRelatedObject()).getNodeBackendId());
         switchMode(MapMode.NODE_REF_POSITION_EDITION);
     }
 
-    private List<Overlay> overlays = new ArrayList<>();
-    Set<VectorialObject> vectorialObjectsEdition = new HashSet<>();
+    private List<Polyline> polylines = new ArrayList<>();
+    //Set<VectorialObject> vectorialObjectsEdition = new HashSet<>();
 
     //get data from overpass
     private void downloadAreaForEdition() {
@@ -1189,8 +1197,8 @@ public class MapFragment extends Fragment {
             removeMarker(locationMarker);
         }
         markersNodeRef.clear();
-        for (Overlay overlay : overlays) {
-            mapView.removeOverlay(overlay);
+        for (Polyline polyline : polylines) {
+            mapboxMap.removePolyline(polyline);
         }
     }
 
@@ -1212,7 +1220,9 @@ public class MapFragment extends Fragment {
 
 
             markerSelected = locationMarkerOptions.getMarker();
-            vectorialOverlay.setSelectedObjectId(poiNodeRef.getNodeBackendId());
+
+//            vectorialOverlay.setSelectedObjectId(poiNodeRef.getNodeBackendId());
+
             onNodeRefClick(locationMarkerOptions.getMarker());
             mapView.invalidate();
 
@@ -1222,7 +1232,7 @@ public class MapFragment extends Fragment {
     }
 
     private void unselectNoderef() {
-        vectorialOverlay.setSelectedObjectId(null);
+//        vectorialOverlay.setSelectedObjectId(null);
         markerSelected = null;
         markerSelectedId = -1L;
         editNodeRefPosition.setVisibility(View.GONE);
@@ -1727,7 +1737,7 @@ public class MapFragment extends Fragment {
     @BindView(R.id.level_bar)
     LevelBar levelBar;
 
-    private VectorialOverlay vectorialOverlay;
+    //private VectorialOverlay vectorialOverlay;
     private boolean isVectorial = false;
     private double currentLevel = 0;
     Set<VectorialObject> vectorialObjectsBackground = new HashSet<>();
@@ -1740,70 +1750,70 @@ public class MapFragment extends Fragment {
             progressBar.setVisibility(View.GONE);
         }
         if (mapMode == MapMode.WAY_EDITION) {
-            Timber.d("Showing nodesRefs : " + event.getVectorialObjects().size());
-            clearAllNodeRef();
-            vectorialObjectsEdition.clear();
-            vectorialObjectsEdition.addAll(event.getVectorialObjects());
-            updateVectorial(event.getLevels());
-
-            if (getMarkerSelected() != null && markerSelected.getType().equals(LocationMarker.MarkerType.NODE_REF)) {
-                boolean reselectMaker = false;
-                for (VectorialObject v : vectorialObjectsEdition) {
-                    if (v.getId().equals(((PoiNodeRef) markerSelected.getRelatedObject()).getNodeBackendId())) {
-                        reselectMaker = true;
-                    }
-                }
-                if (!reselectMaker) {
-                    unselectNoderef();
-                }
-            }
+//            Timber.d("Showing nodesRefs : " + event.getVectorialObjects().size());
+//            clearAllNodeRef();
+//            vectorialObjectsEdition.clear();
+//            vectorialObjectsEdition.addAll(event.getVectorialObjects());
+//            updateVectorial(event.getLevels());
+//
+//            if (getMarkerSelected() != null && markerSelected.getType().equals(LocationMarker.MarkerType.NODE_REF)) {
+//                boolean reselectMaker = false;
+//                for (VectorialObject v : vectorialObjectsEdition) {
+//                    if (v.getId().equals(((PoiNodeRef) markerSelected.getRelatedObject()).getNodeBackendId())) {
+//                        reselectMaker = true;
+//                    }
+//                }
+//                if (!reselectMaker) {
+//                    unselectNoderef();
+//                }
+//            }
         }
     }
 
     private void updateVectorial(TreeSet<Double> levels) {
-
-        if (vectorialOverlay == null) {
-            Set<VectorialObject> vectorialObjects = new HashSet<>();
-            vectorialObjects.addAll(vectorialObjectsBackground);
-            vectorialObjects.addAll(vectorialObjectsEdition);
-
-            vectorialOverlay = new VectorialOverlay(zoomVectorial, vectorialObjects, levels, getResources().getDisplayMetrics().scaledDensity);
-            mapView.addOverlay(vectorialOverlay);
-        } else {
-
-            Set<VectorialObject> vectorialObjects = new HashSet<>();
-            vectorialObjects.addAll(vectorialObjectsBackground);
-            vectorialObjects.addAll(vectorialObjectsEdition);
-
-            vectorialOverlay.setVectorialObjects(vectorialObjects);
-            vectorialOverlay.setLevels(levels);
-        }
-        invalidateMap();
-
-        levelBar.setLevels(vectorialOverlay.getLevels(), currentLevel);
-        if (levelBar.getLevels().length < 2) {
-            levelBar.setVisibility(View.INVISIBLE);
-        } else {
-            levelBar.setVisibility(View.VISIBLE);
-        }
+//
+//        if (vectorialOverlay == null) {
+//            Set<VectorialObject> vectorialObjects = new HashSet<>();
+//            vectorialObjects.addAll(vectorialObjectsBackground);
+//            vectorialObjects.addAll(vectorialObjectsEdition);
+//
+//            vectorialOverlay = new VectorialOverlay(zoomVectorial, vectorialObjects, levels, getResources().getDisplayMetrics().scaledDensity);
+//            /** TODO **/
+//            //mapView.addOverlay(vectorialOverlay);
+//        } else {
+//            Set<VectorialObject> vectorialObjects = new HashSet<>();
+//            vectorialObjects.addAll(vectorialObjectsBackground);
+//            vectorialObjects.addAll(vectorialObjectsEdition);
+//
+//            vectorialOverlay.setVectorialObjects(vectorialObjects);
+//            vectorialOverlay.setLevels(levels);
+//        }
+//        invalidateMap();
+//
+//        levelBar.setLevels(vectorialOverlay.getLevels(), currentLevel);
+//        if (levelBar.getLevels().length < 2) {
+//            levelBar.setVisibility(View.INVISIBLE);
+//        } else {
+//            levelBar.setVisibility(View.VISIBLE);
+//        }
     }
 
     private void clearVectorialEdition() {
-        if (vectorialOverlay == null) {
-            return;
-        } else {
-            vectorialObjectsEdition.clear();
-            Set<VectorialObject> vectorialObjects = new HashSet<>();
-            vectorialObjects.addAll(vectorialObjectsBackground);
-            vectorialOverlay.setVectorialObjects(vectorialObjects);
-            invalidateMap();
-        }
-        levelBar.setLevels(vectorialOverlay.getLevels(), currentLevel);
-        if (levelBar.getLevels().length < 2) {
-            levelBar.setVisibility(View.INVISIBLE);
-        } else {
-            levelBar.setVisibility(View.VISIBLE);
-        }
+//        if (vectorialOverlay == null) {
+//            return;
+//        } else {
+//            vectorialObjectsEdition.clear();
+//            Set<VectorialObject> vectorialObjects = new HashSet<>();
+//            vectorialObjects.addAll(vectorialObjectsBackground);
+//            vectorialOverlay.setVectorialObjects(vectorialObjects);
+//            invalidateMap();
+//        }
+//        levelBar.setLevels(vectorialOverlay.getLevels(), currentLevel);
+//        if (levelBar.getLevels().length < 2) {
+//            levelBar.setVisibility(View.INVISIBLE);
+//        } else {
+//            levelBar.setVisibility(View.VISIBLE);
+//        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

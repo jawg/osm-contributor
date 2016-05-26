@@ -44,19 +44,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.mapbox.mapboxsdk.constants.MapboxConstants;
-import com.mapbox.mapboxsdk.tileprovider.MapTile;
-import com.mapbox.mapboxsdk.tileprovider.MapTileCache;
-import com.mapbox.mapboxsdk.tileprovider.modules.MapTileDownloader;
-import com.mapbox.mapboxsdk.tileprovider.tilesource.TileLayer;
-import com.mapbox.mapboxsdk.util.NetworkUtils;
-import com.mapbox.mapboxsdk.views.util.TileLoadedListener;
-import com.mapbox.mapboxsdk.views.util.TilesLoadedListener;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import uk.co.senab.bitmapcache.CacheableBitmapDrawable;
 
 /**
  * Tweak of {@link com.mapbox.mapboxsdk.tileprovider.tilesource.WebSourceTileLayer} at v0.7.3.
