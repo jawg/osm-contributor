@@ -14,7 +14,7 @@ import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
  * Contains options for LocationMarker.
  * @param <T> Parameter of related object
  */
-public class LocationMarkerOptions<T> extends BaseMarkerOptions {
+public class LocationMarkerOptions<T> extends BaseMarkerOptions<LocationMarker<T>, LocationMarkerOptions<T>> {
 
     // Must be declared because BaseMarkerOptions implements Parceable. DO NOT REMOVE !
     private Parcelable.Creator CREATOR;
@@ -24,7 +24,7 @@ public class LocationMarkerOptions<T> extends BaseMarkerOptions {
     private LocationMarker.MarkerType markerType;
 
 
-    public BaseMarkerOptions relatedObject(T relatedObject) {
+    public LocationMarkerOptions<T> relatedObject(T relatedObject) {
         this.relatedObject = relatedObject;
         setMarkerType();
         return this;
