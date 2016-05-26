@@ -19,6 +19,7 @@
 package io.mapsquare.osmcontributor.map;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -98,6 +99,7 @@ public class MapFragmentPresenter {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onPoiTypesLoaded(PoiTypesLoaded event) {
         Timber.d("Received event PoiTypesLoaded");
+        Log.i(MapFragmentPresenter.class.getSimpleName(), "onPoiTypesLoaded: ");
         poiTypes = event.getPoiTypes();
         setForceRefreshPoi();
         setForceRefreshNotes();
@@ -119,6 +121,7 @@ public class MapFragmentPresenter {
     private LatLngBounds triggerReloadPoiLatLngBounds;
 
     public void loadPoisIfNeeded() {
+        Log.i(MapFragmentPresenter.class.getSimpleName(), "loadPoisIfNeeded: ");
         if (poiTypes == null) {
             Timber.v("PleaseLoadPoiTypes");
             eventBus.post(new PleaseLoadPoiTypes());
@@ -129,6 +132,7 @@ public class MapFragmentPresenter {
             if (mapFragment.getZoomLevel() > 15) {
                 if (shouldReload(viewLatLngBounds)) {
                     Timber.d("Reloading pois");
+                    Log.i(MapFragmentPresenter.class.getSimpleName(), "loadPoisIfNeeded: ");
                     previousZoom = mapFragment.getZoomLevel();
                     triggerReloadPoiLatLngBounds = enlarge(viewLatLngBounds, 1.5);
                     eventBus.post(new PleaseLoadPoisEvent(enlarge(viewLatLngBounds, 1.75)));
@@ -166,6 +170,7 @@ public class MapFragmentPresenter {
     }
 
     LatLngBounds enlarge(LatLngBounds viewLatLngBounds, double factor) {
+        Log.i(MapFragmentPresenter.class.getSimpleName(), "enlarge: " + viewLatLngBounds);
         double n = viewLatLngBounds.getLatNorth();
         double e = viewLatLngBounds.getLonEast();
         double s = viewLatLngBounds.getLatSouth();
@@ -178,12 +183,14 @@ public class MapFragmentPresenter {
     }
 
     public void downloadAreaPoisAndNotes() {
+        Log.i(MapFragmentPresenter.class.getSimpleName(), "downloadAreaPoisAndNotes: ");
         mapFragment.showProgressBar(true);
         eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromLatLngBounds(enlarge(mapFragment.getViewLatLngBounds(), 1.75))));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPoisAndNotesDownloadedEvent(PoisAndNotesDownloadedEvent event) {
+        Log.i(MapFragmentPresenter.class.getSimpleName(), "onPoisAndNotesDownloadedEvent: ");
         mapFragment.showProgressBar(false);
         forceRefreshPoi = true;
         loadPoisIfNeeded();

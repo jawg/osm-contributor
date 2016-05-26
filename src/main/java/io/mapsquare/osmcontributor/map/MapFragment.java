@@ -29,12 +29,14 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -92,6 +94,7 @@ import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.core.events.NodeRefAroundLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseDeletePoiEvent;
+import io.mapsquare.osmcontributor.core.events.PleaseLoadNodeRefAround;
 import io.mapsquare.osmcontributor.core.events.PleaseRemoveArpiMarkerEvent;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
@@ -317,6 +320,33 @@ public class MapFragment extends Fragment {
         mapboxMap.setCameraPosition(cameraBuilder.build());
         onResume();
         switchMode(MapMode.DEFAULT);
+
+        mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(@NonNull LatLng point) {
+                onMapClick(point);
+            }
+        });
+
+
+    }
+
+    /**
+     * User click on map
+     * @param point
+     */
+    private void onMapClick(LatLng point) {
+        if (mapMode == MapMode.DETAIL_POI || mapMode == MapMode.DETAIL_NOTE) {
+            // it prevents to reselect the marker
+            markerSelectedId = -1L;
+            switchMode(MapMode.DEFAULT);
+        }
+        if (mapMode == MapMode.WAY_EDITION) {
+            eventBus.post(new PleaseLoadNodeRefAround(point.getLatitude(), point.getLongitude()));
+        }
+        if (mapMode == MapMode.DEFAULT && addPoiFloatingButton.isExpanded()) {
+            addPoiFloatingButton.collapse();
+        }
     }
 
     private void instantiateMapView(final Bundle savedInstanceState) {
@@ -462,17 +492,6 @@ public class MapFragment extends Fragment {
 //
 //            @Override
 //            public void onTapMap(MapView mapView, ILatLng iLatLng) {
-//                if (mapMode == MapMode.DETAIL_POI || mapMode == MapMode.DETAIL_NOTE) {
-//                    // it prevents to reselect the marker
-//                    markerSelectedId = -1L;
-//                    switchMode(MapMode.DEFAULT);
-//                }
-//                if (mapMode == MapMode.WAY_EDITION) {
-//                    eventBus.post(new PleaseLoadNodeRefAround(iLatLng.getLatitude(), iLatLng.getLongitude()));
-//                }
-//                if (mapMode == MapMode.DEFAULT && floatingMenuAddFewValues.isExpanded()) {
-//                    floatingMenuAddFewValues.collapse();
-//                }
 //
 //            }
 //
@@ -581,12 +600,11 @@ public class MapFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        presenter.register();
-
         //enable geolocation of user
         if (mapboxMap != null) {
             eventBus.register(this);
             eventBus.post(new PleaseInitializeArpiEvent());
+            presenter.register();
             presenter.setForceRefreshPoi();
             presenter.setForceRefreshNotes();
             presenter.loadPoisIfNeeded();
@@ -904,6 +922,7 @@ public class MapFragment extends Fragment {
     }
 
     private void switchMode(MapMode mode) {
+        Log.i(MapFragment.class.getSimpleName(), "switchMode: " + mode);
         mapMode = mode;
         Bitmap bitmap;
 
@@ -928,7 +947,7 @@ public class MapFragment extends Fragment {
          * TODO
          */
 //        mapboxMap.setMinZoom(properties.isZoomOutLimited() ? zoomVectorial : mapboxMap.getTileProvider().getMinimumZoomLevel());
-        mapboxMap.setMinZoom(zoomVectorial);
+//        mapboxMap.setMinZoom(zoomVectorial);
 
         tracker.send(new HitBuilders.EventBuilder()
                 .setCategory(Category.MapMode.getValue())
@@ -976,7 +995,7 @@ public class MapFragment extends Fragment {
             default:
                 poiTypeSelected = null;
                 poiTypeEditText.setText("");
-                floatingMenuAddFewValues.collapse();
+                addPoiFloatingButton.collapse();
                 break;
         }
 
@@ -1069,6 +1088,7 @@ public class MapFragment extends Fragment {
     }
 
     public LatLngBounds getViewLatLngBounds() {
+        Log.i(MapFragment.class.getSimpleName(), "getViewLatLngBounds: " + mapboxMap.getProjection().getVisibleRegion().latLngBounds);
         return mapboxMap.getProjection().getVisibleRegion().latLngBounds;
     }
 
@@ -1251,7 +1271,7 @@ public class MapFragment extends Fragment {
     ImageView handImageView;
 
     @BindView(R.id.add_poi_few_values)
-    FloatingActionsMenu floatingMenuAddFewValues;
+    FloatingActionsMenu addPoiFloatingButton;
 
     @BindView(R.id.floating_btn_wrapper)
     RelativeLayout floatingBtnWrapper;
@@ -1361,8 +1381,8 @@ public class MapFragment extends Fragment {
 
         //which kind of add to display depending on screen size
         // if in store flavor show the spinner
-        floatingMenuAddFewValues.setVisibility(View.VISIBLE);
-        floatingMenuAddFewValues.setOnClickListener(new View.OnClickListener() {
+        addPoiFloatingButton.setVisibility(View.VISIBLE);
+        addPoiFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (isTuto) {
@@ -1374,7 +1394,7 @@ public class MapFragment extends Fragment {
     }
 
     protected void loadPoiTypeFloatingBtn() {
-        floatingMenuAddFewValues.removeAllButtons();
+        addPoiFloatingButton.removeAllButtons();
         FloatingActionButton floatingActionButton;
 
         //add note
@@ -1389,14 +1409,14 @@ public class MapFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     switchMode(MapMode.NOTE_CREATION);
-                    floatingMenuAddFewValues.collapse();
+                    addPoiFloatingButton.collapse();
                     if (isTuto) {
                         nextTutoStep();
                         nextTutoStep();
                     }
                 }
             });
-            floatingMenuAddFewValues.addButton(floatingActionButton);
+            addPoiFloatingButton.addButton(floatingActionButton);
         }
 
         if (presenter.getNumberOfPoiTypes() <= maxPoiType) {
@@ -1414,7 +1434,7 @@ public class MapFragment extends Fragment {
                         if (configManager.hasPoiAddition()) {
                             switchMode(MapMode.POI_CREATION);
                             poiTypeSelected(poiType);
-                            floatingMenuAddFewValues.collapse();
+                            addPoiFloatingButton.collapse();
                             if (isTuto) {
                                 nextTutoStep();
                             }
@@ -1423,7 +1443,7 @@ public class MapFragment extends Fragment {
                         }
                     }
                 });
-                floatingMenuAddFewValues.addButton(floatingActionButton);
+                addPoiFloatingButton.addButton(floatingActionButton);
             }
         } else {
             // add a btn for all poiTypes
@@ -1446,7 +1466,7 @@ public class MapFragment extends Fragment {
                     }
                 }
             });
-            floatingMenuAddFewValues.addButton(floatingActionButton);
+            addPoiFloatingButton.addButton(floatingActionButton);
         }
 
         // the floating btn and tthe poitypes are loaded we can now start the tuto
@@ -2092,18 +2112,18 @@ public class MapFragment extends Fragment {
                     .setStyle(R.style.CustomShowcaseTheme)
                     .setContentTitle(getString(R.string.tuto_title_press_create))
                     .setContentText(getString(R.string.tuto_text_press_create))
-                    .setTarget(new ViewTarget(floatingMenuAddFewValues.getmAddButton()))
+                    .setTarget(new ViewTarget(addPoiFloatingButton.getmAddButton()))
                     .setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 switch (showcaseCounter) {
                                                     case 0:
-                                                        floatingMenuAddFewValues.expand();
+                                                        addPoiFloatingButton.expand();
                                                         nextTutoStep();
                                                         break;
 
                                                     case 1:
-                                                        floatingMenuAddFewValues.getChildAt(1).performClick();
+                                                        addPoiFloatingButton.getChildAt(1).performClick();
                                                         break;
 
                                                     case 2:
@@ -2141,12 +2161,12 @@ public class MapFragment extends Fragment {
                     //compact view
                     showcaseView.setContentText(getString(R.string.tuto_text_poi_or_note));
                 }
-                showcaseView.setTarget(new ViewTarget(floatingMenuAddFewValues.getChildAt(0)));
+                showcaseView.setTarget(new ViewTarget(addPoiFloatingButton.getChildAt(0)));
                 break;
 
             case 1:
                 showcaseView.setContentText(getString(R.string.tuto_text_choose_type));
-                showcaseView.setTarget(new ViewTarget(floatingMenuAddFewValues.getChildAt(0)));
+                showcaseView.setTarget(new ViewTarget(addPoiFloatingButton.getChildAt(0)));
                 break;
 
             case 2:

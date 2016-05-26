@@ -141,7 +141,6 @@ public class MapActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
         setSupportActionBar(toolbar);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
