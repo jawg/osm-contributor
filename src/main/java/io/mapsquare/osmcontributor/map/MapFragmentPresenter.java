@@ -58,6 +58,19 @@ import timber.log.Timber;
 
 public class MapFragmentPresenter {
 
+    /*=========================================*/
+    /*------------ATTRIBUTES-------------------*/
+    /*=========================================*/
+    private boolean forceRefreshPoi = false;
+
+    private boolean forceRefreshNotes = false;
+
+    private List<PoiType> poiTypes = null;
+
+    private Float previousZoom;
+
+    private LatLngBounds triggerReloadPoiLatLngBounds;
+
     MapFragment mapFragment;
 
     @Inject
@@ -66,24 +79,19 @@ public class MapFragmentPresenter {
     @Inject
     ConfigManager configManager;
 
-    private boolean forceRefreshPoi = false;
-    private boolean forceRefreshNotes = false;
 
+    /*=========================================*/
+    /*------------CONSTRUCTORS-----------------*/
+    /*=========================================*/
     public MapFragmentPresenter(MapFragment mapFragment) {
         this.mapFragment = mapFragment;
         ((OsmTemplateApplication) mapFragment.getActivity().getApplication()).getOsmTemplateComponent().inject(this);
     }
 
-    public void register() {
-        eventBus.register(this);
-    }
 
-    public void unregister() {
-        eventBus.unregister(this);
-    }
-
-    private List<PoiType> poiTypes = null;
-
+    /*=========================================*/
+    /*------------GETTER/SETTER----------------*/
+    /*=========================================*/
     public int getNumberOfPoiTypes() {
         return poiTypes != null ? poiTypes.size() : 0;
     }
@@ -96,6 +104,18 @@ public class MapFragmentPresenter {
         return poiTypes.get(id);
     }
 
+    public void setForceRefreshPoi() {
+        this.forceRefreshPoi = true;
+    }
+
+    public void setForceRefreshNotes() {
+        this.forceRefreshNotes = true;
+    }
+
+
+    /*=========================================*/
+    /*----------------EVENTS-------------------*/
+    /*=========================================*/
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onPoiTypesLoaded(PoiTypesLoaded event) {
         Timber.d("Received event PoiTypesLoaded");
@@ -117,11 +137,18 @@ public class MapFragmentPresenter {
         loadPoisIfNeeded();
     }
 
-    private Float previousZoom;
-    private LatLngBounds triggerReloadPoiLatLngBounds;
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoisAndNotesDownloadedEvent(PoisAndNotesDownloadedEvent event) {
+        mapFragment.showProgressBar(false);
+        forceRefreshPoi = true;
+        loadPoisIfNeeded();
+    }
 
+
+    /*=========================================*/
+    /*------------CODE-------------------------*/
+    /*=========================================*/
     public void loadPoisIfNeeded() {
-        Log.i(MapFragmentPresenter.class.getSimpleName(), "loadPoisIfNeeded: ");
         if (poiTypes == null) {
             Timber.v("PleaseLoadPoiTypes");
             eventBus.post(new PleaseLoadPoiTypes());
@@ -132,7 +159,6 @@ public class MapFragmentPresenter {
             if (mapFragment.getZoomLevel() > 15) {
                 if (shouldReload(viewLatLngBounds)) {
                     Timber.d("Reloading pois");
-                    Log.i(MapFragmentPresenter.class.getSimpleName(), "loadPoisIfNeeded: ");
                     previousZoom = mapFragment.getZoomLevel();
                     triggerReloadPoiLatLngBounds = enlarge(viewLatLngBounds, 1.5);
                     eventBus.post(new PleaseLoadPoisEvent(enlarge(viewLatLngBounds, 1.75)));
@@ -148,88 +174,87 @@ public class MapFragmentPresenter {
         }
     }
 
-    public void setForceRefreshPoi() {
-        this.forceRefreshPoi = true;
+    public void downloadAreaPoisAndNotes() {
+        mapFragment.showProgressBar(true);
+        eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromLatLngBounds(enlarge(mapFragment.getViewLatLngBounds(), 1.75))));
     }
 
-    public void setForceRefreshNotes() {
-        this.forceRefreshNotes = true;
-    }
 
+    /*=========================================*/
+    /*------------PRIVATE CODE-----------------*/
+    /*=========================================*/
     private boolean shouldReload(LatLngBounds viewLatLngBounds) {
         if (forceRefreshPoi || forceRefreshNotes) {
             forceRefreshPoi = false;
             forceRefreshNotes = false;
             return true;
         }
-        if (previousZoom != null && previousZoom < 15) {
-            return true;
-        }
-        return triggerReloadPoiLatLngBounds == null
-                || !triggerReloadPoiLatLngBounds.union(viewLatLngBounds).equals(triggerReloadPoiLatLngBounds);
+        return previousZoom != null && previousZoom < 15 ||
+                triggerReloadPoiLatLngBounds == null || !triggerReloadPoiLatLngBounds.union(viewLatLngBounds).equals(triggerReloadPoiLatLngBounds);
     }
 
-    LatLngBounds enlarge(LatLngBounds viewLatLngBounds, double factor) {
-        Log.i(MapFragmentPresenter.class.getSimpleName(), "enlarge: " + viewLatLngBounds);
+    private LatLngBounds enlarge(LatLngBounds viewLatLngBounds, double factor) {
         double n = viewLatLngBounds.getLatNorth();
         double e = viewLatLngBounds.getLonEast();
         double s = viewLatLngBounds.getLatSouth();
         double w = viewLatLngBounds.getLonWest();
         double f = (factor - 1) / 2;
         return new LatLngBounds.Builder()
-        .include(new LatLng(n + f * (n - s), e + f * (e - w)))
+                .include(new LatLng(n + f * (n - s), e + f * (e - w)))
                 .include(new LatLng(s - f * (n - s), w - f * (e - w)))
                 .build();
     }
 
-    public void downloadAreaPoisAndNotes() {
-        Log.i(MapFragmentPresenter.class.getSimpleName(), "downloadAreaPoisAndNotes: ");
-        mapFragment.showProgressBar(true);
-        eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromLatLngBounds(enlarge(mapFragment.getViewLatLngBounds(), 1.75))));
+    private void setIcon(LocationMarkerOptions poiMarkerOptions, Object relatedObject, boolean selected) {
+        Bitmap bitmap;
+        if (relatedObject instanceof Poi) {
+            Poi poi = (Poi) relatedObject;
+            bitmap = mapFragment.getBitmapHandler().getMarkerBitmap(poi.getType(), Poi.computeState(selected, false, poi.getUpdated()));
+        } else {
+            Note note = (Note) relatedObject;
+            bitmap = mapFragment.getBitmapHandler().getNoteBitmap(Note.computeState(note, selected, note.getUpdated()));
+        }
+
+        if (bitmap != null) {
+            poiMarkerOptions.icon(IconFactory.getInstance(mapFragment.getActivity()).fromBitmap(bitmap));
+        }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPoisAndNotesDownloadedEvent(PoisAndNotesDownloadedEvent event) {
-        Log.i(MapFragmentPresenter.class.getSimpleName(), "onPoisAndNotesDownloadedEvent: ");
-        mapFragment.showProgressBar(false);
-        forceRefreshPoi = true;
-        loadPoisIfNeeded();
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPoisLoadedEvent(PoisLoadedEvent event) {
         List<Poi> pois = event.getPois();
         Timber.d("Received event PoisLoaded  : " + pois.size());
         forceRefreshPoi = false;
-
-        List<Long> poiIds = new ArrayList<>(pois.size());
         LocationMarker markerSelected = mapFragment.getMarkerSelected();
+        List<Long> poiIds = new ArrayList<>(pois.size());
+
         for (Poi poi : pois) {
             poiIds.add(poi.getId());
-            LocationMarkerOptions<Poi> locationMarker = mapFragment.getMarkersPoi().get(poi.getId());
+            LocationMarkerOptions<Poi> poiMarkerOptions = mapFragment.getMarkersPoi().get(poi.getId());
             boolean selected = false;
-            if (locationMarker == null) {
-                locationMarker = new LocationMarkerOptions<Poi>().relatedObject(poi).position(poi.getPosition());
+
+            if (poiMarkerOptions == null) {
+                poiMarkerOptions = new LocationMarkerOptions<Poi>().relatedObject(poi).position(poi.getPosition());
 
                 //is it the marker selected
                 if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && poi.getId().equals(mapFragment.getMarkerSelectedId())) {
-                    mapFragment.setMarkerSelected(locationMarker.getMarker());
                     selected = true;
-                } else if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && markerSelected != null &&
-                        poi.getId().equals(((Poi) markerSelected.getRelatedObject()).getId())) {
+                    mapFragment.setMarkerSelected(poiMarkerOptions.getMarker());
+                } else if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && markerSelected != null && poi.getId().equals(((Poi) markerSelected.getRelatedObject()).getId())) {
                     selected = true;
                 }
 
                 //the poi in edition should be hidden
-                if (!(markerSelected != null && mapFragment.getMapMode() == MapMode.POI_POSITION_EDITION && markerSelected.equals(locationMarker)) && !poi.getToDelete()) {
-                    mapFragment.addMarker(locationMarker);
+                if (!(markerSelected != null && mapFragment.getMapMode() == MapMode.POI_POSITION_EDITION && markerSelected.equals(poiMarkerOptions.getMarker())) && !poi.getToDelete()) {
+                    setIcon(poiMarkerOptions, poi, selected);
+                    mapFragment.addMarker(poiMarkerOptions);
                 }
 
             } else {
-                locationMarker.relatedObject(poi);
+                poiMarkerOptions.relatedObject(poi);
 
-                if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && (poi.getId().equals(mapFragment.getMarkerSelectedId()) ||
-                        markerSelected != null && poi.getId().equals(((Poi) markerSelected.getRelatedObject()).getId()))) {
+                if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && (poi.getId().equals(mapFragment.getMarkerSelectedId()) || markerSelected != null && poi.getId().equals(((Poi) markerSelected.getRelatedObject()).getId()))) {
                     selected = true;
                 }
 
@@ -240,11 +265,7 @@ public class MapFragmentPresenter {
             }
 
             // Draw the marker in the right color
-            Bitmap bitmap = mapFragment.getBitmapHandler().getMarkerBitmap(poi.getType(), Poi.computeState(selected, false, poi.getUpdated()));
-
-            if (bitmap != null) {
-                locationMarker.icon(IconFactory.getInstance(mapFragment.getActivity()).fromBitmap(bitmap));
-            }
+            setIcon(poiMarkerOptions, poi, selected);
         }
 
         mapFragment.removePoiMarkersNotIn(poiIds);
@@ -261,42 +282,35 @@ public class MapFragmentPresenter {
         mapFragment.invalidateMap();
     }
 
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNotesLoadedEvent(NotesLoadedEvent event) {
-        Timber.d("Showing notes : " + event.getNotes().size());
         List<Note> notes = event.getNotes();
+        Timber.d("Showing notes : " + notes.size());
         forceRefreshNotes = false;
-        LocationMarkerOptions<Note> marker;
-
+        LocationMarker markerSelected = mapFragment.getMarkerSelected();
         List<Long> noteIds = new ArrayList<>(notes.size());
+
         for (Note note : notes) {
             noteIds.add(note.getId());
-            if (mapFragment.getNote(note.getId()) == null) {
+            LocationMarkerOptions<Note> markerOptions = mapFragment.getNote(note.getId());
+            boolean selected = false;
 
-                marker = new LocationMarkerOptions<Note>().relatedObject(note).position(note.getPosition());
-                Bitmap bitmap;
+            if (markerOptions == null) {
+                markerOptions = new LocationMarkerOptions<Note>().relatedObject(note).position(note.getPosition());
 
                 if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && note.getId().equals(mapFragment.getMarkerSelectedId())) {
-                    mapFragment.setMarkerSelected(marker.getMarker());
-                    bitmap = mapFragment.getBitmapHandler().getNoteBitmap(Note.computeState(note, true, false));
-                } else {
-                    bitmap = mapFragment.getBitmapHandler().getNoteBitmap(Note.computeState(note, false, false));
+                    selected = true;
+                    mapFragment.setMarkerSelected(markerOptions.getMarker());
                 }
 
-                if (bitmap != null) {
-                    marker.icon(IconFactory.getInstance(mapFragment.getActivity()).fromBitmap(bitmap));
-                }
-                mapFragment.addNote(marker);
+                setIcon(markerOptions, note, selected);
+                mapFragment.addNote(markerOptions);
             } else {
-                boolean selected = false;
-                LocationMarkerOptions<Note> currentMarker = mapFragment.getNote(note.getId());
-                // refresh the note inside the marker the data may have changed
-                currentMarker.relatedObject(note);
+                markerOptions.relatedObject(note);
                 //if it's the selected marker refresh the banner view
 
-                if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && mapFragment.getMarkerSelected() != null
-                        && note.getId().equals(((Note) mapFragment.getMarkerSelected().getRelatedObject()).getId())) {
-                    //detailNoteFragment.setNote(mapFragment.getMarkerSelected().getNote());
+                if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && markerSelected != null && note.getId().equals(((Note) markerSelected.getRelatedObject()).getId())) {
                     selected = true;
                 }
 
@@ -305,11 +319,7 @@ public class MapFragmentPresenter {
                     eventBus.post(new PleaseChangeValuesDetailNoteFragmentEvent(note));
                 }
 
-                // refresh the icon
-                Bitmap bitmap = mapFragment.getBitmapHandler().getNoteBitmap(Note.computeState(note, selected, false));
-                if (bitmap != null) {
-                    currentMarker.icon(IconFactory.getInstance(mapFragment.getActivity()).fromBitmap(bitmap));
-                }
+                setIcon(markerOptions, note, selected);
             }
         }
 
@@ -320,9 +330,18 @@ public class MapFragmentPresenter {
 
         }
 
-        if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && mapFragment.getMarkerSelected() == null) {
+        if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && markerSelected == null) {
             mapFragment.setMarkerSelectedId(-1L);
         }
         mapFragment.invalidateMap();
+    }
+
+
+    public void register() {
+        eventBus.register(this);
+    }
+
+    public void unregister() {
+        eventBus.unregister(this);
     }
 }
