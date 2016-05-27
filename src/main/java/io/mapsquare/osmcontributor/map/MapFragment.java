@@ -340,99 +340,7 @@ public class MapFragment extends Fragment {
             });
         }
 
-        // Instantiate the different tiles sources
-        //instantiateTileSources();
 
-
-
-        // Set the tile source has the Osm tile source
-//        switchToTileSource(OSM_TILE_SOURCE);
-
-
-
-        // Enable disk cache
-//        mapboxMap.setDiskCacheEnabled(true);
-
-
-//        mapView.setOnTilesLoadedListener(new TilesLoadedListener() {
-//            @Override
-//            public boolean onTilesLoaded() {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onTilesLoadStarted() {
-//                return false;
-//            }
-//        });
-//
-//        final DecimalFormat df = new DecimalFormat("#.##");
-//        df.setRoundingMode(RoundingMode.DOWN);
-//        zoomLevelText.setText(df.format(getZoomLevel()));
-//
-//        mapView.addListener(new MapListener() {
-//            int initialX;
-//            int initialY;
-//            int deltaX;
-//            int deltaY;
-//
-//            @Override
-//            public void onScroll(ScrollEvent scrollEvent) {
-//                deltaX = initialX - scrollEvent.getX();
-//                deltaY = initialY - scrollEvent.getY();
-//
-//                // 20 px delta before it's worth checking
-//                int minPixelsDeltaBeforeCheck = 100;
-//
-//                if (Math.abs(deltaX) > minPixelsDeltaBeforeCheck || Math.abs(deltaY) > minPixelsDeltaBeforeCheck) {
-//                    initialX = scrollEvent.getX();
-//                    initialY = scrollEvent.getY();
-//                    presenter.loadPoisIfNeeded();
-//
-//                    if (getZoomLevel() > zoomVectorial) {
-//                        LatLng center = mapboxMap.getCameraPosition().target;
-//                        geocoder.delayedReverseGeocoding(center.getLatitude(), center.getLongitude());
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onZoom(ZoomEvent zoomEvent) {
-//                // olduv
-//                // For testing purpose
-//                zoomLevelText.setText(df.format(zoomEvent.getZoomLevel()));
-//
-//                presenter.loadPoisIfNeeded();
-//                Timber.v("new zoom : %s", zoomEvent.getZoomLevel());
-//
-//                if (zoomEvent.getZoomLevel() < zoomVectorial) {
-//                    levelBar.setVisibility(View.INVISIBLE);
-//                    addressView.setVisibility(View.INVISIBLE);
-//                    if (isVectorial) {
-//                        isVectorial = false;
-//                        applyPoiFilter();
-//                        applyNoteFilter();
-//                    }
-//                } else {
-//                    LatLng center = mapboxMap.getCameraPosition().target;
-//                    geocoder.delayedReverseGeocoding(center.getLatitude(), center.getLongitude());
-//                    if (levelBar.getLevels().length > 1) {
-//                        levelBar.setVisibility(View.VISIBLE);
-//                    }
-//                    if (!isVectorial) {
-//                        isVectorial = true;
-//                        applyPoiFilter();
-//                        applyNoteFilter();
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onRotate(RotateEvent rotateEvent) {
-//                presenter.loadPoisIfNeeded();
-//            }
-//
-//        });
     }
 
     private void drawBounds() {
@@ -577,10 +485,6 @@ public class MapFragment extends Fragment {
     *---------------------------------------------------------*/
 
     private Tracker tracker;
-
-    public boolean isTuto() {
-        return isTuto;
-    }
 
     private enum Category {
         MapMode("Map Mode"),
@@ -775,35 +679,6 @@ public class MapFragment extends Fragment {
     }
 
 
-    public MapMode getMapMode() {
-        return mapMode;
-    }
-
-    public LocationMarker getMarkerSelected() {
-        return markerSelected;
-    }
-
-    public void setMarkerSelected(LocationMarker markerSelected) {
-        selectedMarkerType = markerSelected.getType();
-        this.markerSelected = markerSelected;
-    }
-
-    public Long getMarkerSelectedId() {
-        return markerSelectedId;
-    }
-
-    public void setMarkerSelectedId(Long markerSelectedId) {
-        this.markerSelectedId = markerSelectedId;
-    }
-
-    public LocationMarker.MarkerType getSelectedMarkerType() {
-        return selectedMarkerType;
-    }
-
-    public BitmapHandler getBitmapHandler() {
-        return bitmapHandler;
-    }
-
     public void switchMode(MapMode mode) {
         Log.i(MapFragment.class.getSimpleName(), "switchMode: " + mode);
         mapMode = mode;
@@ -926,7 +801,7 @@ public class MapFragment extends Fragment {
             downloadAreaForEdition();
         } else {
             // If flavor Store, allow the download only if the zoom > 18
-            if (!FlavorUtils.isStore() || getZoomLevel() >= 18) {
+            if (!FlavorUtils.isStore() || getZoomLevel() >= 16) {
                 presenter.downloadAreaPoisAndNotes();
                 Toast.makeText(getActivity(), R.string.download_in_progress, Toast.LENGTH_SHORT).show();
             } else {
@@ -968,15 +843,6 @@ public class MapFragment extends Fragment {
             }
             markerSelected = null;
         }
-    }
-
-    public LatLngBounds getViewLatLngBounds() {
-        Log.i(MapFragment.class.getSimpleName(), "getViewLatLngBounds: " + mapboxMap.getProjection().getVisibleRegion().latLngBounds);
-        return mapboxMap.getProjection().getVisibleRegion().latLngBounds;
-    }
-
-    public float getZoomLevel() {
-        return (float) mapboxMap.getCameraPosition().zoom;
     }
 
     public boolean hasMarkers() {
@@ -1026,11 +892,14 @@ public class MapFragment extends Fragment {
 
     private void removeMarker(LocationMarkerOptions marker) {
         if (marker != null) {
+            Log.i(MapFragment.class.getSimpleName(), "removeMarker: " + marker.getMarker().getId());
             mapboxMap.removeMarker(marker.getMarker());
             Object poi = marker.getMarker().getRelatedObject();
             eventBus.post(new PleaseRemoveArpiMarkerEvent(poi));
         }
     }
+
+
 
     public void reselectMarker() {
         // if I found the marker selected I click on it
@@ -1511,17 +1380,28 @@ public class MapFragment extends Fragment {
                 .build());
     }
 
-    public LatLng getMyLocation() {
-        return mapboxMap.getCameraPosition().target;
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChangeMapModeEvent(ChangeMapModeEvent event) {
         switchMode(event.getMapMode());
     }
 
+    public LatLng getMyLocation() {
+        return mapboxMap.getCameraPosition().target;
+    }
+
+    public void setZoomLevelText(String zoom) {
+        zoomLevelText.setText(zoom);
+    }
+
     public LocationMarkerOptions getMarkerOptions(LocationMarker.MarkerType markerType, Long id) {
         return markerType == LocationMarker.MarkerType.POI ? markersPoi.get(id) : markersNotes.get(id);
+    }
+    public LatLngBounds getViewLatLngBounds() {
+        return mapboxMap.getProjection().getVisibleRegion().latLngBounds;
+    }
+
+    public float getZoomLevel() {
+        return (float) mapboxMap.getCameraPosition().zoom;
     }
 
     /*-----------------------------------------------------------
@@ -1932,14 +1812,14 @@ public class MapFragment extends Fragment {
         applyNoteFilter();
     }
 
-    private void applyNoteFilter() {
+    public void applyNoteFilter() {
         for (LocationMarkerOptions marker : markersNotes.values()) {
             removeMarker(marker);
             addNoteMarkerDependingOnFilters(marker);
         }
     }
 
-    private void applyPoiFilter() {
+    public void applyPoiFilter() {
         for (LocationMarkerOptions marker : markersPoi.values()) {
             removeMarker(marker);
             addPoiMarkerDependingOnFilters(marker);
@@ -2201,4 +2081,69 @@ public class MapFragment extends Fragment {
 //    public void onPleaseSwitchMapStyleEvent(PleaseSwitchMapStyleEvent event) {
 //        switchTileSource();
 //    }
+
+    /*-----------------------------------------------------------
+    * GETTERS AND SETTERS
+    *---------------------------------------------------------*/
+
+    public int getZoomVectorial() {
+        return zoomVectorial;
+    }
+
+    public boolean isTuto() {
+        return isTuto;
+    }
+
+    public MapMode getMapMode() {
+        return mapMode;
+    }
+
+    public LocationMarker getMarkerSelected() {
+        return markerSelected;
+    }
+
+    public void setMarkerSelected(LocationMarker markerSelected) {
+        selectedMarkerType = markerSelected.getType();
+        this.markerSelected = markerSelected;
+    }
+
+    public Long getMarkerSelectedId() {
+        return markerSelectedId;
+    }
+
+    public void setMarkerSelectedId(Long markerSelectedId) {
+        this.markerSelectedId = markerSelectedId;
+    }
+
+    public LocationMarker.MarkerType getSelectedMarkerType() {
+        return selectedMarkerType;
+    }
+
+    public BitmapHandler getBitmapHandler() {
+        return bitmapHandler;
+    }
+
+    public LevelBar getLevelBar() {
+        return levelBar;
+    }
+
+    public TextView getAddressView() {
+        return addressView;
+    }
+
+    public boolean isVectorial() {
+        return isVectorial;
+    }
+
+    public void setVectorial(boolean vectorial) {
+        isVectorial = vectorial;
+    }
+
+    public Geocoder getGeocoder() {
+        return geocoder;
+    }
+
+    public MapFragmentPresenter getPresenter() {
+        return presenter;
+    }
 }
