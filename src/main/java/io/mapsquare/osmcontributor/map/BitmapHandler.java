@@ -44,8 +44,6 @@ import io.mapsquare.osmcontributor.core.model.PoiType;
  */
 @Singleton
 public class BitmapHandler {
-
-
     public static final String BITMAP_NOTE_ID = "BITMAP_NOTE_ID";
     private LruCache<String, Bitmap> cache;
     private final Map<String, Integer> icons = new HashMap<>();
@@ -217,7 +215,7 @@ public class BitmapHandler {
      * @param state   State of the Poi.
      * @return The marker corresponding to the poiType and the poi state.
      */
-    Bitmap getMarkerBitmap(PoiType poiType, Poi.State state) {
+    public Bitmap getMarkerBitmap(PoiType poiType, Poi.State state) {
 
         try {
 
@@ -326,7 +324,7 @@ public class BitmapHandler {
      * @param state The state of the note.
      * @return The bitmap in the corresponding color.
      */
-    Bitmap getNoteBitmap(Note.State state) {
+    public Bitmap getNoteBitmap(Note.State state) {
         // Try to retrieve bmOverlay from cache
         Bitmap bmOverlay = getBitmapFromMemCache(state.toString());
         Integer markerId;

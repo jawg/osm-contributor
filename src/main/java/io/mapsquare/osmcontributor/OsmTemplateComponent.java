@@ -159,6 +159,5 @@ public interface OsmTemplateComponent {
     SyncManager getSyncManager();
 
     // Poi type
-
     TypeManager getTypeManager();
 }

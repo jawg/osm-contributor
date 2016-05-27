@@ -40,4 +40,5 @@ public class OsmTemplateModule {
         return application;
     }
 
+
 }

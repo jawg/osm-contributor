@@ -29,7 +29,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -94,7 +93,6 @@ import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.ConfigManager;
 import io.mapsquare.osmcontributor.core.events.NodeRefAroundLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseDeletePoiEvent;
-import io.mapsquare.osmcontributor.core.events.PleaseLoadNodeRefAround;
 import io.mapsquare.osmcontributor.core.events.PleaseRemoveArpiMarkerEvent;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
@@ -133,6 +131,7 @@ import io.mapsquare.osmcontributor.map.events.PleaseToggleArpiEvent;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.map.events.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.map.events.PoiNoTypeCreated;
+import io.mapsquare.osmcontributor.map.listener.MapboxListener;
 import io.mapsquare.osmcontributor.map.marker.LocationMarker;
 import io.mapsquare.osmcontributor.map.marker.LocationMarkerOptions;
 import io.mapsquare.osmcontributor.map.vectorial.Geocoder;
@@ -184,7 +183,9 @@ public class MapFragment extends Fragment {
     private int maxPoiType;
     private PoiType poiTypeSelected;
     private ButteryProgressBar progressBar;
-    MapFragmentPresenter presenter;
+    private MapFragmentPresenter presenter;
+    private MapboxListener mapboxListener;
+
     private MapboxMap mapboxMap;
 
     private Unbinder unbinder;
@@ -197,6 +198,7 @@ public class MapFragment extends Fragment {
 
     @Inject
     EventBus eventBus;
+
 
     @BindView(R.id.poi_detail_wrapper)
     RelativeLayout poiDetailWrapper;
@@ -229,6 +231,7 @@ public class MapFragment extends Fragment {
         measureMaxPoiType();
 
         presenter = new MapFragmentPresenter(this);
+        mapboxListener = new MapboxListener(this);
     }
 
     @Override
@@ -303,11 +306,11 @@ public class MapFragment extends Fragment {
 
     private void instantiateMapBox(Bundle savedInstanceState) {
         mapboxMap.setMyLocationEnabled(true);
+
         // Set the map center and zoom to the saved values or use the default values
         Location myLocation = mapboxMap.getMyLocation();
         mapboxMap.setMyLocationEnabled(false);
         CameraPosition.Builder cameraBuilder = new CameraPosition.Builder();
-
         if (savedInstanceState == null) {
             cameraBuilder.target((FlavorUtils.isStore() && myLocation != null) ?
                     new LatLng(myLocation.getLatitude(), myLocation.getLongitude()) : configManager.getDefaultCenter())
@@ -321,32 +324,7 @@ public class MapFragment extends Fragment {
         onResume();
         switchMode(MapMode.DEFAULT);
 
-        mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(@NonNull LatLng point) {
-                onMapClick(point);
-            }
-        });
-
-
-    }
-
-    /**
-     * User click on map
-     * @param point
-     */
-    private void onMapClick(LatLng point) {
-        if (mapMode == MapMode.DETAIL_POI || mapMode == MapMode.DETAIL_NOTE) {
-            // it prevents to reselect the marker
-            markerSelectedId = -1L;
-            switchMode(MapMode.DEFAULT);
-        }
-        if (mapMode == MapMode.WAY_EDITION) {
-            eventBus.post(new PleaseLoadNodeRefAround(point.getLatitude(), point.getLongitude()));
-        }
-        if (mapMode == MapMode.DEFAULT && addPoiFloatingButton.isExpanded()) {
-            addPoiFloatingButton.collapse();
-        }
+        mapboxListener.listen(mapboxMap);
     }
 
     private void instantiateMapView(final Bundle savedInstanceState) {
@@ -455,51 +433,6 @@ public class MapFragment extends Fragment {
 //            }
 //
 //        });
-//
-//        mapView.setMapViewListener(new MapViewListener() {
-//            @Override
-//            public void onShowMarker(MapView mapView, Marker marker) {
-//            }
-//
-//            @Override
-//            public void onHideMarker(MapView mapView, Marker marker) {
-//            }
-//
-//            @Override
-//            public void onTapMarker(MapView mapView, Marker marker) {
-//                if (marker instanceof LocationMarker) {
-//                    LocationMarker locationMarker = (LocationMarker) marker;
-//                    if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION && mapMode != MapMode.WAY_EDITION && !isTuto) {
-//                        switch (locationMarker.getType()) {
-//                            case POI:
-//                                onPoiMarkerClick(locationMarker);
-//                                break;
-//                            case NOTE:
-//                                onNoteMarkerClick(locationMarker);
-//                                break;
-//                            default:
-//                                break;
-//                        }
-//                    }
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onLongPressMarker(MapView mapView, Marker marker) {
-//
-//            }
-//
-//            @Override
-//            public void onTapMap(MapView mapView, ILatLng iLatLng) {
-//
-//            }
-//
-//            @Override
-//            public void onLongPressMap(MapView mapView, ILatLng iLatLng) {
-//
-//            }
-//        });
     }
 
     private void drawBounds() {
@@ -520,53 +453,6 @@ public class MapFragment extends Fragment {
         maxPoiType = (int) ((dpHeight - toolbarSize - 160) / 80) - 1;
     }
 
-    /**
-     * Click on marker
-     * @param marker
-     */
-    void onPoiMarkerClick(LocationMarker<Poi> marker) {
-        unselectIcon();
-        markerSelected = marker;
-        Bitmap bitmap = bitmapHandler.getMarkerBitmap(((Poi) markerSelected.getRelatedObject()).getType(), Poi.computeState(true, false, false));
-        if (bitmap != null) {
-            markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmap));
-        }
-        selectedMarkerType = LocationMarker.MarkerType.POI;
-        switchMode(MapMode.DETAIL_POI);
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, OsmAnimatorUpdateListener.STEPS_CENTER_ANIMATION);
-        valueAnimator.setDuration(500);
-        valueAnimator.addUpdateListener(new OsmAnimatorUpdateListener(mapboxMap.getCameraPosition().target, markerSelected.getPosition(), mapboxMap));
-        valueAnimator.start();
-        markerSelectedId = -1L;
-    }
-
-
-    private void onNodeRefClick(LocationMarker<PoiNodeRef> marker) {
-        editNodeRefPosition.setVisibility(View.VISIBLE);
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, OsmAnimatorUpdateListener.STEPS_CENTER_ANIMATION);
-        valueAnimator.setDuration(500);
-        valueAnimator.addUpdateListener(new OsmAnimatorUpdateListener(mapboxMap.getCameraPosition().target, marker.getPosition(), mapboxMap));
-        valueAnimator.start();
-    }
-
-    private void onNoteMarkerClick(LocationMarker<Note> marker) {
-        unselectIcon();
-        markerSelected = (marker);
-        selectedMarkerType = LocationMarker.MarkerType.NOTE;
-
-        Bitmap bitmap = bitmapHandler.getNoteBitmap(
-                Note.computeState(((Note) markerSelected.getRelatedObject()), true, false));
-        if (bitmap != null) {
-            markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmap));
-        }
-
-        switchMode(MapMode.DETAIL_NOTE);
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, OsmAnimatorUpdateListener.STEPS_CENTER_ANIMATION);
-        valueAnimator.setDuration(500);
-        valueAnimator.addUpdateListener(new OsmAnimatorUpdateListener(mapboxMap.getCameraPosition().target, markerSelected.getPosition(), mapboxMap));
-        valueAnimator.start();
-        markerSelectedId = -1L;
-    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -692,6 +578,10 @@ public class MapFragment extends Fragment {
 
     private Tracker tracker;
 
+    public boolean isTuto() {
+        return isTuto;
+    }
+
     private enum Category {
         MapMode("Map Mode"),
         GeoLocation("Geolocation"),
@@ -728,17 +618,9 @@ public class MapFragment extends Fragment {
         isMenuLoaded = true;
         if (pleaseSwitchToPoiSelected) {
             pleaseSwitchToPoiSelected = false;
-            onMarkerClick(markerSelected);
+            mapboxListener.onMarkerClick(markerSelected);
         } else {
             //switchMode(mapMode);
-        }
-    }
-
-    public void onMarkerClick(LocationMarker marker) {
-        if (marker.getType().equals(LocationMarker.MarkerType.POI)) {
-            onPoiMarkerClick(marker);
-        } else {
-            onNoteMarkerClick(marker);
         }
     }
 
@@ -902,6 +784,7 @@ public class MapFragment extends Fragment {
     }
 
     public void setMarkerSelected(LocationMarker markerSelected) {
+        selectedMarkerType = markerSelected.getType();
         this.markerSelected = markerSelected;
     }
 
@@ -921,7 +804,7 @@ public class MapFragment extends Fragment {
         return bitmapHandler;
     }
 
-    private void switchMode(MapMode mode) {
+    public void switchMode(MapMode mode) {
         Log.i(MapFragment.class.getSimpleName(), "switchMode: " + mode);
         mapMode = mode;
         Bitmap bitmap;
@@ -1059,7 +942,7 @@ public class MapFragment extends Fragment {
         switchMode(MapMode.DEFAULT);
     }
 
-    private void unselectIcon() {
+    public void unselectIcon() {
         if (markerSelected != null) {
             Bitmap bitmap = null;
 
@@ -1153,7 +1036,7 @@ public class MapFragment extends Fragment {
         // if I found the marker selected I click on it
         if (markerSelected != null) {
             if (isMenuLoaded) {
-                onMarkerClick(markerSelected);
+                mapboxListener.onMarkerClick(markerSelected);
             } else {
                 pleaseSwitchToPoiSelected = true;
             }
@@ -1247,7 +1130,7 @@ public class MapFragment extends Fragment {
 
 //            vectorialOverlay.setSelectedObjectId(poiNodeRef.getNodeBackendId());
 
-            onNodeRefClick(locationMarkerOptions.getMarker());
+            mapboxListener.onNodeRefClick(locationMarkerOptions.getMarker());
             mapView.invalidate();
 
         } else {
@@ -1260,6 +1143,12 @@ public class MapFragment extends Fragment {
         markerSelected = null;
         markerSelectedId = -1L;
         editNodeRefPosition.setVisibility(View.GONE);
+        mapView.invalidate();
+    }
+
+    public void selectNodeRef() {
+//        vectorialOverlay.setSelectedObjectId(null);
+        editNodeRefPosition.setVisibility(View.VISIBLE);
         mapView.invalidate();
     }
 
@@ -1619,6 +1508,10 @@ public class MapFragment extends Fragment {
                 .setCategory(Category.GeoLocation.getValue())
                 .setAction("Center map on user geolocation")
                 .build());
+    }
+
+    public LatLng getMyLocation() {
+        return mapboxMap.getCameraPosition().target;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -2192,6 +2085,11 @@ public class MapFragment extends Fragment {
         isTuto = false;
         sharedPreferences.edit().putBoolean(TUTORIAL_CREATION_FINISH, true).apply();
     }
+
+    public FloatingActionsMenu getAddPoiFloatingButton() {
+        return addPoiFloatingButton;
+    }
+
 /*
     *//*-----------------------------------------------------------
     * TILE SOURCES
