@@ -19,7 +19,6 @@
 package io.mapsquare.osmcontributor.map;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -36,6 +35,7 @@ import javax.inject.Inject;
 
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.core.ConfigManager;
+import io.mapsquare.osmcontributor.core.MapElement;
 import io.mapsquare.osmcontributor.core.events.NotesLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNotesEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiTypes;
@@ -119,7 +119,6 @@ public class MapFragmentPresenter {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onPoiTypesLoaded(PoiTypesLoaded event) {
         Timber.d("Received event PoiTypesLoaded");
-        Log.i(MapFragmentPresenter.class.getSimpleName(), "onPoiTypesLoaded: ");
         poiTypes = event.getPoiTypes();
         setForceRefreshPoi();
         setForceRefreshNotes();
@@ -142,6 +141,38 @@ public class MapFragmentPresenter {
         mapFragment.showProgressBar(false);
         forceRefreshPoi = true;
         loadPoisIfNeeded();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPoisLoadedEvent(PoisLoadedEvent event) {
+        List<Poi> pois = event.getPois();
+        Timber.d("Received event PoisLoaded  : " + pois.size());
+        forceRefreshPoi = false;
+        List<MapElement> mapElements = new ArrayList<>(pois.size());
+        for (Poi poi : pois) {
+            mapElements.add(poi);
+        }
+        onLoaded(mapElements, LocationMarker.MarkerType.POI);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNotesLoadedEvent(NotesLoadedEvent event) {
+        List<Note> notes = event.getNotes();
+        List<MapElement> mapElements = new ArrayList<>(notes.size());
+        for (Note note : notes) {
+            mapElements.add(note);
+        }
+        Timber.d("Showing notes : " + notes.size());
+        forceRefreshNotes = false;
+        onLoaded(mapElements, LocationMarker.MarkerType.NOTE);
+    }
+
+    public void register() {
+        eventBus.register(this);
+    }
+
+    public void unregister() {
+        eventBus.unregister(this);
     }
 
 
@@ -220,128 +251,64 @@ public class MapFragmentPresenter {
         }
     }
 
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPoisLoadedEvent(PoisLoadedEvent event) {
-        List<Poi> pois = event.getPois();
-        Timber.d("Received event PoisLoaded  : " + pois.size());
-        forceRefreshPoi = false;
+    private void onLoaded(List<MapElement> mapElements, LocationMarker.MarkerType markerType) {
         LocationMarker markerSelected = mapFragment.getMarkerSelected();
-        List<Long> poiIds = new ArrayList<>(pois.size());
+        List<Long> ids = new ArrayList<>(mapElements.size());
 
-        for (Poi poi : pois) {
-            poiIds.add(poi.getId());
-            LocationMarkerOptions<Poi> poiMarkerOptions = mapFragment.getMarkersPoi().get(poi.getId());
+        for (MapElement mapElement : mapElements) {
+            ids.add(mapElement.getId());
+            LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(markerType, mapElement.getId());
             boolean selected = false;
 
-            if (poiMarkerOptions == null) {
-                poiMarkerOptions = new LocationMarkerOptions<Poi>().relatedObject(poi).position(poi.getPosition());
-
-                //is it the marker selected
-                if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && poi.getId().equals(mapFragment.getMarkerSelectedId())) {
+            if (markerOptions == null) {
+                markerOptions = new LocationMarkerOptions<>().relatedObject(mapElement).position(mapElement.getPosition());
+                if (mapFragment.getSelectedMarkerType().equals(markerType) && mapElement.getId().equals(mapFragment.getMarkerSelectedId())) {
                     selected = true;
-                    mapFragment.setMarkerSelected(poiMarkerOptions.getMarker());
-                } else if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && markerSelected != null && poi.getId().equals(((Poi) markerSelected.getRelatedObject()).getId())) {
+                    mapFragment.setMarkerSelected(markerOptions.getMarker());
+                } else if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && markerSelected != null && mapElement.getId().equals(((Poi) markerSelected.getRelatedObject()).getId())) {
                     selected = true;
                 }
 
                 //the poi in edition should be hidden
-                if (!(markerSelected != null && mapFragment.getMapMode() == MapMode.POI_POSITION_EDITION && markerSelected.equals(poiMarkerOptions.getMarker())) && !poi.getToDelete()) {
-                    setIcon(poiMarkerOptions, poi, selected);
-                    mapFragment.addMarker(poiMarkerOptions);
+                if (!(markerSelected != null && mapFragment.getMapMode() == MapMode.POI_POSITION_EDITION && markerSelected.equals(markerOptions.getMarker())) && (mapElement instanceof Poi && !((Poi) mapElement).getToDelete())) {
+                    setIcon(markerOptions, mapElement, selected);
+                    mapFragment.addMarker(markerOptions);
                 }
-
             } else {
-                poiMarkerOptions.relatedObject(poi);
-
-                if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && (poi.getId().equals(mapFragment.getMarkerSelectedId()) || markerSelected != null && poi.getId().equals(((Poi) markerSelected.getRelatedObject()).getId()))) {
-                    selected = true;
+                markerOptions.relatedObject(mapElement);
+                if (markerType == LocationMarker.MarkerType.POI) {
+                    if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && (mapElement.getId().equals(mapFragment.getMarkerSelectedId()) || markerSelected != null && mapElement.getId().equals(((Poi) markerSelected.getRelatedObject()).getId()))) {
+                        selected = true;
+                    }
+                } else {
+                    if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && markerSelected != null && mapElement.getId().equals(((Note) markerSelected.getRelatedObject()).getId())) {
+                        selected = true;
+                    }
                 }
 
                 //update the detail banner data
-                if (selected && mapFragment.getMapMode() == MapMode.DETAIL_POI) {
-                    eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(poi.getType().getName(), poi.getName(), poi.getWay()));
-                }
-            }
-
-            // Draw the marker in the right color
-            setIcon(poiMarkerOptions, poi, selected);
-        }
-
-        mapFragment.removePoiMarkersNotIn(poiIds);
-
-        //use to click on the selected marker when the activity resume
-        if (mapFragment.getMapMode() == MapMode.DEFAULT) {
-            mapFragment.reselectMarker();
-        }
-
-        if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && markerSelected == null) {
-            mapFragment.setMarkerSelectedId(-1L);
-        }
-
-        mapFragment.invalidateMap();
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNotesLoadedEvent(NotesLoadedEvent event) {
-        List<Note> notes = event.getNotes();
-        Timber.d("Showing notes : " + notes.size());
-        forceRefreshNotes = false;
-        LocationMarker markerSelected = mapFragment.getMarkerSelected();
-        List<Long> noteIds = new ArrayList<>(notes.size());
-
-        for (Note note : notes) {
-            noteIds.add(note.getId());
-            LocationMarkerOptions<Note> markerOptions = mapFragment.getNote(note.getId());
-            boolean selected = false;
-
-            if (markerOptions == null) {
-                markerOptions = new LocationMarkerOptions<Note>().relatedObject(note).position(note.getPosition());
-
-                if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && note.getId().equals(mapFragment.getMarkerSelectedId())) {
-                    selected = true;
-                    mapFragment.setMarkerSelected(markerOptions.getMarker());
+                if (selected) {
+                    if (mapFragment.getMapMode() == MapMode.DETAIL_NOTE) {
+                        eventBus.post(new PleaseChangeValuesDetailNoteFragmentEvent((Note) mapElement));
+                    } else {
+                        Poi poi = (Poi) mapElement;
+                        eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(poi.getType().getName(), poi.getName(), poi.getWay()));
+                    }
                 }
 
-                setIcon(markerOptions, note, selected);
-                mapFragment.addNote(markerOptions);
-            } else {
-                markerOptions.relatedObject(note);
-                //if it's the selected marker refresh the banner view
-
-                if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && markerSelected != null && note.getId().equals(((Note) markerSelected.getRelatedObject()).getId())) {
-                    selected = true;
-                }
-
-                //update the detail banner data
-                if (selected && mapFragment.getMapMode() == MapMode.DETAIL_NOTE) {
-                    eventBus.post(new PleaseChangeValuesDetailNoteFragmentEvent(note));
-                }
-
-                setIcon(markerOptions, note, selected);
+                setIcon(markerOptions, mapElement, selected);
             }
         }
 
-        mapFragment.removeNoteMarkersNotIn(noteIds);
+        mapFragment.removeNoteMarkersNotIn(ids);
 
         if ((mapFragment.getMapMode() == MapMode.DEFAULT || mapFragment.getMapMode() == MapMode.POI_CREATION)) {
             mapFragment.reselectMarker();
-
         }
 
-        if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && markerSelected == null) {
+        if (mapFragment.getSelectedMarkerType().equals(markerType) && markerSelected == null) {
             mapFragment.setMarkerSelectedId(-1L);
         }
         mapFragment.invalidateMap();
-    }
-
-
-    public void register() {
-        eventBus.register(this);
-    }
-
-    public void unregister() {
-        eventBus.unregister(this);
     }
 }

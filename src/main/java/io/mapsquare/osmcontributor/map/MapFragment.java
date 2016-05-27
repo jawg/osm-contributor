@@ -1421,6 +1421,7 @@ public class MapFragment extends Fragment {
         poi.setToDelete(true);
         markersPoi.remove(poi.getId());
         removeMarker(markersPoi.get(poi.getId()));
+        markersPoi.remove(poi.getId());
         eventBus.post(new PleaseDeletePoiEvent(poi));
         switchMode(MapMode.DEFAULT);
     }
@@ -1519,6 +1520,9 @@ public class MapFragment extends Fragment {
         switchMode(event.getMapMode());
     }
 
+    public LocationMarkerOptions getMarkerOptions(LocationMarker.MarkerType markerType, Long id) {
+        return markerType == LocationMarker.MarkerType.POI ? markersPoi.get(id) : markersNotes.get(id);
+    }
 
     /*-----------------------------------------------------------
     * EASTER EGG

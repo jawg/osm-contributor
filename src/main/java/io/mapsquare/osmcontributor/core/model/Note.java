@@ -29,8 +29,10 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import io.mapsquare.osmcontributor.core.MapElement;
+
 @DatabaseTable(tableName = Note.TABLE_NAME)
-public class Note {
+public class Note implements MapElement {
     public static final String TABLE_NAME = "NOTE";
 
     public static final String ID = "ID";

@@ -41,6 +41,8 @@ public class LocationMarkerOptions<T> extends BaseMarkerOptions<LocationMarker<T
 
     private LocationMarker.MarkerType markerType;
 
+    private LocationMarker<T> marker;
+
 
     public LocationMarkerOptions<T> relatedObject(T relatedObject) {
         this.relatedObject = relatedObject;
@@ -55,10 +57,12 @@ public class LocationMarkerOptions<T> extends BaseMarkerOptions<LocationMarker<T
 
     @Override
     public LocationMarker<T> getMarker() {
-        LocationMarker<T> marker = new LocationMarker<>(this);
-        marker.setPosition(position);
-        marker.setRelatedObject(relatedObject);
-        marker.setType(markerType);
+        if (marker == null) {
+            marker = new LocationMarker<>(this);
+            marker.setPosition(position);
+            marker.setRelatedObject(relatedObject);
+            marker.setType(markerType);
+        }
         return marker;
     }
 

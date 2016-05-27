@@ -34,10 +34,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.mapsquare.osmcontributor.core.MapElement;
 import timber.log.Timber;
 
 @DatabaseTable(tableName = Poi.TABLE_NAME)
-public class Poi implements Cloneable {
+public class Poi implements Cloneable, MapElement {
     public static final String TABLE_NAME = "POI";
 
     public static final String ID = "ID";
@@ -481,7 +482,7 @@ public class Poi implements Cloneable {
 
     @Override
     public int hashCode() {
-        return backendId.hashCode();
+        return backendId != null ? backendId.hashCode() : super.hashCode();
     }
 
     public Poi getCopy() {
