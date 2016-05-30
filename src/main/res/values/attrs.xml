@@ -22,4 +22,8 @@
 <resources>
     <declare-styleable name="LevelBar">
     </declare-styleable>
+
+    <declare-styleable name="TypeFaceTextView">
+        <attr name="typeface" format="string"/>
+    </declare-styleable>
 </resources>
