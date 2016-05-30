@@ -160,17 +160,15 @@ public class MapActivity extends AppCompatActivity {
         filterView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-                switch (menuItem.getGroupId()) {
-                    case R.id.drawer_filter_pois_group:
-                        if (menuItem.getItemId() == R.id.select_all_item) {
-                            onSelectAllClick();
-                        } else {
-                            onFilterItemClick(menuItem);
-                        }
-                        break;
-                    case R.id.drawer_filter_notes_group:
-                        onNoteItemClick(menuItem);
-                        break;
+                if (menuItem.getItemId() == R.id.select_all_item) {
+                    selectAllMenuItem.setChecked(!selectAllMenuItem.isChecked());
+                    onSelectAllClick();
+                } else if (menuItem.getItemId() != R.id.display_open_notes_item && menuItem.getItemId() != R.id.display_closed_notes_item) {
+                    menuItem.setChecked(!menuItem.isChecked());
+                    onFilterItemClick(menuItem);
+                } else {
+                    menuItem.setChecked(!menuItem.isChecked());
+                    onNoteItemClick(menuItem);
                 }
                 return true;
             }
@@ -339,17 +337,14 @@ public class MapActivity extends AppCompatActivity {
         Collections.sort(filters);
 
         Menu menu = filterView.getMenu();
-        menu.removeGroup(R.id.drawer_filter_pois_group);
 
         filtersItemList.clear();
         for (PoiTypeFilter poiTypeFilter : filters) {
             filtersItemList.add(menu
-                    .add(R.id.drawer_filter_pois_group, poiTypeFilter.getPoiTypeId().intValue(), 0, poiTypeFilter.getPoiTypeName())
+                    .add(Menu.NONE, poiTypeFilter.getPoiTypeId().intValue(), 0, poiTypeFilter.getPoiTypeName())
                     .setChecked(poiTypeFilter.isActive())
                     .setIcon(bitmapHandler.getDrawable(poiTypeFilter.getPoiTypeIconName())));
         }
-
-        menu.setGroupCheckable(R.id.drawer_filter_pois_group, true, false);
 
         selectAllMenuItem.setChecked(poiTypesHidden.isEmpty());
     }
@@ -432,15 +427,10 @@ public class MapActivity extends AppCompatActivity {
         long id = item.getItemId();
         if (item.isChecked()) {
             poiTypesHidden.remove(id);
-            if (poiTypesHidden.isEmpty()) {
-                selectAllMenuItem.setChecked(true);
-            }
         } else {
             poiTypesHidden.add(id);
-            if (selectAllMenuItem.isChecked()) {
-                selectAllMenuItem.setChecked(false);
-            }
         }
+        selectAllMenuItem.setChecked(poiTypesHidden.isEmpty());
         eventBus.post(new PleaseApplyPoiFilter(poiTypesHidden));
     }
 
