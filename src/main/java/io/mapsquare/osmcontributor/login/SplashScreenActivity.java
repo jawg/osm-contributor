@@ -100,7 +100,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         bus.removeStickyEvent(SplashScreenTimerFinishedEvent.class);
         bus.removeStickyEvent(ArpiBitmapsPrecomputedEvent.class);
         Intent intent = new Intent(this, MapActivity.class);
-        startActivity(intent);
+        //startActivity(intent);
     }
 
     /**
