@@ -147,7 +147,7 @@ public class MapboxListener {
      */
     private void onZoomChange(double zoom) {
         // For testing purpose
-        mapFragment.setZoomLevelText(df.format(String.valueOf(zoom)));
+        mapFragment.setZoomLevelText(df.format(zoom));
         mapFragment.getPresenter().loadPoisIfNeeded();
         boolean isVectorial = mapFragment.isVectorial();
 
