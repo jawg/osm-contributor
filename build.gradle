@@ -92,6 +92,7 @@ android {
         targetSdkVersion 23
         versionCode 15
         versionName appVersion
+        multiDexEnabled true
         ndk {
             abiFilters "armeabi-v7a"
         }
@@ -143,6 +144,7 @@ configurations {
 
 dependencies {
     compile project(':fab')
+    compile 'com.android.support:multidex:1.0.0'
     compile "com.android.support:appcompat-v7:$androidSupportVersion"
     // Dependency injection
     compile "com.google.dagger:dagger:$daggerVersion"

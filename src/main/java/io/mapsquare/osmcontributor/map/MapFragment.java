@@ -680,7 +680,6 @@ public class MapFragment extends Fragment {
 
 
     public void switchMode(MapMode mode) {
-        Log.i(MapFragment.class.getSimpleName(), "switchMode: " + mode);
         mapMode = mode;
         Bitmap bitmap;
 
@@ -892,7 +891,6 @@ public class MapFragment extends Fragment {
 
     private void removeMarker(LocationMarkerOptions marker) {
         if (marker != null) {
-            Log.i(MapFragment.class.getSimpleName(), "removeMarker: " + marker.getMarker().getId());
             mapboxMap.removeMarker(marker.getMarker());
             Object poi = marker.getMarker().getRelatedObject();
             eventBus.post(new PleaseRemoveArpiMarkerEvent(poi));
