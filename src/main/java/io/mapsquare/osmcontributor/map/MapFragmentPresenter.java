@@ -277,11 +277,16 @@ public class MapFragmentPresenter {
             } else {
                 markerOptions.relatedObject(mapElement);
                 if (markerType == LocationMarker.MarkerType.POI) {
-                    if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && (mapElement.getId().equals(mapFragment.getMarkerSelectedId()) || markerSelected != null && mapElement.getId().equals(((Poi) markerSelected.getRelatedObject()).getId()))) {
+                    if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI)
+                            && (mapElement.getId().equals(mapFragment.getMarkerSelectedId())
+                            || markerSelected != null
+                            && mapElement.getId().equals(((Poi) markerSelected.getRelatedObject()).getId()))) {
                         selected = true;
                     }
                 } else {
-                    if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && markerSelected != null && mapElement.getId().equals(((Note) markerSelected.getRelatedObject()).getId())) {
+                    if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE)
+                            && markerSelected != null
+                            && mapElement.getId().equals(((Note) markerSelected.getRelatedObject()).getId())) {
                         selected = true;
                     }
                 }
@@ -295,7 +300,6 @@ public class MapFragmentPresenter {
                         eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(poi.getType().getName(), poi.getName(), poi.getWay()));
                     }
                 }
-
                 setIcon(markerOptions, mapElement, selected);
             }
         }

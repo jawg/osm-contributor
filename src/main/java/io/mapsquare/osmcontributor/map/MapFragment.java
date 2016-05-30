@@ -1836,11 +1836,11 @@ public class MapFragment extends Fragment {
         }
     }
 
-    private void addPoiMarkerDependingOnFilters(LocationMarkerOptions<Poi> marker) {
-        Poi poi = marker.getMarker().getRelatedObject();
+    private void addPoiMarkerDependingOnFilters(LocationMarkerOptions<Poi> markerOption) {
+        Poi poi = markerOption.getMarker().getRelatedObject();
         //if we are in vectorial mode we hide all poi not at the current level
         if (poi.getType() != null && !poiTypeHidden.contains(poi.getType().getId()) && (!isVectorial || poi.isAtLevel(currentLevel) || !poi.isOnLevels(levelBar.getLevels()))) {
-            mapboxMap.addMarker(marker);
+            mapboxMap.addMarker(markerOption);
         } else if (mapMode.equals(MapMode.DETAIL_POI) && ((Poi) markerSelected.getRelatedObject()).getId().equals(poi.getId())) {
             //if the poi selected is hidden close the detail mode
             switchMode(MapMode.DEFAULT);
