@@ -24,14 +24,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.widget.TextView;
 
-import javax.inject.Inject;
-
-import butterknife.ButterKnife;
-import butterknife.BindView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.events.InitCredentialsEvent;
@@ -100,7 +100,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         bus.removeStickyEvent(SplashScreenTimerFinishedEvent.class);
         bus.removeStickyEvent(ArpiBitmapsPrecomputedEvent.class);
         Intent intent = new Intent(this, MapActivity.class);
-        //startActivity(intent);
+        startActivity(intent);
     }
 
     /**
