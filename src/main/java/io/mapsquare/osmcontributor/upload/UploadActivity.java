@@ -86,6 +86,8 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
     @Inject
     EventBus eventBus;
 
+    private boolean isCanceled;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -261,6 +263,7 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         snackbar.setAction(getString(R.string.undo_snack_bar), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isCanceled = true;
                 snackbar.dismiss();
                 adapter.insert(position, removedItem);
                 poisListView.smoothScrollToPosition(position);
@@ -270,7 +273,7 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
             @Override
             public void onDismissed(Snackbar snackbar, int action) {
                 super.onDismissed(snackbar, action);
-                if (action == DISMISS_EVENT_TIMEOUT || action == DISMISS_EVENT_CONSECUTIVE || action == DISMISS_EVENT_SWIPE || action == DISMISS_EVENT_MANUAL) {
+                if (!isCanceled && (action == DISMISS_EVENT_TIMEOUT || action == DISMISS_EVENT_CONSECUTIVE || action == DISMISS_EVENT_SWIPE || action == DISMISS_EVENT_MANUAL)) {
                     if (removedItem.getIsPoi()) {
                         eventBus.post(new PleaseRevertPoiEvent(removedItem.getId()));
                     } else {
