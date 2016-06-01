@@ -29,7 +29,7 @@ import io.mapsquare.osmcontributor.core.PoiManager;
 import io.mapsquare.osmcontributor.core.database.dao.PoiNodeRefDao;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
-import io.mapsquare.osmcontributor.map.events.PleaseLoadEditVectorialTileEvent;
+import io.mapsquare.osmcontributor.map.events.PleaseLoadEditWaysEvent;
 import io.mapsquare.osmcontributor.sync.converter.PoiConverter;
 import io.mapsquare.osmcontributor.sync.dto.osm.NodeDto;
 import io.mapsquare.osmcontributor.sync.dto.osm.OsmDto;
@@ -105,7 +105,7 @@ public class OSMSyncWayManager implements SyncWayManager {
                     List<Poi> poisFromOSM = poiConverter.convertDtosToPois(osmDto.getWayDtoList(), false);
                     poiManager.mergeFromOsmPois(poisFromOSM);
                     poiManager.deleteAllWaysExcept(poisFromOSM);
-                    bus.post(new PleaseLoadEditVectorialTileEvent(true));
+                    bus.post(new PleaseLoadEditWaysEvent(true));
                 } else {
                     Timber.d("No new ways found in the area");
                 }

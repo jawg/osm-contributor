@@ -168,10 +168,13 @@ public class PoiNodeRef implements Cloneable {
     public String toString() {
         return "PoiNodeRef{" +
                 "id=" + id +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
                 ", nodeBackendId='" + nodeBackendId + '\'' +
                 ", ordinal=" + ordinal +
+                ", poi=" + poi +
+                ", updated=" + updated +
                 ", old=" + old +
-                ", poi=" + (poi == null ? null : poi.getId()) +
                 '}';
     }
 

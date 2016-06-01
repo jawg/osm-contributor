@@ -18,18 +18,16 @@
  */
 package io.mapsquare.osmcontributor.core.events;
 
-import java.util.List;
-
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
 
 public class NodeRefAroundLoadedEvent {
-    private final List<PoiNodeRef> poiNodeRefs;
+    private final PoiNodeRef poiNodeRef;
 
-    public NodeRefAroundLoadedEvent(List<PoiNodeRef> poiNodeRefs) {
-        this.poiNodeRefs = poiNodeRefs;
+    public NodeRefAroundLoadedEvent(PoiNodeRef poiNodeRef) {
+        this.poiNodeRef = poiNodeRef;
     }
 
-    public List<PoiNodeRef> getPoiNodeRefs() {
-        return poiNodeRefs;
+    public PoiNodeRef getPoiNodeRef() {
+        return poiNodeRef;
     }
 }

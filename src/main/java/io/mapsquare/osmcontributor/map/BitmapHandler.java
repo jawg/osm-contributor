@@ -52,10 +52,7 @@ public class BitmapHandler {
     @Inject
     public BitmapHandler(Application osmTemplateApplication) {
         context = osmTemplateApplication.getApplicationContext();
-
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        // Use 1/8th of the available memory for this memory cache.
-        final int cacheSize = maxMemory / 8;
+        final int cacheSize = 1000 * 1024 / 2; //5MB
 
         cache = new LruCache<String, Bitmap>(cacheSize) {
             @Override

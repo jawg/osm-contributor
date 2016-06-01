@@ -18,9 +18,9 @@
  */
 package io.mapsquare.osmcontributor.map.listener;
 
-import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -34,15 +34,12 @@ import org.greenrobot.eventbus.EventBus;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
-import javax.inject.Inject;
-
-import io.mapsquare.osmcontributor.core.events.PleaseLoadNodeRefAround;
+import io.mapsquare.osmcontributor.core.events.NodeRefAroundLoadedEvent;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
 import io.mapsquare.osmcontributor.map.MapFragment;
 import io.mapsquare.osmcontributor.map.MapMode;
-import io.mapsquare.osmcontributor.map.OsmAnimatorUpdateListener;
 import io.mapsquare.osmcontributor.map.marker.LocationMarker;
 import timber.log.Timber;
 
@@ -51,17 +48,13 @@ public class MapboxListener {
     private MapFragment mapFragment;
     private MapboxMap mapboxMap;
     private CameraPosition position;
+    private EventBus eventBus;
 
     private final DecimalFormat df;
 
-    private int initialX, initialY, deltaX, deltaY;
-
-    @Inject
-    EventBus eventBus;
-
-    @Inject
-    public MapboxListener(MapFragment mapFragment) {
+    public MapboxListener(MapFragment mapFragment, EventBus eventBus) {
         this.mapFragment = mapFragment;
+        this.eventBus = eventBus;
         df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.DOWN);
     }
@@ -87,7 +80,7 @@ public class MapboxListener {
                 if (marker instanceof LocationMarker) {
                     LocationMarker locationMarker = (LocationMarker) marker;
                     MapboxListener.this.onMarkerClick(locationMarker);
-                    return true;
+                    return false;
                 }
                 return false;
             }
@@ -112,33 +105,6 @@ public class MapboxListener {
                 MapboxListener.this.position = position;
             }
         });
-
-        // Listen on scroll change
-        mapboxMap.setOnScrollListener(new MapboxMap.OnScrollListener() {
-            @Override
-            public void onScroll() {
-                onScrollChange();
-            }
-        });
-    }
-
-    private void onScrollChange() {
-//        deltaX = initialX - scrollEvent.getX();
-//        deltaY = initialY - scrollEvent.getY();
-//
-//        // 20 px delta before it's worth checking
-//        int minPixelsDeltaBeforeCheck = 100;
-//
-//        if (Math.abs(deltaX) > minPixelsDeltaBeforeCheck || Math.abs(deltaY) > minPixelsDeltaBeforeCheck) {
-//            initialX = scrollEvent.getX();
-//            initialY = scrollEvent.getY();
-//            presenter.loadPoisIfNeeded();
-//
-//            if (getZoomLevel() > zoomVectorial) {
-//                LatLng center = mapboxMap.getCameraPosition().target;
-//                geocoder.delayedReverseGeocoding(center.getLatitude(), center.getLongitude());
-//            }
-//        }
     }
 
     /**
@@ -192,7 +158,8 @@ public class MapboxListener {
             mapFragment.switchMode(MapMode.DEFAULT);
         }
         if (mapMode == MapMode.WAY_EDITION) {
-            eventBus.post(new PleaseLoadNodeRefAround(point.getLatitude(), point.getLongitude()));
+//            eventBus.post(new PleaseLoadNodeRefAround(point.getLatitude(), point.getLongitude()));
+            mapFragment.unselectIcon();
         }
         if (mapMode == MapMode.DEFAULT && mapFragment.getAddPoiFloatingButton().isExpanded()) {
             mapFragment.getAddPoiFloatingButton().collapse();
@@ -205,15 +172,19 @@ public class MapboxListener {
      */
     public void onMarkerClick(LocationMarker locationMarker) {
         MapMode mapMode = mapFragment.getMapMode();
-        if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION && mapMode != MapMode.WAY_EDITION && !mapFragment.isTuto()) {
+        if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION && !mapFragment.isTuto()) {
             mapFragment.unselectIcon();
             mapFragment.setMarkerSelected(locationMarker);
+            Log.i(MapboxListener.class.getSimpleName(), "onMarkerClick: selected " + locationMarker.getRelatedObject());
             switch (locationMarker.getType()) {
                 case POI:
                     onPoiMarkerClick(locationMarker);
                     break;
                 case NOTE:
                     onNoteMarkerClick(locationMarker);
+                    break;
+                case NODE_REF:
+                    onNodeRefMarkerClick(locationMarker);
                     break;
                 default:
                     break;
@@ -231,10 +202,7 @@ public class MapboxListener {
             marker.setIcon(IconFactory.getInstance(mapFragment.getActivity()).fromBitmap(bitmap));
         }
         mapFragment.switchMode(MapMode.DETAIL_POI);
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, OsmAnimatorUpdateListener.STEPS_CENTER_ANIMATION);
-        valueAnimator.setDuration(500);
-        valueAnimator.addUpdateListener(new OsmAnimatorUpdateListener(mapboxMap.getCameraPosition().target, marker.getPosition(), mapboxMap));
-        valueAnimator.start();
+        mapFragment.changeMapPositionSmooth(marker.getPosition());
         mapFragment.setMarkerSelectedId(-1L);
     }
 
@@ -250,22 +218,19 @@ public class MapboxListener {
         }
 
         mapFragment.switchMode(MapMode.DETAIL_NOTE);
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, OsmAnimatorUpdateListener.STEPS_CENTER_ANIMATION);
-        valueAnimator.setDuration(500);
-        valueAnimator.addUpdateListener(new OsmAnimatorUpdateListener(mapboxMap.getCameraPosition().target, marker.getPosition(), mapboxMap));
-        valueAnimator.start();
+        mapFragment.changeMapPositionSmooth(marker.getPosition());
         mapFragment.setMarkerSelectedId(-1L);
     }
+
 
     /**
      * Click on NoteRef
      * @param marker
      */
-    public void onNodeRefClick(LocationMarker<PoiNodeRef> marker) {
-        mapFragment.selectNodeRef();
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, OsmAnimatorUpdateListener.STEPS_CENTER_ANIMATION);
-        valueAnimator.setDuration(500);
-        valueAnimator.addUpdateListener(new OsmAnimatorUpdateListener(mapboxMap.getCameraPosition().target, marker.getPosition(), mapboxMap));
-        valueAnimator.start();
+    public void onNodeRefMarkerClick(LocationMarker<PoiNodeRef> marker) {
+        Log.i(MapboxListener.class.getSimpleName(), "onNodeRefMarkerClick: ");
+        mapFragment.selectNodeRefMarker(marker);
+        mapFragment.changeMapPositionSmooth(marker.getPosition());
+        eventBus.post(new NodeRefAroundLoadedEvent(marker.getRelatedObject()));
     }
 }

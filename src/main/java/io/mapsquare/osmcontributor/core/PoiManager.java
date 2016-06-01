@@ -44,7 +44,6 @@ import io.mapsquare.osmcontributor.core.database.dao.PoiTagDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiTypeDao;
 import io.mapsquare.osmcontributor.core.database.dao.PoiTypeTagDao;
 import io.mapsquare.osmcontributor.core.events.DatabaseResetFinishedEvent;
-import io.mapsquare.osmcontributor.core.events.NodeRefAroundLoadedEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadNodeRefAround;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiForArpiEvent;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoiForCreationEvent;
@@ -133,7 +132,7 @@ public class PoiManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseLoadNodeRefAround(PleaseLoadNodeRefAround event) {
-        bus.post(new NodeRefAroundLoadedEvent(poiNodeRefDao.queryAllInRect(event.getLat(), event.getLng())));
+//        bus.post(new NodeRefAroundLoadedEvent(poiNodeRefDao.queryAllInRect(event.getLat(), event.getLng())));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)

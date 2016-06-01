@@ -139,7 +139,7 @@
         android:visibility="gone"
        />
 
-    <io.mapsquare.osmcontributor.map.vectorial.LevelBar
+    <io.mapsquare.osmcontributor.map.ways.LevelBar
         android:id="@+id/level_bar"
         style="@android:style/Widget.Holo.SeekBar"
         android:layout_width="200dp"
