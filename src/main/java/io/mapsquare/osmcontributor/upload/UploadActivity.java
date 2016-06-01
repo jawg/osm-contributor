@@ -35,17 +35,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
+import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.events.PleaseLoadPoisToUpdateEvent;
@@ -270,7 +270,7 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
             @Override
             public void onDismissed(Snackbar snackbar, int action) {
                 super.onDismissed(snackbar, action);
-                if (action == DISMISS_EVENT_TIMEOUT || action == DISMISS_EVENT_CONSECUTIVE || action == DISMISS_EVENT_SWIPE) {
+                if (action == DISMISS_EVENT_TIMEOUT || action == DISMISS_EVENT_CONSECUTIVE || action == DISMISS_EVENT_SWIPE || action == DISMISS_EVENT_MANUAL) {
                     if (removedItem.getIsPoi()) {
                         eventBus.post(new PleaseRevertPoiEvent(removedItem.getId()));
                     } else {

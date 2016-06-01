@@ -260,6 +260,8 @@ public class MapFragment extends Fragment {
 //        Timber.d("bounding box : %s", getViewLatLngBounds());
 //        Timber.d("bounding box internal : %s", mapboxMap.get());
 
+        eventBus.register(this);
+        eventBus.register(presenter);
         return rootView;
     }
 
@@ -395,9 +397,7 @@ public class MapFragment extends Fragment {
         super.onResume();
         //enable geolocation of user
         if (mapboxMap != null) {
-            eventBus.register(this);
             eventBus.post(new PleaseInitializeArpiEvent());
-            presenter.register();
             presenter.setForceRefreshPoi();
             presenter.setForceRefreshNotes();
             presenter.loadPoisIfNeeded();
@@ -410,9 +410,9 @@ public class MapFragment extends Fragment {
 
     @Override
     public void onPause() {
-        eventBus.unregister(this);
-        presenter.unregister();
-        mapboxMap.setMyLocationEnabled(false);
+        if (mapboxMap != null) {
+            mapboxMap.setMyLocationEnabled(false);
+        }
         if (valueAnimator != null) {
             valueAnimator.cancel();
             valueAnimator.removeAllListeners();
@@ -2143,4 +2143,5 @@ public class MapFragment extends Fragment {
     public MapFragmentPresenter getPresenter() {
         return presenter;
     }
+
 }

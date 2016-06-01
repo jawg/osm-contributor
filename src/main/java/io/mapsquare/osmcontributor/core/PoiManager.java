@@ -72,6 +72,7 @@ import io.mapsquare.osmcontributor.map.events.ChangesInDB;
 import io.mapsquare.osmcontributor.map.events.LastUsePoiTypeLoaded;
 import io.mapsquare.osmcontributor.map.events.PleaseLoadLastUsedPoiType;
 import io.mapsquare.osmcontributor.map.events.PleaseTellIfDbChanges;
+import io.mapsquare.osmcontributor.map.marker.LocationMarker;
 import io.mapsquare.osmcontributor.sync.assets.PoiAssetLoader;
 import io.mapsquare.osmcontributor.sync.assets.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.sync.assets.events.InitDbEvent;
@@ -201,14 +202,14 @@ public class PoiManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseRevertPoiEvent(PleaseRevertPoiEvent event) {
-        revertPoi(event.getIdToRevert());
-        bus.post(new RevertFinishedEvent());
+        Poi poi = revertPoi(event.getIdToRevert());
+        bus.post(new RevertFinishedEvent(poi, LocationMarker.MarkerType.POI));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseRevertPoiNodeRefEvent(PleaseRevertPoiNodeRefEvent event) {
         revertPoiNodeRef(event.getIdToRevert());
-        bus.post(new RevertFinishedEvent());
+        bus.post(new RevertFinishedEvent(event.getIdToRevert(), LocationMarker.MarkerType.NODE_REF));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -838,9 +839,9 @@ public class PoiManager {
      *
      * @param poiId The Id of the Poi to revert.
      */
-    private void revertPoi(Long poiId) {
+    private Poi revertPoi(Long poiId) {
         Poi poi = poiDao.queryForId(poiId);
-        Poi backup;
+        Poi backup = null;
         Long oldPoiId = poi.getOldPoiId();
 
         if (oldPoiId != null) {
@@ -856,6 +857,7 @@ public class PoiManager {
         }
 
         deletePoi(poi);
+        return backup;
     }
 
     /**

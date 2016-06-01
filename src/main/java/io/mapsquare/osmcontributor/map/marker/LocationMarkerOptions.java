@@ -23,6 +23,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.mapbox.mapboxsdk.annotations.BaseMarkerOptions;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
@@ -30,7 +32,7 @@ import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
 
 /**
  * Contains options for LocationMarker.
- * @param <T> Parameter of related object
+ * @param <T> Type of related object
  */
 public class LocationMarkerOptions<T> extends BaseMarkerOptions<LocationMarker<T>, LocationMarkerOptions<T>> {
 
@@ -45,7 +47,11 @@ public class LocationMarkerOptions<T> extends BaseMarkerOptions<LocationMarker<T
 
 
     public LocationMarkerOptions<T> relatedObject(T relatedObject) {
-        this.relatedObject = relatedObject;
+        if (marker == null) {
+            this.relatedObject = relatedObject;
+        } else {
+            marker.setRelatedObject(relatedObject);
+        }
         setMarkerType();
         return this;
     }
@@ -64,6 +70,26 @@ public class LocationMarkerOptions<T> extends BaseMarkerOptions<LocationMarker<T
             marker.setType(markerType);
         }
         return marker;
+    }
+
+    @Override
+    public LocationMarkerOptions<T> icon(Icon icon) {
+        if (marker == null) {
+            this.icon = icon;
+        } else {
+            marker.setIcon(icon);
+        }
+        return this;
+    }
+
+    @Override
+    public LocationMarkerOptions<T> position(LatLng position) {
+        if (marker == null) {
+            this.position = position;
+        } else {
+            marker.setPosition(position);
+        }
+        return this;
     }
 
     @Override

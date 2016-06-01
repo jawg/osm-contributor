@@ -18,5 +18,24 @@
  */
 package io.mapsquare.osmcontributor.core.events;
 
+import io.mapsquare.osmcontributor.map.marker.LocationMarker;
+
 public class RevertFinishedEvent {
+
+    private final Object object;
+
+    private final LocationMarker.MarkerType markerType;
+
+    public RevertFinishedEvent(Object object, LocationMarker.MarkerType markerType) {
+        this.object = object;
+        this.markerType = markerType;
+    }
+
+    public Object getRelatedObject() {
+        return object;
+    }
+
+    public LocationMarker.MarkerType getMarkerType() {
+        return markerType;
+    }
 }

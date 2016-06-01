@@ -132,8 +132,13 @@ public class MapFragmentPresenter {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRevertFinishedEvent(RevertFinishedEvent event) {
         Timber.d("Received event RevertFinishedEvent");
-        setForceRefreshPoi();
-        loadPoisIfNeeded();
+        Object object = event.getRelatedObject();
+        if (object instanceof Poi) {
+            Poi poi = (Poi) event.getRelatedObject();
+            LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poi.getId()).position(poi.getPosition()).relatedObject(poi);
+            setIcon(markerOptions, poi, false);
+        }
+        // TO DO : Complete for node ref
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -236,7 +241,7 @@ public class MapFragmentPresenter {
                 .build();
     }
 
-    private void setIcon(LocationMarkerOptions poiMarkerOptions, Object relatedObject, boolean selected) {
+    private void setIcon(LocationMarkerOptions markerOptions, Object relatedObject, boolean selected) {
         Bitmap bitmap;
         if (relatedObject instanceof Poi) {
             Poi poi = (Poi) relatedObject;
@@ -247,7 +252,7 @@ public class MapFragmentPresenter {
         }
 
         if (bitmap != null) {
-            poiMarkerOptions.icon(IconFactory.getInstance(mapFragment.getActivity()).fromBitmap(bitmap));
+            markerOptions.icon(IconFactory.getInstance(mapFragment.getActivity()).fromBitmap(bitmap));
         }
     }
 
@@ -275,7 +280,7 @@ public class MapFragmentPresenter {
                     mapFragment.addMarker(markerOptions);
                 }
             } else {
-                markerOptions.relatedObject(mapElement);
+                markerOptions.relatedObject(mapElement).position(mapElement.getPosition());
                 if (markerType == LocationMarker.MarkerType.POI) {
                     if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI)
                             && (mapElement.getId().equals(mapFragment.getMarkerSelectedId())
@@ -289,6 +294,7 @@ public class MapFragmentPresenter {
                             && mapElement.getId().equals(((Note) markerSelected.getRelatedObject()).getId())) {
                         selected = true;
                     }
+                    setIcon(markerOptions, mapElement, selected);
                 }
 
                 //update the detail banner data
@@ -300,7 +306,6 @@ public class MapFragmentPresenter {
                         eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(poi.getType().getName(), poi.getName(), poi.getWay()));
                     }
                 }
-                setIcon(markerOptions, mapElement, selected);
             }
         }
 
@@ -313,6 +318,5 @@ public class MapFragmentPresenter {
         if (mapFragment.getSelectedMarkerType().equals(markerType) && markerSelected == null) {
             mapFragment.setMarkerSelectedId(-1L);
         }
-        mapFragment.invalidateMap();
     }
 }
