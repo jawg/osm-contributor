@@ -36,6 +36,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -257,9 +258,6 @@ public class MapFragment extends Fragment {
         instantiateMapView(savedInstanceState);
         instantiateLevelBar();
         instantiatePoiTypePicker();
-
-//        Timber.d("bounding box : %s", getViewLatLngBounds());
-//        Timber.d("bounding box internal : %s", mapboxMap.get());
 
         eventBus.register(this);
         eventBus.register(presenter);
@@ -578,6 +576,7 @@ public class MapFragment extends Fragment {
                 newPoiPosition = mapboxMap.getCameraPosition().target;
                 eventBus.post(new PleaseApplyPoiPositionChange(newPoiPosition, poi.getId()));
                 markerSelected.setPosition(newPoiPosition);
+                markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getMarkerBitmap(poi.getType(), Poi.computeState(false, false, true))));
                 poi.setUpdated(true);
                 mapboxMap.updateMarker(markerSelected);
                 switchMode(MapMode.DETAIL_POI);
@@ -758,7 +757,6 @@ public class MapFragment extends Fragment {
 
         //the marker is displayed at the end of the animation
         creationPin.setVisibility(properties.isShowCreationPin() ? View.VISIBLE : View.GONE);
-
     }
 
     private void switchToolbarMode(MapMode mode) {
@@ -1230,13 +1228,17 @@ public class MapFragment extends Fragment {
         if (configManager.hasPoiModification()) {
             switchMode(MapMode.POI_POSITION_EDITION);
             creationPin.setVisibility(View.GONE);
-            changeMapPositionSmooth(markerSelected.getPosition());
+
+            ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, OsmAnimatorUpdateListener.STEPS_CENTER_ANIMATION);
+            valueAnimator.setDuration(900);
+            valueAnimator.addUpdateListener(new OsmAnimatorUpdateListener(mapboxMap.getCameraPosition().target, markerSelected.getPosition(), mapboxMap));
 
             valueAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     creationPin.setVisibility(View.VISIBLE);
-                    removeMarker(markersPoi.get(markerSelected));
+                    Log.i(MapFragment.class.getSimpleName(), "onAnimationEnd: " + markerSelected.getRelatedObject());
+                    hideMarker(markerSelected);
                 }
             });
             valueAnimator.start();
@@ -1385,6 +1387,10 @@ public class MapFragment extends Fragment {
                 return new CameraPosition.Builder().target(newPosition).build();
             }
         }, 700);
+    }
+
+    public void hideMarker(Marker marker) {
+        marker.setIcon(IconFactory.getInstance(getActivity()).fromResource(R.drawable.hidden_marker));
     }
 
     /*-----------------------------------------------------------
