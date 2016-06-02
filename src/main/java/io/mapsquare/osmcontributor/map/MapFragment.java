@@ -328,9 +328,9 @@ public class MapFragment extends Fragment {
     }
 
     private void instantiateMapView(final Bundle savedInstanceState) {
-
         if (mapView != null) {
             mapView.onCreate(savedInstanceState);
+            mapView.setStyleUrl("asset://osmMapStyle.json");
             mapView.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(MapboxMap mapboxMap) {
@@ -339,8 +339,6 @@ public class MapFragment extends Fragment {
                 }
             });
         }
-
-
     }
 
     private void drawBounds() {

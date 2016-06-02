@@ -29,9 +29,10 @@
         android:id="@+id/mapview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        application:style_url="@string/style_mapbox_streets"
-        application:access_token="pk.eyJ1IjoiYmVyaHVnIiwiYSI6ImNpb2VmdjRraDAwMmZ2Z2x4bDJ5bmJlY3YifQ.CGm3KMpBeX5fSD-kzZUS8Q"
+        application:access_token="@string/mapbox_api_key"
         application:rotate_enabled="false"
+        application:logo_enabled="false"
+        application:attribution_enabled="false"
         application:zoom_enabled="true"/>
 
 

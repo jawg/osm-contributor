@@ -226,4 +226,5 @@
     <!-- Easter Egg -->
     <string name="easter_egg_activation">Activated the 3D is!</string>
 
+    <string name="mapbox_api_key">pk.eyJ1IjoiYmVyaHVnIiwiYSI6ImNpb2VmdjRraDAwMmZ2Z2x4bDJ5bmJlY3YifQ.CGm3KMpBeX5fSD-kzZUS8Q</string>
 </resources>
