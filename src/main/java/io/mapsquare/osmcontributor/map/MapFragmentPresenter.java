@@ -71,7 +71,7 @@ public class MapFragmentPresenter {
 
     private LatLngBounds triggerReloadPoiLatLngBounds;
 
-    MapFragment mapFragment;
+    private MapFragment mapFragment;
 
     @Inject
     EventBus eventBus;
@@ -278,6 +278,14 @@ public class MapFragmentPresenter {
                 if (!(markerSelected != null && mapFragment.getMapMode() == MapMode.POI_POSITION_EDITION && markerSelected.equals(markerOptions.getMarker())) && (mapElement instanceof Poi && !((Poi) mapElement).getToDelete())) {
                     setIcon(markerOptions, mapElement, selected);
                     mapFragment.addMarker(markerOptions);
+                }
+
+                if (markerType == LocationMarker.MarkerType.NOTE) {
+                    if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && mapElement.getId().equals(mapFragment.getMarkerSelectedId())) {
+                        mapFragment.setMarkerSelected(markerOptions.getMarker());
+                    }
+                    setIcon(markerOptions, mapElement, selected);
+                    mapFragment.addNote(markerOptions);
                 }
             } else {
                 markerOptions.relatedObject(mapElement).position(mapElement.getPosition());

@@ -1829,9 +1829,11 @@ public class MapFragment extends Fragment {
 
         if ((displayOpenNotes && Note.STATUS_OPEN.equals(note.getStatus())) || Note.STATUS_SYNC.equals(note.getStatus()) || (displayClosedNotes && Note.STATUS_CLOSE.equals(note.getStatus()))) {
             mapboxMap.addMarker(marker);
+            switchMode(MapMode.DEFAULT);
         } else if (mapMode.equals(MapMode.DETAIL_NOTE) && ((Note) markerSelected.getRelatedObject()).getId().equals(note.getId())) {
             switchMode(MapMode.DEFAULT);
         }
+        creationPin.setVisibility(View.GONE);
     }
 
     private void addPoiMarkerDependingOnFilters(LocationMarkerOptions<Poi> markerOption) {
