@@ -26,13 +26,16 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import java.util.HashSet;
 import java.util.Set;
 
+import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
 
 public class Way {
     private PolylineOptions polylineOptions;
     private Set<PoiNodeRef> poiNodeRefs;
+    private Poi poi;
 
-    public Way() {
+    public Way(Poi poi) {
+        this.poi = poi;
         polylineOptions = new PolylineOptions().alpha(0.8f).width(1.8f).color(Color.parseColor("#1565C0"));
         poiNodeRefs = new HashSet<>();
     }
@@ -48,5 +51,9 @@ public class Way {
 
     public Set<PoiNodeRef> getPoiNodeRefs() {
         return poiNodeRefs;
+    }
+
+    public Poi getPoi() {
+        return poi;
     }
 }

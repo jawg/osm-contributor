@@ -19,7 +19,6 @@
 package io.mapsquare.osmcontributor.map.ways;
 
 import android.app.Application;
-import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -65,8 +64,6 @@ public class WaysManager {
 
     public void buildWaysEdition(List<Poi> pois, boolean isRefreshFromOverpass) {
         Timber.d("Showing nodesRefs : " + pois.size());
-        Log.i(WaysManager.class.getSimpleName(), "buildWaysEdition: ");
-
         waysEdition.clear();
         waysEdition = WayMapper.poisToWays(pois);
 
@@ -78,16 +75,13 @@ public class WaysManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseLoadEditWaysEvent(PleaseLoadEditWaysEvent event) {
-        Log.i(WaysManager.class.getSimpleName(), "onPleaseLoadEditWaysEvent: ");
         List<Poi> poisFromDB = poiManager.queryForAllWays();
         buildWaysEdition(poisFromDB, event.isRefreshFromOverpass());
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseSelectNodeRefByID(PleaseSelectNodeRefByID event) {
-        Log.i(WaysManager.class.getSimpleName(), "onPleaseSelectNodeRefByID: ");
         List<PoiNodeRef> poisFromDB = new ArrayList<>();
         poisFromDB.add(poiNodeRefDao.queryForId(event.getNodeRefSelectedId()));
-//        bus.post(new NodeRefAroundLoadedEvent(poisFromDB));
     }
 }

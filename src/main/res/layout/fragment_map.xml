@@ -184,7 +184,7 @@
     </RelativeLayout>
 
     <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/edit_way_elemnt_position"
+        android:id="@+id/edit_way_point_position"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

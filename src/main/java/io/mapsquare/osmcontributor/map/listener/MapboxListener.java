@@ -34,7 +34,6 @@ import org.greenrobot.eventbus.EventBus;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
-import io.mapsquare.osmcontributor.core.events.NodeRefAroundLoadedEvent;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
 import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
@@ -105,6 +104,22 @@ public class MapboxListener {
                 MapboxListener.this.position = position;
             }
         });
+
+        mapboxMap.setOnCameraChangeListener(new MapboxMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition position) {
+                onCameraPositionChange();
+            }
+        });
+    }
+
+    /**
+     * The camera position change
+     */
+    private void onCameraPositionChange() {
+        if (mapFragment.getMapMode().equals(MapMode.NODE_REF_POSITION_EDITION)) {
+            mapFragment.onCameraChangeUpdatePolyline();
+        }
     }
 
     /**
@@ -229,8 +244,6 @@ public class MapboxListener {
      */
     public void onNodeRefMarkerClick(LocationMarker<PoiNodeRef> marker) {
         Log.i(MapboxListener.class.getSimpleName(), "onNodeRefMarkerClick: ");
-        mapFragment.selectNodeRefMarker(marker);
-        mapFragment.changeMapPositionSmooth(marker.getPosition());
-        eventBus.post(new NodeRefAroundLoadedEvent(marker.getRelatedObject()));
+        mapFragment.selectNodeRefMarker();
     }
 }

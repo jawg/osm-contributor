@@ -26,6 +26,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LruCache;
 
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import javax.inject.Singleton;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.core.model.Note;
 import io.mapsquare.osmcontributor.core.model.Poi;
+import io.mapsquare.osmcontributor.core.model.PoiNodeRef;
 import io.mapsquare.osmcontributor.core.model.PoiType;
 
 /**
@@ -360,13 +362,60 @@ public class BitmapHandler {
     }
 
     /**
+     * Get the nodeRef bitmap with the color corresponding to the state of the node.
+     *
+     * @param state The state of the node.
+     * @return The bitmap in the corresponding color.
+     */
+    public Bitmap getNodeRefBitmap(PoiNodeRef.State state) {
+        // Try to retrieve bmOverlay from cache
+        Bitmap bmOverlay = getBitmapFromMemCache(state.toString());
+        Integer markerId;
+
+        // If we don't have the combination into memory yet, compute it manually
+        if (bmOverlay == null) {
+            switch (state) {
+                case NONE:
+                    markerId = R.drawable.waypoint;
+                    break;
+                case SELECTED:
+                    markerId = R.drawable.waypoint_selected;
+                    break;
+                case MOVING:
+                    markerId = R.drawable.waypoint_edition;
+                    break;
+                default:
+                    markerId = R.drawable.waypoint;
+                    break;
+            }
+            // If still too slow (lots of sources), we might change this and also include partials into cache
+            // Right now, I don't think the use case proves its usefulness
+            Drawable drawable = ContextCompat.getDrawable(context, markerId);
+            bmOverlay = drawableToBitmap(drawable);
+            addBitmapToMemoryCache(state.toString(), bmOverlay);
+        }
+        return bmOverlay;
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
+    /**
      * Get the drawable corresponding to the icon name.
      *
      * @param iconName The icon name.
      * @return The drawable.
      */
     public Drawable getDrawable(String iconName) {
-        return context.getResources().getDrawable(getDrawableId(iconName));
+        return ContextCompat.getDrawable(context, getDrawableId(iconName));
     }
 
     /**

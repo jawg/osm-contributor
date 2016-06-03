@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -36,7 +37,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,6 +63,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdate;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -137,7 +138,6 @@ import io.mapsquare.osmcontributor.map.marker.LocationMarker;
 import io.mapsquare.osmcontributor.map.marker.LocationMarkerOptions;
 import io.mapsquare.osmcontributor.map.ways.Geocoder;
 import io.mapsquare.osmcontributor.map.ways.LevelBar;
-import io.mapsquare.osmcontributor.map.ways.VectorialObject;
 import io.mapsquare.osmcontributor.map.ways.Way;
 import io.mapsquare.osmcontributor.note.NoteCommentDialogFragment;
 import io.mapsquare.osmcontributor.note.events.ApplyNewCommentFailedEvent;
@@ -589,7 +589,9 @@ public class MapFragment extends Fragment {
                 newPoiPosition = mapboxMap.getCameraPosition().target;
                 eventBus.post(new PleaseApplyNodeRefPositionChange(newPoiPosition, poiNodeRef.getId()));
                 markerSelected.setPosition(newPoiPosition);
+                markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.SELECTED)));
                 switchMode(MapMode.WAY_EDITION);
+                removePolyline(editionPolyline);
                 tracker.send(new HitBuilders.EventBuilder()
                         .setCategory(Category.Edition.getValue())
                         .setAction("way point position edited")
@@ -639,16 +641,14 @@ public class MapFragment extends Fragment {
                     mapboxMap.updateMarker(markerSelected);
                     switchMode(MapMode.DEFAULT);
                     break;
-
                 case NODE_REF_POSITION_EDITION:
                     switchMode(MapMode.WAY_EDITION);
+                    removePolyline(editionPolyline);
                     break;
 
                 case WAY_EDITION:
-                    clearVectorialEdition();
                     switchMode(MapMode.DEFAULT);
                     break;
-
                 case DETAIL_POI:
                 case DETAIL_NOTE:
                 case POI_CREATION:
@@ -733,6 +733,7 @@ public class MapFragment extends Fragment {
                 break;
 
             case NODE_REF_POSITION_EDITION:
+                creationPin.setImageBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.MOVING));
                 break;
 
             case WAY_EDITION:
@@ -827,7 +828,7 @@ public class MapFragment extends Fragment {
                     break;
 
                 case NODE_REF:
-                    markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromResource(R.drawable.waypoint));
+                    markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.NONE)));
                     break;
                 default:
                     break;
@@ -844,14 +845,18 @@ public class MapFragment extends Fragment {
     }
 
     public void removeAllMarkers() {
-        for (Long markerId : markersNotes.keySet()) {
-            removeMarker(markersNotes.get(markerId));
+        for (LocationMarkerOptions markerOptions : markersNotes.values()) {
+            removeMarker(markerOptions);
         }
-        for (Long markerId : markersNodeRef.keySet()) {
-            removeMarker(markersNodeRef.get(markerId));
+        for (LocationMarkerOptions markerOptions : markersNodeRef.values()) {
+            removeMarker(markerOptions);
+        }
+        for (PolylineOptions polylineOptions : polylinesWays.values()) {
+            removePolyline(polylineOptions);
         }
         markersNotes.clear();
         markersNodeRef.clear();
+        polylinesWays.clear();
         removeAllPoiMarkers();
     }
 
@@ -892,7 +897,11 @@ public class MapFragment extends Fragment {
         }
     }
 
-
+    private void removePolyline(PolylineOptions polylineOptions) {
+        if (polylineOptions != null) {
+            mapboxMap.removePolyline(polylineOptions.getPolyline());
+        }
+    }
 
     public void reselectMarker() {
         // if I found the marker selected I click on it
@@ -928,14 +937,49 @@ public class MapFragment extends Fragment {
     * WAY EDITION
     *---------------------------------------------------------*/
 
-    @BindView(R.id.edit_way_elemnt_position)
+    @BindView(R.id.edit_way_point_position)
     FloatingActionButton editNodeRefPosition;
+    @BindView(R.id.level_bar)
+    LevelBar levelBar;
+
+    private boolean isVectorial = false;
+    private double currentLevel = 0;
+    private LocationMarker.MarkerType selectedMarkerType = LocationMarker.MarkerType.NONE;
+    private int zoomVectorial;
+    private Map<Long, PolylineOptions> polylinesWays = new HashMap<>();
+    private PolylineOptions editionPolyline;
+    private int currentPoiIndexInRelatedPolyline;
 
 
-    @OnClick(R.id.edit_way_elemnt_position)
-    public void setEditNodeRefPosition() {
-//        vectorialOverlay.setMovingObjectId(((PoiNodeRef) markerSelected.getRelatedObject()).getNodeBackendId());
+    @OnClick(R.id.edit_way_point_position)
+    public void editNodeRefPosition() {
+        buildEditionPolygon();
         switchMode(MapMode.NODE_REF_POSITION_EDITION);
+        creationPin.setVisibility(View.VISIBLE);
+        hideMarker(markerSelected);
+    }
+
+    private void buildEditionPolygon() {
+        // Current selected poiNodeRef
+        PoiNodeRef currentPoiNodeRef = (PoiNodeRef) markerSelected.getRelatedObject();
+
+        // Polyline related to this poiNodeRef
+        PolylineOptions currentPolyline = polylinesWays.get(currentPoiNodeRef.getId());
+
+        // Item of the poiNodeRef in the polilyne
+        int indexOfPoiNodeRef = currentPolyline
+                .getPoints()
+                .indexOf(new LatLng(currentPoiNodeRef.getLatitude(), currentPoiNodeRef.getLongitude()));
+
+        LatLng previousPoint = currentPolyline.getPoints().get(indexOfPoiNodeRef == 0 ? indexOfPoiNodeRef + 1 : indexOfPoiNodeRef - 1);
+        LatLng nextPoint = currentPolyline.getPoints().get(indexOfPoiNodeRef == currentPolyline.getPoints().size() - 1 ? indexOfPoiNodeRef - 1 : indexOfPoiNodeRef + 1);
+        editionPolyline = new PolylineOptions()
+                .add(previousPoint, currentPolyline.getPoints().get(indexOfPoiNodeRef), nextPoint)
+                .alpha(0.4f)
+                .width(1.8f)
+                .color(Color.parseColor("#F57C00"));
+
+        mapboxMap.addPolyline(editionPolyline);
     }
 
     //get data from overpass
@@ -946,6 +990,48 @@ public class MapFragment extends Fragment {
             eventBus.post(new SyncDownloadWayEvent(viewLatLngBounds));
         } else {
             Toast.makeText(getActivity(), getString(R.string.zoom_to_edit), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEditionWaysLoadedEvent(EditionWaysLoadedEvent event) {
+        if (event.isRefreshFromOverpass()) {
+            progressBar.setVisibility(View.GONE);
+        }
+        if (mapMode == MapMode.WAY_EDITION) {
+            Timber.d("Showing nodesRefs : " + event.getWays().size());
+            clearAllNodeRef();
+            updateVectorials(event.getWays(), event.getLevels());
+        }
+    }
+
+    public void onCameraChangeUpdatePolyline() {
+        if (editionPolyline != null) {
+            List<LatLng> points = editionPolyline.getPoints();
+            points.set(1, mapboxMap.getCameraPosition().target);
+
+            removePolyline(editionPolyline);
+            editionPolyline = new PolylineOptions()
+                    .addAll(points)
+                    .alpha(0.4f)
+                    .width(1.8f)
+                    .color(Color.parseColor("#F57C00"));
+            mapboxMap.addPolyline(editionPolyline);
+        }
+    }
+
+    private void updateVectorials(Set<Way> ways, TreeSet<Double> levels) {
+        for (Way way: ways) {
+            mapboxMap.addPolyline(way.getPolylineOptions());
+            for (PoiNodeRef poiNodeRef : way.getPoiNodeRefs()) {
+                LocationMarkerOptions<PoiNodeRef> markerOptions =
+                        new LocationMarkerOptions<PoiNodeRef>().position(poiNodeRef.getPosition())
+                                .icon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.NONE)))
+                                .relatedObject(poiNodeRef);
+                mapboxMap.addMarker(markerOptions);
+                markersNodeRef.put(poiNodeRef.getId(), markerOptions);
+                polylinesWays.put(poiNodeRef.getId(), way.getPolylineOptions());
+            }
         }
     }
 
@@ -962,7 +1048,11 @@ public class MapFragment extends Fragment {
         for (LocationMarkerOptions locationMarker : markersNodeRef.values()) {
             removeMarker(locationMarker);
         }
+        for (PolylineOptions polylineOptions : polylinesWays.values()) {
+            removePolyline(polylineOptions);
+        }
         markersNodeRef.clear();
+        polylinesWays.clear();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -971,19 +1061,20 @@ public class MapFragment extends Fragment {
         if (poiNodeRefSelected != null) {
             invalidateMap();
         } else {
-            unselectNoderef();
+            unselectNodeRefMarker();
         }
     }
 
-    public void unselectNoderef() {
+    public void unselectNodeRefMarker() {
         markerSelected = null;
         markerSelectedId = -1L;
         editNodeRefPosition.setVisibility(View.GONE);
     }
 
-    public void selectNodeRefMarker(LocationMarker<PoiNodeRef> markerSelected) {
+    public void selectNodeRefMarker() {
         editNodeRefPosition.setVisibility(View.VISIBLE);
-        markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromResource(R.drawable.waypoint_selected));
+        markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.SELECTED)));
+        changeMapPositionSmooth(markerSelected.getPosition());
     }
 
     /*-----------------------------------------------------------
@@ -1235,7 +1326,6 @@ public class MapFragment extends Fragment {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     creationPin.setVisibility(View.VISIBLE);
-                    Log.i(MapFragment.class.getSimpleName(), "onAnimationEnd: " + markerSelected.getRelatedObject());
                     hideMarker(markerSelected);
                 }
             });
@@ -1516,103 +1606,6 @@ public class MapFragment extends Fragment {
             mapboxMap.removeMarker(m);
         }
         defaultMap();
-    }
-
-    /*-----------------------------------------------------------
-    * VECTORIAL
-    *---------------------------------------------------------*/
-
-    @BindView(R.id.level_bar)
-    LevelBar levelBar;
-
-    //private VectorialOverlay vectorialOverlay;
-    private boolean isVectorial = false;
-    private double currentLevel = 0;
-    Set<VectorialObject> vectorialObjectsBackground = new HashSet<>();
-    private LocationMarker.MarkerType selectedMarkerType = LocationMarker.MarkerType.NONE;
-    private int zoomVectorial;
-    private Set<Way> waysEdition = new HashSet<>();
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEditionWaysLoadedEvent(EditionWaysLoadedEvent event) {
-        if (event.isRefreshFromOverpass()) {
-            progressBar.setVisibility(View.GONE);
-        }
-        if (mapMode == MapMode.WAY_EDITION) {
-            Timber.d("Showing nodesRefs : " + event.getWays().size());
-            clearAllNodeRef();
-            waysEdition.clear();
-            waysEdition.addAll(event.getWays());
-            updateVectorial(event.getLevels());
-
-//            if (getMarkerSelected() != null && markerSelected.getType().equals(LocationMarker.MarkerType.NODE_REF)) {
-//                boolean reselectMaker = false;
-//                for (VectorialObject v : vectorialObjectsEdition) {
-//                    if (v.getId().equals(((PoiNodeRef) markerSelected.getRelatedObject()).getNodeBackendId())) {
-//                        reselectMaker = true;
-//                    }
-//                }
-//                if (!reselectMaker) {
-//                    unselectNoderef();
-//                }
-//            }
-        }
-    }
-
-    private void updateVectorial(TreeSet<Double> levels) {
-        for (Way way: waysEdition) {
-            mapboxMap.addPolyline(way.getPolylineOptions());
-            for (PoiNodeRef poiNodeRef : way.getPoiNodeRefs()) {
-                LocationMarkerOptions<PoiNodeRef> markerOptions =
-                        new LocationMarkerOptions<PoiNodeRef>().position(poiNodeRef.getPosition())
-                                .icon(IconFactory.getInstance(getActivity()).fromResource(R.drawable.waypoint))
-                                .relatedObject(poiNodeRef);
-                mapboxMap.addMarker(markerOptions);
-            }
-        }
-//        if (vectorialOverlay == null) {
-//            Set<VectorialObject> vectorialObjects = new HashSet<>();
-//            vectorialObjects.addAll(vectorialObjectsBackground);
-//            vectorialObjects.addAll(vectorialObjectsEdition);
-//
-//            vectorialOverlay = new VectorialOverlay(zoomVectorial, vectorialObjects, levels, getResources().getDisplayMetrics().scaledDensity);
-//            /** TODO **/
-//            //mapView.addOverlay(vectorialOverlay);
-//        } else {
-//            Set<VectorialObject> vectorialObjects = new HashSet<>();
-//            vectorialObjects.addAll(vectorialObjectsBackground);
-//            vectorialObjects.addAll(vectorialObjectsEdition);
-//
-//            vectorialOverlay.setVectorialObjects(vectorialObjects);
-//            vectorialOverlay.setLevels(levels);
-//        }
-//        invalidateMap();
-//
-//        levelBar.setLevels(vectorialOverlay.getLevels(), currentLevel);
-//        if (levelBar.getLevels().length < 2) {
-//            levelBar.setVisibility(View.INVISIBLE);
-//        } else {
-//            levelBar.setVisibility(View.VISIBLE);
-//        }
-    }
-
-    private void clearVectorialEdition() {
-//        if (vectorialOverlay == null) {
-//            return;
-//        } else {
-//            vectorialObjectsEdition.clear();
-//            Set<VectorialObject> vectorialObjects = new HashSet<>();
-//            vectorialObjects.addAll(vectorialObjectsBackground);
-//            vectorialOverlay.setVectorialObjects(vectorialObjects);
-//            invalidateMap();
-//        }
-//        levelBar.setLevels(vectorialOverlay.getLevels(), currentLevel);
-//        if (levelBar.getLevels().length < 2) {
-//            levelBar.setVisibility(View.INVISIBLE);
-//        } else {
-//            levelBar.setVisibility(View.VISIBLE);
-//        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -1973,114 +1966,6 @@ public class MapFragment extends Fragment {
     public FloatingActionsMenu getAddPoiFloatingButton() {
         return addPoiFloatingButton;
     }
-
-/*
-    *//*-----------------------------------------------------------
-    * TILE SOURCES
-    *---------------------------------------------------------*//*
-    private static final String TILE_SOURCE = "TILE_SOURCE";
-    private static final String OSM_MBTILES_FILE = "osm.mbtiles";
-    private static final String BING_MBTILES_FILE = "satellite.mbtiles";
-
-    private TileLayer osmTileLayer;
-    private TileLayer bingTileLayer;
-
-    // Ids of tile layers
-    public static final String OSM_TILE_SOURCE = "OSM_TILE_SOURCE";
-    public static final String BING_TILE_SOURCE = "BING_TILE_SOURCE";
-    private String currentTileLayer;
-
-    private static final float MIN_ZOOM_LEVEL = 5;
-
-    private BoundingBox scrollableAreaLimit = null;
-
-    *//**
-     * Switch the tile source between the osm tile source and the bing aerial vue tile source.
-     *//*
-    private void switchTileSource() {
-        switchToTileSource(BING_TILE_SOURCE.equals(currentTileLayer) ? OSM_TILE_SOURCE : BING_TILE_SOURCE);
-    }
-
-    *//**
-     * Change the tile source of the mapView.
-     *
-     * @param tileSourceId The id of the new tile source.
-     *//*
-    private void switchToTileSource(String tileSourceId) {
-        Timber.d("Switch tileSource to %s", tileSourceId);
-        switch (tileSourceId) {
-            case BING_TILE_SOURCE:
-                currentTileLayer = BING_TILE_SOURCE;
-                mapView.setTileSource(bingTileLayer);
-                break;
-            case OSM_TILE_SOURCE:
-            default:
-                currentTileLayer = OSM_TILE_SOURCE;
-                mapView.setTileSource(osmTileLayer);
-                break;
-        }
-        // Reset the scroll limit of the map
-        mapView.setScrollableAreaLimit(scrollableAreaLimit);
-    }
-
-    *//**
-     * Instantiate the different tiles sources used by the map.
-     *//*
-    private void instantiateTileSources() {
-        if (FlavorUtils.isTemplate()) {
-            try {
-                List<String> assetsList = Arrays.asList(getActivity().getResources().getAssets().list(""));
-                if (assetsList.contains(OSM_MBTILES_FILE)) {
-                    // Create a TileSource with OpenstreetMap's Tiles from a MBTiles file
-                    osmTileLayer = new MBTilesLayer(getActivity(), OSM_MBTILES_FILE, configManager.getZoomMaxProvider())
-                            .setName("OpenStreetMap")
-                            .setAttribution("© OpenStreetMap Contributors")
-                            .setMaximumZoomLevel(configManager.getZoomMax());
-                }
-
-                if (assetsList.contains(BING_MBTILES_FILE)) {
-                    // Create a TileSource with Bing Maps' Tiles from a MBTiles file
-                    bingTileLayer = new MBTilesLayer(getActivity(), BING_MBTILES_FILE, configManager.getZoomMaxProvider())
-                            .setName("Bing aerial view")
-                            .setMaximumZoomLevel(configManager.getZoomMax());
-                }
-            } catch (IOException e) {
-                Timber.e(e, "Couldn't get assets list");
-            }
-        }
-
-        if (osmTileLayer == null) {
-            // Create a TileSource from OpenStreetMap server
-            osmTileLayer = new WebSourceTileLayer("openstreetmap", configManager.getMapUrl(), configManager.getZoomMaxProvider())
-                    .setName("OpenStreetMap")
-                    .setAttribution("© OpenStreetMap Contributors")
-                    .setMinimumZoomLevel(MIN_ZOOM_LEVEL)
-                    .setMaximumZoomLevel(configManager.getZoomMax());
-        }
-        if (bingTileLayer == null) {
-            // Create a TileSource from Bing map with aerial with label style
-            bingTileLayer = new BingTileLayer(configManager.getBingApiKey(), BingTileLayer.IMAGERYSET_AERIALWITHLABELS, configManager.getZoomMaxProvider())
-                    .setName("Bing aerial view")
-                    .setMinimumZoomLevel(MIN_ZOOM_LEVEL)
-                    .setMaximumZoomLevel(configManager.getZoomMax());
-        }
-
-        // Set the map bounds
-        if (configManager.hasBounds()) {
-            scrollableAreaLimit = configManager.getLatLngBounds();
-        }
-
-        // Set the map bounds for the map
-        if (FlavorUtils.isTemplate()) {
-            scrollableAreaLimit = Box.enlarge(configManager.getLatLngBounds(), 2);
-            drawBounds();
-        }
-    }*/
-
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onPleaseSwitchMapStyleEvent(PleaseSwitchMapStyleEvent event) {
-//        switchTileSource();
-//    }
 
     /*-----------------------------------------------------------
     * GETTERS AND SETTERS

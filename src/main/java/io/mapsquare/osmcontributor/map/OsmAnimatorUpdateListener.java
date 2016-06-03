@@ -46,7 +46,7 @@ public class OsmAnimatorUpdateListener implements ValueAnimator.AnimatorUpdateLi
         float animatedValue = (Float) valueAnimator.getAnimatedValue();
         Double lat = originPos.getLatitude() + latStep * animatedValue;
         Double lng = originPos.getLongitude() + lngStep * animatedValue;
-
-        mapboxMap.setCameraPosition(new CameraPosition.Builder().target(new LatLng(lat, lng)).build());
+        LatLng newPosition = new LatLng(lat, lng);
+        mapboxMap.setCameraPosition(new CameraPosition.Builder().target(newPosition).build());
     }
 }

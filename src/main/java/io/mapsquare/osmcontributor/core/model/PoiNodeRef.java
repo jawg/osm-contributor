@@ -27,6 +27,7 @@ import timber.log.Timber;
 
 @DatabaseTable(tableName = PoiNodeRef.TABLE_NAME)
 public class PoiNodeRef implements Cloneable {
+    public enum State { NONE, SELECTED, MOVING }
     public static final String TABLE_NAME = "POI_NODE_REF";
     public static final String ID = "ID";
     public static final String NODE_BACKEND_ID = "NODE_BACKEND_ID";

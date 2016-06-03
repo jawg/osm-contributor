@@ -31,7 +31,7 @@ public class WayMapper {
         Set<Way> ways = new HashSet<>();
         if (pois != null && !pois.isEmpty()) {
             for (Poi poi : pois) {
-                Way way = new Way();
+                Way way = new Way(poi);
                 for (PoiNodeRef nodeRef : poi.getNodeRefs()) {
                     // Properties of a node in way edition
                     way.add(nodeRef);

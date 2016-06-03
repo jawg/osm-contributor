@@ -115,7 +115,7 @@ android {
         store {
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.store"'
             buildConfigField "int", "DEFAULT_ZOOM", "16"
-            buildConfigField "int", "ZOOM_VECTORIAL", "19"
+            buildConfigField "int", "ZOOM_VECTORIAL", "18"
             buildConfigField "int", "ZOOM_MAX_PROVIDER", "19"
             buildConfigField "float", "ZOOM_MAX", "21.99f"
             buildConfigField "double", "CENTER_LAT", "48.858370"
