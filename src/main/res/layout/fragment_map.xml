@@ -140,7 +140,7 @@
         android:visibility="gone"
        />
 
-    <io.mapsquare.osmcontributor.map.ways.LevelBar
+    <io.mapsquare.osmcontributor.utils.ways.LevelBar
         android:id="@+id/level_bar"
         style="@android:style/Widget.Holo.SeekBar"
         android:layout_width="200dp"
@@ -163,7 +163,7 @@
 
         <fragment
             android:id="@+id/note_info_panel"
-            android:name="io.mapsquare.osmcontributor.map.NoteDetailFragment"
+            android:name="io.mapsquare.osmcontributor.ui.fragments.NoteDetailFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"/>
@@ -177,7 +177,7 @@
 
         <fragment
             android:id="@+id/poi_info_panel"
-            android:name="io.mapsquare.osmcontributor.map.PoiDetailFragment"
+            android:name="io.mapsquare.osmcontributor.ui.fragments.PoiDetailFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"/>

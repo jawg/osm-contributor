@@ -87,7 +87,7 @@
                 android:textColor="@color/disable_text"/>
 
 
-            <io.mapsquare.osmcontributor.edition.ExpandableHeightGridView
+            <io.mapsquare.osmcontributor.ui.utils.views.ExpandableHeightGridView
                 android:id="@+id/gridView1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

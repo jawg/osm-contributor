@@ -51,7 +51,7 @@
 
 [1.3.0]:
 
- - OSM suggestions while adding a new PoiType
+ - OSM suggestionsDto while adding a new PoiType
  - Performance enhancements
  - Refactor, code cleaning
  - Bugfixes

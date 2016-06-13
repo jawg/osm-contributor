@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.greenrobot.eventbus.EventBus;
-import io.mapsquare.osmcontributor.core.model.Poi;
-import io.mapsquare.osmcontributor.core.model.PoiType;
-import io.mapsquare.osmcontributor.sync.converter.PoiStorageConverter;
+import io.mapsquare.osmcontributor.model.entities.Poi;
+import io.mapsquare.osmcontributor.model.entities.PoiType;
+import io.mapsquare.osmcontributor.rest.mappers.PoiStorageConverter;
 import io.mapsquare.osmcontributor.sync.dto.poistorage.CreationOrUpdateResult;
 import io.mapsquare.osmcontributor.sync.dto.poistorage.PoiDto;
 import io.mapsquare.osmcontributor.sync.dto.poistorage.TypeDto;
-import io.mapsquare.osmcontributor.sync.events.error.SyncDownloadRetrofitErrorEvent;
+import io.mapsquare.osmcontributor.rest.events.error.SyncDownloadRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.sync.rest.PoiStorageClient;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.CollectionUtils;

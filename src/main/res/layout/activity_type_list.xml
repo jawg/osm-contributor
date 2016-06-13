@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <io.mapsquare.osmcontributor.type.HorizontalViewSwitcher
+            <io.mapsquare.osmcontributor.ui.utils.views.HorizontalViewSwitcher
                 android:id="@+id/list_switcher"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -52,7 +52,7 @@
                     android:id="@+id/list_poi_tags"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
-            </io.mapsquare.osmcontributor.type.HorizontalViewSwitcher>
+            </io.mapsquare.osmcontributor.ui.utils.views.HorizontalViewSwitcher>
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_add"

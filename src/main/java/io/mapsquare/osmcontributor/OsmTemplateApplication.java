@@ -33,8 +33,11 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.HashMap;
 
 import io.fabric.sdk.android.Fabric;
-import io.mapsquare.osmcontributor.crashlytics.CrashContextWrapper;
-import io.mapsquare.osmcontributor.crashlytics.CrashlyticsTree;
+import io.mapsquare.osmcontributor.utils.crashlytics.CrashContextWrapper;
+import io.mapsquare.osmcontributor.utils.crashlytics.CrashlyticsTree;
+import io.mapsquare.osmcontributor.modules.DaggerOsmTemplateComponent;
+import io.mapsquare.osmcontributor.modules.OsmTemplateComponent;
+import io.mapsquare.osmcontributor.modules.OsmTemplateModule;
 import timber.log.Timber;
 
 public class OsmTemplateApplication extends Application {

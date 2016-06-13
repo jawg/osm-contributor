@@ -24,7 +24,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.mapsquare.osmcontributor.about.AboutActivity">
+    tools:context=".ui.activities.AboutActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

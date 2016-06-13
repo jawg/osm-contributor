@@ -48,7 +48,7 @@
             android:value="fa5f6bab15b8638cbf45357060825fcdcb6e0050"/>
 
         <activity
-            android:name=".login.SplashScreenActivity"
+            android:name=".ui.activities.SplashScreenActivity"
             android:label="@string/name"
             android:noHistory="true"
             android:screenOrientation="portrait">
@@ -59,29 +59,29 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".map.MapActivity"
+            android:name=".ui.activities.MapActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/name"/>
         <activity
-            android:name=".edition.EditPoiActivity"
+            android:name=".ui.activities.EditPoiActivity"
             android:label="@string/title_activity_edit_poi"/>
         <activity
-            android:name=".edition.PickValueActivity"
+            android:name=".ui.activities.PickValueActivity"
             android:label="@string/title_activity_pick_value"/>
         <activity
-            android:name=".preferences.MyPreferencesActivity"
+            android:name=".ui.activities.MyPreferencesActivity"
             android:label="@string/title_activity_my_preferences"/>
         <activity
-            android:name=".type.TypeListActivity"
+            android:name=".ui.activities.TypeListActivity"
             android:label="@string/manage_poi_types"/>
         <activity
-            android:name=".note.NoteActivity"
+            android:name=".ui.activities.NoteActivity"
             android:label="@string/title_activity_note"/>
         <activity
-            android:name=".upload.UploadActivity"
+            android:name=".ui.activities.UploadActivity"
             android:label="@string/title_activity_upload"/>
         <activity
-            android:name=".about.AboutActivity"
+            android:name=".ui.activities.AboutActivity"
             android:label="@string/title_activity_about"/>
 
         <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService"/>

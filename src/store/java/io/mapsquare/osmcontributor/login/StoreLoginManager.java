@@ -19,9 +19,12 @@
 package io.mapsquare.osmcontributor.login;
 
 import org.greenrobot.eventbus.EventBus;
-import io.mapsquare.osmcontributor.sync.dto.osm.OsmDto;
-import io.mapsquare.osmcontributor.sync.dto.osm.PermissionDto;
-import io.mapsquare.osmcontributor.sync.rest.OsmRestClient;
+
+import io.mapsquare.osmcontributor.database.preferences.LoginPreferences;
+import io.mapsquare.osmcontributor.rest.dtos.osm.OsmDto;
+import io.mapsquare.osmcontributor.rest.dtos.osm.PermissionDto;
+import io.mapsquare.osmcontributor.rest.clients.OsmRestClient;
+import io.mapsquare.osmcontributor.ui.managers.LoginManager;
 import retrofit.RetrofitError;
 import timber.log.Timber;
 
