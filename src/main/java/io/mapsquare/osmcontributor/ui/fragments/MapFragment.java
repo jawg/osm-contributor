@@ -38,6 +38,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -276,7 +277,6 @@ public class MapFragment extends Fragment {
         return rootView;
     }
 
-
     private void instantiateCopyrightBar() {
         osmCopyrightTextView.setText(Html.fromHtml(getString(R.string.osm_copyright)));
     }
@@ -302,13 +302,6 @@ public class MapFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Timber.v("onProgressChanged");
-//                if (vectorialOverlay != null) {
-//                    LevelBar lvl = (LevelBar) seekBar;
-//                    currentLevel = lvl.getLevel();
-//                    vectorialOverlay.setLevel(currentLevel);
-//                    invalidateMap();
-//                    applyPoiFilter();
-//                }
             }
 
             @Override
@@ -402,7 +395,6 @@ public class MapFragment extends Fragment {
 
             displayOpenNotes = savedInstanceState.getBoolean(DISPLAY_OPEN_NOTES);
             displayClosedNotes = savedInstanceState.getBoolean(DISPLAY_CLOSED_NOTES);
-//            switchToTileSource(savedInstanceState.getString(TILE_SOURCE));
         }
     }
 
@@ -1353,7 +1345,6 @@ public class MapFragment extends Fragment {
     public void onPleaseDeletePoiFromMapEvent(PleaseDeletePoiFromMapEvent event) {
         Poi poi = (Poi) markerSelected.getRelatedObject();
         poi.setToDelete(true);
-        markersPoi.remove(poi.getId());
         removeMarker(markersPoi.get(poi.getId()));
         markersPoi.remove(poi.getId());
         eventBus.post(new PleaseDeletePoiEvent(poi));

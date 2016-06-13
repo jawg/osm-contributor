@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.ui.fragments;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,9 @@ public class NoteDetailFragment extends Fragment {
     @BindView(R.id.comment_text)
     TextView textViewCommentText;
 
+    @BindView(R.id.osm_copyright)
+    TextView osmCopyrightTextView;
+
     @BindView(R.id.edit_note_detail)
     FloatingActionButton floatingActionButtonEditNote;
 
@@ -82,6 +86,8 @@ public class NoteDetailFragment extends Fragment {
 
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
         ButterKnife.bind(this, rootView);
+
+        osmCopyrightTextView.setText(Html.fromHtml(getString(R.string.osm_copyright)));
 
         return rootView;
     }

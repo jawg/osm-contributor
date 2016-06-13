@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,13 +66,16 @@ public class PoiDetailFragment extends Fragment {
     @BindView(R.id.poi_type_name)
     TextView editTextPoiTypeName;
 
+    @BindView(R.id.osm_copyright)
+    TextView osmCopyrightTextView;
+
     @BindView(R.id.floating_action_menu)
     FloatingActionsMenu floatingActionMenu;
 
-    @BindView(R.id.edit_poi_detail)
+    @BindView(R.id.edit_poi_detail_floating_button)
     FloatingActionButton floatingButtonEditPoi;
 
-    @BindView(R.id.edit_poi_position)
+    @BindView(R.id.edit_poi_position_floating_button)
     FloatingActionButton floatingButtonEditPosition;
 
     public PoiDetailFragment() {
@@ -83,6 +87,8 @@ public class PoiDetailFragment extends Fragment {
 
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
         ButterKnife.bind(this, rootView);
+
+        osmCopyrightTextView.setText(Html.fromHtml(getString(R.string.osm_copyright)));
 
         if (!configManager.hasPoiModification()) {
             floatingButtonEditPoi.setIcon(R.drawable.eye);
@@ -103,17 +109,17 @@ public class PoiDetailFragment extends Fragment {
         super.onPause();
     }
 
-    @OnClick(R.id.edit_poi_detail)
+    @OnClick(R.id.edit_poi_detail_floating_button)
     public void editPoiOnClick() {
         eventBus.post(new PleaseOpenEditionEvent());
     }
 
-    @OnClick(R.id.edit_poi_position)
+    @OnClick(R.id.edit_poi_position_floating_button)
     public void editPoiPositionOnClick() {
         eventBus.post(new PleaseChangePoiPosition());
     }
 
-    @OnClick(R.id.delete_poi)
+    @OnClick(R.id.delete_poi_floating_button)
     public void deletePoiOnClick() {
         if (configManager.hasPoiModification()) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());

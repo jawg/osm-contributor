@@ -138,7 +138,13 @@ public class MapFragmentPresenter {
         Object object = event.getRelatedObject();
         if (object instanceof Poi) {
             Poi poi = (Poi) object;
-            LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poi.getId()).position(poi.getPosition()).relatedObject(poi);
+            LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poi.getId());
+            if (markerOptions == null) {
+                markerOptions = new LocationMarkerOptions<Poi>().position(poi.getPosition()).relatedObject(poi);
+                mapFragment.addMarker(markerOptions);
+            } else {
+                markerOptions.position(poi.getPosition()).relatedObject(poi);
+            }
             setIcon(markerOptions, poi, false);
         } else {
             PoiNodeRef poiNodeRef = (PoiNodeRef) object;

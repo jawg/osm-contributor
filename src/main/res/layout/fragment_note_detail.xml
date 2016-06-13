@@ -22,22 +22,24 @@
 <RelativeLayout
     android:id="@+id/poi_info_panel"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".ui.fragments.NoteDetailFragment">
 
-    <TextView
+    <io.mapsquare.osmcontributor.ui.utils.views.TypeFaceTextView
+        android:id="@+id/osm_copyright"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/banner"
+        android:paddingRight="3dp"
+        android:paddingLeft="3dp"
+        android:background="@drawable/rounded_top_right_corner"
+        app:typeface="Roboto-Light.ttf"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:text="@string/osm_copyright"/>
+        android:textSize="13sp"/>
 
     <RelativeLayout
         android:id="@+id/banner"
@@ -83,9 +85,9 @@
         android:layout_marginBottom="-40dp"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
-        fab:fab_colorNormal="@color/material_blue_500"
-        fab:fab_colorPressed="@color/material_blue_grey_800"
-        fab:fab_icon="@drawable/pencil"
-        fab:fab_title="@string/edit_poi"/>
+        app:fab_colorNormal="@color/material_blue_500"
+        app:fab_colorPressed="@color/material_blue_grey_800"
+        app:fab_icon="@drawable/pencil"
+        app:fab_title="@string/edit_poi"/>
 
 </RelativeLayout>
