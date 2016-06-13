@@ -883,7 +883,7 @@ public class PoiManager {
         poiNodeRefDao.createOrUpdate(poiNodeRef);
         return poiNodeRef;
     }
-    
+
     public void deleteOldPoiAssociated(Poi poi) {
         Long oldId = poi.getOldPoiId();
         if (oldId != null) {

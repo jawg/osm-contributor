@@ -162,6 +162,7 @@ import timber.log.Timber;
 
 @SuppressWarnings("all")
 public class MapFragment extends Fragment {
+    private static final String TAG = "MapFragment";
 
     public static final String MAP_FRAGMENT_TAG = "MAP_FRAGMENT_TAG";
     private static final String LOCATION = "location";
@@ -596,8 +597,8 @@ public class MapFragment extends Fragment {
                 eventBus.post(new PleaseApplyNodeRefPositionChange(newPoiPosition, poiNodeRef.getId()));
                 markerSelected.setPosition(newPoiPosition);
                 markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.SELECTED)));
-                switchMode(MapMode.WAY_EDITION);
                 removePolyline(editionPolyline);
+                switchMode(MapMode.WAY_EDITION);
                 tracker.send(new HitBuilders.EventBuilder()
                         .setCategory(Category.Edition.getValue())
                         .setAction("way point position edited")
@@ -1026,8 +1027,8 @@ public class MapFragment extends Fragment {
         }
     }
 
-    private void updateVectorials(Set<Way> ways, TreeSet<Double> levels) {
-        for (Way way: ways) {
+    public void updateVectorials(Set<Way> ways, TreeSet<Double> levels) {
+        for (Way way : ways) {
             mapboxMap.addPolyline(way.getPolylineOptions());
             for (PoiNodeRef poiNodeRef : way.getPoiNodeRefs()) {
                 LocationMarkerOptions<PoiNodeRef> markerOptions =
@@ -1039,18 +1040,6 @@ public class MapFragment extends Fragment {
                 polylinesWays.put(poiNodeRef.getId(), way.getPolylineOptions());
             }
         }
-    }
-
-    public void updatePolyline(LocationMarkerOptions<PoiNodeRef> markerOptions) {
-        PoiNodeRef poiNodeRef = markerOptions.getMarker().getRelatedObject();
-        PolylineOptions polylineOption = polylinesWays.get(poiNodeRef.getId());
-        List<LatLng> points = polylineOption.getPoints();
-        removePolyline(polylineOption);
-        mapboxMap.addPolyline(new PolylineOptions()
-                .addAll(points)
-                .alpha(0.4f)
-                .width(1.8f)
-                .color(Color.parseColor("#F57C00")));
     }
 
     //get data from the bd
@@ -1467,8 +1456,18 @@ public class MapFragment extends Fragment {
     }
 
     public LocationMarkerOptions getMarkerOptions(LocationMarker.MarkerType markerType, Long id) {
-        return markerType == LocationMarker.MarkerType.POI ? markersPoi.get(id) : markersNotes.get(id);
+        switch (markerType) {
+            case POI:
+                return markersPoi.get(id);
+            case NOTE:
+                return markersNotes.get(id);
+            case NODE_REF:
+                return markersNodeRef.get(id);
+            default:
+                return null;
+        }
     }
+
     public LatLngBounds getViewLatLngBounds() {
         return mapboxMap.getProjection().getVisibleRegion().latLngBounds;
     }

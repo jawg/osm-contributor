@@ -143,8 +143,7 @@ public class MapFragmentPresenter {
         } else {
             PoiNodeRef poiNodeRef = (PoiNodeRef) object;
             LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poiNodeRef.getId()).position(poiNodeRef.getPosition()).relatedObject(poiNodeRef);
-            setIcon(markerOptions, poiNodeRef, false);
-            mapFragment.updatePolyline(markerOptions);
+            mapFragment.switchMode(MapMode.WAY_EDITION);
         }
     }
 
