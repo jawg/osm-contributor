@@ -71,7 +71,7 @@
     <string name="delete_poi_negative_btn">Cancel</string>
     <string name="point_modification_forbidden">This version doesn\'t allowed points modification</string>
     <string name="licenses_title">Licenses</string>
-    <string name="osm_copyright">© OpenStreetMap contributors</string>
+    <string name="osm_copyright"><![CDATA[<font color=\"#000\">© </font><font color=\"#1565C0\">OpenStreetMap </font><font color=\"#000\">contributors</font>]]></string>
     <string name="zoom_to_edit">This area is too large to load, please zoom more.</string>
     <string name="download_in_progress">Download in progress of all pois and notes of the displayed zone</string>
     <string name="switch_style">Satellite view</string>

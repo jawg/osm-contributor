@@ -70,7 +70,7 @@
     <string name="delete_poi_negative_btn">Annuler</string>
     <string name="point_modification_forbidden">Cette version ne permet pas la modification de points</string>
     <string name="licenses_title">Licences</string>
-    <string name="osm_copyright">© OpenStreetMap contributors</string>
+    <string name="osm_copyright"><![CDATA[<font color=\"#000\">© </font><font color=\"#1565C0\">OpenStreetMap </font><font color=\"#000\">contributors</font>]]></string>
     <string name="zoom_to_edit">Cette zone est trop grande. Veuillez zoomer plus.</string>
     <string name="download_in_progress">Tous les pois et notes de la zone affichée sont en cours de rechargement</string>
     <string name="switch_style">Vue satellite</string>

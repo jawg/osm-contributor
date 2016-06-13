@@ -62,7 +62,7 @@
   <string name="delete_poi_negative_btn">Cancelar</string>
   <string name="point_modification_forbidden">Esta versión no permite modificación de puntos</string>
   <string name="licenses_title">Licencias</string>
-  <string name="osm_copyright">© Colaboradores de OpenStreetMap</string>
+  <string name="osm_copyright"><![CDATA[<font color=\"#000\">© colaboradores de </font><font color=\"#1565C0\">OpenStreetMap </font>]]></string>
   <string name="zoom_to_edit">Esta área es demasiado grande para cargar, acerquese más.</string>
   <string name="download_in_progress">Descarga en curso de todos los PDIs y notas de la zona que se muestra</string>
   <string name="switch_style">Vista de satélite</string>

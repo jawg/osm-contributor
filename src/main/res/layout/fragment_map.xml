@@ -77,16 +77,22 @@
         android:src="@drawable/hand_tuto"
         android:visibility="gone"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:text="@string/osm_copyright"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <io.mapsquare.osmcontributor.ui.utils.views.TypeFaceTextView
+            android:id="@+id/osm_copyright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="3dp"
+            android:paddingLeft="3dp"
+            android:background="@drawable/rounded_top_right_corner"
+            application:typeface="Roboto-Light.ttf"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textSize="13sp"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="wrap_content"

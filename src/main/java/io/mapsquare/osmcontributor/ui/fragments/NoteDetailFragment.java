@@ -49,7 +49,6 @@ import io.mapsquare.osmcontributor.ui.activities.NoteActivity;
 
 
 public class NoteDetailFragment extends Fragment {
-
     private Note note;
 
     @Inject

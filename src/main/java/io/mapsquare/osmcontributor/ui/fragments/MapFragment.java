@@ -35,6 +35,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -92,23 +93,26 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.utils.ConfigManager;
-import io.mapsquare.osmcontributor.ui.utils.BitmapHandler;
-import io.mapsquare.osmcontributor.ui.utils.views.ButteryProgressBar;
-import io.mapsquare.osmcontributor.ui.presenters.MapFragmentPresenter;
-import io.mapsquare.osmcontributor.ui.utils.MapMode;
-import io.mapsquare.osmcontributor.ui.listeners.OsmAnimatorUpdateListener;
-import io.mapsquare.osmcontributor.ui.listeners.OsmCreationAnimatorUpdateListener;
-import io.mapsquare.osmcontributor.ui.adapters.PoiTypePickerAdapter;
-import io.mapsquare.osmcontributor.model.events.NodeRefAroundLoadedEvent;
-import io.mapsquare.osmcontributor.model.events.PleaseDeletePoiEvent;
-import io.mapsquare.osmcontributor.model.events.PleaseRemoveArpiMarkerEvent;
 import io.mapsquare.osmcontributor.model.entities.Note;
 import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiNodeRef;
 import io.mapsquare.osmcontributor.model.entities.PoiType;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
+import io.mapsquare.osmcontributor.model.entities.Way;
+import io.mapsquare.osmcontributor.model.events.NodeRefAroundLoadedEvent;
+import io.mapsquare.osmcontributor.model.events.PleaseDeletePoiEvent;
+import io.mapsquare.osmcontributor.model.events.PleaseRemoveArpiMarkerEvent;
+import io.mapsquare.osmcontributor.rest.events.SyncDownloadWayEvent;
+import io.mapsquare.osmcontributor.rest.events.SyncFinishUploadPoiEvent;
+import io.mapsquare.osmcontributor.rest.events.error.SyncConflictingNodeErrorEvent;
+import io.mapsquare.osmcontributor.rest.events.error.SyncDownloadRetrofitErrorEvent;
+import io.mapsquare.osmcontributor.rest.events.error.SyncNewNodeErrorEvent;
+import io.mapsquare.osmcontributor.rest.events.error.SyncUnauthorizedEvent;
+import io.mapsquare.osmcontributor.rest.events.error.SyncUploadNoteRetrofitErrorEvent;
+import io.mapsquare.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
+import io.mapsquare.osmcontributor.rest.events.error.TooManyRequestsEvent;
 import io.mapsquare.osmcontributor.ui.activities.EditPoiActivity;
+import io.mapsquare.osmcontributor.ui.adapters.PoiTypePickerAdapter;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyNodeRefPositionChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyPoiPositionChange;
 import io.mapsquare.osmcontributor.ui.events.map.AddressFoundEvent;
@@ -140,24 +144,21 @@ import io.mapsquare.osmcontributor.ui.events.map.PleaseToggleArpiEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.ui.events.map.PoiNoTypeCreated;
+import io.mapsquare.osmcontributor.ui.events.note.ApplyNewCommentFailedEvent;
 import io.mapsquare.osmcontributor.ui.listeners.MapboxListener;
+import io.mapsquare.osmcontributor.ui.listeners.OsmAnimatorUpdateListener;
+import io.mapsquare.osmcontributor.ui.listeners.OsmCreationAnimatorUpdateListener;
+import io.mapsquare.osmcontributor.ui.presenters.MapFragmentPresenter;
+import io.mapsquare.osmcontributor.ui.utils.BitmapHandler;
+import io.mapsquare.osmcontributor.ui.utils.MapMode;
+import io.mapsquare.osmcontributor.ui.utils.views.ButteryProgressBar;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerOptions;
-import io.mapsquare.osmcontributor.utils.ways.Geocoder;
-import io.mapsquare.osmcontributor.utils.ways.LevelBar;
-import io.mapsquare.osmcontributor.model.entities.Way;
-import io.mapsquare.osmcontributor.ui.events.note.ApplyNewCommentFailedEvent;
-import io.mapsquare.osmcontributor.rest.events.SyncDownloadWayEvent;
-import io.mapsquare.osmcontributor.rest.events.SyncFinishUploadPoiEvent;
-import io.mapsquare.osmcontributor.rest.events.error.SyncConflictingNodeErrorEvent;
-import io.mapsquare.osmcontributor.rest.events.error.SyncDownloadRetrofitErrorEvent;
-import io.mapsquare.osmcontributor.rest.events.error.SyncNewNodeErrorEvent;
-import io.mapsquare.osmcontributor.rest.events.error.SyncUnauthorizedEvent;
-import io.mapsquare.osmcontributor.rest.events.error.SyncUploadNoteRetrofitErrorEvent;
-import io.mapsquare.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
-import io.mapsquare.osmcontributor.rest.events.error.TooManyRequestsEvent;
+import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import io.mapsquare.osmcontributor.utils.StringUtils;
+import io.mapsquare.osmcontributor.utils.ways.Geocoder;
+import io.mapsquare.osmcontributor.utils.ways.LevelBar;
 import timber.log.Timber;
 
 @SuppressWarnings("all")
@@ -217,6 +218,9 @@ public class MapFragment extends Fragment {
     @BindView(R.id.note_detail_wrapper)
     RelativeLayout noteDetailWrapper;
 
+    @BindView(R.id.osm_copyright)
+    TextView osmCopyrightTextView;
+
     @Inject
     SharedPreferences sharedPreferences;
 
@@ -265,10 +269,16 @@ public class MapFragment extends Fragment {
         instantiateMapView(savedInstanceState);
         instantiateLevelBar();
         instantiatePoiTypePicker();
+        instantiateCopyrightBar();
 
         eventBus.register(this);
         eventBus.register(presenter);
         return rootView;
+    }
+
+
+    private void instantiateCopyrightBar() {
+        osmCopyrightTextView.setText(Html.fromHtml(getString(R.string.osm_copyright)));
     }
 
     private void instantiateProgressBar() {
@@ -745,22 +755,15 @@ public class MapFragment extends Fragment {
 
             case WAY_EDITION:
                 loadAreaForEdition();
-//                if (vectorialOverlay != null) {
-//                    vectorialOverlay.setMovingObjectId(null);
-//                    vectorialOverlay.setSelectedObjectId(null);
-//                }
-//                else if (markerSelected == null && markerSelectedId != -1) {
-//                    eventBus.post(new PleaseSelectNodeRefByID(markerSelectedId));
-//                }
                 break;
 
             default:
                 poiTypeSelected = null;
                 poiTypeEditText.setText("");
                 addPoiFloatingButton.collapse();
+                clearAllNodeRef();
                 break;
         }
-
         //the marker is displayed at the end of the animation
         creationPin.setVisibility(properties.isShowCreationPin() ? View.VISIBLE : View.GONE);
     }
