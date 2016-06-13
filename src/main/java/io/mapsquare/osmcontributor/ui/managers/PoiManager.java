@@ -208,8 +208,8 @@ public class PoiManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseRevertPoiNodeRefEvent(PleaseRevertPoiNodeRefEvent event) {
-        revertPoiNodeRef(event.getIdToRevert());
-        bus.post(new RevertFinishedEvent(event.getIdToRevert(), LocationMarker.MarkerType.NODE_REF));
+        PoiNodeRef poiNodeRef = revertPoiNodeRef(event.getIdToRevert());
+        bus.post(new RevertFinishedEvent(poiNodeRef, LocationMarker.MarkerType.NODE_REF));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -865,7 +865,7 @@ public class PoiManager {
      *
      * @param poiNodeRefId The Id of the PoiNodeRef to revert.
      */
-    private void revertPoiNodeRef(Long poiNodeRefId) {
+    private PoiNodeRef revertPoiNodeRef(Long poiNodeRefId) {
         PoiNodeRef poiNodeRef = poiNodeRefDao.queryForId(poiNodeRefId);
         PoiNodeRef backup;
         Long oldId = poiNodeRef.getOldPoiId();
@@ -881,8 +881,9 @@ public class PoiManager {
         poiNodeRef.setOld(false);
         poiNodeRef.setOldPoiId(null);
         poiNodeRefDao.createOrUpdate(poiNodeRef);
+        return poiNodeRef;
     }
-
+    
     public void deleteOldPoiAssociated(Poi poi) {
         Long oldId = poi.getOldPoiId();
         if (oldId != null) {

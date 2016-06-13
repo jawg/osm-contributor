@@ -34,6 +34,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
+import io.mapsquare.osmcontributor.model.entities.PoiNodeRef;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.core.MapElement;
 import io.mapsquare.osmcontributor.ui.utils.MapMode;
@@ -136,11 +137,15 @@ public class MapFragmentPresenter {
         Timber.d("Received event RevertFinishedEvent");
         Object object = event.getRelatedObject();
         if (object instanceof Poi) {
-            Poi poi = (Poi) event.getRelatedObject();
+            Poi poi = (Poi) object;
             LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poi.getId()).position(poi.getPosition()).relatedObject(poi);
             setIcon(markerOptions, poi, false);
+        } else {
+            PoiNodeRef poiNodeRef = (PoiNodeRef) object;
+            LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poiNodeRef.getId()).position(poiNodeRef.getPosition()).relatedObject(poiNodeRef);
+            setIcon(markerOptions, poiNodeRef, false);
+            mapFragment.updatePolyline(markerOptions);
         }
-        // TO DO : Complete for node ref
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

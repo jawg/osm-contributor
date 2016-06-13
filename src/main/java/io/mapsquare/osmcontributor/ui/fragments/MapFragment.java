@@ -1041,6 +1041,18 @@ public class MapFragment extends Fragment {
         }
     }
 
+    public void updatePolyline(LocationMarkerOptions<PoiNodeRef> markerOptions) {
+        PoiNodeRef poiNodeRef = markerOptions.getMarker().getRelatedObject();
+        PolylineOptions polylineOption = polylinesWays.get(poiNodeRef.getId());
+        List<LatLng> points = polylineOption.getPoints();
+        removePolyline(polylineOption);
+        mapboxMap.addPolyline(new PolylineOptions()
+                .addAll(points)
+                .alpha(0.4f)
+                .width(1.8f)
+                .color(Color.parseColor("#F57C00")));
+    }
+
     //get data from the bd
     private void loadAreaForEdition() {
         if (getZoomLevel() >= zoomVectorial) {
