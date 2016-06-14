@@ -18,17 +18,17 @@
  */
 package io.mapsquare.osmcontributor.ui.utils.views.map.marker;
 
-import com.mapbox.mapboxsdk.annotations.BaseMarkerOptions;
-import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.BaseMarkerViewOptions;
+import com.mapbox.mapboxsdk.annotations.MarkerView;
 
 
-public class LocationMarker<T> extends Marker {
+public class LocationMarker<T> extends MarkerView {
 
     private T relatedObject;
 
     private MarkerType type;
 
-    LocationMarker(BaseMarkerOptions markerOptions) {
+    LocationMarker(BaseMarkerViewOptions markerOptions) {
         super(markerOptions);
     }
 

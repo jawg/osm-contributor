@@ -64,6 +64,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdate;
@@ -1836,6 +1837,11 @@ public class MapFragment extends Fragment {
         //if we are in vectorial mode we hide all poi not at the current level
         if (poi.getType() != null && !poiTypeHidden.contains(poi.getType().getId()) && (!isVectorial || poi.isAtLevel(currentLevel) || !poi.isOnLevels(levelBar.getLevels()))) {
             mapboxMap.addMarker(markerOption);
+            MarkerViewOptions markerViewOptions = new MarkerViewOptions()
+                    .icon(markerOption.getIcon())
+                    .position(markerOption.getPosition())
+                    .flat(true);
+            mapboxMap.addMarker(markerViewOptions);
         } else if (mapMode.equals(MapMode.DETAIL_POI) && ((Poi) markerSelected.getRelatedObject()).getId().equals(poi.getId())) {
             //if the poi selected is hidden close the detail mode
             switchMode(MapMode.DEFAULT);

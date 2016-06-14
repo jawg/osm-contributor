@@ -22,7 +22,7 @@ package io.mapsquare.osmcontributor.ui.utils.views.map.marker;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.mapbox.mapboxsdk.annotations.BaseMarkerOptions;
+import com.mapbox.mapboxsdk.annotations.BaseMarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
@@ -34,8 +34,7 @@ import io.mapsquare.osmcontributor.model.entities.PoiNodeRef;
  * Contains options for LocationMarker.
  * @param <T> Type of related object
  */
-public class LocationMarkerOptions<T> extends BaseMarkerOptions<LocationMarker<T>, LocationMarkerOptions<T>> {
-
+public class LocationMarkerOptions<T> extends BaseMarkerViewOptions<LocationMarker<T>, LocationMarkerOptions<T>> {
     // Must be declared because BaseMarkerOptions implements Parceable. DO NOT REMOVE !
     private Parcelable.Creator CREATOR;
 
@@ -65,9 +64,17 @@ public class LocationMarkerOptions<T> extends BaseMarkerOptions<LocationMarker<T
     public LocationMarker<T> getMarker() {
         if (marker == null) {
             marker = new LocationMarker<>(this);
-            marker.setPosition(position);
             marker.setRelatedObject(relatedObject);
             marker.setType(markerType);
+            marker.setPosition(position);
+            marker.setSnippet(snippet);
+            marker.setTitle(title);
+            marker.setIcon(icon);
+            marker.setFlat(flat);
+            marker.setAnchor(anchorU, anchorV);
+            marker.setInfoWindowAnchor(infoWindowAnchorU, infoWindowAnchorV);
+            marker.setRotation(rotation);
+            marker.setVisible(visible);
         }
         return marker;
     }
