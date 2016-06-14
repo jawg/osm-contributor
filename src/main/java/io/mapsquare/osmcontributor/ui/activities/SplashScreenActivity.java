@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -213,7 +212,6 @@ public class SplashScreenActivity extends AppCompatActivity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.i("osmcontributorlog", "onRequestPermissionsResult: ");
         // If request is cancelled, the result arrays are empty.
         if (requestCode == ALLOW_PERMISSIONS && grantResults.length > 0) {
             List<String> permissionsNotAllowed = new ArrayList<>();
@@ -238,10 +236,8 @@ public class SplashScreenActivity extends AppCompatActivity {
      * This method is called is a permission (or all permissions) are declined by the user.
      * If permissions are refused, we indicate why we request permissions and that, whitout it,
      * the app can not work.
-     *
      */
     private void permissionNotEnabled() {
-        Log.i("osmcontributorlog", "permissionNotEnabled: ");
         new LovelyStandardDialog(this)
                 .setTopColorRes(R.color.colorPrimaryDark)
                 .setIcon(R.mipmap.icon)

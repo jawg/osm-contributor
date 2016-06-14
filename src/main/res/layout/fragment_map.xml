@@ -30,7 +30,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         application:access_token="@string/mapbox_api_key"
-        application:rotate_enabled="false"
+        application:rotate_enabled="true"
         application:logo_enabled="false"
         application:attribution_enabled="false"
         application:zoom_enabled="true"/>
