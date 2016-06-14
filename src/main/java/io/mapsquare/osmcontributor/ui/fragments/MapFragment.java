@@ -161,7 +161,6 @@ import io.mapsquare.osmcontributor.utils.ways.Geocoder;
 import io.mapsquare.osmcontributor.utils.ways.LevelBar;
 import timber.log.Timber;
 
-@SuppressWarnings("all")
 public class MapFragment extends Fragment {
     private static final String TAG = "MapFragment";
 
@@ -199,6 +198,8 @@ public class MapFragment extends Fragment {
     private MapboxMap mapboxMap;
 
     private Unbinder unbinder;
+
+    private Location lastLocation;
 
     @Inject
     BitmapHandler bitmapHandler;
@@ -314,15 +315,12 @@ public class MapFragment extends Fragment {
     }
 
     private void instantiateMapBox(Bundle savedInstanceState) {
-        mapboxMap.setMyLocationEnabled(true);
-
         // Set the map center and zoom to the saved values or use the default values
-        Location myLocation = mapboxMap.getMyLocation();
-        mapboxMap.setMyLocationEnabled(false);
+        getUserLocation();
         CameraPosition.Builder cameraBuilder = new CameraPosition.Builder();
         if (savedInstanceState == null) {
-            cameraBuilder.target((FlavorUtils.isStore() && myLocation != null) ?
-                    new LatLng(myLocation.getLatitude(), myLocation.getLongitude()) : configManager.getDefaultCenter())
+            cameraBuilder.target((FlavorUtils.isStore() && lastLocation != null) ?
+                    new LatLng(lastLocation) : configManager.getDefaultCenter())
                     .zoom(configManager.getDefaultZoom());
         } else {
             cameraBuilder.target((LatLng) savedInstanceState.getParcelable(LOCATION))
@@ -330,9 +328,16 @@ public class MapFragment extends Fragment {
         }
 
         mapboxMap.setCameraPosition(cameraBuilder.build());
-        onResume();
+        getUserLocation();
+        eventBus.post(new PleaseInitializeArpiEvent());
+        presenter.setForceRefreshPoi();
+        presenter.setForceRefreshNotes();
+        presenter.loadPoisIfNeeded();
+        eventBus.post(new PleaseInitializeNoteDrawerEvent(displayOpenNotes, displayClosedNotes));
+        if (poiTypePickerAdapter != null) {
+            poiTypePickerAdapter.setExpertMode(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
+        }
         switchMode(MapMode.DEFAULT);
-
         mapboxListener.listen(mapboxMap);
     }
 
@@ -348,6 +353,12 @@ public class MapFragment extends Fragment {
                 }
             });
         }
+    }
+
+    private void getUserLocation() {
+        mapboxMap.setMyLocationEnabled(true);
+        lastLocation = mapboxMap.getMyLocation();
+        mapboxMap.setMyLocationEnabled(false);
     }
 
     private void drawBounds() {
@@ -400,17 +411,6 @@ public class MapFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //enable geolocation of user
-        if (mapboxMap != null) {
-            eventBus.post(new PleaseInitializeArpiEvent());
-            presenter.setForceRefreshPoi();
-            presenter.setForceRefreshNotes();
-            presenter.loadPoisIfNeeded();
-            eventBus.post(new PleaseInitializeNoteDrawerEvent(displayOpenNotes, displayClosedNotes));
-            if (poiTypePickerAdapter != null) {
-                poiTypePickerAdapter.setExpertMode(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
-            }
-        }
     }
 
     @Override
@@ -1423,9 +1423,9 @@ public class MapFragment extends Fragment {
     @OnClick(R.id.localisation)
     public void setOnPosition() {
         Timber.d("Center position on user location");
-        Location pos = mapboxMap.getMyLocation();
-        if (pos != null) {
-            mapboxMap.setCameraPosition(new CameraPosition.Builder().target(new LatLng(pos.getLatitude(), pos.getLongitude())).build());
+        getUserLocation();
+        if (lastLocation != null) {
+            mapboxMap.setCameraPosition(new CameraPosition.Builder().target(new LatLng(lastLocation)).build());
         } else {
             Toast.makeText(getActivity(), getResources().getString(R.string.location_not_found), Toast.LENGTH_SHORT).show();
         }
