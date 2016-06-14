@@ -50,7 +50,6 @@
         <activity
             android:name=".ui.activities.SplashScreenActivity"
             android:label="@string/name"
-            android:noHistory="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

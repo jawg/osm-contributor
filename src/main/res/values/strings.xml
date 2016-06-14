@@ -226,5 +226,12 @@
     <!-- Easter Egg -->
     <string name="easter_egg_activation">Activated the 3D is!</string>
 
-    <string name="mapbox_api_key">pk.eyJ1IjoiYmVyaHVnIiwiYSI6ImNpb2VmdjRraDAwMmZ2Z2x4bDJ5bmJlY3YifQ.CGm3KMpBeX5fSD-kzZUS8Q</string>
+    <!-- Android 6.0 dialog messages -->
+    <string name="permissions_title">Permissions required</string>
+    <string name="permissions_information">Location permission and write access permission are
+        required to handle the map and the database. We do not collect personal informations.
+        Without this permissions, the application can't work correctly.
+    </string>
+
+    <string name="mapbox_api_key" translatable="false">pk.eyJ1IjoiYmVyaHVnIiwiYSI6ImNpb2VmdjRraDAwMmZ2Z2x4bDJ5bmJlY3YifQ.CGm3KMpBeX5fSD-kzZUS8Q</string>
 </resources>

@@ -203,4 +203,12 @@
     <!-- Easter Egg -->
     <string name="easter_egg_activation">La 3D activé tu as!</string>
 
+    <!-- Android 6.0 dialog messages -->
+    <string name="permissions_title">Permissions nécessaires</string>
+    <string name="permissions_information">L\'accès à la localisation et en écriture au téléphone
+        sont nécessaires pour gérer la carte et la base de données.
+        Nous ne récupérons aucunes données personnelles sur votre téléphone. En refusant ces
+        deux permissions, l\'application ne peut fonctionner correctement.
+    </string>
+
 </resources>

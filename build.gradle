@@ -24,6 +24,7 @@ ext {
     showcaseviewVersion = '5.0.0'
     licensesdialogVersion = '1.7.0'
     arpiglVersion = '0.3.3'
+    lovelyDialog = '1.0.4'
 }
 
 buildscript {
@@ -181,6 +182,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$androidSupportVersion"
     compile "com.android.support:design:$androidSupportVersion"
     compile "com.github.amlcurran.showcaseview:library:$showcaseviewVersion"
+    compile "com.yarolegovich:lovely-dialog:$lovelyDialog"
 
     compile("com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion@aar") { transitive = true }
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"
