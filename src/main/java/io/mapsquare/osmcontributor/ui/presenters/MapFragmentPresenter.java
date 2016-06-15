@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.model.entities.PoiNodeRef;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
@@ -204,19 +205,13 @@ public class MapFragmentPresenter {
 
         LatLngBounds viewLatLngBounds = mapFragment.getViewLatLngBounds();
         if (viewLatLngBounds != null) {
-            if (mapFragment.getZoomLevel() > 15) {
+            if (mapFragment.getZoomLevel() > BuildConfig.ZOOM_MARKER_MIN) {
                 if (shouldReload(viewLatLngBounds)) {
                     Timber.d("Reloading pois");
                     previousZoom = mapFragment.getZoomLevel();
                     triggerReloadPoiLatLngBounds = enlarge(viewLatLngBounds, 1.5);
                     eventBus.post(new PleaseLoadPoisEvent(enlarge(viewLatLngBounds, 1.75)));
                     eventBus.post(new PleaseLoadNotesEvent(enlarge(viewLatLngBounds, 1.75)));
-                }
-            } else {
-                if (mapFragment.hasMarkers()) {
-                    Timber.d("area displayed is too big, hiding pois");
-                    previousZoom = mapFragment.getZoomLevel();
-                    mapFragment.removeAllMarkers();
                 }
             }
         }
@@ -237,8 +232,7 @@ public class MapFragmentPresenter {
             forceRefreshNotes = false;
             return true;
         }
-        return previousZoom != null && previousZoom < 15 ||
-                triggerReloadPoiLatLngBounds == null || !triggerReloadPoiLatLngBounds.union(viewLatLngBounds).equals(triggerReloadPoiLatLngBounds);
+        return previousZoom != null && previousZoom < BuildConfig.ZOOM_MARKER_MIN;
     }
 
     private LatLngBounds enlarge(LatLngBounds viewLatLngBounds, double factor) {
@@ -330,6 +324,7 @@ public class MapFragmentPresenter {
         }
 
         mapFragment.removeNoteMarkersNotIn(ids);
+        mapFragment.removePoiMarkersNotIn(ids);
 
         if ((mapFragment.getMapMode() == MapMode.DEFAULT || mapFragment.getMapMode() == MapMode.POI_CREATION)) {
             mapFragment.reselectMarker();

@@ -54,7 +54,10 @@ public class BitmapHandler {
     @Inject
     public BitmapHandler(Application osmTemplateApplication) {
         context = osmTemplateApplication.getApplicationContext();
-        final int cacheSize = 1000 * 1024 / 2; //5MB
+
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        // Use 1/5th of the available memory for this memory cache.
+        final int cacheSize = maxMemory / 5;
 
         cache = new LruCache<String, Bitmap>(cacheSize) {
             @Override
@@ -390,8 +393,7 @@ public class BitmapHandler {
             }
             // If still too slow (lots of sources), we might change this and also include partials into cache
             // Right now, I don't think the use case proves its usefulness
-            Drawable drawable = ContextCompat.getDrawable(context, markerId);
-            bmOverlay = drawableToBitmap(drawable);
+            bmOverlay = drawableToBitmap(ContextCompat.getDrawable(context, markerId));
             addBitmapToMemoryCache(state.toString(), bmOverlay);
         }
         return bmOverlay;

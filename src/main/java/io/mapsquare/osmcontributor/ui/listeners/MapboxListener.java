@@ -92,7 +92,7 @@ public class MapboxListener {
                 // Location change, call the listener method
                 if (MapboxListener.this.position != null) {
                     if (!MapboxListener.this.position.target.equals(position.target)) {
-                        onLocationChange(position.target);
+                        onCameraPositionChange();
                     }
 
                     // Zoom change, call the listener method
@@ -102,13 +102,6 @@ public class MapboxListener {
                 }
 
                 MapboxListener.this.position = position;
-            }
-        });
-
-        mapboxMap.setOnCameraChangeListener(new MapboxMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition position) {
-                onCameraPositionChange();
             }
         });
     }
@@ -156,11 +149,6 @@ public class MapboxListener {
         }
     }
 
-
-    private void onLocationChange(LatLng location) {
-
-    }
-
     /**
      * User click on map
      * @param point
@@ -190,7 +178,6 @@ public class MapboxListener {
         if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION && !mapFragment.isTuto()) {
             mapFragment.unselectIcon();
             mapFragment.setMarkerSelected(locationMarker);
-            Log.i(MapboxListener.class.getSimpleName(), "onMarkerClick: selected " + locationMarker.getRelatedObject());
             switch (locationMarker.getType()) {
                 case POI:
                     onPoiMarkerClick(locationMarker);

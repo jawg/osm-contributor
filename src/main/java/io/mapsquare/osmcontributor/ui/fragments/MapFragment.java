@@ -703,14 +703,6 @@ public class MapFragment extends Fragment {
         displayPoiDetailBanner(properties.isShowPoiBanner());
         displayNoteDetailBanner(properties.isShowNodeBanner());
 
-        // If there must be a min zoom, take zoom vectorial
-        // If there is no need for a zoom min, take the zoom min of the current TileProvider.
-        /**
-         * TODO
-         */
-//        mapboxMap.setMinZoom(properties.isZoomOutLimited() ? zoomVectorial : mapboxMap.getTileProvider().getMinimumZoomLevel());
-//        mapboxMap.setMinZoom(zoomVectorial);
-
         tracker.send(new HitBuilders.EventBuilder()
                 .setCategory(Category.MapMode.getValue())
                 .setAction(properties.getAnalyticsAction())
