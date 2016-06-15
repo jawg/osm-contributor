@@ -323,8 +323,11 @@ public class MapFragmentPresenter {
             }
         }
 
-        mapFragment.removeNoteMarkersNotIn(ids);
-        mapFragment.removePoiMarkersNotIn(ids);
+        if (markerType == LocationMarker.MarkerType.NOTE) {
+            mapFragment.removeNoteMarkersNotIn(ids);
+        } else {
+            mapFragment.removePoiMarkersNotIn(ids);
+        }
 
         if ((mapFragment.getMapMode() == MapMode.DEFAULT || mapFragment.getMapMode() == MapMode.POI_CREATION)) {
             mapFragment.reselectMarker();
