@@ -38,6 +38,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -64,7 +65,6 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
-import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdate;
@@ -153,6 +153,7 @@ import io.mapsquare.osmcontributor.ui.presenters.MapFragmentPresenter;
 import io.mapsquare.osmcontributor.ui.utils.BitmapHandler;
 import io.mapsquare.osmcontributor.ui.utils.MapMode;
 import io.mapsquare.osmcontributor.ui.utils.views.ButteryProgressBar;
+import io.mapsquare.osmcontributor.ui.utils.views.LocationMarkerViewAdapter;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerOptions;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
@@ -340,6 +341,8 @@ public class MapFragment extends Fragment {
         }
         switchMode(MapMode.DEFAULT);
         mapboxListener.listen(mapboxMap, mapView);
+
+        mapboxMap.getMarkerViewManager().addMarkerViewAdapter(new LocationMarkerViewAdapter(getActivity()));
     }
 
     private void instantiateMapView(final Bundle savedInstanceState) {
@@ -360,11 +363,6 @@ public class MapFragment extends Fragment {
         mapboxMap.setMyLocationEnabled(true);
         lastLocation = mapboxMap.getMyLocation();
         mapboxMap.setMyLocationEnabled(false);
-    }
-
-    private void drawBounds() {
-//        BoxOverlay boxOverlay = new BoxOverlay(configManager.getLatLngBounds());
-//        mapView.addOverlay(boxOverlay);
     }
 
     private void measureMaxPoiType() {
@@ -1820,11 +1818,12 @@ public class MapFragment extends Fragment {
         }
     }
 
-    private void addNoteMarkerDependingOnFilters(LocationMarkerOptions<Note> marker) {
-        Note note = marker.getMarker().getRelatedObject();
+    private void addNoteMarkerDependingOnFilters(LocationMarkerOptions<Note> markerOption) {
+        Note note = markerOption.getMarker().getRelatedObject();
 
         if ((displayOpenNotes && Note.STATUS_OPEN.equals(note.getStatus())) || Note.STATUS_SYNC.equals(note.getStatus()) || (displayClosedNotes && Note.STATUS_CLOSE.equals(note.getStatus()))) {
-            mapboxMap.addMarker(marker);
+            Log.i(TAG, "addNoteMarkerDependingOnFilters: " + markerOption.getPosition());
+            mapboxMap.addMarker(markerOption);
             switchMode(MapMode.DEFAULT);
         } else if (mapMode.equals(MapMode.DETAIL_NOTE) && ((Note) markerSelected.getRelatedObject()).getId().equals(note.getId())) {
             switchMode(MapMode.DEFAULT);
@@ -1837,11 +1836,6 @@ public class MapFragment extends Fragment {
         //if we are in vectorial mode we hide all poi not at the current level
         if (poi.getType() != null && !poiTypeHidden.contains(poi.getType().getId()) && (!isVectorial || poi.isAtLevel(currentLevel) || !poi.isOnLevels(levelBar.getLevels()))) {
             mapboxMap.addMarker(markerOption);
-            MarkerViewOptions markerViewOptions = new MarkerViewOptions()
-                    .icon(markerOption.getIcon())
-                    .position(markerOption.getPosition())
-                    .flat(true);
-            mapboxMap.addMarker(markerViewOptions);
         } else if (mapMode.equals(MapMode.DETAIL_POI) && ((Poi) markerSelected.getRelatedObject()).getId().equals(poi.getId())) {
             //if the poi selected is hidden close the detail mode
             switchMode(MapMode.DEFAULT);

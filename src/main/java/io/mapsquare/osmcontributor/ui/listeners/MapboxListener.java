@@ -37,7 +37,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.Queue;
 
 import io.mapsquare.osmcontributor.model.entities.Note;
 import io.mapsquare.osmcontributor.model.entities.Poi;
@@ -46,11 +45,11 @@ import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
 import io.mapsquare.osmcontributor.ui.utils.MapMode;
 import io.mapsquare.osmcontributor.ui.utils.ZoomAnimationGestureDetector;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
-import io.mapsquare.osmcontributor.utils.LimitedQueue;
 import timber.log.Timber;
 
 
 public class MapboxListener {
+    private static final String TAG = "MapboxListener";
     private MapFragment mapFragment;
     private MapboxMap mapboxMap;
     private MapView mapView;
@@ -59,9 +58,6 @@ public class MapboxListener {
 
     private final DecimalFormat df;
 
-    private Queue<Double> previousZoomQueue;
-    private double previousZoom = -1;
-    private double zoomScrollSpeed = 0;
     private ValueAnimator zoomValueAnimator;
 
     public MapboxListener(MapFragment mapFragment, EventBus eventBus) {
@@ -69,7 +65,6 @@ public class MapboxListener {
         this.eventBus = eventBus;
         df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.DOWN);
-        previousZoomQueue = new LimitedQueue<>(5);
     }
 
     /**
@@ -90,6 +85,7 @@ public class MapboxListener {
         mapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
+                Log.i(TAG, "onMarkerClick: ");
                 if (marker instanceof LocationMarker) {
                     LocationMarker locationMarker = (LocationMarker) marker;
                     MapboxListener.this.onMarkerClick(locationMarker);
@@ -146,6 +142,14 @@ public class MapboxListener {
                 return false;
             }
         });
+
+        mapboxMap.getMarkerViewManager().setOnMarkerViewClickListener(new MapboxMap.OnMarkerViewClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker, @NonNull View view, @NonNull MapboxMap.MarkerViewAdapter adapter) {
+                Log.i(TAG, "onMarkerViewClick: ");
+                return false;
+            }
+        });
     }
 
     /**
@@ -196,6 +200,7 @@ public class MapboxListener {
      * @param point
      */
     private void onMapClick(LatLng point) {
+        Log.i(TAG, "onMapClick: ");
         MapMode mapMode = mapFragment.getMapMode();
         if (mapMode == MapMode.DETAIL_POI || mapMode == MapMode.DETAIL_NOTE) {
             // it prevents to reselect the marker
@@ -203,7 +208,6 @@ public class MapboxListener {
             mapFragment.switchMode(MapMode.DEFAULT);
         }
         if (mapMode == MapMode.WAY_EDITION) {
-//            eventBus.post(new PleaseLoadNodeRefAround(point.getLatitude(), point.getLongitude()));
             mapFragment.unselectIcon();
         }
         if (mapMode == MapMode.DEFAULT && mapFragment.getAddPoiFloatingButton().isExpanded()) {

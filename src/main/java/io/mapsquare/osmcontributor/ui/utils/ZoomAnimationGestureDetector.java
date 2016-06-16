@@ -31,6 +31,8 @@ import io.mapsquare.osmcontributor.utils.LimitedQueue;
  * @author Tommy Buonomo on 16/06/16.
  */
 public abstract class ZoomAnimationGestureDetector extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+    private static final float MAX_SPEED = 50.0f;
+    private static final float MIN_SPEED = 2.0f;
     private Queue<Float> previousSpeedQueue = new LimitedQueue<>(5);
 
     @Override
@@ -53,8 +55,8 @@ public abstract class ZoomAnimationGestureDetector extends ScaleGestureDetector.
             sum += speed;
         }
         float moy = sum / previousSpeedQueue.size();
-        if (Math.abs(moy) > 50) {
-            moy = moy > 0 ? 50 : -50;
+        if (Math.abs(moy) > MAX_SPEED) {
+            moy = moy > 0 ? MAX_SPEED : -MAX_SPEED;
         }
 
         ValueAnimator valueAnimator = ObjectAnimator.ofFloat(-moy / 1000, 0);
@@ -63,11 +65,10 @@ public abstract class ZoomAnimationGestureDetector extends ScaleGestureDetector.
         valueAnimator.setInterpolator(new DecelerateInterpolator());
         onZoomAnimationEnd(valueAnimator);
 
-        if (Math.abs(moy) > 2) {
+        if (Math.abs(moy) > MIN_SPEED) {
             onZoomAnimationEnd(valueAnimator);
         }
     }
-
 
     public abstract void onZoomAnimationEnd(ValueAnimator animator);
 }

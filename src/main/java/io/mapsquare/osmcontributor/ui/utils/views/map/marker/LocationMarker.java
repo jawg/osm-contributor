@@ -23,7 +23,6 @@ import com.mapbox.mapboxsdk.annotations.MarkerView;
 
 
 public class LocationMarker<T> extends MarkerView {
-
     private T relatedObject;
 
     private MarkerType type;
