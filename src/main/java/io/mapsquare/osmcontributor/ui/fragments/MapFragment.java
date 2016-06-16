@@ -338,7 +338,7 @@ public class MapFragment extends Fragment {
             poiTypePickerAdapter.setExpertMode(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
         }
         switchMode(MapMode.DEFAULT);
-        mapboxListener.listen(mapboxMap);
+        mapboxListener.listen(mapboxMap, mapView);
     }
 
     private void instantiateMapView(final Bundle savedInstanceState) {

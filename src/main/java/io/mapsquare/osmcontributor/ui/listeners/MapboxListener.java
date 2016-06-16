@@ -18,51 +18,65 @@
  */
 package io.mapsquare.osmcontributor.ui.listeners;
 
+import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.Queue;
 
 import io.mapsquare.osmcontributor.model.entities.Note;
 import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiNodeRef;
 import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
 import io.mapsquare.osmcontributor.ui.utils.MapMode;
+import io.mapsquare.osmcontributor.ui.utils.ZoomAnimationGestureDetector;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
+import io.mapsquare.osmcontributor.utils.LimitedQueue;
 import timber.log.Timber;
 
 
 public class MapboxListener {
     private MapFragment mapFragment;
     private MapboxMap mapboxMap;
+    private MapView mapView;
     private CameraPosition position;
     private EventBus eventBus;
 
     private final DecimalFormat df;
+
+    private Queue<Double> previousZoomQueue;
+    private double previousZoom = -1;
+    private double zoomScrollSpeed = 0;
+    private ValueAnimator zoomValueAnimator;
 
     public MapboxListener(MapFragment mapFragment, EventBus eventBus) {
         this.mapFragment = mapFragment;
         this.eventBus = eventBus;
         df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.DOWN);
+        previousZoomQueue = new LimitedQueue<>(5);
     }
 
     /**
      * Register the listener for the map
      * @param mapboxMap
      */
-    public void listen(MapboxMap mapboxMap) {
+    public void listen(final MapboxMap mapboxMap, final MapView mapView) {
         this.mapboxMap = mapboxMap;
         // Listen on map click
         mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
@@ -94,14 +108,42 @@ public class MapboxListener {
                     if (!MapboxListener.this.position.target.equals(position.target)) {
                         onCameraPositionChange();
                     }
-
                     // Zoom change, call the listener method
-                    if (MapboxListener.this.position.zoom !=  position.zoom) {
-                        onZoomChange(position.zoom);
+                    if (MapboxListener.this.position.zoom != position.zoom) {
+                        onCameraZoomChange(position.zoom);
                     }
                 }
-
                 MapboxListener.this.position = position;
+            }
+        });
+
+        final ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(mapFragment.getActivity(), new ZoomAnimationGestureDetector() {
+            @Override
+            public void onZoomAnimationEnd(ValueAnimator animator) {
+                if (zoomValueAnimator != null && zoomValueAnimator.isRunning()) {
+                    zoomValueAnimator.cancel();
+                }
+                zoomValueAnimator = animator;
+                zoomValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                        CameraPosition position = mapboxMap.getCameraPosition();
+                        mapboxMap.setCameraPosition(new CameraPosition.Builder()
+                                .target(position.target)
+                                .bearing(position.bearing)
+                                .zoom(position.zoom + (Float) valueAnimator.getAnimatedValue())
+                                .build());
+                    }
+                });
+                zoomValueAnimator.start();
+            }
+        });
+
+        mapView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                scaleGestureDetector.onTouchEvent(motionEvent);
+                return false;
             }
         });
     }
@@ -119,7 +161,7 @@ public class MapboxListener {
      * The zoom change
      * @param zoom
      */
-    private void onZoomChange(double zoom) {
+    private void onCameraZoomChange(double zoom) {
         // For testing purpose
         mapFragment.setZoomLevelText(df.format(zoom));
         mapFragment.getPresenter().loadPoisIfNeeded();
