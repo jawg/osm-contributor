@@ -883,7 +883,7 @@ public class MapFragment extends Fragment {
 
     private void removeMarker(LocationMarkerOptions marker) {
         if (marker != null) {
-            mapboxMap.removeMarker(marker.getMarker());
+            mapboxMap.getMarkerViewManager().removeMarkerView(marker.getMarker());
             Object poi = marker.getMarker().getRelatedObject();
             eventBus.post(new PleaseRemoveArpiMarkerEvent(poi));
         }
@@ -1824,7 +1824,6 @@ public class MapFragment extends Fragment {
         if ((displayOpenNotes && Note.STATUS_OPEN.equals(note.getStatus())) || Note.STATUS_SYNC.equals(note.getStatus()) || (displayClosedNotes && Note.STATUS_CLOSE.equals(note.getStatus()))) {
             Log.i(TAG, "addNoteMarkerDependingOnFilters: " + markerOption.getPosition());
             mapboxMap.addMarker(markerOption);
-            switchMode(MapMode.DEFAULT);
         } else if (mapMode.equals(MapMode.DETAIL_NOTE) && ((Note) markerSelected.getRelatedObject()).getId().equals(note.getId())) {
             switchMode(MapMode.DEFAULT);
         }

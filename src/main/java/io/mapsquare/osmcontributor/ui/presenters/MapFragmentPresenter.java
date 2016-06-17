@@ -126,7 +126,6 @@ public class MapFragmentPresenter {
         poiTypes = event.getPoiTypes();
         setForceRefreshPoi();
         setForceRefreshNotes();
-        loadPoisIfNeeded();
         eventBus.post(new PleaseInitializeDrawer(poiTypes, mapFragment.getPoiTypeHidden()));
         mapFragment.loadPoiTypeSpinner();
         mapFragment.loadPoiTypeFloatingBtn();

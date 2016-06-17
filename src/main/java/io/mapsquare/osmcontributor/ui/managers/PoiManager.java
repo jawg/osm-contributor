@@ -46,14 +46,12 @@ import io.mapsquare.osmcontributor.database.dao.PoiTypeTagDao;
 import io.mapsquare.osmcontributor.database.events.DbInitializedEvent;
 import io.mapsquare.osmcontributor.database.events.InitDbEvent;
 import io.mapsquare.osmcontributor.database.helper.DatabaseHelper;
-import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiNodeRef;
 import io.mapsquare.osmcontributor.model.entities.PoiTag;
 import io.mapsquare.osmcontributor.model.entities.PoiType;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
 import io.mapsquare.osmcontributor.model.events.DatabaseResetFinishedEvent;
-import io.mapsquare.osmcontributor.model.events.PleaseLoadNodeRefAround;
 import io.mapsquare.osmcontributor.model.events.PleaseLoadPoiForArpiEvent;
 import io.mapsquare.osmcontributor.model.events.PleaseLoadPoiForCreationEvent;
 import io.mapsquare.osmcontributor.model.events.PleaseLoadPoiForEditionEvent;
@@ -77,6 +75,7 @@ import io.mapsquare.osmcontributor.ui.events.map.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.ui.utils.BitmapHandler;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
 import io.mapsquare.osmcontributor.utils.Box;
+import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 import io.mapsquare.osmcontributor.utils.upload.PoiUpdateWrapper;
@@ -129,11 +128,6 @@ public class PoiManager {
             initDb();
             bus.postSticky(new DbInitializedEvent());
         }
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseLoadNodeRefAround(PleaseLoadNodeRefAround event) {
-//        bus.post(new NodeRefAroundLoadedEvent(poiNodeRefDao.queryAllInRect(event.getLat(), event.getLng())));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
