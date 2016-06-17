@@ -141,7 +141,7 @@ public class MapFragmentPresenter {
             LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poi.getId());
             if (markerOptions == null) {
                 markerOptions = new LocationMarkerOptions<Poi>().position(poi.getPosition()).relatedObject(poi);
-                mapFragment.addMarker(markerOptions);
+                mapFragment.addPoi(markerOptions);
             } else {
                 markerOptions.position(poi.getPosition()).relatedObject(poi);
             }
@@ -282,7 +282,7 @@ public class MapFragmentPresenter {
                 //the poi in edition should be hidden
                 if (!(markerSelected != null && mapFragment.getMapMode() == MapMode.POI_POSITION_EDITION && markerSelected.equals(markerOptions.getMarker())) && (mapElement instanceof Poi && !((Poi) mapElement).getToDelete())) {
                     setIcon(markerOptions, mapElement, selected);
-                    mapFragment.addMarker(markerOptions);
+                    mapFragment.addPoi(markerOptions);
                 }
 
                 if (markerType == LocationMarker.MarkerType.NOTE) {

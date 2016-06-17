@@ -168,7 +168,6 @@ public class MapboxListener {
     private void onCameraZoomChange(double zoom) {
         // For testing purpose
         mapFragment.setZoomLevelText(df.format(zoom));
-        mapFragment.getPresenter().loadPoisIfNeeded();
         boolean isVectorial = mapFragment.isVectorial();
 
         Timber.v("new zoom : %s", zoom);

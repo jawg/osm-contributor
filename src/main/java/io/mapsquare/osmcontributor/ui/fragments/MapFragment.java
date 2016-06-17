@@ -342,7 +342,7 @@ public class MapFragment extends Fragment {
         switchMode(MapMode.DEFAULT);
         mapboxListener.listen(mapboxMap, mapView);
 
-        mapboxMap.getMarkerViewManager().addMarkerViewAdapter(new LocationMarkerViewAdapter(getActivity()));
+        mapboxMap.getMarkerViewManager().addMarkerViewAdapter(new LocationMarkerViewAdapter(getActivity().getApplicationContext()));
     }
 
     private void instantiateMapView(final Bundle savedInstanceState) {
@@ -376,6 +376,12 @@ public class MapFragment extends Fragment {
         // -1 because we always have note
 
         maxPoiType = (int) ((dpHeight - toolbarSize - 160) / 80) - 1;
+    }
+
+    private void addMarkerView(LocationMarkerOptions markerOptions) {
+        mapboxMap.getMarkerViewManager().removeMarkerView(markerOptions.getMarker());
+        mapboxMap.removeMarker(markerOptions.getMarker());
+        mapboxMap.addMarker(markerOptions);
     }
 
 
@@ -906,7 +912,7 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void addMarker(LocationMarkerOptions<Poi> marker) {
+    public void addPoi(LocationMarkerOptions<Poi> marker) {
         markersPoi.put(marker.getMarker().getRelatedObject().getId(), marker);
         addPoiMarkerDependingOnFilters(marker);
     }
@@ -1020,7 +1026,7 @@ public class MapFragment extends Fragment {
                         new LocationMarkerOptions<PoiNodeRef>().position(poiNodeRef.getPosition())
                                 .icon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.NONE)))
                                 .relatedObject(poiNodeRef);
-                mapboxMap.addMarker(markerOptions);
+                addMarkerView(markerOptions);
                 markersNodeRef.put(poiNodeRef.getId(), markerOptions);
                 polylinesWays.put(poiNodeRef.getId(), way.getPolylineOptions());
             }
@@ -1822,8 +1828,7 @@ public class MapFragment extends Fragment {
         Note note = markerOption.getMarker().getRelatedObject();
 
         if ((displayOpenNotes && Note.STATUS_OPEN.equals(note.getStatus())) || Note.STATUS_SYNC.equals(note.getStatus()) || (displayClosedNotes && Note.STATUS_CLOSE.equals(note.getStatus()))) {
-            Log.i(TAG, "addNoteMarkerDependingOnFilters: " + markerOption.getPosition());
-            mapboxMap.addMarker(markerOption);
+            addMarkerView(markerOption);
         } else if (mapMode.equals(MapMode.DETAIL_NOTE) && ((Note) markerSelected.getRelatedObject()).getId().equals(note.getId())) {
             switchMode(MapMode.DEFAULT);
         }
@@ -1834,7 +1839,7 @@ public class MapFragment extends Fragment {
         Poi poi = markerOption.getMarker().getRelatedObject();
         //if we are in vectorial mode we hide all poi not at the current level
         if (poi.getType() != null && !poiTypeHidden.contains(poi.getType().getId()) && (!isVectorial || poi.isAtLevel(currentLevel) || !poi.isOnLevels(levelBar.getLevels()))) {
-            mapboxMap.addMarker(markerOption);
+            //mapboxMap.addMarker(markerOption);
         } else if (mapMode.equals(MapMode.DETAIL_POI) && ((Poi) markerSelected.getRelatedObject()).getId().equals(poi.getId())) {
             //if the poi selected is hidden close the detail mode
             switchMode(MapMode.DEFAULT);
