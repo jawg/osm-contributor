@@ -293,7 +293,6 @@ public class MapFragmentPresenter {
                     mapFragment.addNote(markerOptions);
                 }
             } else {
-                markerOptions.relatedObject(mapElement).position(mapElement.getPosition());
                 if (markerType == LocationMarker.MarkerType.POI) {
                     if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI)
                             && (mapElement.getId().equals(mapFragment.getMarkerSelectedId())
@@ -307,7 +306,6 @@ public class MapFragmentPresenter {
                             && mapElement.getId().equals(((Note) markerSelected.getRelatedObject()).getId())) {
                         selected = true;
                     }
-                    setIcon(markerOptions, mapElement, selected);
                 }
 
                 //update the detail banner data

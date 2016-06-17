@@ -100,7 +100,6 @@ import io.mapsquare.osmcontributor.model.entities.PoiNodeRef;
 import io.mapsquare.osmcontributor.model.entities.PoiType;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
 import io.mapsquare.osmcontributor.model.entities.Way;
-import io.mapsquare.osmcontributor.model.events.NodeRefAroundLoadedEvent;
 import io.mapsquare.osmcontributor.model.events.PleaseDeletePoiEvent;
 import io.mapsquare.osmcontributor.model.events.PleaseRemoveArpiMarkerEvent;
 import io.mapsquare.osmcontributor.rest.events.SyncDownloadWayEvent;
@@ -378,9 +377,7 @@ public class MapFragment extends Fragment {
         maxPoiType = (int) ((dpHeight - toolbarSize - 160) / 80) - 1;
     }
 
-    private void addMarkerView(LocationMarkerOptions markerOptions) {
-        mapboxMap.getMarkerViewManager().removeMarkerView(markerOptions.getMarker());
-        mapboxMap.removeMarker(markerOptions.getMarker());
+    private void addMarkerView(LocationMarkerOptions  markerOptions) {
         mapboxMap.addMarker(markerOptions);
     }
 
@@ -1051,16 +1048,6 @@ public class MapFragment extends Fragment {
         }
         markersNodeRef.clear();
         polylinesWays.clear();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNodeRefAroundLoadedEvent(NodeRefAroundLoadedEvent event) {
-        PoiNodeRef poiNodeRefSelected = event.getPoiNodeRef();
-        if (poiNodeRefSelected != null) {
-            invalidateMap();
-        } else {
-            unselectNodeRefMarker();
-        }
     }
 
     public void unselectNodeRefMarker() {
@@ -1839,7 +1826,7 @@ public class MapFragment extends Fragment {
         Poi poi = markerOption.getMarker().getRelatedObject();
         //if we are in vectorial mode we hide all poi not at the current level
         if (poi.getType() != null && !poiTypeHidden.contains(poi.getType().getId()) && (!isVectorial || poi.isAtLevel(currentLevel) || !poi.isOnLevels(levelBar.getLevels()))) {
-            //mapboxMap.addMarker(markerOption);
+            mapboxMap.addMarker(markerOption);
         } else if (mapMode.equals(MapMode.DETAIL_POI) && ((Poi) markerSelected.getRelatedObject()).getId().equals(poi.getId())) {
             //if the poi selected is hidden close the detail mode
             switchMode(MapMode.DEFAULT);
