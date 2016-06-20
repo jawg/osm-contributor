@@ -412,6 +412,11 @@ public class MapFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (mapboxMap != null) {
+            presenter.setForceRefreshPoi();
+            presenter.setForceRefreshNotes();
+            presenter.loadPoisIfNeeded();
+        }
     }
 
     @Override
@@ -885,7 +890,7 @@ public class MapFragment extends Fragment {
 
     private void removeMarker(LocationMarkerOptions marker) {
         if (marker != null) {
-            mapboxMap.getMarkerViewManager().removeMarkerView(marker.getMarker());
+            mapboxMap.removeMarker(marker.getMarker());
             Object poi = marker.getMarker().getRelatedObject();
             eventBus.post(new PleaseRemoveArpiMarkerEvent(poi));
         }

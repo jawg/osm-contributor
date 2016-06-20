@@ -136,7 +136,13 @@ public class MapFragmentPresenter {
     public void onRevertFinishedEvent(RevertFinishedEvent event) {
         Timber.d("Received event RevertFinishedEvent");
         Object object = event.getRelatedObject();
-        if (object instanceof Poi) {
+
+        if (object == null) {
+            mapFragment.removeAllPoiMarkers();
+            setForceRefreshPoi();
+            setForceRefreshNotes();
+            loadPoisIfNeeded();
+        } else if (object instanceof Poi) {
             Poi poi = (Poi) object;
             LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poi.getId());
             if (markerOptions == null) {
@@ -146,7 +152,7 @@ public class MapFragmentPresenter {
                 markerOptions.position(poi.getPosition()).relatedObject(poi);
             }
             setIcon(markerOptions, poi, false);
-        } else {
+        } else if (object instanceof PoiNodeRef) {
             PoiNodeRef poiNodeRef = (PoiNodeRef) object;
             LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poiNodeRef.getId()).position(poiNodeRef.getPosition()).relatedObject(poiNodeRef);
             mapFragment.switchMode(MapMode.WAY_EDITION);

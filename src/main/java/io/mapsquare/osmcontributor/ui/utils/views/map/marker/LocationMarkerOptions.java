@@ -84,7 +84,7 @@ public class LocationMarkerOptions<T> extends BaseMarkerViewOptions<LocationMark
         if (marker == null) {
             this.icon = icon;
         } else {
-            //marker.setIcon(icon);
+            marker.setIcon(icon);
         }
         return this;
     }
