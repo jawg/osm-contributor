@@ -35,10 +35,10 @@ import javax.inject.Inject;
 
 import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
+import io.mapsquare.osmcontributor.model.entities.Note;
+import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiNodeRef;
-import io.mapsquare.osmcontributor.utils.ConfigManager;
-import io.mapsquare.osmcontributor.utils.core.MapElement;
-import io.mapsquare.osmcontributor.ui.utils.MapMode;
+import io.mapsquare.osmcontributor.model.entities.PoiType;
 import io.mapsquare.osmcontributor.model.events.NotesLoadedEvent;
 import io.mapsquare.osmcontributor.model.events.PleaseLoadNotesEvent;
 import io.mapsquare.osmcontributor.model.events.PleaseLoadPoiTypes;
@@ -47,17 +47,17 @@ import io.mapsquare.osmcontributor.model.events.PoiTypesLoaded;
 import io.mapsquare.osmcontributor.model.events.PoisAndNotesDownloadedEvent;
 import io.mapsquare.osmcontributor.model.events.PoisLoadedEvent;
 import io.mapsquare.osmcontributor.model.events.RevertFinishedEvent;
-import io.mapsquare.osmcontributor.model.entities.Note;
-import io.mapsquare.osmcontributor.model.entities.Poi;
-import io.mapsquare.osmcontributor.model.entities.PoiType;
+import io.mapsquare.osmcontributor.rest.events.SyncDownloadPoisAndNotesEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseChangeValuesDetailNoteFragmentEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseInitializeDrawer;
+import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
+import io.mapsquare.osmcontributor.ui.utils.MapMode;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerOptions;
-import io.mapsquare.osmcontributor.rest.events.SyncDownloadPoisAndNotesEvent;
-import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
 import io.mapsquare.osmcontributor.utils.Box;
+import io.mapsquare.osmcontributor.utils.ConfigManager;
+import io.mapsquare.osmcontributor.utils.core.MapElement;
 import timber.log.Timber;
 
 public class MapFragmentPresenter {
@@ -147,6 +147,7 @@ public class MapFragmentPresenter {
             LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poi.getId());
             if (markerOptions == null) {
                 markerOptions = new LocationMarkerOptions<Poi>().position(poi.getPosition()).relatedObject(poi);
+                setIcon(markerOptions, poi, false);
                 mapFragment.addPoi(markerOptions);
             } else {
                 markerOptions.position(poi.getPosition()).relatedObject(poi);

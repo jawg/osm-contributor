@@ -21,7 +21,6 @@ package io.mapsquare.osmcontributor.ui.listeners;
 import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -81,20 +80,6 @@ public class MapboxListener {
             }
         });
 
-        // Listen on marker click
-        mapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(@NonNull Marker marker) {
-                Log.i(TAG, "onMarkerClick: ");
-                if (marker instanceof LocationMarker) {
-                    LocationMarker locationMarker = (LocationMarker) marker;
-                    MapboxListener.this.onMarkerClick(locationMarker);
-                    return false;
-                }
-                return false;
-            }
-        });
-
         // Listen on location and zoom change
         mapboxMap.setOnCameraChangeListener(new MapboxMap.OnCameraChangeListener() {
             @Override
@@ -143,10 +128,15 @@ public class MapboxListener {
             }
         });
 
+        // Listen on marker click
         mapboxMap.getMarkerViewManager().setOnMarkerViewClickListener(new MapboxMap.OnMarkerViewClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker, @NonNull View view, @NonNull MapboxMap.MarkerViewAdapter adapter) {
-                Log.i(TAG, "onMarkerViewClick: ");
+                if (marker instanceof LocationMarker) {
+                    LocationMarker locationMarker = (LocationMarker) marker;
+                    MapboxListener.this.onMarkerClick(locationMarker);
+                    return false;
+                }
                 return false;
             }
         });
@@ -199,7 +189,6 @@ public class MapboxListener {
      * @param point
      */
     private void onMapClick(LatLng point) {
-        Log.i(TAG, "onMapClick: ");
         MapMode mapMode = mapFragment.getMapMode();
         if (mapMode == MapMode.DETAIL_POI || mapMode == MapMode.DETAIL_NOTE) {
             // it prevents to reselect the marker
@@ -275,7 +264,6 @@ public class MapboxListener {
      * @param marker
      */
     public void onNodeRefMarkerClick(LocationMarker<PoiNodeRef> marker) {
-        Log.i(MapboxListener.class.getSimpleName(), "onNodeRefMarkerClick: ");
         mapFragment.selectNodeRefMarker();
     }
 }
