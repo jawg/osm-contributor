@@ -71,7 +71,7 @@ public class LocationMarkerOptions<T> extends BaseMarkerViewOptions<LocationMark
             marker.setTitle(title);
             marker.setIcon(icon);
             marker.setFlat(flat);
-            marker.setAnchor(0.5f, 0.5f);
+            marker.setAnchor(0.5f, 1f);
             marker.setInfoWindowAnchor(infoWindowAnchorU, infoWindowAnchorV);
             marker.setRotation(rotation);
             marker.setVisible(visible);

@@ -264,12 +264,11 @@ public class BitmapHandler {
                 Canvas canvas = new Canvas(bmOverlay);
 
                 int x = markerWrapper.getWidth() / 2 - icon.getWidth() / 2;
-                int y = markerWrapper.getHeight() / 4 - icon.getHeight() / 2 - (int) (0.05 * markerWrapper.getHeight());
+                int y = markerWrapper.getHeight() / 2 - icon.getHeight() / 2 - (int) (0.05 * markerWrapper.getHeight());
 
                 canvas.drawBitmap(markerWrapper, 0, 0, null);
                 canvas.drawBitmap(icon, x, y, null);
                 addBitmapToMemoryCache(bitmapCacheId, bmOverlay);
-
             }
 
             return bmOverlay;
