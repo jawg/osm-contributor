@@ -22,12 +22,11 @@ import com.mapbox.mapboxsdk.annotations.BaseMarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerView;
 
 
-public class LocationMarker<T> extends MarkerView {
+public class LocationMarkerView<T> extends MarkerView {
     private T relatedObject;
-
     private MarkerType type;
 
-    LocationMarker(BaseMarkerViewOptions markerOptions) {
+    LocationMarkerView(BaseMarkerViewOptions markerOptions) {
         super(markerOptions);
     }
 
@@ -46,11 +45,11 @@ public class LocationMarker<T> extends MarkerView {
             return true;
         }
 
-        if (!(o instanceof LocationMarker)) {
+        if (!(o instanceof LocationMarkerView)) {
             return false;
         }
 
-        LocationMarker marker = (LocationMarker) o;
+        LocationMarkerView marker = (LocationMarkerView) o;
         Object itsRelated = marker.getRelatedObject();
 
         return relatedObject == null ? itsRelated == null : relatedObject.equals(itsRelated);

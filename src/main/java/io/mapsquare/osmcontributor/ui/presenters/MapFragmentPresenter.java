@@ -53,8 +53,8 @@ import io.mapsquare.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFrag
 import io.mapsquare.osmcontributor.ui.events.map.PleaseInitializeDrawer;
 import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
 import io.mapsquare.osmcontributor.ui.utils.MapMode;
-import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
-import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerOptions;
+import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
+import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerViewOptions;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.core.MapElement;
@@ -144,9 +144,9 @@ public class MapFragmentPresenter {
             loadPoisIfNeeded();
         } else if (object instanceof Poi) {
             Poi poi = (Poi) object;
-            LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poi.getId());
+            LocationMarkerViewOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poi.getId());
             if (markerOptions == null) {
-                markerOptions = new LocationMarkerOptions<Poi>().position(poi.getPosition()).relatedObject(poi);
+                markerOptions = new LocationMarkerViewOptions<Poi>().position(poi.getPosition()).relatedObject(poi);
                 setIcon(markerOptions, poi, false);
                 mapFragment.addPoi(markerOptions);
             } else {
@@ -154,8 +154,6 @@ public class MapFragmentPresenter {
             }
             setIcon(markerOptions, poi, false);
         } else if (object instanceof PoiNodeRef) {
-            PoiNodeRef poiNodeRef = (PoiNodeRef) object;
-            LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(event.getMarkerType(), poiNodeRef.getId()).position(poiNodeRef.getPosition()).relatedObject(poiNodeRef);
             mapFragment.switchMode(MapMode.WAY_EDITION);
         }
     }
@@ -176,7 +174,7 @@ public class MapFragmentPresenter {
         for (Poi poi : pois) {
             mapElements.add(poi);
         }
-        onLoaded(mapElements, LocationMarker.MarkerType.POI);
+        onLoaded(mapElements, LocationMarkerView.MarkerType.POI);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -188,7 +186,7 @@ public class MapFragmentPresenter {
         }
         Timber.d("Showing notes : " + notes.size());
         forceRefreshNotes = false;
-        onLoaded(mapElements, LocationMarker.MarkerType.NOTE);
+        onLoaded(mapElements, LocationMarkerView.MarkerType.NOTE);
     }
 
     public void register() {
@@ -253,7 +251,7 @@ public class MapFragmentPresenter {
                 .build();
     }
 
-    private void setIcon(LocationMarkerOptions markerOptions, Object relatedObject, boolean selected) {
+    private void setIcon(LocationMarkerViewOptions markerOptions, Object relatedObject, boolean selected) {
         Bitmap bitmap;
         if (relatedObject instanceof Poi) {
             Poi poi = (Poi) relatedObject;
@@ -268,21 +266,21 @@ public class MapFragmentPresenter {
         }
     }
 
-    private void onLoaded(List<MapElement> mapElements, LocationMarker.MarkerType markerType) {
-        LocationMarker markerSelected = mapFragment.getMarkerSelected();
+    private void onLoaded(List<MapElement> mapElements, LocationMarkerView.MarkerType markerType) {
+        LocationMarkerView markerSelected = mapFragment.getMarkerSelected();
         List<Long> ids = new ArrayList<>(mapElements.size());
 
         for (MapElement mapElement : mapElements) {
             ids.add(mapElement.getId());
-            LocationMarkerOptions markerOptions = mapFragment.getMarkerOptions(markerType, mapElement.getId());
+            LocationMarkerViewOptions markerOptions = mapFragment.getMarkerOptions(markerType, mapElement.getId());
             boolean selected = false;
 
             if (markerOptions == null) {
-                markerOptions = new LocationMarkerOptions<>().relatedObject(mapElement).position(mapElement.getPosition());
+                markerOptions = new LocationMarkerViewOptions<>().relatedObject(mapElement).position(mapElement.getPosition());
                 if (mapFragment.getSelectedMarkerType().equals(markerType) && mapElement.getId().equals(mapFragment.getMarkerSelectedId())) {
                     selected = true;
                     mapFragment.setMarkerSelected(markerOptions.getMarker());
-                } else if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI) && markerSelected != null && mapElement.getId().equals(((Poi) markerSelected.getRelatedObject()).getId())) {
+                } else if (mapFragment.getSelectedMarkerType().equals(LocationMarkerView.MarkerType.POI) && markerSelected != null && mapElement.getId().equals(((Poi) markerSelected.getRelatedObject()).getId())) {
                     selected = true;
                 }
 
@@ -292,23 +290,23 @@ public class MapFragmentPresenter {
                     mapFragment.addPoi(markerOptions);
                 }
 
-                if (markerType == LocationMarker.MarkerType.NOTE) {
-                    if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE) && mapElement.getId().equals(mapFragment.getMarkerSelectedId())) {
+                if (markerType == LocationMarkerView.MarkerType.NOTE) {
+                    if (mapFragment.getSelectedMarkerType().equals(LocationMarkerView.MarkerType.NOTE) && mapElement.getId().equals(mapFragment.getMarkerSelectedId())) {
                         mapFragment.setMarkerSelected(markerOptions.getMarker());
                     }
                     setIcon(markerOptions, mapElement, selected);
                     mapFragment.addNote(markerOptions);
                 }
             } else {
-                if (markerType == LocationMarker.MarkerType.POI) {
-                    if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.POI)
+                if (markerType == LocationMarkerView.MarkerType.POI) {
+                    if (mapFragment.getSelectedMarkerType().equals(LocationMarkerView.MarkerType.POI)
                             && (mapElement.getId().equals(mapFragment.getMarkerSelectedId())
                             || markerSelected != null
                             && mapElement.getId().equals(((Poi) markerSelected.getRelatedObject()).getId()))) {
                         selected = true;
                     }
                 } else {
-                    if (mapFragment.getSelectedMarkerType().equals(LocationMarker.MarkerType.NOTE)
+                    if (mapFragment.getSelectedMarkerType().equals(LocationMarkerView.MarkerType.NOTE)
                             && markerSelected != null
                             && mapElement.getId().equals(((Note) markerSelected.getRelatedObject()).getId())) {
                         selected = true;
@@ -327,7 +325,7 @@ public class MapFragmentPresenter {
             }
         }
 
-        if (markerType == LocationMarker.MarkerType.NOTE) {
+        if (markerType == LocationMarkerView.MarkerType.NOTE) {
             mapFragment.removeNoteMarkersNotIn(ids);
         } else {
             mapFragment.removePoiMarkersNotIn(ids);

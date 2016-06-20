@@ -29,13 +29,13 @@ import android.widget.ImageView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
+import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
 
 /**
  * MarkerViewAdapter used for LocationMarkerView class to adapt a LocationMarkerView to an ImageView
  * @author Tommy Buonomo on 16/06/16.
  */
-public class LocationMarkerViewAdapter extends MapboxMap.MarkerViewAdapter<LocationMarker> {
+public class LocationMarkerViewAdapter extends MapboxMap.MarkerViewAdapter<LocationMarkerView> {
     private static final String TAG = "LocationMarkerVA";
     private LayoutInflater inflater;
 
@@ -46,7 +46,7 @@ public class LocationMarkerViewAdapter extends MapboxMap.MarkerViewAdapter<Locat
 
     @Nullable
     @Override
-    public View getView(@NonNull LocationMarker marker, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(@NonNull LocationMarkerView marker, @Nullable View convertView, @NonNull ViewGroup parent) {
         ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();

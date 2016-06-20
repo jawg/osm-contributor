@@ -31,21 +31,21 @@ import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiNodeRef;
 
 /**
- * Contains options for LocationMarker.
+ * Contains options for LocationMarkerView.
  * @param <T> Type of related object
  */
-public class LocationMarkerOptions<T> extends BaseMarkerViewOptions<LocationMarker<T>, LocationMarkerOptions<T>> {
+public class LocationMarkerViewOptions<T> extends BaseMarkerViewOptions<LocationMarkerView<T>, LocationMarkerViewOptions<T>> {
     // Must be declared because BaseMarkerOptions implements Parceable. DO NOT REMOVE !
     private Parcelable.Creator CREATOR;
 
     private T relatedObject;
 
-    private LocationMarker.MarkerType markerType;
+    private LocationMarkerView.MarkerType markerType;
 
-    private LocationMarker<T> marker;
+    private LocationMarkerView<T> marker;
 
 
-    public LocationMarkerOptions<T> relatedObject(T relatedObject) {
+    public LocationMarkerViewOptions<T> relatedObject(T relatedObject) {
         if (marker == null) {
             this.relatedObject = relatedObject;
         } else {
@@ -56,14 +56,14 @@ public class LocationMarkerOptions<T> extends BaseMarkerViewOptions<LocationMark
     }
 
     @Override
-    public LocationMarkerOptions<T> getThis() {
+    public LocationMarkerViewOptions<T> getThis() {
         return this;
     }
 
     @Override
-    public LocationMarker<T> getMarker() {
+    public LocationMarkerView<T> getMarker() {
         if (marker == null) {
-            marker = new LocationMarker<>(this);
+            marker = new LocationMarkerView<>(this);
             marker.setRelatedObject(relatedObject);
             marker.setType(markerType);
             marker.setPosition(position);
@@ -80,7 +80,7 @@ public class LocationMarkerOptions<T> extends BaseMarkerViewOptions<LocationMark
     }
 
     @Override
-    public LocationMarkerOptions<T> icon(Icon icon) {
+    public LocationMarkerViewOptions<T> icon(Icon icon) {
         if (marker == null) {
             this.icon = icon;
         } else {
@@ -90,7 +90,7 @@ public class LocationMarkerOptions<T> extends BaseMarkerViewOptions<LocationMark
     }
 
     @Override
-    public LocationMarkerOptions<T> position(LatLng position) {
+    public LocationMarkerViewOptions<T> position(LatLng position) {
         if (marker == null) {
             this.position = position;
         } else {
@@ -114,13 +114,13 @@ public class LocationMarkerOptions<T> extends BaseMarkerViewOptions<LocationMark
      */
     private void setMarkerType() {
         if (relatedObject instanceof Poi) {
-            markerType = LocationMarker.MarkerType.POI;
+            markerType = LocationMarkerView.MarkerType.POI;
         } else if (relatedObject instanceof Note) {
-            markerType = LocationMarker.MarkerType.NOTE;
+            markerType = LocationMarkerView.MarkerType.NOTE;
         } else if (relatedObject instanceof PoiNodeRef) {
-            markerType = LocationMarker.MarkerType.NODE_REF;
+            markerType = LocationMarkerView.MarkerType.NODE_REF;
         } else {
-            markerType = LocationMarker.MarkerType.NONE;
+            markerType = LocationMarkerView.MarkerType.NONE;
         }
     }
 }

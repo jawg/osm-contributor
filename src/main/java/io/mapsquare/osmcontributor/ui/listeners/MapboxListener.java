@@ -39,11 +39,11 @@ import java.text.DecimalFormat;
 
 import io.mapsquare.osmcontributor.model.entities.Note;
 import io.mapsquare.osmcontributor.model.entities.Poi;
-import io.mapsquare.osmcontributor.model.entities.PoiNodeRef;
 import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
 import io.mapsquare.osmcontributor.ui.utils.MapMode;
 import io.mapsquare.osmcontributor.ui.utils.ZoomAnimationGestureDetector;
-import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
+import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
+import io.mapsquare.osmcontributor.ui.utils.views.map.marker.WayMarker;
 import timber.log.Timber;
 
 
@@ -77,6 +77,18 @@ public class MapboxListener {
             @Override
             public void onMapClick(@NonNull LatLng point) {
                 MapboxListener.this.onMapClick(point);
+            }
+        });
+
+        // Listen on marker click
+        mapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                if (marker instanceof WayMarker) {
+                    WayMarker wayMarker = (WayMarker) marker;
+                    MapboxListener.this.onWayMarkerClick(wayMarker);
+                }
+                return false;
             }
         });
 
@@ -132,8 +144,8 @@ public class MapboxListener {
         mapboxMap.getMarkerViewManager().setOnMarkerViewClickListener(new MapboxMap.OnMarkerViewClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker, @NonNull View view, @NonNull MapboxMap.MarkerViewAdapter adapter) {
-                if (marker instanceof LocationMarker) {
-                    LocationMarker locationMarker = (LocationMarker) marker;
+                if (marker instanceof LocationMarkerView) {
+                    LocationMarkerView locationMarker = (LocationMarkerView) marker;
                     MapboxListener.this.onMarkerClick(locationMarker);
                     return false;
                 }
@@ -196,7 +208,7 @@ public class MapboxListener {
             mapFragment.switchMode(MapMode.DEFAULT);
         }
         if (mapMode == MapMode.WAY_EDITION) {
-            mapFragment.unselectIcon();
+            mapFragment.unselectWayMarker();
         }
         if (mapMode == MapMode.DEFAULT && mapFragment.getAddPoiFloatingButton().isExpanded()) {
             mapFragment.getAddPoiFloatingButton().collapse();
@@ -204,23 +216,20 @@ public class MapboxListener {
     }
 
     /**
-     * Click on LocationMarker
-     * @param locationMarker
+     * Click on LocationMarkerView
+     * @param locationMarkerView
      */
-    public void onMarkerClick(LocationMarker locationMarker) {
+    public void onMarkerClick(LocationMarkerView locationMarkerView) {
         MapMode mapMode = mapFragment.getMapMode();
         if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION && !mapFragment.isTuto()) {
-            mapFragment.unselectIcon();
-            mapFragment.setMarkerSelected(locationMarker);
-            switch (locationMarker.getType()) {
+            mapFragment.unselectMarker();
+            mapFragment.setMarkerSelected(locationMarkerView);
+            switch (locationMarkerView.getType()) {
                 case POI:
-                    onPoiMarkerClick(locationMarker);
+                    onPoiMarkerClick(locationMarkerView);
                     break;
                 case NOTE:
-                    onNoteMarkerClick(locationMarker);
-                    break;
-                case NODE_REF:
-                    onNodeRefMarkerClick(locationMarker);
+                    onNoteMarkerClick(locationMarkerView);
                     break;
                 default:
                     break;
@@ -228,11 +237,25 @@ public class MapboxListener {
         }
     }
 
+
+    /**
+     * Click on way marker
+     * @param wayMarker
+     */
+    public void onWayMarkerClick(WayMarker wayMarker) {
+        MapMode mapMode = mapFragment.getMapMode();
+        if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION && !mapFragment.isTuto()) {
+            mapFragment.unselectWayMarker();
+            mapFragment.setWayMarkerSelected(wayMarker);
+            mapFragment.selectWayMarker();
+        }
+    }
+
     /**
      * Click on POI
      * @param marker
      */
-    void onPoiMarkerClick(LocationMarker<Poi> marker) {
+    void onPoiMarkerClick(LocationMarkerView<Poi> marker) {
         Bitmap bitmap = mapFragment.getBitmapHandler().getMarkerBitmap(marker.getRelatedObject().getType(), Poi.computeState(true, false, false));
         if (bitmap != null) {
             marker.setIcon(IconFactory.getInstance(mapFragment.getActivity()).fromBitmap(bitmap));
@@ -246,7 +269,7 @@ public class MapboxListener {
      * Click on Note
      * @param marker
      */
-    private void onNoteMarkerClick(LocationMarker<Note> marker) {
+    private void onNoteMarkerClick(LocationMarkerView<Note> marker) {
         Bitmap bitmap = mapFragment.getBitmapHandler().getNoteBitmap(
                 Note.computeState(marker.getRelatedObject(), true, false));
         if (bitmap != null) {
@@ -256,14 +279,5 @@ public class MapboxListener {
         mapFragment.switchMode(MapMode.DETAIL_NOTE);
         mapFragment.changeMapPositionSmooth(marker.getPosition());
         mapFragment.setMarkerSelectedId(-1L);
-    }
-
-
-    /**
-     * Click on NoteRef
-     * @param marker
-     */
-    public void onNodeRefMarkerClick(LocationMarker<PoiNodeRef> marker) {
-        mapFragment.selectNodeRefMarker();
     }
 }

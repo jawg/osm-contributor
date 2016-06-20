@@ -18,15 +18,15 @@
  */
 package io.mapsquare.osmcontributor.model.events;
 
-import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
+import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
 
 public class RevertFinishedEvent {
 
     private final Object object;
 
-    private final LocationMarker.MarkerType markerType;
+    private final LocationMarkerView.MarkerType markerType;
 
-    public RevertFinishedEvent(Object object, LocationMarker.MarkerType markerType) {
+    public RevertFinishedEvent(Object object, LocationMarkerView.MarkerType markerType) {
         this.object = object;
         this.markerType = markerType;
     }
@@ -35,7 +35,7 @@ public class RevertFinishedEvent {
         return object;
     }
 
-    public LocationMarker.MarkerType getMarkerType() {
+    public LocationMarkerView.MarkerType getMarkerType() {
         return markerType;
     }
 }

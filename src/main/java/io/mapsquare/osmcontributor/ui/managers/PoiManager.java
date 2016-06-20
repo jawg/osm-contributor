@@ -73,7 +73,7 @@ import io.mapsquare.osmcontributor.ui.events.map.LastUsePoiTypeLoaded;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseLoadLastUsedPoiType;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.ui.utils.BitmapHandler;
-import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
+import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
@@ -197,13 +197,13 @@ public class PoiManager {
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseRevertPoiEvent(PleaseRevertPoiEvent event) {
         Poi poi = revertPoi(event.getIdToRevert());
-        bus.post(new RevertFinishedEvent(poi, LocationMarker.MarkerType.POI));
+        bus.post(new RevertFinishedEvent(poi, LocationMarkerView.MarkerType.POI));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseRevertPoiNodeRefEvent(PleaseRevertPoiNodeRefEvent event) {
         PoiNodeRef poiNodeRef = revertPoiNodeRef(event.getIdToRevert());
-        bus.post(new RevertFinishedEvent(poiNodeRef, LocationMarker.MarkerType.NODE_REF));
+        bus.post(new RevertFinishedEvent(poiNodeRef, LocationMarkerView.MarkerType.NODE_REF));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)

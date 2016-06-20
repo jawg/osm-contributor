@@ -152,8 +152,10 @@ import io.mapsquare.osmcontributor.ui.utils.BitmapHandler;
 import io.mapsquare.osmcontributor.ui.utils.MapMode;
 import io.mapsquare.osmcontributor.ui.utils.views.ButteryProgressBar;
 import io.mapsquare.osmcontributor.ui.utils.views.LocationMarkerViewAdapter;
-import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarker;
-import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerOptions;
+import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
+import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerViewOptions;
+import io.mapsquare.osmcontributor.ui.utils.views.map.marker.WayMarker;
+import io.mapsquare.osmcontributor.ui.utils.views.map.marker.WayMarkerOptions;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import io.mapsquare.osmcontributor.utils.StringUtils;
@@ -176,7 +178,9 @@ public class MapFragment extends Fragment {
     private static final String DISPLAY_OPEN_NOTES = "DISPLAY_OPEN_NOTES";
     private static final String DISPLAY_CLOSED_NOTES = "DISPLAY_CLOSED_NOTES";
 
-    private LocationMarker markerSelected = null;
+    private LocationMarkerView markerSelected = null;
+
+    private WayMarker wayMarkerSelected = null;
 
     // when resuming app we use this id to re-select the good marker
     private Long markerSelectedId = -1L;
@@ -185,9 +189,9 @@ public class MapFragment extends Fragment {
     private boolean isMenuLoaded = false;
     private boolean pleaseSwitchToPoiSelected = false;
 
-    private Map<Long, LocationMarkerOptions<Poi>> markersPoi;
-    private Map<Long, LocationMarkerOptions<Note>> markersNotes;
-    private Map<Long, LocationMarkerOptions<PoiNodeRef>> markersNodeRef;
+    private Map<Long, LocationMarkerViewOptions<Poi>> markersPoi;
+    private Map<Long, LocationMarkerViewOptions<Note>> markersNotes;
+    private Map<Long, WayMarkerOptions> markersNodeRef;
 
     private int maxPoiType;
     private PoiType poiTypeSelected;
@@ -263,7 +267,7 @@ public class MapFragment extends Fragment {
 
         if (savedInstanceState != null) {
             currentLevel = savedInstanceState.getDouble(LEVEL);
-            selectedMarkerType = LocationMarker.MarkerType.values()[savedInstanceState.getInt(MARKER_TYPE)];
+            selectedMarkerType = LocationMarkerView.MarkerType.values()[savedInstanceState.getInt(MARKER_TYPE)];
         }
 
         instantiateProgressBar();
@@ -376,11 +380,6 @@ public class MapFragment extends Fragment {
         maxPoiType = (int) ((dpHeight - toolbarSize - 160) / 80) - 1;
     }
 
-    private void addMarkerView(LocationMarkerOptions  markerOptions) {
-        mapboxMap.addMarker(markerOptions);
-    }
-
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -458,7 +457,7 @@ public class MapFragment extends Fragment {
         outState.putBoolean(DISPLAY_CLOSED_NOTES, displayClosedNotes);
 //        outState.putString(TILE_SOURCE, currentTileLayer);
 
-        int markerType = markerSelected == null ? LocationMarker.MarkerType.NONE.ordinal() : markerSelected.getType().ordinal();
+        int markerType = markerSelected == null ? LocationMarkerView.MarkerType.NONE.ordinal() : markerSelected.getType().ordinal();
         outState.putInt(MARKER_TYPE, markerType);
 
         if (markerSelected != null) {
@@ -599,11 +598,11 @@ public class MapFragment extends Fragment {
                 break;
 
             case NODE_REF_POSITION_EDITION:
-                PoiNodeRef poiNodeRef = (PoiNodeRef) markerSelected.getRelatedObject();
+                PoiNodeRef poiNodeRef = wayMarkerSelected.getPoiNodeRef();
                 newPoiPosition = mapboxMap.getCameraPosition().target;
                 eventBus.post(new PleaseApplyNodeRefPositionChange(newPoiPosition, poiNodeRef.getId()));
-                markerSelected.setPosition(newPoiPosition);
-                markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.SELECTED)));
+                wayMarkerSelected.setPosition(newPoiPosition);
+                wayMarkerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.SELECTED)));
                 removePolyline(editionPolyline);
                 switchMode(MapMode.WAY_EDITION);
                 tracker.send(new HitBuilders.EventBuilder()
@@ -701,7 +700,7 @@ public class MapFragment extends Fragment {
         final MapMode.MapModeProperties properties = mode.getProperties();
 
         if (properties.isUnSelectIcon()) {
-            unselectIcon();
+            unselectMarker();
         }
 
         showFloatingButtonAddPoi(properties.isShowAddPoiFab());
@@ -739,7 +738,7 @@ public class MapFragment extends Fragment {
                 break;
 
             case NODE_REF_POSITION_EDITION:
-                creationPin.setImageBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.MOVING));
+                wayCreationPin.setImageBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.MOVING));
                 break;
 
             case WAY_EDITION:
@@ -755,6 +754,7 @@ public class MapFragment extends Fragment {
         }
         //the marker is displayed at the end of the animation
         creationPin.setVisibility(properties.isShowCreationPin() ? View.VISIBLE : View.GONE);
+        wayCreationPin.setVisibility(properties.isShowCreationPin() ? View.VISIBLE : View.GONE);
     }
 
     private void switchToolbarMode(MapMode mode) {
@@ -812,7 +812,7 @@ public class MapFragment extends Fragment {
         switchMode(MapMode.DEFAULT);
     }
 
-    public void unselectIcon() {
+    public void unselectMarker() {
         if (markerSelected != null) {
             Bitmap bitmap = null;
 
@@ -826,9 +826,6 @@ public class MapFragment extends Fragment {
                     bitmap = bitmapHandler.getNoteBitmap(Note.computeState((Note) markerSelected.getRelatedObject(), false, false));
                     break;
 
-                case NODE_REF:
-                    markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.NONE)));
-                    break;
                 default:
                     break;
             }
@@ -839,16 +836,22 @@ public class MapFragment extends Fragment {
         }
     }
 
+    public void unselectWayMarker() {
+        if (wayMarkerSelected != null) {
+            wayMarkerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.NONE)));
+        }
+    }
+
     public boolean hasMarkers() {
         return !markersPoi.isEmpty();
     }
 
     public void removeAllMarkers() {
-        for (LocationMarkerOptions markerOptions : markersNotes.values()) {
-            removeMarker(markerOptions);
+        for (LocationMarkerViewOptions markerOptions : markersNotes.values()) {
+            removeMarkerView(markerOptions);
         }
-        for (LocationMarkerOptions markerOptions : markersNodeRef.values()) {
-            removeMarker(markerOptions);
+        for (WayMarkerOptions markerOptions : markersNodeRef.values()) {
+            removeWayMarker(markerOptions);
         }
         for (PolylineOptions polylineOptions : polylinesWays.values()) {
             removePolyline(polylineOptions);
@@ -861,7 +864,7 @@ public class MapFragment extends Fragment {
 
     public void removeAllPoiMarkers() {
         for (Long markerId : markersPoi.keySet()) {
-            removeMarker(markersPoi.get(markerId));
+            removeMarkerView(markersPoi.get(markerId));
         }
         markersPoi.clear();
     }
@@ -870,7 +873,7 @@ public class MapFragment extends Fragment {
         Set<Long> idsToRemove = new HashSet<>(markersPoi.keySet());
         idsToRemove.removeAll(poiIds);
         for (Long id : idsToRemove) {
-            removeMarker(markersPoi.get(id));
+            removeMarkerView(markersPoi.get(id));
         }
         markersPoi.keySet().removeAll(idsToRemove);
     }
@@ -879,21 +882,25 @@ public class MapFragment extends Fragment {
         Set<Long> idsToRemove = new HashSet<>(markersNotes.keySet());
         idsToRemove.removeAll(noteIds);
         for (Long id : idsToRemove) {
-            removeMarker(markersNotes.get(id));
+            removeMarkerView(markersNotes.get(id));
         }
         markersNotes.keySet().removeAll(idsToRemove);
     }
 
-    public Map<Long, LocationMarkerOptions<Poi>> getMarkersPoi() {
+    public Map<Long, LocationMarkerViewOptions<Poi>> getMarkersPoi() {
         return markersPoi;
     }
 
-    private void removeMarker(LocationMarkerOptions marker) {
+    private void removeMarkerView(LocationMarkerViewOptions marker) {
         if (marker != null) {
             mapboxMap.removeMarker(marker.getMarker());
             Object poi = marker.getMarker().getRelatedObject();
             eventBus.post(new PleaseRemoveArpiMarkerEvent(poi));
         }
+    }
+
+    private void removeWayMarker(WayMarkerOptions markerOptions) {
+        mapboxMap.removeMarker(markerOptions.getMarker());
     }
 
     private void removePolyline(PolylineOptions polylineOptions) {
@@ -913,7 +920,7 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public void addPoi(LocationMarkerOptions<Poi> marker) {
+    public void addPoi(LocationMarkerViewOptions<Poi> marker) {
         markersPoi.put(marker.getMarker().getRelatedObject().getId(), marker);
         addPoiMarkerDependingOnFilters(marker);
     }
@@ -922,13 +929,13 @@ public class MapFragment extends Fragment {
         mapView.invalidate();
     }
 
-    public void addNote(LocationMarkerOptions<Note> marker) {
+    public void addNote(LocationMarkerViewOptions<Note> marker) {
         markersNotes.put(marker.getMarker().getRelatedObject().getId(), marker);
         // add the note to the map
         addNoteMarkerDependingOnFilters(marker);
     }
 
-    public LocationMarkerOptions<Note> getNote(Long id) {
+    public LocationMarkerViewOptions<Note> getNote(Long id) {
         return markersNotes.get(id);
     }
 
@@ -938,12 +945,16 @@ public class MapFragment extends Fragment {
 
     @BindView(R.id.edit_way_point_position)
     FloatingActionButton editNodeRefPosition;
+
     @BindView(R.id.level_bar)
     LevelBar levelBar;
 
+    @BindView(R.id.way_pin)
+    ImageButton wayCreationPin;
+
     private boolean isVectorial = false;
     private double currentLevel = 0;
-    private LocationMarker.MarkerType selectedMarkerType = LocationMarker.MarkerType.NONE;
+    private LocationMarkerView.MarkerType selectedMarkerType = LocationMarkerView.MarkerType.NONE;
     private int zoomVectorial;
     private Map<Long, PolylineOptions> polylinesWays = new HashMap<>();
     private PolylineOptions editionPolyline;
@@ -954,13 +965,13 @@ public class MapFragment extends Fragment {
     public void editNodeRefPosition() {
         buildEditionPolygon();
         switchMode(MapMode.NODE_REF_POSITION_EDITION);
-        creationPin.setVisibility(View.VISIBLE);
-        hideMarker(markerSelected);
+        wayCreationPin.setVisibility(View.VISIBLE);
+        hideMarker(wayMarkerSelected);
     }
 
     private void buildEditionPolygon() {
         // Current selected poiNodeRef
-        PoiNodeRef currentPoiNodeRef = (PoiNodeRef) markerSelected.getRelatedObject();
+        PoiNodeRef currentPoiNodeRef = wayMarkerSelected.getPoiNodeRef();
 
         // Polyline related to this poiNodeRef
         PolylineOptions currentPolyline = polylinesWays.get(currentPoiNodeRef.getId());
@@ -1023,12 +1034,12 @@ public class MapFragment extends Fragment {
         for (Way way : ways) {
             mapboxMap.addPolyline(way.getPolylineOptions());
             for (PoiNodeRef poiNodeRef : way.getPoiNodeRefs()) {
-                LocationMarkerOptions<PoiNodeRef> markerOptions =
-                        new LocationMarkerOptions<PoiNodeRef>().position(poiNodeRef.getPosition())
-                                .icon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.NONE)))
-                                .relatedObject(poiNodeRef);
-                addMarkerView(markerOptions);
-                markersNodeRef.put(poiNodeRef.getId(), markerOptions);
+                WayMarkerOptions wayMarkerOptions = new WayMarkerOptions()
+                        .position(poiNodeRef.getPosition())
+                        .poiNodeRef(poiNodeRef)
+                        .icon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.NONE)));
+                addWayMarker(wayMarkerOptions);
+                markersNodeRef.put(poiNodeRef.getId(), wayMarkerOptions);
                 polylinesWays.put(poiNodeRef.getId(), way.getPolylineOptions());
             }
         }
@@ -1044,8 +1055,8 @@ public class MapFragment extends Fragment {
     }
 
     private void clearAllNodeRef() {
-        for (LocationMarkerOptions locationMarker : markersNodeRef.values()) {
-            removeMarker(locationMarker);
+        for (WayMarkerOptions locationMarker : markersNodeRef.values()) {
+            removeWayMarker(locationMarker);
         }
         for (PolylineOptions polylineOptions : polylinesWays.values()) {
             removePolyline(polylineOptions);
@@ -1054,16 +1065,10 @@ public class MapFragment extends Fragment {
         polylinesWays.clear();
     }
 
-    public void unselectNodeRefMarker() {
-        markerSelected = null;
-        markerSelectedId = -1L;
-        editNodeRefPosition.setVisibility(View.GONE);
-    }
-
-    public void selectNodeRefMarker() {
+    public void selectWayMarker() {
         editNodeRefPosition.setVisibility(View.VISIBLE);
-        markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.SELECTED)));
-        changeMapPositionSmooth(markerSelected.getPosition());
+        wayMarkerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.SELECTED)));
+        changeMapPositionSmooth(wayMarkerSelected.getPosition());
     }
 
     /*-----------------------------------------------------------
@@ -1332,7 +1337,7 @@ public class MapFragment extends Fragment {
     public void onPleaseDeletePoiFromMapEvent(PleaseDeletePoiFromMapEvent event) {
         Poi poi = (Poi) markerSelected.getRelatedObject();
         poi.setToDelete(true);
-        removeMarker(markersPoi.get(poi.getId()));
+        removeMarkerView(markersPoi.get(poi.getId()));
         markersPoi.remove(poi.getId());
         eventBus.post(new PleaseDeletePoiEvent(poi));
         switchMode(MapMode.DEFAULT);
@@ -1376,7 +1381,7 @@ public class MapFragment extends Fragment {
     *---------------------------------------------------------*/
     private void displayNoteDetailBanner(boolean display) {
         if (display) {
-            if (markerSelected != null && !markerSelected.getType().equals(LocationMarker.MarkerType.POI)) {
+            if (markerSelected != null && !markerSelected.getType().equals(LocationMarkerView.MarkerType.POI)) {
                 eventBus.post(new PleaseChangeValuesDetailNoteFragmentEvent(
                         (Note) markerSelected.getRelatedObject()));
             }
@@ -1436,17 +1441,19 @@ public class MapFragment extends Fragment {
         zoomLevelText.setText(zoom);
     }
 
-    public LocationMarkerOptions getMarkerOptions(LocationMarker.MarkerType markerType, Long id) {
+    public LocationMarkerViewOptions getMarkerOptions(LocationMarkerView.MarkerType markerType, Long id) {
         switch (markerType) {
             case POI:
                 return markersPoi.get(id);
             case NOTE:
                 return markersNotes.get(id);
-            case NODE_REF:
-                return markersNodeRef.get(id);
             default:
                 return null;
         }
+    }
+
+    public WayMarkerOptions getWayMarkerOptions(Long id) {
+        return markersNodeRef.get(id);
     }
 
     public LatLngBounds getViewLatLngBounds() {
@@ -1477,6 +1484,14 @@ public class MapFragment extends Fragment {
 
     public void hideMarker(Marker marker) {
         marker.setIcon(IconFactory.getInstance(getActivity()).fromResource(R.drawable.hidden_marker));
+    }
+
+    private void addMarkerView(LocationMarkerViewOptions markerOptions) {
+        mapboxMap.addMarker(markerOptions);
+    }
+
+    private void addWayMarker(WayMarkerOptions wayMarkerOptions) {
+        mapboxMap.addMarker(wayMarkerOptions);
     }
 
     /*-----------------------------------------------------------
@@ -1539,7 +1554,7 @@ public class MapFragment extends Fragment {
         // a note has been created, select it
         markerSelectedId = event.getNoteId();
         markerSelected = null;
-        selectedMarkerType = LocationMarker.MarkerType.NOTE;
+        selectedMarkerType = LocationMarkerView.MarkerType.NOTE;
         presenter.setForceRefreshNotes();
         presenter.loadPoisIfNeeded();
     }
@@ -1549,7 +1564,7 @@ public class MapFragment extends Fragment {
         Toast.makeText(getActivity(), getString(R.string.failed_apply_comment), Toast.LENGTH_SHORT).show();
         markerSelectedId = null;
         markerSelected = null;
-        selectedMarkerType = LocationMarker.MarkerType.NONE;
+        selectedMarkerType = LocationMarkerView.MarkerType.NONE;
         switchMode(MapMode.DEFAULT);
     }
 
@@ -1802,20 +1817,20 @@ public class MapFragment extends Fragment {
     }
 
     public void applyNoteFilter() {
-        for (LocationMarkerOptions marker : markersNotes.values()) {
-            removeMarker(marker);
+        for (LocationMarkerViewOptions marker : markersNotes.values()) {
+            removeMarkerView(marker);
             addNoteMarkerDependingOnFilters(marker);
         }
     }
 
     public void applyPoiFilter() {
-        for (LocationMarkerOptions marker : markersPoi.values()) {
-            removeMarker(marker);
+        for (LocationMarkerViewOptions marker : markersPoi.values()) {
+            removeMarkerView(marker);
             addPoiMarkerDependingOnFilters(marker);
         }
     }
 
-    private void addNoteMarkerDependingOnFilters(LocationMarkerOptions<Note> markerOption) {
+    private void addNoteMarkerDependingOnFilters(LocationMarkerViewOptions<Note> markerOption) {
         Note note = markerOption.getMarker().getRelatedObject();
 
         if ((displayOpenNotes && Note.STATUS_OPEN.equals(note.getStatus())) || Note.STATUS_SYNC.equals(note.getStatus()) || (displayClosedNotes && Note.STATUS_CLOSE.equals(note.getStatus()))) {
@@ -1826,7 +1841,7 @@ public class MapFragment extends Fragment {
         creationPin.setVisibility(View.GONE);
     }
 
-    private void addPoiMarkerDependingOnFilters(LocationMarkerOptions<Poi> markerOption) {
+    private void addPoiMarkerDependingOnFilters(LocationMarkerViewOptions<Poi> markerOption) {
         Poi poi = markerOption.getMarker().getRelatedObject();
         //if we are in vectorial mode we hide all poi not at the current level
         if (poi.getType() != null && !poiTypeHidden.contains(poi.getType().getId()) && (!isVectorial || poi.isAtLevel(currentLevel) || !poi.isOnLevels(levelBar.getLevels()))) {
@@ -1980,13 +1995,17 @@ public class MapFragment extends Fragment {
         return mapMode;
     }
 
-    public LocationMarker getMarkerSelected() {
+    public LocationMarkerView getMarkerSelected() {
         return markerSelected;
     }
 
-    public void setMarkerSelected(LocationMarker markerSelected) {
+    public void setMarkerSelected(LocationMarkerView markerSelected) {
         selectedMarkerType = markerSelected.getType();
         this.markerSelected = markerSelected;
+    }
+
+    public void setWayMarkerSelected(WayMarker wayMarkerSelected) {
+        this.wayMarkerSelected = wayMarkerSelected;
     }
 
     public Long getMarkerSelectedId() {
@@ -1997,7 +2016,7 @@ public class MapFragment extends Fragment {
         this.markerSelectedId = markerSelectedId;
     }
 
-    public LocationMarker.MarkerType getSelectedMarkerType() {
+    public LocationMarkerView.MarkerType getSelectedMarkerType() {
         return selectedMarkerType;
     }
 
