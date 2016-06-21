@@ -14,6 +14,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.TouchDelegate;
@@ -212,10 +213,10 @@ public class FloatingActionsMenu extends ViewGroup {
 
                 } else {
 
-                    final RotatingDrawable drawable = new RotatingDrawable(getResources().getDrawable(R.drawable.close));
+                    final RotatingDrawable drawable = new RotatingDrawable(ContextCompat.getDrawable(getContext(), R.drawable.close));
                     drawable.setAlpha(0);
 
-                    final RotatingDrawable rotatingDrawable = new RotatingDrawable(getResources().getDrawable(R.drawable.menu), drawable);
+                    final RotatingDrawable rotatingDrawable = new RotatingDrawable(ContextCompat.getDrawable(getContext(), R.drawable.menu), drawable);
                     mRotatingDrawable = rotatingDrawable;
 
                     final OvershootInterpolator overshootInterpolator = new OvershootInterpolator();

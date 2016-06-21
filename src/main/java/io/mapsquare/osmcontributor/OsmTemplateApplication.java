@@ -26,18 +26,17 @@ import android.support.multidex.MultiDex;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
-import com.squareup.leakcanary.LeakCanary;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
 
 import io.fabric.sdk.android.Fabric;
-import io.mapsquare.osmcontributor.utils.crashlytics.CrashContextWrapper;
-import io.mapsquare.osmcontributor.utils.crashlytics.CrashlyticsTree;
 import io.mapsquare.osmcontributor.modules.DaggerOsmTemplateComponent;
 import io.mapsquare.osmcontributor.modules.OsmTemplateComponent;
 import io.mapsquare.osmcontributor.modules.OsmTemplateModule;
+import io.mapsquare.osmcontributor.utils.crashlytics.CrashContextWrapper;
+import io.mapsquare.osmcontributor.utils.crashlytics.CrashlyticsTree;
 import timber.log.Timber;
 
 public class OsmTemplateApplication extends Application {
@@ -54,7 +53,7 @@ public class OsmTemplateApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        LeakCanary.install(this);
+        //LeakCanary.install(this);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());

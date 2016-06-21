@@ -298,7 +298,7 @@ public class MapFragment extends Fragment {
     }
 
     private void instantiateLevelBar() {
-        Drawable d = getResources().getDrawable(R.drawable.level_thumb);
+        Drawable d = ContextCompat.getDrawable(getActivity(), R.drawable.level_thumb);
         levelBar.setThumb(d);
         levelBar.setDrawableHeight(d.getIntrinsicHeight());
         levelBar.setLevel(currentLevel);
@@ -533,7 +533,7 @@ public class MapFragment extends Fragment {
             pleaseSwitchToPoiSelected = false;
             mapboxListener.onMarkerClick(markerSelected);
         } else {
-            //switchMode(mapMode);
+            switchMode(mapMode);
         }
     }
 
@@ -748,8 +748,10 @@ public class MapFragment extends Fragment {
             default:
                 poiTypeSelected = null;
                 poiTypeEditText.setText("");
-                addPoiFloatingButton.collapse();
+                //addPoiFloatingButton.collapse();
                 clearAllNodeRef();
+                switchToolbarMode(mapMode);
+                displayHomeButton(true);
                 break;
         }
         //the marker is displayed at the end of the animation
@@ -1172,16 +1174,13 @@ public class MapFragment extends Fragment {
         //animation show and hide
         if (show) {
             if (floatingBtnWrapper.getVisibility() == View.GONE) {
-                Animation bottomUp = AnimationUtils.loadAnimation(getActivity(),
-                        R.anim.anim_up_detail);
-
+                Animation bottomUp = AnimationUtils.loadAnimation(getActivity(), R.anim.anim_up_detail);
                 floatingBtnWrapper.startAnimation(bottomUp);
                 floatingBtnWrapper.setVisibility(View.VISIBLE);
             }
         } else {
             if (floatingBtnWrapper.getVisibility() == View.VISIBLE) {
-                Animation upDown = AnimationUtils.loadAnimation(getActivity(),
-                        R.anim.anim_down_detail);
+                Animation upDown = AnimationUtils.loadAnimation(getActivity(), R.anim.anim_down_detail);
                 floatingBtnWrapper.startAnimation(upDown);
                 floatingBtnWrapper.setVisibility(View.GONE);
             }
@@ -1257,10 +1256,10 @@ public class MapFragment extends Fragment {
             // add a btn for all poiTypes
             floatingActionButton = new FloatingActionButton(getActivity());
             floatingActionButton.setTitle(getResources().getString(R.string.add_poi));
-            floatingActionButton.setColorPressed(getResources().getColor(R.color.material_blue_grey_800));
-            floatingActionButton.setColorNormal(getResources().getColor(R.color.material_blue_500));
+            floatingActionButton.setColorPressed(ContextCompat.getColor(getActivity(), R.color.material_blue_grey_800));
+            floatingActionButton.setColorNormal(ContextCompat.getColor(getActivity(), R.color.material_blue_500));
             floatingActionButton.setSize(FloatingActionButton.SIZE_MINI);
-            floatingActionButton.setIconDrawable(getResources().getDrawable(R.drawable.fab_poi));
+            floatingActionButton.setIconDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.fab_poi));
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

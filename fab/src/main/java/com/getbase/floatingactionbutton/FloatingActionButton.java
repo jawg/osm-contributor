@@ -25,6 +25,7 @@ import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -233,7 +234,7 @@ public class FloatingActionButton extends ImageButton {
 
     LayerDrawable layerDrawable = new LayerDrawable(
         new Drawable[] {
-            getResources().getDrawable(mSize == SIZE_NORMAL ? R.drawable.fab_bg_normal : R.drawable.fab_bg_mini),
+            ContextCompat.getDrawable(getContext(), mSize == SIZE_NORMAL ? R.drawable.fab_bg_normal : R.drawable.fab_bg_mini),
             createFillDrawable(strokeWidth),
             createOuterStrokeDrawable(strokeWidth),
             getIconDrawable()
@@ -270,7 +271,7 @@ public class FloatingActionButton extends ImageButton {
     if (mIconDrawable != null) {
       return mIconDrawable;
     } else if (mIcon != 0) {
-      return getResources().getDrawable(mIcon);
+      return ContextCompat.getDrawable(getContext(), mIcon);
     } else {
       return new ColorDrawable(Color.TRANSPARENT);
     }
