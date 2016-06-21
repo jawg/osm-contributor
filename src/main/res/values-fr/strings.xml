@@ -73,7 +73,8 @@
     <string name="osm_copyright"><![CDATA[<font color=\"#000\">© </font><font color=\"#1565C0\">OpenStreetMap </font><font color=\"#000\">contributors</font>]]></string>
     <string name="zoom_to_edit">Cette zone est trop grande. Veuillez zoomer plus.</string>
     <string name="download_in_progress">Tous les pois et notes de la zone affichée sont en cours de rechargement</string>
-    <string name="switch_style">Vue satellite</string>
+    <string name="switch_style_satellite">Vue Satellite</string>
+    <string name="switch_style_default">Vue par défaut</string>
     <string name="zoom_more">Vous devez zoomer plus pour pouvoir télécharger les données</string>
     <string name="search_poitype_hint">Chercher un type de Poi</string>
     <string name="title_3d_view">Vue 3D</string>

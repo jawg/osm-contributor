@@ -19,4 +19,14 @@
 package io.mapsquare.osmcontributor.ui.events.map;
 
 public class PleaseSwitchMapStyleEvent {
+
+    private boolean isSatelliteMode;
+
+    public PleaseSwitchMapStyleEvent(boolean isSatelliteMode) {
+        this.isSatelliteMode = isSatelliteMode;
+    }
+
+    public boolean isSatelliteMode() {
+        return isSatelliteMode;
+    }
 }

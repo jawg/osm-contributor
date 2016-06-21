@@ -138,6 +138,7 @@ import io.mapsquare.osmcontributor.ui.events.map.PleaseLoadEditWaysEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseLoadLastUsedPoiType;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseOpenEditionEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseShowMeArpiglEvent;
+import io.mapsquare.osmcontributor.ui.events.map.PleaseSwitchMapStyleEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseToggleArpiEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseToggleDrawer;
@@ -688,6 +689,17 @@ public class MapFragment extends Fragment {
         eventBus.post(new MapCenterValueEvent(mapboxMap.getCameraPosition().target));
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseSwitchMapStyleEvent(PleaseSwitchMapStyleEvent event) {
+        if (mapboxMap != null) {
+            if (event.isSatelliteMode()) {
+                mapboxMap.setStyleUrl("mapbox://styles/mapbox/satellite-streets-v9");
+            } else {
+                mapboxMap.setStyleUrl("asset://osmMapStyle.json");
+            }
+        }
+    }
+
 
     public void switchMode(MapMode mode) {
         mapMode = mode;
@@ -748,7 +760,7 @@ public class MapFragment extends Fragment {
             default:
                 poiTypeSelected = null;
                 poiTypeEditText.setText("");
-                //addPoiFloatingButton.collapse();
+                addPoiFloatingButton.collapse();
                 clearAllNodeRef();
                 switchToolbarMode(mapMode);
                 displayHomeButton(true);
@@ -862,6 +874,13 @@ public class MapFragment extends Fragment {
         markersNodeRef.clear();
         polylinesWays.clear();
         removeAllPoiMarkers();
+    }
+
+    public void removeAllNotes() {
+        for (LocationMarkerViewOptions<Note> markerNote : markersNotes.values()) {
+            removeMarkerView(markerNote);
+        }
+        markersNotes.clear();
     }
 
     public void removeAllPoiMarkers() {

@@ -132,6 +132,8 @@ public class MapActivity extends AppCompatActivity {
     private boolean displayOpenNotes;
     private boolean displayClosedNotes;
 
+    private boolean isSatelliteMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -447,8 +449,10 @@ public class MapActivity extends AppCompatActivity {
                 toggleArpiGl();
                 break;
             case R.id.switch_style:
-                eventBus.post(new PleaseSwitchMapStyleEvent());
+                isSatelliteMode = !isSatelliteMode;
+                eventBus.post(new PleaseSwitchMapStyleEvent(isSatelliteMode));
                 drawerLayout.closeDrawer(navigationView);
+                menuItem.setTitle(isSatelliteMode ? R.string.switch_style_default : R.string.switch_style_satellite);
                 break;
             case R.id.preferences_menu:
                 startPreferencesActivity();

@@ -140,7 +140,6 @@ public class MapFragmentPresenter {
         if (object == null) {
             mapFragment.removeAllPoiMarkers();
             setForceRefreshPoi();
-            setForceRefreshNotes();
             loadPoisIfNeeded();
         } else if (object instanceof Poi) {
             Poi poi = (Poi) object;
@@ -168,7 +167,6 @@ public class MapFragmentPresenter {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPoisLoadedEvent(PoisLoadedEvent event) {
         List<Poi> pois = event.getPois();
-        Timber.d("Received event PoisLoaded  : " + pois.size());
         forceRefreshPoi = false;
         List<MapElement> mapElements = new ArrayList<>(pois.size());
         for (Poi poi : pois) {
@@ -179,12 +177,12 @@ public class MapFragmentPresenter {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNotesLoadedEvent(NotesLoadedEvent event) {
+        mapFragment.removeAllNotes();
         List<Note> notes = event.getNotes();
         List<MapElement> mapElements = new ArrayList<>(notes.size());
         for (Note note : notes) {
             mapElements.add(note);
         }
-        Timber.d("Showing notes : " + notes.size());
         forceRefreshNotes = false;
         onLoaded(mapElements, LocationMarkerView.MarkerType.NOTE);
     }
@@ -258,7 +256,7 @@ public class MapFragmentPresenter {
             bitmap = mapFragment.getBitmapHandler().getMarkerBitmap(poi.getType(), Poi.computeState(selected, false, poi.getUpdated()));
         } else {
             Note note = (Note) relatedObject;
-            bitmap = mapFragment.getBitmapHandler().getNoteBitmap(Note.computeState(note, selected, note.getUpdated()));
+            bitmap = mapFragment.getBitmapHandler().getNoteBitmap(Note.computeState(note, selected, false));
         }
 
         if (bitmap != null) {
@@ -294,7 +292,7 @@ public class MapFragmentPresenter {
                     if (mapFragment.getSelectedMarkerType().equals(LocationMarkerView.MarkerType.NOTE) && mapElement.getId().equals(mapFragment.getMarkerSelectedId())) {
                         mapFragment.setMarkerSelected(markerOptions.getMarker());
                     }
-                    setIcon(markerOptions, mapElement, selected);
+                    setIcon(markerOptions, mapElement, false);
                     mapFragment.addNote(markerOptions);
                 }
             } else {
@@ -311,6 +309,7 @@ public class MapFragmentPresenter {
                             && mapElement.getId().equals(((Note) markerSelected.getRelatedObject()).getId())) {
                         selected = true;
                     }
+                    setIcon(markerOptions, mapElement, selected);
                 }
 
                 //update the detail banner data

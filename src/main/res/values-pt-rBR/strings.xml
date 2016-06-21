@@ -65,7 +65,8 @@
   <string name="osm_copyright"><![CDATA[<font color=\"#000\">© colaboradores do </font><font color=\"#1565C0\">OpenStreetMap </font>]]></string>
   <string name="zoom_to_edit">Esta área é muito grande para fazer download, por favor aumente o zoom.</string>
   <string name="download_in_progress">Download em progresso de todos os POIs e notas da zona mostrada</string>
-  <string name="switch_style">Vista de satélite</string>
+  <string name="switch_style_satellite">Vista de satélite</string>
+  <string name="switch_style_default">Vista por defecto</string>
   <string name="zoom_more">Você precisa aumentar o zoom para fazer o download de POIs</string>
   <string name="search_poitype_hint">Buscar um tipo de POI</string>
   <!--Strings related to login-->

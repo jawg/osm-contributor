@@ -52,7 +52,7 @@
 
         <item
             android:id="@+id/switch_style"
-            android:title="@string/switch_style"/>
+            android:title="@string/switch_style_satellite"/>
 
         <item
             android:id="@+id/replay_tuto_menu"
