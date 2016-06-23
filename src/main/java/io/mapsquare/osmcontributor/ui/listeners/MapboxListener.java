@@ -209,8 +209,8 @@ public class MapboxListener {
         if (mapMode == MapMode.WAY_EDITION) {
             mapFragment.unselectWayMarker();
         }
-        if (mapMode == MapMode.DEFAULT && mapFragment.getAddPoiFloatinMenu().isOpened()) {
-            mapFragment.getAddPoiFloatinMenu().close(true);
+        if (mapMode == MapMode.DEFAULT && mapFragment.getAddPoiFloatingMenu().isOpened()) {
+            mapFragment.getAddPoiFloatingMenu().close(true);
         }
     }
 

@@ -1099,7 +1099,7 @@ public class MapFragment extends Fragment {
     ImageView handImageView;
 
     @BindView(R.id.add_poi_few_values)
-    FloatingActionMenu addPoiFloatinMenu;
+    FloatingActionMenu addPoiFloatingMenu;
 
     @BindView(R.id.floating_btn_wrapper)
     RelativeLayout floatingBtnWrapper;
@@ -1206,20 +1206,21 @@ public class MapFragment extends Fragment {
 
         //which kind of add to display depending on screen size
         // if in store flavor show the spinner
-        addPoiFloatinMenu.setVisibility(View.VISIBLE);
-        addPoiFloatinMenu.setOnClickListener(new View.OnClickListener() {
+        addPoiFloatingMenu.setVisibility(View.VISIBLE);
+        addPoiFloatingMenu.setOnMenuButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (isTuto) {
                     nextTutoStep();
                 }
                 easterEgg();
+                addPoiFloatingMenu.toggle(true);
             }
         });
     }
 
     public void loadPoiTypeFloatingBtn() {
-        addPoiFloatinMenu.removeAllMenuButtons();
+        addPoiFloatingMenu.removeAllMenuButtons();
         FloatingActionButton floatingActionButton;
 
         //add note
@@ -1234,14 +1235,14 @@ public class MapFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     switchMode(MapMode.NOTE_CREATION);
-                    addPoiFloatinMenu.close(true);
+                    addPoiFloatingMenu.close(true);
                     if (isTuto) {
                         nextTutoStep();
                         nextTutoStep();
                     }
                 }
             });
-            addPoiFloatinMenu.addMenuButton(floatingActionButton);
+            addPoiFloatingMenu.addMenuButton(floatingActionButton);
         }
 
         if (presenter.getNumberOfPoiTypes() <= maxPoiType) {
@@ -1259,7 +1260,7 @@ public class MapFragment extends Fragment {
                         if (configManager.hasPoiAddition()) {
                             switchMode(MapMode.POI_CREATION);
                             poiTypeSelected(poiType);
-                            addPoiFloatinMenu.close(true);
+                            addPoiFloatingMenu.close(true);
                             if (isTuto) {
                                 nextTutoStep();
                             }
@@ -1268,7 +1269,7 @@ public class MapFragment extends Fragment {
                         }
                     }
                 });
-                addPoiFloatinMenu.addMenuButton(floatingActionButton);
+                addPoiFloatingMenu.addMenuButton(floatingActionButton);
             }
         } else {
             // add a btn for all poiTypes
@@ -1291,7 +1292,7 @@ public class MapFragment extends Fragment {
                     }
                 }
             });
-            addPoiFloatinMenu.addMenuButton(floatingActionButton);
+            addPoiFloatingMenu.addMenuButton(floatingActionButton);
         }
 
         // the floating btn and tthe poitypes are loaded we can now start the tuto
@@ -1904,18 +1905,18 @@ public class MapFragment extends Fragment {
                     .setStyle(R.style.CustomShowcaseTheme)
                     .setContentTitle(getString(R.string.tuto_title_press_create))
                     .setContentText(getString(R.string.tuto_text_press_create))
-                    .setTarget(new ViewTarget(addPoiFloatinMenu.getMenuIconView()))
+                    .setTarget(new ViewTarget(addPoiFloatingMenu.getMenuIconView()))
                     .setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 switch (showcaseCounter) {
                                                     case 0:
-                                                        addPoiFloatinMenu.open(true);
+                                                        addPoiFloatingMenu.open(true);
                                                         nextTutoStep();
                                                         break;
 
                                                     case 1:
-                                                        addPoiFloatinMenu.getChildAt(1).performClick();
+                                                        addPoiFloatingMenu.getChildAt(1).performClick();
                                                         break;
 
                                                     case 2:
@@ -1953,12 +1954,12 @@ public class MapFragment extends Fragment {
                     //compact view
                     showcaseView.setContentText(getString(R.string.tuto_text_poi_or_note));
                 }
-                showcaseView.setTarget(new ViewTarget(addPoiFloatinMenu.getChildAt(0)));
+                showcaseView.setTarget(new ViewTarget(addPoiFloatingMenu.getChildAt(0)));
                 break;
 
             case 1:
                 showcaseView.setContentText(getString(R.string.tuto_text_choose_type));
-                showcaseView.setTarget(new ViewTarget(addPoiFloatinMenu.getChildAt(0)));
+                showcaseView.setTarget(new ViewTarget(addPoiFloatingMenu.getChildAt(0)));
                 break;
 
             case 2:
@@ -1985,8 +1986,8 @@ public class MapFragment extends Fragment {
         sharedPreferences.edit().putBoolean(TUTORIAL_CREATION_FINISH, true).apply();
     }
 
-    public FloatingActionMenu getAddPoiFloatinMenu() {
-        return addPoiFloatinMenu;
+    public FloatingActionMenu getAddPoiFloatingMenu() {
+        return addPoiFloatingMenu;
     }
 
     /*-----------------------------------------------------------
