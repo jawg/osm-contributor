@@ -54,7 +54,7 @@
                     android:layout_height="match_parent"/>
             </io.mapsquare.osmcontributor.ui.utils.views.HorizontalViewSwitcher>
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
+            <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -62,9 +62,9 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_margin="@dimen/fab_margin"
+                android:src="@drawable/plus"
                 application:fab_colorNormal="@color/material_blue_500"
-                application:fab_colorPressed="@color/material_blue_grey_800"
-                application:fab_icon="@drawable/plus"/>
+                application:fab_colorPressed="@color/material_blue_grey_800"/>
         </RelativeLayout>
 
         <ProgressBar

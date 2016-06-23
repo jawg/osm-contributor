@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 
     Copyright (C) 2016 eBusiness Information
 
@@ -19,11 +18,10 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<RelativeLayout
-    android:id="@+id/poi_info_panel"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/poi_info_panel"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".ui.fragments.PoiDetailFragment">
@@ -33,23 +31,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/banner"
-        android:paddingRight="3dp"
-        android:paddingLeft="3dp"
-        android:background="@drawable/rounded_top_right_corner"
-        app:typeface="Roboto-Light.ttf"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textSize="13sp"/>
+        android:background="@drawable/rounded_top_right_corner"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:textSize="13sp"
+        app:typeface="Roboto-Light.ttf" />
 
     <RelativeLayout
         android:id="@+id/banner"
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/white"
+        android:background="@android:color/white"
         android:clickable="true">
 
-        <TextView
+        <io.mapsquare.osmcontributor.ui.utils.views.TypeFaceTextView
             android:id="@+id/poi_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,21 +55,22 @@
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:textSize="20sp"
+            app:typeface="RobotoCondensed-Regular.ttf" />
 
-        <TextView
+        <io.mapsquare.osmcontributor.ui.utils.views.TypeFaceTextView
             android:id="@+id/poi_type_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/poi_name"
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
-            android:textSize="18sp"/>
+            android:textSize="16sp"
+            app:typeface="Roboto-Light.ttf" />
 
     </RelativeLayout>
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
+    <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/floating_action_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -81,43 +80,45 @@
         android:layout_marginBottom="-40dp"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
-        app:fab_addButtonColorNormal="@color/material_blue_500"
-        app:fab_addButtonColorPressed="@color/material_blue_grey_800"
-        app:fab_addButtonPlusIconColor="@color/white"
-        app:fab_labelStyle="@style/menu_labels_style"
-        app:fab_labelsPosition="left"
-        app:fab_plusIconColor="@color/white">
+        app:menu_icon="@drawable/pencil"
+        app:menu_labels_colorNormal="@color/material_blue_500"
+        app:menu_labels_colorPressed="@color/material_blue_grey_800"
+        app:menu_labels_position="left"
+        app:menu_labels_style="@style/menu_labels_style"
+        app:menu_colorNormal="@color/colorPrimaryDark"
+        app:menu_colorPressed="@color/colorPrimary"
+        app:menu_colorRipple="@color/colorPrimary">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/delete_poi_floating_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_colorNormal="@color/material_amber_800"
             app:fab_colorPressed="@color/material_amber_900"
-            app:fab_icon="@drawable/delete"
+            android:src="@drawable/delete"
             app:fab_size="mini"
-            app:fab_title="@string/delete_poi"/>
+            app:fab_label="@string/delete_poi" />
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/edit_poi_detail_floating_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_colorNormal="@color/material_blue_500"
             app:fab_colorPressed="@color/material_blue_grey_800"
-            app:fab_icon="@drawable/pencil"
+            android:src="@drawable/pencil"
             app:fab_size="mini"
-            app:fab_title="@string/edit_poi"/>
+            app:fab_label="@string/edit_poi" />
 
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/edit_poi_position_floating_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_colorNormal="@color/material_blue_500"
             app:fab_colorPressed="@color/material_blue_grey_800"
-            app:fab_icon="@drawable/move_poi"
+            android:src="@drawable/move_poi"
             app:fab_size="mini"
-            app:fab_title="@string/edit_position"/>
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+            app:fab_label="@string/edit_position" />
+    </com.github.clans.fab.FloatingActionMenu>
 
 </RelativeLayout>

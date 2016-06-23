@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,25 +30,25 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 
-import javax.inject.Inject;
-
-import butterknife.ButterKnife;
-import butterknife.BindView;
-import butterknife.OnClick;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseChangePoiPosition;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseDeletePoiFromMapEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseOpenEditionEvent;
+import io.mapsquare.osmcontributor.utils.ConfigManager;
 
 /**
  * Fragment to display when the user click on marker
@@ -70,7 +71,7 @@ public class PoiDetailFragment extends Fragment {
     TextView osmCopyrightTextView;
 
     @BindView(R.id.floating_action_menu)
-    FloatingActionsMenu floatingActionMenu;
+    FloatingActionMenu floatingActionMenu;
 
     @BindView(R.id.edit_poi_detail_floating_button)
     FloatingActionButton floatingButtonEditPoi;
@@ -91,7 +92,7 @@ public class PoiDetailFragment extends Fragment {
         osmCopyrightTextView.setText(Html.fromHtml(getString(R.string.osm_copyright)));
 
         if (!configManager.hasPoiModification()) {
-            floatingButtonEditPoi.setIcon(R.drawable.eye);
+            floatingButtonEditPoi.setImageResource(R.drawable.eye);
         }
 
         return rootView;
@@ -145,24 +146,23 @@ public class PoiDetailFragment extends Fragment {
     }
 
     private void setPoiName(String poiName) {
-        floatingActionMenu.collapse();
-
+        floatingActionMenu.close(true);
         if (poiName != null && !poiName.isEmpty()) {
             editTextPoiName.setText(poiName);
-            editTextPoiName.setTextColor(getResources().getColor(R.color.active_text));
+            editTextPoiName.setTextColor(ContextCompat.getColor(getActivity(), R.color.active_text));
         } else {
             editTextPoiName.setText(getResources().getString(R.string.no_poi_name));
-            editTextPoiName.setTextColor(getResources().getColor(R.color.disable_text));
+            editTextPoiName.setTextColor(ContextCompat.getColor(getActivity(), R.color.disable_text));
         }
     }
 
     private void setPoiType(String poiTypeName) {
         if (poiTypeName != null && !poiTypeName.isEmpty()) {
             editTextPoiTypeName.setText(poiTypeName);
-            editTextPoiTypeName.setTextColor(getResources().getColor(R.color.active_text));
+            editTextPoiTypeName.setTextColor(ContextCompat.getColor(getActivity(), R.color.active_text));
         } else {
             editTextPoiTypeName.setText(getResources().getString(R.string.no_poi_name));
-            editTextPoiTypeName.setTextColor(getResources().getColor(R.color.disable_text));
+            editTextPoiTypeName.setTextColor(ContextCompat.getColor(getActivity(), R.color.disable_text));
         }
     }
 

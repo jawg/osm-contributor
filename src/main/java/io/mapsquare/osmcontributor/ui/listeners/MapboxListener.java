@@ -76,7 +76,7 @@ public class MapboxListener {
         mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
             public void onMapClick(@NonNull LatLng point) {
-                MapboxListener.this.onMapClick(point);
+                MapboxListener.this.onMapClick();
             }
         });
 
@@ -140,13 +140,13 @@ public class MapboxListener {
             }
         });
 
-        // Listen on marker click
+        // Listen on marker view click
         mapboxMap.getMarkerViewManager().setOnMarkerViewClickListener(new MapboxMap.OnMarkerViewClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker, @NonNull View view, @NonNull MapboxMap.MarkerViewAdapter adapter) {
                 if (marker instanceof LocationMarkerView) {
                     LocationMarkerView locationMarker = (LocationMarkerView) marker;
-                    MapboxListener.this.onMarkerClick(locationMarker);
+                    MapboxListener.this.onLocationMarkerClick(locationMarker);
                     return false;
                 }
                 return false;
@@ -198,9 +198,8 @@ public class MapboxListener {
 
     /**
      * User click on map
-     * @param point
      */
-    private void onMapClick(LatLng point) {
+    private void onMapClick() {
         MapMode mapMode = mapFragment.getMapMode();
         if (mapMode == MapMode.DETAIL_POI || mapMode == MapMode.DETAIL_NOTE) {
             // it prevents to reselect the marker
@@ -210,8 +209,8 @@ public class MapboxListener {
         if (mapMode == MapMode.WAY_EDITION) {
             mapFragment.unselectWayMarker();
         }
-        if (mapMode == MapMode.DEFAULT && mapFragment.getAddPoiFloatingButton().isExpanded()) {
-            mapFragment.getAddPoiFloatingButton().collapse();
+        if (mapMode == MapMode.DEFAULT && mapFragment.getAddPoiFloatinMenu().isOpened()) {
+            mapFragment.getAddPoiFloatinMenu().close(true);
         }
     }
 
@@ -219,7 +218,7 @@ public class MapboxListener {
      * Click on LocationMarkerView
      * @param locationMarkerView
      */
-    public void onMarkerClick(LocationMarkerView locationMarkerView) {
+    public void onLocationMarkerClick(LocationMarkerView locationMarkerView) {
         MapMode mapMode = mapFragment.getMapMode();
         if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION && !mapFragment.isTuto()) {
             mapFragment.unselectMarker();

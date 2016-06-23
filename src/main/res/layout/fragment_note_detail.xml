@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 
     Copyright (C) 2016 eBusiness Information
 
@@ -19,11 +18,10 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<RelativeLayout
-    android:id="@+id/poi_info_panel"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/poi_info_panel"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".ui.fragments.NoteDetailFragment">
@@ -33,13 +31,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/banner"
-        android:paddingRight="3dp"
-        android:paddingLeft="3dp"
-        android:background="@drawable/rounded_top_right_corner"
-        app:typeface="Roboto-Light.ttf"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textSize="13sp"/>
+        android:background="@drawable/rounded_top_right_corner"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:textSize="13sp"
+        app:typeface="Roboto-Light.ttf" />
 
     <RelativeLayout
         android:id="@+id/banner"
@@ -59,7 +57,7 @@
             android:layout_marginTop="16dp"
             android:text="@string/Note"
             android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/comment_text"
@@ -70,12 +68,12 @@
             android:layout_marginStart="16dp"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
 
     </RelativeLayout>
 
 
-    <com.getbase.floatingactionbutton.FloatingActionButton
+    <com.github.clans.fab.FloatingActionButton
         android:id="@+id/edit_note_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -85,9 +83,9 @@
         android:layout_marginBottom="-40dp"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
+        android:src="@drawable/pencil"
         app:fab_colorNormal="@color/material_blue_500"
         app:fab_colorPressed="@color/material_blue_grey_800"
-        app:fab_icon="@drawable/pencil"
-        app:fab_title="@string/edit_poi"/>
+        app:fab_label="@string/edit_poi"/>
 
 </RelativeLayout>

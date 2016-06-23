@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 
     Copyright (C) 2016 eBusiness Information
 
@@ -20,7 +19,7 @@
 
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:application="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -29,17 +28,17 @@
         android:id="@+id/mapview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        application:access_token="@string/mapbox_api_key"
-        application:rotate_enabled="true"
-        application:logo_enabled="false"
-        application:attribution_enabled="false"
-        application:zoom_enabled="true"/>
+        app:access_token="@string/mapbox_api_key"
+        app:attribution_enabled="false"
+        app:logo_enabled="false"
+        app:rotate_enabled="true"
+        app:zoom_enabled="true" />
 
 
     <RelativeLayout
         android:id="@+id/progressbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 
     <TextView
@@ -52,28 +51,28 @@
         android:layout_margin="10dp"
         android:background="@android:drawable/dialog_holo_light_frame"
         android:padding="15dp"
-        android:visibility="invisible"/>
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/zoom_level"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <View
         android:id="@+id/pin_anchor"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true" />
 
     <ImageButton
         android:id="@+id/pin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignBottom="@id/pin_anchor"
+        android:layout_centerHorizontal="true"
         android:background="#00000000"
         android:clickable="false"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <ImageButton
         android:id="@+id/way_pin"
@@ -82,7 +81,7 @@
         android:layout_centerInParent="true"
         android:background="#00000000"
         android:clickable="false"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/hand"
@@ -91,72 +90,71 @@
         android:layout_centerInParent="true"
         android:paddingTop="130dp"
         android:src="@drawable/hand_tuto"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <io.mapsquare.osmcontributor.ui.utils.views.TypeFaceTextView
         android:id="@+id/osm_copyright"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="3dp"
-        android:paddingLeft="3dp"
-        android:background="@drawable/rounded_top_right_corner"
-        application:typeface="Roboto-Light.ttf"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textSize="13sp"/>
+        android:background="@drawable/rounded_top_right_corner"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:textSize="13sp"
+        app:typeface="Roboto-Light.ttf" />
 
     <RelativeLayout
+        android:id="@+id/poi_type_value_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:background="@android:color/white"
-        android:id="@+id/poi_type_value_wrapper">
+        android:background="@android:color/white">
 
         <TextView
-            android:gravity="center"
             android:id="@+id/poi_type"
-            android:layout_toLeftOf="@+id/edit_poi_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:layout_centerInParent="true"
+            android:layout_toLeftOf="@+id/edit_poi_type"
             android:ellipsize="end"
-            android:visibility="gone"/>
+            android:gravity="center"
+            android:padding="10dp"
+            android:visibility="gone" />
 
         <EditText
-            android:singleLine="true"
-            android:layout_marginRight="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_centerVertical="true"
             android:id="@+id/poi_type_value"
-            android:layout_toLeftOf="@+id/edit_poi_type"
-            android:imeOptions="flagNoExtractUi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:hint="@string/search_poitype_hint"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_toLeftOf="@+id/edit_poi_type"
             android:drawableRight="@drawable/magnify"
-            android:visibility="gone"/>
+            android:hint="@string/search_poitype_hint"
+            android:imeOptions="flagNoExtractUi"
+            android:inputType="text"
+            android:singleLine="true"
+            android:visibility="gone" />
 
         <ImageButton
             android:id="@+id/edit_poi_type"
-            android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
-            android:padding="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
             android:background="@drawable/chevron_down"
-            android:visibility="gone"/>
+            android:padding="16dp"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <ListView
-        android:background="@android:color/white"
         android:id="@+id/autocomplete_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/poi_type_value_wrapper"
-        android:visibility="gone"
-        />
+        android:background="@android:color/white"
+        android:visibility="gone" />
 
     <io.mapsquare.osmcontributor.utils.ways.LevelBar
         android:id="@+id/level_bar"
@@ -171,7 +169,7 @@
         android:paddingRight="20dp"
         android:rotation="270"
         android:splitTrack="false"
-        android:visibility="invisible"/>
+        android:visibility="invisible" />
 
     <RelativeLayout
         android:id="@+id/note_detail_wrapper"
@@ -184,7 +182,7 @@
             android:name="io.mapsquare.osmcontributor.ui.fragments.NoteDetailFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -198,10 +196,10 @@
             android:name="io.mapsquare.osmcontributor.ui.fragments.PoiDetailFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true" />
     </RelativeLayout>
 
-    <com.getbase.floatingactionbutton.FloatingActionButton
+    <com.github.clans.fab.FloatingActionButton
         android:id="@+id/edit_way_point_position"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -211,10 +209,10 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:src="@drawable/move_poi"
         android:visibility="gone"
-        application:fab_colorNormal="@color/material_blue_500"
-        application:fab_colorPressed="@color/material_blue_grey_800"
-        application:fab_icon="@drawable/move_poi"/>
+        app:fab_colorNormal="@color/material_blue_500"
+        app:fab_colorPressed="@color/material_blue_grey_800" />
 
     <RelativeLayout
         android:id="@+id/floating_btn_wrapper"
@@ -227,7 +225,7 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin">
 
-        <com.getbase.floatingactionbutton.FloatingActionsMenu
+        <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/add_poi_few_values"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -235,24 +233,26 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:visibility="gone"
-            application:fab_addButtonColorNormal="@color/material_blue_500"
-            application:fab_addButtonColorPressed="@color/material_blue_grey_800"
-            application:fab_addButtonPlusIconColor="@color/white"
-            application:fab_labelStyle="@style/menu_labels_style"
-            application:fab_labelsPosition="left"
-            application:fab_plusIconColor="@color/white"/>
+            app:menu_icon="@drawable/add_white"
+            app:menu_labels_colorNormal="@color/material_blue_500"
+            app:menu_labels_colorPressed="@color/material_blue_grey_800"
+            app:menu_labels_position="left"
+            app:menu_labels_style="@style/menu_labels_style"
+            app:menu_openDirection="up"
+            app:menu_colorNormal="@color/colorPrimaryDark"
+            app:menu_colorPressed="@color/colorPrimary"
+            app:menu_colorRipple="@color/colorPrimary"/>
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/localisation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            application:fab_colorNormal="@color/floating_ab_normal"
-            application:fab_colorPressed="@color/floating_ab_pressed"
-            application:fab_colorRipple="@color/floating_ab_ripple"
-            application:fab_icon="@drawable/gps"/>
+            android:src="@drawable/gps"
+            app:fab_colorNormal="@color/floating_ab_normal"
+            app:fab_colorPressed="@color/floating_ab_pressed"
+            app:fab_colorRipple="@color/floating_ab_ripple" />
     </RelativeLayout>
-
 </RelativeLayout>
