@@ -320,6 +320,11 @@ public class MapFragment extends Fragment {
     }
 
     private void instantiateMapBox(Bundle savedInstanceState) {
+        // LocationView settings
+        mapboxMap.getMyLocationViewSettings().setAccuracyAlpha(0);
+        mapboxMap.getMyLocationViewSettings().setForegroundTintColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryTransparent));
+
+
         // Set the map center and zoom to the saved values or use the default values
         getUserLocation();
         CameraPosition.Builder cameraBuilder = new CameraPosition.Builder();
@@ -333,7 +338,6 @@ public class MapFragment extends Fragment {
         }
 
         mapboxMap.setCameraPosition(cameraBuilder.build());
-        getUserLocation();
         eventBus.post(new PleaseInitializeArpiEvent());
         presenter.setForceRefreshPoi();
         presenter.setForceRefreshNotes();
@@ -365,7 +369,6 @@ public class MapFragment extends Fragment {
     private void getUserLocation() {
         mapboxMap.setMyLocationEnabled(true);
         lastLocation = mapboxMap.getMyLocation();
-        mapboxMap.setMyLocationEnabled(false);
     }
 
     private void measureMaxPoiType() {
