@@ -434,6 +434,6 @@ public class BitmapHandler {
                 iconId = context.getResources().getIdentifier(iconName, "drawable", context.getPackageName());
             }
         }
-        return iconId != 0 ? iconId : R.drawable.default_marker;
+        return iconId != 0 ? iconId : R.drawable.default_osm_marker;
     }
 }
