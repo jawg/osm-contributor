@@ -47,6 +47,9 @@ import io.mapsquare.osmcontributor.model.entities.PoiType;
 @Singleton
 public class BitmapHandler {
     public static final String BITMAP_NOTE_ID = "BITMAP_NOTE_ID";
+    public static final String BITMAP_POI_NODE_REF_ID = "BITMAP_NODE_ID";
+
+
     private LruCache<String, Bitmap> cache;
     private final Map<String, Integer> icons = new HashMap<>();
     private final Context context;
@@ -348,7 +351,6 @@ public class BitmapHandler {
                 case MOVING:
                     markerId = R.drawable.note_orange;
                     break;
-
                 default:
                     markerId = R.drawable.note_green;
                     break;
@@ -357,7 +359,7 @@ public class BitmapHandler {
             // If still too slow (lots of sources), we might change this and also include partials into cache
             // Right now, I don't think the use case proves its usefulness
             bmOverlay = BitmapFactory.decodeResource(context.getResources(), markerId);
-            addBitmapToMemoryCache(state.toString(), bmOverlay);
+            addBitmapToMemoryCache(BITMAP_NOTE_ID + state.toString(), bmOverlay);
         }
 
         return bmOverlay;
@@ -393,7 +395,7 @@ public class BitmapHandler {
             // If still too slow (lots of sources), we might change this and also include partials into cache
             // Right now, I don't think the use case proves its usefulness
             bmOverlay = drawableToBitmap(ContextCompat.getDrawable(context, markerId));
-            addBitmapToMemoryCache(state.toString(), bmOverlay);
+            addBitmapToMemoryCache(BITMAP_POI_NODE_REF_ID + state.toString(), bmOverlay);
         }
         return bmOverlay;
     }
