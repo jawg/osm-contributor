@@ -342,14 +342,21 @@ public class MapActivity extends AppCompatActivity {
 
         Menu menu = filterView.getMenu();
 
+        int order = 1;
         for (PoiTypeFilter poiTypeFilter : filters) {
+            PoiTypeFilter nextPoiTypeFilter = null;
+            if (order < filters.size()) {
+                nextPoiTypeFilter = filters.get(order);
+            }
             // Add only menu if not present
             if (menu.findItem(poiTypeFilter.getPoiTypeId().intValue()) == null) {
                 filtersItemList.add(menu
-                        .add(Menu.NONE, poiTypeFilter.getPoiTypeId().intValue(), 0, poiTypeFilter.getPoiTypeName())
+                        .add(Menu.NONE, poiTypeFilter.getPoiTypeId().intValue(), (nextPoiTypeFilter != null ?
+                                (poiTypeFilter.compareTo(nextPoiTypeFilter) > 0 ? order - 1 : order) : order), poiTypeFilter.getPoiTypeName())
                         .setChecked(poiTypeFilter.isActive())
                         .setIcon(bitmapHandler.getDrawable(poiTypeFilter.getPoiTypeIconName())));
             }
+            order++;
         }
 
         // Remove only filter removed by user

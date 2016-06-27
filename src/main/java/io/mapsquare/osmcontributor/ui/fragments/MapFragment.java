@@ -1229,8 +1229,8 @@ public class MapFragment extends Fragment {
         if (!FlavorUtils.isPoiStorage()) {
             floatingActionButton = new FloatingActionButton(getActivity());
             floatingActionButton.setLabelText(getString(R.string.note));
-            floatingActionButton.setColorPressed(getResources().getColor(R.color.material_green_700));
-            floatingActionButton.setColorNormal(getResources().getColor(R.color.material_green_500));
+            floatingActionButton.setColorPressed(ContextCompat.getColor(getActivity(), R.color.material_green_700));
+            floatingActionButton.setColorNormal(ContextCompat.getColor(getActivity(), R.color.material_green_500));
             floatingActionButton.setButtonSize(FloatingActionButton.SIZE_MINI);
             floatingActionButton.setImageDrawable(bitmapHandler.getIconWhite(null));
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
