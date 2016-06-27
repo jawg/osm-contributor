@@ -1220,7 +1220,9 @@ public class MapFragment extends Fragment {
     }
 
     public void loadPoiTypeFloatingBtn() {
-        addPoiFloatingMenu.removeAllMenuButtons();
+        if (addPoiFloatingMenu != null) {
+            addPoiFloatingMenu.removeAllMenuButtons();
+        }
         FloatingActionButton floatingActionButton;
 
         //add note

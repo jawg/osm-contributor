@@ -51,11 +51,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.ui.utils.ArpiPoiProvider;
-import io.mapsquare.osmcontributor.ui.utils.BitmapHandler;
-import io.mapsquare.osmcontributor.ui.utils.MapMode;
-import io.mapsquare.osmcontributor.ui.utils.PoiTypeFilter;
-import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.model.entities.PoiType;
 import io.mapsquare.osmcontributor.ui.events.map.ChangeMapModeEvent;
 import io.mapsquare.osmcontributor.ui.events.map.ChangesInDB;
@@ -76,6 +71,11 @@ import io.mapsquare.osmcontributor.ui.events.map.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseToggleArpiEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseToggleDrawer;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseToggleDrawerLock;
+import io.mapsquare.osmcontributor.ui.utils.ArpiPoiProvider;
+import io.mapsquare.osmcontributor.ui.utils.BitmapHandler;
+import io.mapsquare.osmcontributor.ui.utils.MapMode;
+import io.mapsquare.osmcontributor.ui.utils.PoiTypeFilter;
+import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import mobi.designmyapp.arpigl.engine.ArpiGlController;
 import mobi.designmyapp.arpigl.listener.PoiSelectionListener;
@@ -320,6 +320,8 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
+    List<PoiType> poiTypesSave;
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPleaseInitializeDrawer(PleaseInitializeDrawer event) {
         Timber.d("initializing drawer with poiType");
@@ -340,12 +342,31 @@ public class MapActivity extends AppCompatActivity {
 
         Menu menu = filterView.getMenu();
 
-        filtersItemList.clear();
         for (PoiTypeFilter poiTypeFilter : filters) {
-            filtersItemList.add(menu
-                    .add(Menu.NONE, poiTypeFilter.getPoiTypeId().intValue(), 0, poiTypeFilter.getPoiTypeName())
-                    .setChecked(poiTypeFilter.isActive())
-                    .setIcon(bitmapHandler.getDrawable(poiTypeFilter.getPoiTypeIconName())));
+            // Add only menu if not present
+            if (menu.findItem(poiTypeFilter.getPoiTypeId().intValue()) == null) {
+                filtersItemList.add(menu
+                        .add(Menu.NONE, poiTypeFilter.getPoiTypeId().intValue(), 0, poiTypeFilter.getPoiTypeName())
+                        .setChecked(poiTypeFilter.isActive())
+                        .setIcon(bitmapHandler.getDrawable(poiTypeFilter.getPoiTypeIconName())));
+            }
+        }
+
+        // Remove only filter removed by user
+        if (filters.size() < filtersItemList.size()) {
+            List<MenuItem> temp = new ArrayList<>(filters.size());
+            for (MenuItem menuItem : filtersItemList) {
+                PoiTypeFilter poiTypeFilter = new PoiTypeFilter("", (long) menuItem.getItemId(), "", true);
+                if (!filters.contains(poiTypeFilter)) {
+                    menu.removeItem(poiTypeFilter.getPoiTypeId().intValue());
+                } else {
+                    temp.add(menuItem);
+                }
+            }
+
+            filtersItemList.clear();
+            filtersItemList.addAll(temp);
+            temp.clear();
         }
 
         selectAllMenuItem.setChecked(poiTypesHidden.isEmpty());

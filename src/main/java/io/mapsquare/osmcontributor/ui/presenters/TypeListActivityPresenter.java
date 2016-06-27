@@ -32,7 +32,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
-import io.mapsquare.osmcontributor.ui.managers.PoiManager;
 import io.mapsquare.osmcontributor.database.helper.DatabaseHelper;
 import io.mapsquare.osmcontributor.model.entities.PoiType;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
@@ -47,6 +46,7 @@ import io.mapsquare.osmcontributor.ui.events.type.PoiTypeCreatedEvent;
 import io.mapsquare.osmcontributor.ui.events.type.PoiTypeDeletedEvent;
 import io.mapsquare.osmcontributor.ui.fragments.EditPoiTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.fragments.EditPoiTypeNameDialogFragment;
+import io.mapsquare.osmcontributor.ui.managers.PoiManager;
 import io.mapsquare.osmcontributor.ui.managers.TypeManager;
 import timber.log.Timber;
 
