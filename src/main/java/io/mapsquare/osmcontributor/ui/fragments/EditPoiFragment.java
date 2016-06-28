@@ -72,6 +72,7 @@ import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.ui.events.edition.NewPoiTagAddedEvent;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyPoiChanges;
 import io.mapsquare.osmcontributor.ui.events.edition.PoiChangesApplyEvent;
+import io.mapsquare.osmcontributor.utils.parser.ParserType;
 
 
 public class EditPoiFragment extends Fragment {
@@ -358,6 +359,10 @@ public class EditPoiFragment extends Fragment {
         if (actionBar != null) {
             actionBar.setSubtitle(poi.getType().getName());
         }
+
+        // Parse before creation of the adapter
+        ParserType.getWidgetForType(poi.getType(), getActivity());
+
 
         tagsAdapter = new TagsAdapter(poi, cardModelList, getActivity(), event.getValuesMap(), configManager, sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
         recyclerView.setAdapter(tagsAdapter);
