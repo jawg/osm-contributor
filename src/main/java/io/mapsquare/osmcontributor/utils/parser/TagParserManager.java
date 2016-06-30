@@ -18,6 +18,7 @@
  */
 package io.mapsquare.osmcontributor.utils.parser;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
@@ -30,6 +31,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import io.mapsquare.osmcontributor.model.entities.PoiType;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
 
@@ -38,13 +42,13 @@ import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
  * for each tag vie the h2geo.json file present in assets folder and indicates what widget
  * we have to show to the user.
  *
- * Work in progress, can be change. First propsition.
+ * Work in progress, can be change. First proposition.
  *
  * @version 0.0.1
  */
-public class ParserType {
-
-    private static final String TAG = "ParserType";
+@Singleton
+public class TagParserManager {
+    private static final String TAG = "TagParserManager";
 
     /**
      * Use the best UI widget based on the tag name and possible values.
@@ -58,20 +62,23 @@ public class ParserType {
         TEXT                // Use by default
     }
 
-    private static JSONArray h2geoJson;
+    private JSONArray h2geoJson;
+
+    @Inject
+    public TagParserManager(Application application) {
+        instantiateH2geoJson(application.getApplicationContext());
+    }
 
     /**
      * The main idea of this method is to get the tag of poi type and return, for each tag,
      * the widget to use.
      *
-     * This is a first propsition.
+     * This is a first proposition.
      *
      * @param poiType poi type to process
      * @return map of tag name with the widget corresponding
      */
-    public static Map<String, Widget> getWidgetForType(PoiType poiType, Context context) {
-        instantiateH2geoJson(context);
-
+    public Map<String, Widget> getWidgetForType(PoiType poiType, Context context) {
         // Map to return
         Map<String, Widget> widgets = new HashMap<>();
 
@@ -82,17 +89,22 @@ public class ParserType {
 
             // Get tag info about the current poi type from h2geo file
             JSONArray tagsInfoFromH2geo = getTagsInfoFromH2Geo(tag.getKey() + "=" + tag.getValue());
-            if (tagsInfoFromH2geo != null) {
-                for (int i = 0; i < tagsInfoFromH2geo.length(); i++) {
-                    if (tagsInfoFromH2geo.getJSONObject(i).getString("key").equals("opening_hours")) {
-                        widgets.put("opening_hours", Widget.OPENING_HOURS);
-                    } else if (tagsInfoFromH2geo.getJSONObject(i).has("possibleValues")) {
-                        // Get possible values. If exists, possible values can be yes / no, a name,
-                        // a number, 24 / 7, a word.
-                    } else {
 
+            try {
+                if (tagsInfoFromH2geo != null) {
+                    for (int i = 0; i < tagsInfoFromH2geo.length(); i++) {
+                        if (tagsInfoFromH2geo.getJSONObject(i).getString("key").equals("opening_hours")) {
+                            widgets.put("opening_hours", Widget.OPENING_HOURS);
+                        } else if (tagsInfoFromH2geo.getJSONObject(i).has("possibleValues")) {
+                            // Get possible values. If exists, possible values can be yes / no, a name,
+                            // a number, 24 / 7, a word.
+                        } else {
+
+                        }
                     }
                 }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
         }
         return widgets;
@@ -105,7 +117,7 @@ public class ParserType {
      * @param name Name of poi type (ex : amenity=pharmacy or shop=e-cig)
      * @return a Json Array with all tags for the poi type
      */
-    private static JSONArray getTagsInfoFromH2Geo(String name) {
+    private JSONArray getTagsInfoFromH2Geo(String name) {
         try {
             for (int i = 0; i < h2geoJson.length(); i++) {
                 if (h2geoJson.getJSONObject(i).getString("name").equals(name)) {
@@ -125,7 +137,7 @@ public class ParserType {
      *
      * @param context context to access assets
      */
-    private static void instantiateH2geoJson(Context context) {
+    private void instantiateH2geoJson(Context context) {
         if (h2geoJson == null) {
             try {
                 h2geoJson = new JSONObject(loadJsonFromAsset(context)).getJSONArray("data");
@@ -135,7 +147,7 @@ public class ParserType {
         }
     }
 
-    private static String loadJsonFromAsset(Context context) {
+    private String loadJsonFromAsset(Context context) {
         String json;
         try {
             InputStream is = context.getAssets().open("h2geo.json");

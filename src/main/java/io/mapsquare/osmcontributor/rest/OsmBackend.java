@@ -281,7 +281,7 @@ public class OsmBackend implements Backend {
                 Timber.e(e, "Couldn't update node, conflicting version");
                 return new UpdateResult(ModificationStatus.FAILURE_CONFLICT, null);
             } else if (e.getResponse() != null && e.getResponse().getStatus() == 404) {
-                Timber.e(e, "Couldn't update node, no existing node found with the id");
+                Timber.e(e, "Couldn't update node, no existing node found with the id " + poi.getId());
                 return new UpdateResult(ModificationStatus.FAILURE_NOT_EXISTING, null);
             } else {
                 Timber.e(e, "Couldn't update node");
@@ -289,7 +289,6 @@ public class OsmBackend implements Backend {
             }
         }
         return new UpdateResult(ModificationStatus.FAILURE_UNKNOWN, null);
-
     }
 
     /**

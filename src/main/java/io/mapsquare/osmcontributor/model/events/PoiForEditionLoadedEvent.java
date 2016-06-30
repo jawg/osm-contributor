@@ -24,9 +24,9 @@ import java.util.Map;
 import io.mapsquare.osmcontributor.model.entities.Poi;
 
 public class PoiForEditionLoadedEvent {
-
     private final Poi poi;
     private final Map<String, List<String>> valuesMap;
+
 
     public PoiForEditionLoadedEvent(Poi poi, Map<String, List<String>> valuesMap) {
         this.poi = poi;

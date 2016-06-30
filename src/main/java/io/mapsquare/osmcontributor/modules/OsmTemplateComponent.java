@@ -22,47 +22,49 @@ import android.app.Application;
 
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
+
 import javax.inject.Singleton;
 
 import dagger.Component;
-import org.greenrobot.eventbus.EventBus;
-import io.mapsquare.osmcontributor.utils.core.ArpiInitializer;
-import io.mapsquare.osmcontributor.utils.core.CoreModule;
-import io.mapsquare.osmcontributor.ui.managers.PoiManager;
+import io.mapsquare.osmcontributor.database.PoiAssetLoader;
 import io.mapsquare.osmcontributor.database.helper.DatabaseHelper;
 import io.mapsquare.osmcontributor.database.helper.DatabaseModule;
 import io.mapsquare.osmcontributor.database.helper.OsmSqliteOpenHelper;
-import io.mapsquare.osmcontributor.ui.fragments.AddValueDialogFragment;
-import io.mapsquare.osmcontributor.ui.activities.EditPoiActivity;
-import io.mapsquare.osmcontributor.ui.fragments.EditPoiFragment;
-import io.mapsquare.osmcontributor.ui.managers.EditPoiManager;
-import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
-import io.mapsquare.osmcontributor.ui.managers.LoginManager;
 import io.mapsquare.osmcontributor.login.LoginModule;
-import io.mapsquare.osmcontributor.ui.activities.SplashScreenActivity;
-import io.mapsquare.osmcontributor.ui.activities.MapActivity;
-import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
-import io.mapsquare.osmcontributor.ui.presenters.MapFragmentPresenter;
-import io.mapsquare.osmcontributor.ui.fragments.NoteDetailFragment;
-import io.mapsquare.osmcontributor.ui.fragments.PoiDetailFragment;
-import io.mapsquare.osmcontributor.ui.managers.WaysManager;
-import io.mapsquare.osmcontributor.utils.ways.Geocoder;
-import io.mapsquare.osmcontributor.ui.activities.NoteActivity;
-import io.mapsquare.osmcontributor.ui.fragments.NoteCommentDialogFragment;
-import io.mapsquare.osmcontributor.ui.managers.NoteManager;
-import io.mapsquare.osmcontributor.ui.fragments.MyPreferenceFragment;
-import io.mapsquare.osmcontributor.ui.activities.MyPreferencesActivity;
 import io.mapsquare.osmcontributor.rest.CommonSyncModule;
 import io.mapsquare.osmcontributor.rest.managers.SyncManager;
 import io.mapsquare.osmcontributor.sync.SyncModule;
-import io.mapsquare.osmcontributor.database.PoiAssetLoader;
+import io.mapsquare.osmcontributor.ui.activities.EditPoiActivity;
+import io.mapsquare.osmcontributor.ui.activities.MapActivity;
+import io.mapsquare.osmcontributor.ui.activities.MyPreferencesActivity;
+import io.mapsquare.osmcontributor.ui.activities.NoteActivity;
+import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
+import io.mapsquare.osmcontributor.ui.activities.SplashScreenActivity;
+import io.mapsquare.osmcontributor.ui.activities.TypeListActivity;
+import io.mapsquare.osmcontributor.ui.activities.UploadActivity;
+import io.mapsquare.osmcontributor.ui.fragments.AddValueDialogFragment;
+import io.mapsquare.osmcontributor.ui.fragments.EditPoiFragment;
 import io.mapsquare.osmcontributor.ui.fragments.EditPoiTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.fragments.EditPoiTypeDialogFragment;
 import io.mapsquare.osmcontributor.ui.fragments.EditPoiTypeNameDialogFragment;
-import io.mapsquare.osmcontributor.ui.activities.TypeListActivity;
-import io.mapsquare.osmcontributor.ui.presenters.TypeListActivityPresenter;
+import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
+import io.mapsquare.osmcontributor.ui.fragments.MyPreferenceFragment;
+import io.mapsquare.osmcontributor.ui.fragments.NoteCommentDialogFragment;
+import io.mapsquare.osmcontributor.ui.fragments.NoteDetailFragment;
+import io.mapsquare.osmcontributor.ui.fragments.PoiDetailFragment;
+import io.mapsquare.osmcontributor.ui.managers.EditPoiManager;
+import io.mapsquare.osmcontributor.ui.managers.LoginManager;
+import io.mapsquare.osmcontributor.ui.managers.NoteManager;
+import io.mapsquare.osmcontributor.ui.managers.PoiManager;
 import io.mapsquare.osmcontributor.ui.managers.TypeManager;
-import io.mapsquare.osmcontributor.ui.activities.UploadActivity;
+import io.mapsquare.osmcontributor.ui.managers.WaysManager;
+import io.mapsquare.osmcontributor.ui.presenters.MapFragmentPresenter;
+import io.mapsquare.osmcontributor.ui.presenters.TypeListActivityPresenter;
+import io.mapsquare.osmcontributor.utils.core.ArpiInitializer;
+import io.mapsquare.osmcontributor.utils.core.CoreModule;
+import io.mapsquare.osmcontributor.utils.parser.TagParserManager;
+import io.mapsquare.osmcontributor.utils.ways.Geocoder;
 
 @Singleton
 @Component(modules = {
@@ -159,4 +161,6 @@ public interface OsmTemplateComponent {
 
     // Poi type
     TypeManager getTypeManager();
+
+    TagParserManager getTagParserManager();
 }

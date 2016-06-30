@@ -459,7 +459,6 @@ public class MapFragment extends Fragment {
         outState.putDouble(LEVEL, currentLevel);
         outState.putBoolean(DISPLAY_OPEN_NOTES, displayOpenNotes);
         outState.putBoolean(DISPLAY_CLOSED_NOTES, displayClosedNotes);
-//        outState.putString(TILE_SOURCE, currentTileLayer);
 
         int markerType = markerSelected == null ? LocationMarkerView.MarkerType.NONE.ordinal() : markerSelected.getType().ordinal();
         outState.putInt(MARKER_TYPE, markerType);

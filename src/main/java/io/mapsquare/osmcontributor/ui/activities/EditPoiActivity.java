@@ -37,7 +37,6 @@ import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
 import io.mapsquare.osmcontributor.ui.fragments.EditPoiFragment;
 
 public class EditPoiActivity extends AppCompatActivity {
-
     public static final String POI_ID = "POI_ID";
     public static final String CREATION_MODE = "CREATION_MODE";
     public static final String POI_LAT = "POI_LAT";
