@@ -211,6 +211,8 @@
     <string name="poi_tag_key_hint">key</string>
     <string name="poi_tag_value_hint">value</string>
     <string name="poi_tag_mandatory">Mandatory</string>
+    <string name="poi_tag_days">Days</string>
+    <string name="poi_tag_hours">Opening time</string>
 
     <!-- Snackbar -->
     <string name="item_removed">\"%1$s\" was removed</string>

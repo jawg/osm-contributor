@@ -19,15 +19,8 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<resources>
-    <declare-styleable name="LevelBar">
-    </declare-styleable>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="false" android:drawable="@drawable/checkbox_state_checked"/>
 
-    <declare-styleable name="TypeFaceView">
-        <attr name="typeface" format="string"/>
-    </declare-styleable>
-
-    <declare-styleable name="TextViewCheck">
-        <attr name="checked" format="boolean"/>
-    </declare-styleable>
-</resources>
+    <item android:state_selected="true" android:drawable="@drawable/checkbox_state_unchecked"/>
+</selector>

@@ -16,12 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.utils;
+package io.mapsquare.osmcontributor.ui.utils;
 
-public class StringUtils {
+import android.text.Editable;
+import android.text.TextWatcher;
 
-    public static boolean isEmpty(CharSequence cs) {
-        return cs == null || cs.length() == 0;
+/**
+ * @author Tommy Buonomo on 01/07/16.
+ */
+public class SimpleTextWatcher implements TextWatcher {
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
     }
 
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+
+    }
 }

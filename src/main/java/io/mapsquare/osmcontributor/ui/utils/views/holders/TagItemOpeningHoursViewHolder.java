@@ -18,28 +18,29 @@
  */
 package io.mapsquare.osmcontributor.ui.utils.views.holders;
 
+
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.EditText;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.R;
 
-public class ViewHolderPoiTagManyValues extends RecyclerView.ViewHolder {
+public class TagItemOpeningHoursViewHolder extends RecyclerView.ViewHolder {
     public View poiTagLayout;
 
     @BindView(R.id.poi_key)
     TextView textViewKey;
 
-    @BindView(R.id.poi_value)
-    TextView textViewValue;
+    @BindView(R.id.poi_days_value)
+    EditText textViewDaysValue;
 
-    @BindView(R.id.edit_btn)
-    ImageButton editButton;
+    @BindView(R.id.poi_hours_value)
+    EditText textViewHoursValue;
 
-    public ViewHolderPoiTagManyValues(View v) {
+    public TagItemOpeningHoursViewHolder(View v) {
         super(v);
         poiTagLayout = v;
         ButterKnife.bind(this, v);
@@ -49,31 +50,15 @@ public class ViewHolderPoiTagManyValues extends RecyclerView.ViewHolder {
         return poiTagLayout;
     }
 
-    public void setPoiTagLayout(View poiTagLayout) {
-        this.poiTagLayout = poiTagLayout;
-    }
-
     public TextView getTextViewKey() {
         return textViewKey;
     }
 
-    public void setTextViewKey(TextView textViewKey) {
-        this.textViewKey = textViewKey;
+    public TextView getTextViewDaysValue() {
+        return textViewDaysValue;
     }
 
-    public TextView getTextViewValue() {
-        return textViewValue;
-    }
-
-    public void setTextViewValue(TextView textViewValue) {
-        this.textViewValue = textViewValue;
-    }
-
-    public ImageButton getEditButton() {
-        return editButton;
-    }
-
-    public void setEditButton(ImageButton editButton) {
-        this.editButton = editButton;
+    public EditText getTextViewHoursValue() {
+        return textViewHoursValue;
     }
 }

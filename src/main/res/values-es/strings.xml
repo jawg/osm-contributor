@@ -173,6 +173,8 @@
     <string name="poi_tag_key_hint">clave</string>
     <string name="poi_tag_value_hint">valor</string>
     <string name="poi_tag_mandatory">Obligatorio</string>
+    <string name="poi_tag_days">Días</string>
+    <string name="poi_tag_hours">Horarios</string>
     <!--Snackbar-->
     <string name="item_removed">\"%1$s\" fue quitado</string>
     <string name="undo">Deshacer</string>

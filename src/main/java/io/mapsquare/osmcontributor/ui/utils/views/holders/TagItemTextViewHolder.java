@@ -19,47 +19,53 @@
 package io.mapsquare.osmcontributor.ui.utils.views.holders;
 
 
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
-import butterknife.BindView;
-import io.mapsquare.osmcontributor.R;
+import org.greenrobot.eventbus.EventBus;
 
-public class ViewHolderPoiTagFewValues extends RecyclerView.ViewHolder {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.mapsquare.osmcontributor.R;
+import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
+import io.mapsquare.osmcontributor.ui.utils.SimpleTextWatcher;
+
+public class TagItemTextViewHolder extends RecyclerView.ViewHolder {
     public View poiTagLayout;
+
+    private EventBus eventBus;
 
     @BindView(R.id.poi_key)
     TextView textViewKey;
 
     @BindView(R.id.poi_value)
-    TextView textViewValue;
-
-    @BindView(R.id.gridView1)
-    GridView gridView;
-
-    @BindView(R.id.expend_button)
-    ImageButton expendButton;
+    TextInputEditText textViewValue;
 
     @BindView(R.id.grid_layout_wrapper)
     LinearLayout gridViewLayoutWrapper;
-
-    @BindView(R.id.no_value_text)
-    TextView noValueTextView;
 
     @BindView(R.id.edition)
     RelativeLayout relativeLayoutEdition;
 
 
-    public ViewHolderPoiTagFewValues(View v) {
+    public TagItemTextViewHolder(View v) {
         super(v);
         poiTagLayout = v;
         ButterKnife.bind(this, v);
+        eventBus = EventBus.getDefault();
+
+        textViewValue.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (i1 != i2) {
+                    eventBus.post(new PleaseApplyTagChangeView(textViewKey.getText().toString(), charSequence.toString()));
+                }
+            }
+        });
     }
 
     public View getPoiTagLayout() {
@@ -70,24 +76,12 @@ public class ViewHolderPoiTagFewValues extends RecyclerView.ViewHolder {
         return textViewKey;
     }
 
-    public TextView getTextViewValue() {
+    public TextInputEditText getTextViewValue() {
         return textViewValue;
-    }
-
-    public GridView getGridView() {
-        return gridView;
-    }
-
-    public ImageButton getExpendButton() {
-        return expendButton;
     }
 
     public LinearLayout getGridViewLayoutWrapper() {
         return gridViewLayoutWrapper;
-    }
-
-    public TextView getNoValueTextView() {
-        return noValueTextView;
     }
 
     public RelativeLayout getRelativeLayoutEdition() {

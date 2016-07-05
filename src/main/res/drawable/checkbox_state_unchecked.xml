@@ -19,15 +19,7 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<resources>
-    <declare-styleable name="LevelBar">
-    </declare-styleable>
-
-    <declare-styleable name="TypeFaceView">
-        <attr name="typeface" format="string"/>
-    </declare-styleable>
-
-    <declare-styleable name="TextViewCheck">
-        <attr name="checked" format="boolean"/>
-    </declare-styleable>
-</resources>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/colorPrimary"/>
+    <corners android:radius="3dp"/>
+</shape>

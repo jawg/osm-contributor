@@ -19,59 +19,63 @@
 package io.mapsquare.osmcontributor.ui.adapters;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.DialogFragment;
 import android.content.Intent;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.utils.ConfigManager;
-import io.mapsquare.osmcontributor.utils.edition.CardModel;
-import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
-import io.mapsquare.osmcontributor.utils.edition.PoiChanges;
 import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
+import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
+import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
+import io.mapsquare.osmcontributor.ui.adapters.parser.TagItemParser;
+import io.mapsquare.osmcontributor.ui.dialogs.EditDaysTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
-import io.mapsquare.osmcontributor.ui.fragments.AddValueDialogFragment;
-import io.mapsquare.osmcontributor.ui.utils.views.holders.ViewHolderPoiTagFewValues;
-import io.mapsquare.osmcontributor.ui.utils.views.holders.ViewHolderPoiTagImposed;
-import io.mapsquare.osmcontributor.ui.utils.views.holders.ViewHolderPoiTagManyValues;
-import io.mapsquare.osmcontributor.ui.utils.views.holders.ViewHolderSeparator;
+import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemMultiChoiceViewHolder;
+import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemOpeningHoursViewHolder;
+import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemTextImposedViewHolder;
+import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemTextViewHolder;
+import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.StringUtils;
-import io.mapsquare.osmcontributor.ui.utils.views.ViewAnimation;
+import io.mapsquare.osmcontributor.utils.edition.PoiChanges;
 
 public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final String TAG = "TagsAdapter";
     public static final int NB_AUTOCOMPLETE_LIMIT = 6;
-    private List<CardModel> cardModelList = new ArrayList<>();
+    private List<TagItem> tagItemList = new ArrayList<>();
     private Poi poi;
-    private Context context;
+    private Activity context;
     private EventBus eventBus;
     private ConfigManager configManager;
     private boolean change = false;
     private boolean expertMode = false;
+    private TagItemParser tagItemParser;
 
-    public TagsAdapter(Poi poi, List<CardModel> cardModelList, Context context, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
+    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity context, TagItemParser tagItemParser, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
         this.context = context;
         this.configManager = configManager;
         this.expertMode = expertMode;
+        this.tagItemParser = tagItemParser;
 
-        if (cardModelList == null) {
+        if (tagItemList == null) {
             loadTags(poi.getTagsMap(), tagValueSuggestionsMap);
         } else {
-            this.cardModelList = cardModelList;
+            this.tagItemList = tagItemList;
             notifyDataSetChanged();
         }
 
@@ -83,30 +87,31 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         int nbMandatory = 0;
         int nbImposed = 0;
 
+        Map<String, TagItem.TagType> tagTypeMap = tagItemParser.getTagTypeMap(poi.getType());
+
         for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
             // Tags not in the PoiType should not be displayed if we are not in expert mode
             if (poiTypeTag.getValue() == null) {
                 String key = poiTypeTag.getKey();
                 // Display tags as mandatory if they are mandatory and we are not in expert mode
                 if (poiTypeTag.getMandatory() && !expertMode) {
-                    add(key, poiTags.remove(key), true, tagValueSuggestionsMap.get(key), nbMandatory + nbImposed, false, true);
+                    addTag(key, poiTags.remove(key), true, tagValueSuggestionsMap.get(key), nbMandatory + nbImposed, tagTypeMap.get(key), true);
                     nbMandatory++;
                 } else {
-                    add(key, poiTags.remove(key), false, tagValueSuggestionsMap.get(key), this.getItemCount(), false, true);
+                    addTag(key, poiTags.remove(key), false, tagValueSuggestionsMap.get(key), this.getItemCount(), tagTypeMap.get(key), true);
                 }
             } else if (expertMode) {
                 // Display the tags of the poi that are not in the PoiType
                 String key = poiTypeTag.getKey();
-                add(key, poiTags.remove(key), true, tagValueSuggestionsMap.get(key), nbImposed, false, false);
+                addTag(key, poiTags.remove(key), true, tagValueSuggestionsMap.get(key), nbImposed, tagTypeMap.get(key), false);
                 nbImposed++;
             }
         }
         if (expertMode) {
             for (String key : poiTags.keySet()) {
-                add(key, poiTags.get(key), false, Collections.singletonList(poiTags.get(key)), this.getItemCount(), false, true);
+                addTag(key, poiTags.get(key), false, Collections.singletonList(poiTags.get(key)), this.getItemCount(), tagTypeMap.get(key), true);
             }
         }
-        addSeparator(nbMandatory, nbImposed);
     }
 
     /**
@@ -114,69 +119,64 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     public PoiChanges getPoiChanges() {
         PoiChanges result = new PoiChanges(poi.getId());
-        for (CardModel cardModel : cardModelList) {
-            if (cardModel.isTag()) {
-                // Only mandatory tags and optional tags that have been changed are saved
-                if (cardModel.isMandatory() || cardModel.getValue() != null) {
-                    result.getTagsMap().put(cardModel.getKey(), cardModel.getValue());
-                }
+        for (TagItem tagItem : tagItemList) {
+            // Only mandatory tags and optional tags that have been changed are saved
+            if (tagItem.isMandatory() || tagItem.getValue() != null) {
+                result.getTagsMap().put(tagItem.getKey(), tagItem.getValue());
             }
         }
         return result;
     }
 
-    public List<CardModel> getCardModelList() {
-        return cardModelList;
+    public List<TagItem> getTagItemList() {
+        return tagItemList;
     }
 
     public boolean isChange() {
         return change;
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        /* Create different views depending of type of the tag */
+        switch (TagItem.TagType.values()[viewType]) {
+            case TEXT_IMPOSED:
+                View poiTagImposedLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_text_imposed, parent, false);
+                return new TagItemTextImposedViewHolder(poiTagImposedLayout);
 
-        switch (CardModel.CardType.values()[viewType]) {
-            case TAG_IMPOSED:
-                View poiTagImposedLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_tag_imposed, parent, false);
-                return new ViewHolderPoiTagImposed(poiTagImposedLayout);
+            case MULTI_CHOICE:
+                View poiTagFewValuesLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_multi_choice, parent, false);
+                return new TagItemMultiChoiceViewHolder(poiTagFewValuesLayout);
 
-            case TAG_MANY_VALUES:
-                View poiTagFewValuesLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_tag_many_values_layout, parent, false);
-                return new ViewHolderPoiTagManyValues(poiTagFewValuesLayout);
+            case TEXT:
+                View poiTagManyValuesLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_text, parent, false);
+                return new TagItemTextViewHolder(poiTagManyValuesLayout);
 
-            case TAG_FEW_VALUES:
-                View poiTagManyValuesLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_tag_few_values_layout, parent, false);
-                return new ViewHolderPoiTagFewValues(poiTagManyValuesLayout);
-
-            case HEADER_OPTIONAL:
-                return new ViewHolderSeparator(LayoutInflater.from(parent.getContext()).inflate(R.layout.card_tag_separator, parent, false), ViewHolderSeparator.SeparatorType.OPTIONAL);
-
-            case HEADER_REQUIRED:
-                return new ViewHolderSeparator(LayoutInflater.from(parent.getContext()).inflate(R.layout.card_tag_separator, parent, false), ViewHolderSeparator.SeparatorType.REQUIRED);
+            case OPENING_HOURS:
+                View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_hours, parent, false);
+                return new TagItemOpeningHoursViewHolder(poiTagOpeningHoursLayout);
 
             default:
                 return null;
         }
     }
 
-    public void onBindViewHolder(final ViewHolderPoiTagManyValues holder,
+    public void onBindViewHolder(final TagItemMultiChoiceViewHolder holder,
                                  final int position) {
 
-        final CardModel cardModel = cardModelList.get(position);
+        final TagItem tagItem = tagItemList.get(position);
 
-        holder.getTextViewKey().setText(cardModel.getKey());
-        holder.getTextViewValue().setText(cardModel.getValue());
+        holder.getTextViewKey().setText(tagItemParser.parseTagName(tagItem.getKey()));
+        holder.getTextViewValue().setText(tagItem.getValue());
 
         if (configManager.hasPoiModification()) {
             View.OnClickListener editTagClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, PickValueActivity.class);
-                    intent.putExtra(PickValueActivity.KEY, cardModel.getKey());
-                    intent.putExtra(PickValueActivity.VALUE, cardModel.getValue());
-                    intent.putExtra(PickValueActivity.AUTOCOMPLETE, cardModel.getAutocompleteValues().toArray(new String[cardModel.getAutocompleteValues().size()]));
+                    intent.putExtra(PickValueActivity.KEY, tagItemParser.parseTagName(tagItem.getKey()));
+                    intent.putExtra(PickValueActivity.VALUE, tagItem.getValue());
+                    intent.putExtra(PickValueActivity.AUTOCOMPLETE, tagItem.getAutocompleteValues().toArray(new String[tagItem.getAutocompleteValues().size()]));
                     ((Activity) context).startActivityForResult(intent, PickValueActivity.PICK_VALUE_ACTIVITY_CODE);
 
                 }
@@ -189,80 +189,63 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public void onBindViewHolder(final ViewHolderPoiTagFewValues holder,
+    public void onBindViewHolder(final TagItemTextViewHolder holder,
                                  final int position) {
-        final CardModel cardModel = cardModelList.get(position);
+        final TagItem tagItem = tagItemList.get(position);
 
         if (configManager.hasPoiModification()) {
+            holder.getGridViewLayoutWrapper().setVisibility(View.VISIBLE);
 
-            holder.getGridView().setAdapter(new AutocompleteAdapter(context, cardModel.getAutocompleteValues(), holder.getTextViewValue(), holder.getPoiTagLayout(), cardModel.getKey()));
+            holder.getTextViewKey().setText(tagItemParser.parseTagName(tagItem.getKey()));
 
-            if (cardModel.getAutocompleteValues().size() > 0) {
-                holder.getNoValueTextView().setVisibility(View.GONE);
-                holder.getGridView().setVisibility(View.VISIBLE);
-            } else {
-                holder.getNoValueTextView().setVisibility(View.VISIBLE);
-                holder.getGridView().setVisibility(View.GONE);
-            }
-
-            View.OnClickListener expandCardClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    cardModel.setOpen(!cardModel.isOpen());
-
-                    ViewAnimation.animate(holder.getGridViewLayoutWrapper(), cardModel.isOpen());
-
-                    if (cardModel.isOpen()) {
-                        holder.getExpendButton().setImageResource(R.drawable.chevron_up);
-                    } else {
-                        holder.getExpendButton().setImageResource(R.drawable.chevron_down);
-                    }
-                }
-            };
-
-            if (cardModel.isOpen()) {
-                holder.getGridViewLayoutWrapper().setVisibility(View.VISIBLE);
-            } else {
-                holder.getGridViewLayoutWrapper().setVisibility(View.GONE);
-            }
-
-            holder.getPoiTagLayout().setOnClickListener(expandCardClickListener);
-            holder.getExpendButton().setOnClickListener(expandCardClickListener);
-            holder.getTextViewKey().setText(cardModel.getKey());
-            holder.getTextViewValue().setText(cardModel.getValue());
-            holder.getRelativeLayoutEdition().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AddValueDialogFragment dialog = AddValueDialogFragment.newInstance(cardModel.getKey(), cardModel.getValue(), holder.getPoiTagLayout());
-                    dialog.show(((Activity) context).getFragmentManager(), "dialog");
-                }
-            });
+            ((TextInputLayout) (holder.getTextViewValue().getParent())).setHint(tagItem.getKey());
+            holder.getTextViewValue().setText(tagItem.getValue());
         } else {
-            holder.getExpendButton().setVisibility(View.GONE);
             holder.getGridViewLayoutWrapper().setVisibility(View.GONE);
         }
     }
 
-    public void onBindViewHolder(ViewHolderPoiTagImposed holder, int position) {
-        final CardModel cardModel = cardModelList.get(position);
-        holder.getTextViewKey().setText(cardModel.getKey());
-        holder.getTextViewValue().setText(cardModel.getValue());
+    public void onBindViewHolder(TagItemTextImposedViewHolder holder, int position) {
+        final TagItem tagItem = tagItemList.get(position);
+        holder.getTextViewKey().setText(tagItemParser.parseTagName(tagItem.getKey()));
+        holder.getTextViewValue().setText(tagItem.getValue());
+    }
+
+    public void onBindViewHolder(TagItemOpeningHoursViewHolder holder, int position) {
+        final TagItem tagItem = tagItemList.get(position);
+        holder.getTextViewKey().setText(tagItemParser.parseTagName(tagItem.getKey()));
+
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment fragment = new EditDaysTagDialogFragment();
+                fragment.show(context.getFragmentManager(), DialogFragment.class.getSimpleName());
+
+            }
+        };
+
+        holder.getTextViewDaysValue().setOnClickListener(onClickListener);
+        holder.getTextViewHoursValue().setOnClickListener(onClickListener);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder,
                                  int position) {
-        switch (cardModelList.get(position).getType()) {
-            case TAG_MANY_VALUES:
-                onBindViewHolder((ViewHolderPoiTagManyValues) holder, position);
+        switch (tagItemList.get(position).getTagType()) {
+            case MULTI_CHOICE:
+                onBindViewHolder((TagItemMultiChoiceViewHolder) holder, position);
                 return;
 
-            case TAG_FEW_VALUES:
-                onBindViewHolder((ViewHolderPoiTagFewValues) holder, position);
+            case TEXT:
+                onBindViewHolder((TagItemTextViewHolder) holder, position);
                 return;
 
-            case TAG_IMPOSED:
-                onBindViewHolder((ViewHolderPoiTagImposed) holder, position);
+            case TEXT_IMPOSED:
+                onBindViewHolder((TagItemTextImposedViewHolder) holder, position);
+                return;
+
+            case OPENING_HOURS:
+                onBindViewHolder((TagItemOpeningHoursViewHolder) holder, position);
                 return;
 
             default:
@@ -272,24 +255,20 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return cardModelList.get(position).getType().ordinal();
+        return tagItemList.get(position).getTagType().ordinal();
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return cardModelList.size();
+        return tagItemList.size();
     }
 
-    public void add(String key, String value, boolean mandatory, List<String> autocompleteValues, int position, boolean open, boolean updatable) {
+    public void addTag(String key, String value, boolean mandatory, List<String> autocompleteValues, int position, TagItem.TagType tagType, boolean updatable) {
         if (!updatable) {
-            cardModelList.add(position, new CardModel(key, value, mandatory, autocompleteValues, open, CardModel.CardType.TAG_IMPOSED));
+            tagItemList.add(position, new TagItem(key, value, mandatory, autocompleteValues, TagItem.TagType.TEXT_IMPOSED));
         } else {
-            if (autocompleteValues.size() > NB_AUTOCOMPLETE_LIMIT) {
-                cardModelList.add(position, new CardModel(key, value, mandatory, autocompleteValues, open, CardModel.CardType.TAG_MANY_VALUES));
-            } else {
-                cardModelList.add(position, new CardModel(key, value, mandatory, autocompleteValues, open, CardModel.CardType.TAG_FEW_VALUES));
-            }
+            tagItemList.add(position, new TagItem(key, value, mandatory, autocompleteValues, tagType == null ? TagItem.TagType.TEXT : tagType));
         }
         notifyItemInserted(position);
     }
@@ -299,27 +278,17 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      *
      * @return The position of the inserted element
      */
-    public int addLast(String key, String value, List<String> autocompleteValues, boolean open, boolean updatable) {
-        add(key, value, false, autocompleteValues, cardModelList.size(), open, updatable);
-        return cardModelList.size() - 1;
-    }
-
-    public void addSeparator(int nbMandatory, int nbImposed) {
-        // if there is only mandatory or only optional tags we hide the separators
-        if (nbMandatory != 0 && nbMandatory != this.getItemCount()) {
-            cardModelList.add(nbMandatory + nbImposed, new CardModel("", "", false, null, false, CardModel.CardType.HEADER_OPTIONAL));
-            cardModelList.add(nbImposed, new CardModel("", "", false, null, false, CardModel.CardType.HEADER_REQUIRED));
-            notifyItemInserted(nbMandatory + nbImposed);
-            notifyItemInserted(nbImposed);
-        }
+    public int addLast(String key, String value, List<String> autocompleteValues, TagItem.TagType tagType, boolean updatable) {
+        addTag(key, value, false, autocompleteValues, tagItemList.size(), tagType == null ? TagItem.TagType.TEXT : tagType, updatable);
+        return tagItemList.size() - 1;
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC)
-    public void onEventBackgroundThread(PleaseApplyTagChange event) {
+    public void onPleaseApplyTagChange(PleaseApplyTagChange event) {
         eventBus.removeStickyEvent(event);
-        for (CardModel cardModel : cardModelList) {
-            if (cardModel.getKey().equals(event.getKey())) {
-                cardModel.setValue(event.getValue());
+        for (TagItem tagItem : tagItemList) {
+            if (tagItem.getKey().equals(event.getKey())) {
+                tagItem.setValue(event.getValue());
                 change = true;
             }
         }
@@ -328,20 +297,22 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onPleaseApplyTagChangeView(PleaseApplyTagChangeView event) {
         eventBus.removeStickyEvent(event);
-        int position = 0;
-        for (CardModel cardModel : cardModelList) {
-            if (cardModel.getKey().equals(event.getKey())) {
-                cardModel.setValue(event.getValue());
-                notifyItemChanged(position);
+        for (TagItem tagItem : tagItemList) {
+            if (tagItemParser.parseTagName(tagItem.getKey()).equals(event.getKey())) {
+                tagItem.setValue(event.getValue());
                 change = true;
             }
-            position++;
         }
     }
 
+    private void editTag(TagItem tagItem, String newValue) {
+        tagItem.setValue(newValue);
+        change = true;
+    }
+
     public boolean isValidChanges() {
-        for (CardModel cardModel : cardModelList) {
-            if (cardModel.isTag() && cardModel.isMandatory() && StringUtils.isEmpty(cardModel.getValue())) {
+        for (TagItem tagItem : tagItemList) {
+            if (tagItem.isMandatory() && StringUtils.isEmpty(tagItem.getValue())) {
                 return false;
             }
         }

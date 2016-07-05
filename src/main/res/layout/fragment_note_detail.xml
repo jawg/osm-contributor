@@ -26,7 +26,7 @@
     android:layout_height="wrap_content"
     tools:context=".ui.fragments.NoteDetailFragment">
 
-    <io.mapsquare.osmcontributor.ui.utils.views.TypeFaceTextView
+    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:id="@+id/osm_copyright"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

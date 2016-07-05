@@ -43,14 +43,14 @@ import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.activities.SplashScreenActivity;
 import io.mapsquare.osmcontributor.ui.activities.TypeListActivity;
 import io.mapsquare.osmcontributor.ui.activities.UploadActivity;
-import io.mapsquare.osmcontributor.ui.fragments.AddValueDialogFragment;
+import io.mapsquare.osmcontributor.ui.dialogs.AddValueDialogFragment;
 import io.mapsquare.osmcontributor.ui.fragments.EditPoiFragment;
-import io.mapsquare.osmcontributor.ui.fragments.EditPoiTagDialogFragment;
-import io.mapsquare.osmcontributor.ui.fragments.EditPoiTypeDialogFragment;
-import io.mapsquare.osmcontributor.ui.fragments.EditPoiTypeNameDialogFragment;
+import io.mapsquare.osmcontributor.ui.dialogs.EditPoiTagDialogFragment;
+import io.mapsquare.osmcontributor.ui.dialogs.EditPoiTypeDialogFragment;
+import io.mapsquare.osmcontributor.ui.dialogs.EditPoiTypeNameDialogFragment;
 import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
 import io.mapsquare.osmcontributor.ui.fragments.MyPreferenceFragment;
-import io.mapsquare.osmcontributor.ui.fragments.NoteCommentDialogFragment;
+import io.mapsquare.osmcontributor.ui.dialogs.NoteCommentDialogFragment;
 import io.mapsquare.osmcontributor.ui.fragments.NoteDetailFragment;
 import io.mapsquare.osmcontributor.ui.fragments.PoiDetailFragment;
 import io.mapsquare.osmcontributor.ui.managers.EditPoiManager;
@@ -63,7 +63,7 @@ import io.mapsquare.osmcontributor.ui.presenters.MapFragmentPresenter;
 import io.mapsquare.osmcontributor.ui.presenters.TypeListActivityPresenter;
 import io.mapsquare.osmcontributor.utils.core.ArpiInitializer;
 import io.mapsquare.osmcontributor.utils.core.CoreModule;
-import io.mapsquare.osmcontributor.utils.parser.TagParserManager;
+import io.mapsquare.osmcontributor.ui.adapters.parser.TagItemParser;
 import io.mapsquare.osmcontributor.utils.ways.Geocoder;
 
 @Singleton
@@ -162,5 +162,5 @@ public interface OsmTemplateComponent {
     // Poi type
     TypeManager getTypeManager();
 
-    TagParserManager getTagParserManager();
+    TagItemParser getTagParserManager();
 }

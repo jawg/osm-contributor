@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.utils.parser;
+package io.mapsquare.osmcontributor.ui.adapters.parser;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +35,7 @@ import javax.inject.Singleton;
 
 import io.mapsquare.osmcontributor.model.entities.PoiType;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
+import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 
 /**
  * Parser type is used when we want to create a POI. This parser getTagInfoFromH2Geo the possible values
@@ -47,25 +47,13 @@ import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
  * @version 0.0.1
  */
 @Singleton
-public class TagParserManager {
-    private static final String TAG = "TagParserManager";
-
-    /**
-     * Use the best UI widget based on the tag name and possible values.
-     */
-    public enum Widget {
-        OPENING_HOURS,      // Use when tag value is opening_hours
-        DATE,               // Use when tag value is a date
-        MULTI_CHOICE,       // Use when a tag can contain multiple values
-        BOOLEAN_CHOICE,     // Use when tag value can be yes, no or undefined
-        LIST,               // Use when tag value must be choose in a list of element
-        TEXT                // Use by default
-    }
+public class TagItemParser {
+    private static final String TAG = "TagItemParser";
 
     private JSONArray h2geoJson;
 
     @Inject
-    public TagParserManager(Application application) {
+    public TagItemParser(Application application) {
         instantiateH2geoJson(application.getApplicationContext());
     }
 
@@ -78,14 +66,14 @@ public class TagParserManager {
      * @param poiType poi type to process
      * @return map of tag name with the widget corresponding
      */
-    public Map<String, Widget> getWidgetForType(PoiType poiType, Context context) {
+    public Map<String, TagItem.TagType> getTagTypeMap(PoiType poiType) {
         // Map to return
-        Map<String, Widget> widgets = new HashMap<>();
+        Map<String, TagItem.TagType> tagTypes = new HashMap<>();
 
         // Loop over tag of the poi type
         for (PoiTypeTag tag : poiType.getTags()) {
             // Print all tag key / value just for info
-            Log.i(TAG, tag.getKey() + "=" + tag.getValue());
+            //Log.i(TAG, tag.getKey() + "=" + tag.getValue());
 
             // Get tag info about the current poi type from h2geo file
             JSONArray tagsInfoFromH2geo = getTagsInfoFromH2Geo(tag.getKey() + "=" + tag.getValue());
@@ -93,13 +81,15 @@ public class TagParserManager {
             try {
                 if (tagsInfoFromH2geo != null) {
                     for (int i = 0; i < tagsInfoFromH2geo.length(); i++) {
-                        if (tagsInfoFromH2geo.getJSONObject(i).getString("key").equals("opening_hours")) {
-                            widgets.put("opening_hours", Widget.OPENING_HOURS);
+                        String key = tagsInfoFromH2geo.getJSONObject(i).getString("key");
+                        if (key.equals("opening_hours")) {
+                            tagTypes.put(key, TagItem.TagType.OPENING_HOURS);
                         } else if (tagsInfoFromH2geo.getJSONObject(i).has("possibleValues")) {
                             // Get possible values. If exists, possible values can be yes / no, a name,
                             // a number, 24 / 7, a word.
+                            tagTypes.put(key, TagItem.TagType.MULTI_CHOICE);
                         } else {
-
+                            tagTypes.put(key, TagItem.TagType.TEXT);
                         }
                     }
                 }
@@ -107,8 +97,45 @@ public class TagParserManager {
                 throw new RuntimeException(e);
             }
         }
-        return widgets;
+        return tagTypes;
     }
+
+    /**
+     * The main idea of this method is to get the tag item type of the tag key
+     *
+     * This is a first proposition.
+     *
+     * @param poiType poi type to process
+     * @return the tag item type enum
+     */
+    public TagItem.TagType getTagTypeForKey(PoiType poiType) {
+        // Loop over tag of the poi type
+        for (PoiTypeTag tag : poiType.getTags()) {
+            // Get tag info about the current poi type from h2geo file
+            JSONArray tagsInfoFromH2geo = getTagsInfoFromH2Geo(tag.getKey() + "=" + tag.getValue());
+
+            try {
+                if (tagsInfoFromH2geo != null) {
+                    for (int i = 0; i < tagsInfoFromH2geo.length(); i++) {
+                        if (tagsInfoFromH2geo.getJSONObject(i).getString("key").equals("opening_hours")) {
+                            return TagItem.TagType.OPENING_HOURS;
+                        } else if (tagsInfoFromH2geo.getJSONObject(i).has("possibleValues")) {
+                            // Get possible values. If exists, possible values can be yes / no, a name,
+                            // a number, 24 / 7, a word.
+                            return TagItem.TagType.MULTI_CHOICE;
+                        } else {
+                            return TagItem.TagType.TEXT;
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+
 
 
     /**
@@ -121,7 +148,6 @@ public class TagParserManager {
         try {
             for (int i = 0; i < h2geoJson.length(); i++) {
                 if (h2geoJson.getJSONObject(i).getString("name").equals(name)) {
-                    Log.i(TAG, h2geoJson.getJSONObject(i).getJSONArray("tags").toString());
                     return h2geoJson.getJSONObject(i).getJSONArray("tags");
                 }
             }
@@ -160,5 +186,13 @@ public class TagParserManager {
             throw new RuntimeException(exception);
         }
         return json;
+    }
+
+    public String parseTagName(String tagName) {
+        return Character.toUpperCase(tagName.charAt(0)) + tagName.substring(1).replace("_", " ");
+    }
+
+    public void parseOpeningHoursToValue() {
+
     }
 }

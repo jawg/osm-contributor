@@ -29,6 +29,7 @@
     <!--text-->
     <color name="active_text">#424242</color>
     <color name="disable_text">#9E9E9E</color>
+    <color name="hint_color">#7c7c7c</color>
 
     <color name="theme_grey">#ff999999</color>
     <color name="material_amber_800">#ffff8f00</color>

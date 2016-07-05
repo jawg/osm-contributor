@@ -20,13 +20,14 @@ package io.mapsquare.osmcontributor.ui.utils.views.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
 import butterknife.BindView;
 import io.mapsquare.osmcontributor.R;
 
-public class ViewHolderPoiTagImposed extends RecyclerView.ViewHolder {
+public class TagItemMultiChoiceViewHolder extends RecyclerView.ViewHolder {
     public View poiTagLayout;
 
     @BindView(R.id.poi_key)
@@ -35,8 +36,10 @@ public class ViewHolderPoiTagImposed extends RecyclerView.ViewHolder {
     @BindView(R.id.poi_value)
     TextView textViewValue;
 
+    @BindView(R.id.edit_btn)
+    ImageButton editButton;
 
-    public ViewHolderPoiTagImposed(View v) {
+    public TagItemMultiChoiceViewHolder(View v) {
         super(v);
         poiTagLayout = v;
         ButterKnife.bind(this, v);
@@ -46,11 +49,31 @@ public class ViewHolderPoiTagImposed extends RecyclerView.ViewHolder {
         return poiTagLayout;
     }
 
+    public void setPoiTagLayout(View poiTagLayout) {
+        this.poiTagLayout = poiTagLayout;
+    }
+
     public TextView getTextViewKey() {
         return textViewKey;
     }
 
+    public void setTextViewKey(TextView textViewKey) {
+        this.textViewKey = textViewKey;
+    }
+
     public TextView getTextViewValue() {
         return textViewValue;
+    }
+
+    public void setTextViewValue(TextView textViewValue) {
+        this.textViewValue = textViewValue;
+    }
+
+    public ImageButton getEditButton() {
+        return editButton;
+    }
+
+    public void setEditButton(ImageButton editButton) {
+        this.editButton = editButton;
     }
 }

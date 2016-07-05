@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.utils.edition;
+package io.mapsquare.osmcontributor.ui.adapters.item;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -24,42 +24,40 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CardModel implements Parcelable {
+public class TagItem implements Parcelable {
     private String key;
     private String value;
     private boolean mandatory;
     private List<String> autocompleteValues = new ArrayList<>();
-    private boolean open;
-    private CardType type;
+    private TagType type;
 
-    public enum CardType {
-        HEADER_OPTIONAL,
-        HEADER_REQUIRED,
-        TAG_FEW_VALUES,
-        TAG_MANY_VALUES,
-        TAG_IMPOSED
+    /**
+     * Use the best UI widget based on the tag name and possible values.
+     */
+    public enum TagType {
+        OPENING_HOURS,      // Use when tag value is opening_hours
+        DATE,               // Use when tag value is a date
+        MULTI_CHOICE,       // Use when a tag can contain multiple values
+        BOOLEAN_CHOICE,     // Use when tag value can be yes, no or undefined
+        LIST,               // Use when tag value must be choose in a list of element
+        TEXT_IMPOSED,       // Use when tag value can't be modified
+        TEXT                // Use by default
     }
 
-    public boolean isTag() {
-        return type == CardType.TAG_FEW_VALUES || type == CardType.TAG_MANY_VALUES || type == CardType.TAG_IMPOSED;
-    }
-
-    public CardModel(String key, String value, boolean mandatory, List<String> autocompleteValues, boolean open, CardType separator) {
+    public TagItem(String key, String value, boolean mandatory, List<String> autocompleteValues, TagType separator) {
         this.key = key;
         this.value = value;
         this.autocompleteValues = autocompleteValues;
         this.mandatory = mandatory;
-        this.open = open;
         this.type = separator;
     }
 
-    public CardModel(Parcel in) {
+    public TagItem(Parcel in) {
         this.key = in.readString();
         this.value = in.readString();
         this.mandatory = in.readByte() != 0;
-        this.open = in.readByte() != 0;
         try {
-            this.type = CardType.valueOf(in.readString());
+            this.type = TagType.valueOf(in.readString());
         } catch (IllegalArgumentException x) {
             this.type = null;
         }
@@ -80,14 +78,6 @@ public class CardModel implements Parcelable {
         this.autocompleteValues = autocompleteValues;
     }
 
-    public boolean isOpen() {
-        return open;
-    }
-
-    public void setOpen(boolean open) {
-        this.open = open;
-    }
-
     public String getKey() {
         return key;
     }
@@ -104,7 +94,7 @@ public class CardModel implements Parcelable {
         this.value = value;
     }
 
-    public CardType getType() {
+    public TagType getTagType() {
         return type;
     }
 
@@ -126,7 +116,6 @@ public class CardModel implements Parcelable {
         dest.writeString(key);
         dest.writeString(value);
         dest.writeByte((byte) (mandatory ? 1 : 0));
-        dest.writeByte((byte) (open ? 1 : 0));
         dest.writeString((type == null) ? "" : type.toString());
 
         if (autocompleteValues != null) {
@@ -140,15 +129,15 @@ public class CardModel implements Parcelable {
     }
 
 
-    public static final Parcelable.Creator<CardModel> CREATOR = new Parcelable.Creator<CardModel>() {
+    public static final Parcelable.Creator<TagItem> CREATOR = new Parcelable.Creator<TagItem>() {
         @Override
-        public CardModel createFromParcel(Parcel source) {
-            return new CardModel(source);
+        public TagItem createFromParcel(Parcel source) {
+            return new TagItem(source);
         }
 
         @Override
-        public CardModel[] newArray(int size) {
-            return new CardModel[size];
+        public TagItem[] newArray(int size) {
+            return new TagItem[size];
         }
     };
 

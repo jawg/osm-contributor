@@ -31,7 +31,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,7 +53,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -71,12 +69,14 @@ import io.mapsquare.osmcontributor.model.events.PleaseLoadPoiForEditionEvent;
 import io.mapsquare.osmcontributor.model.events.PoiForEditionLoadedEvent;
 import io.mapsquare.osmcontributor.ui.activities.EditPoiActivity;
 import io.mapsquare.osmcontributor.ui.adapters.TagsAdapter;
+import io.mapsquare.osmcontributor.ui.dialogs.AddTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.NewPoiTagAddedEvent;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyPoiChanges;
 import io.mapsquare.osmcontributor.ui.events.edition.PoiChangesApplyEvent;
+import io.mapsquare.osmcontributor.ui.utils.views.DividerItemDecoration;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
-import io.mapsquare.osmcontributor.utils.edition.CardModel;
-import io.mapsquare.osmcontributor.utils.parser.TagParserManager;
+import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
+import io.mapsquare.osmcontributor.ui.adapters.parser.TagItemParser;
 
 
 public class EditPoiFragment extends Fragment {
@@ -85,7 +85,7 @@ public class EditPoiFragment extends Fragment {
     private TagsAdapter tagsAdapter;
     public static final String CHANGES_KEY = "CHANGES_KEY";
 
-    private List<CardModel> cardModelList;
+    private List<TagItem> tagItemList;
     private boolean creation = false;
     private Poi poi;
     private boolean menuReady = false;
@@ -121,7 +121,7 @@ public class EditPoiFragment extends Fragment {
     ConfigManager configManager;
 
     @Inject
-    TagParserManager tagParserManager;
+    TagItemParser tagItemParser;
 
     @BindView(R.id.fab_add)
     FloatingActionButton fabAdd;
@@ -138,7 +138,7 @@ public class EditPoiFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            cardModelList = savedInstanceState.getParcelableArrayList(CHANGES_KEY);
+            tagItemList = savedInstanceState.getParcelableArrayList(CHANGES_KEY);
         }
     }
 
@@ -162,13 +162,13 @@ public class EditPoiFragment extends Fragment {
 
         recyclerView.setHasFixedSize(false);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         tracker = ((OsmTemplateApplication) this.getActivity().getApplication()).getTracker(OsmTemplateApplication.TrackerName.APP_TRACKER);
         if (creation) {
             eventBus.post(new PleaseLoadPoiForCreationEvent(lat, lng, poiType, level));
             getActivity().setTitle(getResources().getString(R.string.creation_title));
-
             tracker.setScreenName("CreationView");
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
 
@@ -355,7 +355,7 @@ public class EditPoiFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
-        savedState.putParcelableArrayList(CHANGES_KEY, new ArrayList<>(tagsAdapter.getCardModelList()));
+        savedState.putParcelableArrayList(CHANGES_KEY, new ArrayList<>(tagsAdapter.getTagItemList()));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -368,18 +368,21 @@ public class EditPoiFragment extends Fragment {
             actionBar.setSubtitle(poi.getType().getName());
         }
 
-        // Parse before creation of the adapter
-        Map map = tagParserManager.getWidgetForType(poi.getType(), getActivity());
 
-        Log.i(TAG, "onPoiForEditionLoadedEvent: " + map);
-
-        tagsAdapter = new TagsAdapter(poi, cardModelList, getActivity(), event.getValuesMap(), configManager, sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
+        tagsAdapter = new TagsAdapter(poi,
+                tagItemList,
+                getActivity(),
+                tagItemParser,
+                event.getValuesMap(),
+                configManager,
+                sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
         recyclerView.setAdapter(tagsAdapter);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewPoiTagAddedEvent(NewPoiTagAddedEvent event) {
-        recyclerView.smoothScrollToPosition(tagsAdapter.addLast(event.getTagKey(), event.getTagValue(), Collections.<String>emptyList(), false, true));
+        /**TODO remove null for tag type **/
+        recyclerView.smoothScrollToPosition(tagsAdapter.addLast(event.getTagKey(), event.getTagValue(), Collections.<String>emptyList(), null, true));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

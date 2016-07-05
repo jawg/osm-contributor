@@ -16,35 +16,35 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.ui.utils.views;
+package io.mapsquare.osmcontributor.ui.utils.views.customs;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.support.design.widget.TextInputEditText;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.widget.TextView;
 
 import io.mapsquare.osmcontributor.R;
 
-public class TypeFaceTextView extends TextView {
-    private static final String TAG = "TextView";
+public class TypeFaceTextInputEditText extends TextInputEditText {
+    private static final String TAG = "TextInputEditText";
 
-    public TypeFaceTextView(Context context) {
+    public TypeFaceTextInputEditText(Context context) {
         super(context);
     }
 
-    public TypeFaceTextView(Context context, AttributeSet attrs) {
+    public TypeFaceTextInputEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TypeFaceTextView, 0, 0);
-        setCustomFont(context, a.getString(R.styleable.TypeFaceTextView_typeface));
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TypeFaceView, 0, 0);
+        setCustomFont(context, a.getString(R.styleable.TypeFaceView_typeface));
         a.recycle();
     }
 
-    public TypeFaceTextView(Context context, AttributeSet attrs, int defStyle) {
+    public TypeFaceTextInputEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TypeFaceTextView, 0, 0);
-        setCustomFont(context, a.getString(R.styleable.TypeFaceTextView_typeface));
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TypeFaceView, 0, 0);
+        setCustomFont(context, a.getString(R.styleable.TypeFaceView_typeface));
         a.recycle();
     }
 
@@ -60,4 +60,5 @@ public class TypeFaceTextView extends TextView {
         setTypeface(tf);
         return true;
     }
+
 }

@@ -112,6 +112,7 @@ import io.mapsquare.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEven
 import io.mapsquare.osmcontributor.rest.events.error.TooManyRequestsEvent;
 import io.mapsquare.osmcontributor.ui.activities.EditPoiActivity;
 import io.mapsquare.osmcontributor.ui.adapters.PoiTypePickerAdapter;
+import io.mapsquare.osmcontributor.ui.dialogs.NoteCommentDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyNodeRefPositionChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyPoiPositionChange;
 import io.mapsquare.osmcontributor.ui.events.map.AddressFoundEvent;

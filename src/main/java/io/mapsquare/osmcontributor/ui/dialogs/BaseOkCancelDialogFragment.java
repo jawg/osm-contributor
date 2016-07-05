@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.ui.fragments;
+package io.mapsquare.osmcontributor.ui.dialogs;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
