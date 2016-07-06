@@ -69,14 +69,13 @@ import io.mapsquare.osmcontributor.model.events.PleaseLoadPoiForEditionEvent;
 import io.mapsquare.osmcontributor.model.events.PoiForEditionLoadedEvent;
 import io.mapsquare.osmcontributor.ui.activities.EditPoiActivity;
 import io.mapsquare.osmcontributor.ui.adapters.TagsAdapter;
+import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 import io.mapsquare.osmcontributor.ui.adapters.parser.TagParser;
 import io.mapsquare.osmcontributor.ui.dialogs.AddTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.NewPoiTagAddedEvent;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyPoiChanges;
 import io.mapsquare.osmcontributor.ui.events.edition.PoiChangesApplyEvent;
-import io.mapsquare.osmcontributor.ui.utils.views.DividerItemDecoration;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
-import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 
 
 public class EditPoiFragment extends Fragment {
@@ -157,7 +156,6 @@ public class EditPoiFragment extends Fragment {
 
         recyclerView.setHasFixedSize(false);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         tracker = ((OsmTemplateApplication) this.getActivity().getApplication()).getTracker(OsmTemplateApplication.TrackerName.APP_TRACKER);

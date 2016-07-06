@@ -118,6 +118,7 @@ public class EditDaysTagDialogFragment extends DialogFragment {
         fromTextView.setTextColor(Color.WHITE);
         // TODO: 24h or AM/PM depending on locale
         fromTimePicker.setIs24HourView(true);
+        fromTimePicker.bringToFront();
         toTimePicker.setIs24HourView(true);
         toTimePicker.setAlpha(0);
 
@@ -218,6 +219,7 @@ public class EditDaysTagDialogFragment extends DialogFragment {
         createToggleAnimator(from).start();
         fromTextView.setTextColor(from ? Color.WHITE : Color.BLACK);
         toTextView.setTextColor(from ? Color.BLACK : Color.WHITE);
+        (from ? fromTimePicker : toTimePicker).bringToFront();
     }
 
     @Override
@@ -248,28 +250,9 @@ public class EditDaysTagDialogFragment extends DialogFragment {
         final TimePicker outTimePicker = from ? toTimePicker : fromTimePicker;
         final TimePicker inTimePicker = from ? fromTimePicker : toTimePicker;
 
-
         //Time picker animator
         ObjectAnimator fadeOut = ObjectAnimator.ofFloat(outTimePicker, View.ALPHA, 1, 0);
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(inTimePicker, View.ALPHA, 0, 1);
-
-        fadeIn.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                super.onAnimationStart(animation);
-//                inTimePicker.setVisibility(View.VISIBLE);
-            }
-        });
-
-        fadeOut.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                if (from) {
-//                    outTimePicker.setVisibility(View.GONE);
-                }
-            }
-        });
 
         //Final animator set
         Interpolator interpolator = new DecelerateInterpolator();

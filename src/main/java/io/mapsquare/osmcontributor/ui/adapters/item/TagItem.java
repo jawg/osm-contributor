@@ -36,7 +36,6 @@ public class TagItem implements Parcelable {
      */
     public enum TagType {
         OPENING_HOURS,      // Use when tag value is opening_hours
-        DATE,               // Use when tag value is a date
         MULTI_CHOICE,       // Use when a tag can contain multiple values
         BOOLEAN_CHOICE,     // Use when tag value can be yes, no or undefined
         LIST,               // Use when tag value must be choose in a list of element

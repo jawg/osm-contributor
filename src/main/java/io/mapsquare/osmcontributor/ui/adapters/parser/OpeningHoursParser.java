@@ -31,6 +31,7 @@ public class OpeningHoursParser {
         if (isNonStop(openingHours)) {
             return NON_STOP;
         } else {
+
         }
         return null;
     }
