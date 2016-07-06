@@ -54,7 +54,8 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/poi_key">
+                android:layout_below="@id/poi_key"
+                android:theme="@style/TextInputLayout">
                 <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
                     android:id="@+id/poi_value"
                     android:layout_width="match_parent"

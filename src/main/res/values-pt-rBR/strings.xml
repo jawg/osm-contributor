@@ -162,6 +162,13 @@
   <string name="poi_tag_mandatory">Obrigatório</string>
   <string name="poi_tag_days">Dias</string>
   <string name="poi_tag_hours">Horários</string>
+  <string name="day_monday_letter">S</string>
+  <string name="day_tuesday_letter">T</string>
+  <string name="day_wednesday_letter">Q</string>
+  <string name="day_thursday_letter">Q</string>
+  <string name="day_friday_letter">S</string>
+  <string name="day_saturday_letter">S</string>
+  <string name="day_sunday_letter">D</string>
   <!--Snackbar-->
   <string name="item_removed">\"%1$s\" foi removido</string>
   <string name="undo">Desfazer</string>

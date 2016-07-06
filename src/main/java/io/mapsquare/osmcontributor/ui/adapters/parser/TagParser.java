@@ -47,13 +47,13 @@ import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
  * @version 0.0.1
  */
 @Singleton
-public class TagItemParser {
-    private static final String TAG = "TagItemParser";
+public class TagParser {
+    private static final String TAG = "TagParser";
 
     private JSONArray h2geoJson;
 
     @Inject
-    public TagItemParser(Application application) {
+    public TagParser(Application application) {
         instantiateH2geoJson(application.getApplicationContext());
     }
 
@@ -99,43 +99,6 @@ public class TagItemParser {
         }
         return tagTypes;
     }
-
-    /**
-     * The main idea of this method is to get the tag item type of the tag key
-     *
-     * This is a first proposition.
-     *
-     * @param poiType poi type to process
-     * @return the tag item type enum
-     */
-    public TagItem.TagType getTagTypeForKey(PoiType poiType) {
-        // Loop over tag of the poi type
-        for (PoiTypeTag tag : poiType.getTags()) {
-            // Get tag info about the current poi type from h2geo file
-            JSONArray tagsInfoFromH2geo = getTagsInfoFromH2Geo(tag.getKey() + "=" + tag.getValue());
-
-            try {
-                if (tagsInfoFromH2geo != null) {
-                    for (int i = 0; i < tagsInfoFromH2geo.length(); i++) {
-                        if (tagsInfoFromH2geo.getJSONObject(i).getString("key").equals("opening_hours")) {
-                            return TagItem.TagType.OPENING_HOURS;
-                        } else if (tagsInfoFromH2geo.getJSONObject(i).has("possibleValues")) {
-                            // Get possible values. If exists, possible values can be yes / no, a name,
-                            // a number, 24 / 7, a word.
-                            return TagItem.TagType.MULTI_CHOICE;
-                        } else {
-                            return TagItem.TagType.TEXT;
-                        }
-                    }
-                }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return null;
-    }
-
-
 
 
     /**

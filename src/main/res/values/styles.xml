@@ -72,10 +72,10 @@
 
     <style name="TextInputLayout" parent="TextAppearance.AppCompat">
         <!-- Hint color and label color in FALSE state -->
-        <item name="android:textColorHint">@color/hint_color</item>
+        <item name="android:textColorHint">@color/disable_text</item>
         <item name="android:textColor">@color/hint_color</item>
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
-        <item name="colorAccent">@color/hint_color</item>
+        <item name="colorAccent">@color/disable_text</item>
         <item name="colorControlNormal">#dfdfdf</item>
         <item name="colorControlActivated">@android:color/holo_blue_dark</item>
     </style>

@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +42,7 @@ import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
 import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
-import io.mapsquare.osmcontributor.ui.adapters.parser.TagItemParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.TagParser;
 import io.mapsquare.osmcontributor.ui.dialogs.EditDaysTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
@@ -63,14 +64,14 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ConfigManager configManager;
     private boolean change = false;
     private boolean expertMode = false;
-    private TagItemParser tagItemParser;
+    private TagParser tagParser;
 
-    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity context, TagItemParser tagItemParser, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
+    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity context, TagParser tagParser, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
         this.context = context;
         this.configManager = configManager;
         this.expertMode = expertMode;
-        this.tagItemParser = tagItemParser;
+        this.tagParser = tagParser;
 
         if (tagItemList == null) {
             loadTags(poi.getTagsMap(), tagValueSuggestionsMap);
@@ -87,7 +88,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         int nbMandatory = 0;
         int nbImposed = 0;
 
-        Map<String, TagItem.TagType> tagTypeMap = tagItemParser.getTagTypeMap(poi.getType());
+        Map<String, TagItem.TagType> tagTypeMap = tagParser.getTagTypeMap(poi.getType());
 
         for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
             // Tags not in the PoiType should not be displayed if we are not in expert mode
@@ -166,7 +167,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         final TagItem tagItem = tagItemList.get(position);
 
-        holder.getTextViewKey().setText(tagItemParser.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
         holder.getTextViewValue().setText(tagItem.getValue());
 
         if (configManager.hasPoiModification()) {
@@ -174,7 +175,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, PickValueActivity.class);
-                    intent.putExtra(PickValueActivity.KEY, tagItemParser.parseTagName(tagItem.getKey()));
+                    intent.putExtra(PickValueActivity.KEY, tagParser.parseTagName(tagItem.getKey()));
                     intent.putExtra(PickValueActivity.VALUE, tagItem.getValue());
                     intent.putExtra(PickValueActivity.AUTOCOMPLETE, tagItem.getAutocompleteValues().toArray(new String[tagItem.getAutocompleteValues().size()]));
                     ((Activity) context).startActivityForResult(intent, PickValueActivity.PICK_VALUE_ACTIVITY_CODE);
@@ -196,7 +197,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (configManager.hasPoiModification()) {
             holder.getGridViewLayoutWrapper().setVisibility(View.VISIBLE);
 
-            holder.getTextViewKey().setText(tagItemParser.parseTagName(tagItem.getKey()));
+            holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
 
             ((TextInputLayout) (holder.getTextViewValue().getParent())).setHint(tagItem.getKey());
             holder.getTextViewValue().setText(tagItem.getValue());
@@ -207,20 +208,30 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void onBindViewHolder(TagItemTextImposedViewHolder holder, int position) {
         final TagItem tagItem = tagItemList.get(position);
-        holder.getTextViewKey().setText(tagItemParser.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
         holder.getTextViewValue().setText(tagItem.getValue());
     }
 
     public void onBindViewHolder(TagItemOpeningHoursViewHolder holder, int position) {
         final TagItem tagItem = tagItemList.get(position);
-        holder.getTextViewKey().setText(tagItemParser.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
 
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogFragment fragment = new EditDaysTagDialogFragment();
-                fragment.show(context.getFragmentManager(), DialogFragment.class.getSimpleName());
+                EditDaysTagDialogFragment fragment = new EditDaysTagDialogFragment();
+                fragment.setOnEditDaysTagListener(new EditDaysTagDialogFragment.OnEditDaysTagListener() {
+                    @Override
+                    public void onOpeningDaysChanged(boolean[] days) {
 
+                    }
+
+                    @Override
+                    public void onOpeningHoursChanged(LocalTime from, LocalTime to) {
+
+                    }
+                });
+                fragment.show(context.getFragmentManager(), DialogFragment.class.getSimpleName());
             }
         };
 
@@ -298,7 +309,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onPleaseApplyTagChangeView(PleaseApplyTagChangeView event) {
         eventBus.removeStickyEvent(event);
         for (TagItem tagItem : tagItemList) {
-            if (tagItemParser.parseTagName(tagItem.getKey()).equals(event.getKey())) {
+            if (tagParser.parseTagName(tagItem.getKey()).equals(event.getKey())) {
                 tagItem.setValue(event.getValue());
                 change = true;
             }

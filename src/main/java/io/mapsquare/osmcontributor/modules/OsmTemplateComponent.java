@@ -63,7 +63,7 @@ import io.mapsquare.osmcontributor.ui.presenters.MapFragmentPresenter;
 import io.mapsquare.osmcontributor.ui.presenters.TypeListActivityPresenter;
 import io.mapsquare.osmcontributor.utils.core.ArpiInitializer;
 import io.mapsquare.osmcontributor.utils.core.CoreModule;
-import io.mapsquare.osmcontributor.ui.adapters.parser.TagItemParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.TagParser;
 import io.mapsquare.osmcontributor.utils.ways.Geocoder;
 
 @Singleton
@@ -162,5 +162,5 @@ public interface OsmTemplateComponent {
     // Poi type
     TypeManager getTypeManager();
 
-    TagItemParser getTagParserManager();
+    TagParser getTagParserManager();
 }

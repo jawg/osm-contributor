@@ -34,6 +34,8 @@ public class TextViewCheck extends TypeFaceTextView {
     private static final int COLOR_CHECKED = Color.WHITE;
     private static final int COLOR_UNCHECKED = Color.parseColor("#424242");
 
+    private OnCheckListener listener;
+
     private boolean checked = false;
 
     public TextViewCheck(Context context) {
@@ -65,6 +67,9 @@ public class TextViewCheck extends TypeFaceTextView {
             public void onClick(View view) {
                 setSelected((checked = !checked));
                 setTextColor(checked ? COLOR_CHECKED : COLOR_UNCHECKED);
+                if (listener != null) {
+                    listener.onChecked(checked);
+                }
             }
         });
     }
@@ -72,5 +77,17 @@ public class TextViewCheck extends TypeFaceTextView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec);
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setOnCheckListener(OnCheckListener listener) {
+        this.listener = listener;
+    }
+
+    public interface OnCheckListener {
+        void onChecked(boolean checked);
     }
 }
