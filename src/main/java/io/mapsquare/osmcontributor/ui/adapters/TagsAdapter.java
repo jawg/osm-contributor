@@ -23,9 +23,12 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,6 +36,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +47,7 @@ import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
 import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 import io.mapsquare.osmcontributor.ui.adapters.parser.TagParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.ValueParser;
 import io.mapsquare.osmcontributor.ui.dialogs.EditDaysTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
@@ -50,13 +55,13 @@ import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemMultiChoiceView
 import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemOpeningHoursViewHolder;
 import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemTextImposedViewHolder;
 import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemTextViewHolder;
+import io.mapsquare.osmcontributor.ui.utils.views.holders.TagRadioChoiceHolder;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 import io.mapsquare.osmcontributor.utils.edition.PoiChanges;
 
 public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "TagsAdapter";
-    public static final int NB_AUTOCOMPLETE_LIMIT = 6;
     private List<TagItem> tagItemList = new ArrayList<>();
     private Poi poi;
     private Activity context;
@@ -79,7 +84,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.tagItemList = tagItemList;
             notifyDataSetChanged();
         }
-
         this.eventBus = EventBus.getDefault();
         eventBus.register(this);
     }
@@ -88,31 +92,37 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         int nbMandatory = 0;
         int nbImposed = 0;
 
-        Map<String, TagItem.TagType> tagTypeMap = tagParser.getTagTypeMap(poi.getType());
-
         for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
             // Tags not in the PoiType should not be displayed if we are not in expert mode
             if (poiTypeTag.getValue() == null) {
                 String key = poiTypeTag.getKey();
                 // Display tags as mandatory if they are mandatory and we are not in expert mode
                 if (poiTypeTag.getMandatory() && !expertMode) {
-                    addTag(key, poiTags.remove(key), true, tagValueSuggestionsMap.get(key), nbMandatory + nbImposed, tagTypeMap.get(key), true);
+                    addTag(key, poiTags.remove(key), true, getPossibleValuesAsList(poiTypeTag.getPossibleValues()), tagValueSuggestionsMap.get(key), nbMandatory + nbImposed, true);
                     nbMandatory++;
                 } else {
-                    addTag(key, poiTags.remove(key), false, tagValueSuggestionsMap.get(key), this.getItemCount(), tagTypeMap.get(key), true);
+                    addTag(key, poiTags.remove(key), false, getPossibleValuesAsList(poiTypeTag.getPossibleValues()), tagValueSuggestionsMap.get(key), this.getItemCount(), true);
                 }
             } else if (expertMode) {
                 // Display the tags of the poi that are not in the PoiType
                 String key = poiTypeTag.getKey();
-                addTag(key, poiTags.remove(key), true, tagValueSuggestionsMap.get(key), nbImposed, tagTypeMap.get(key), false);
+                addTag(key, poiTags.remove(key), true, getPossibleValuesAsList(poiTypeTag.getPossibleValues()), tagValueSuggestionsMap.get(key), nbImposed, false);
                 nbImposed++;
             }
         }
         if (expertMode) {
             for (String key : poiTags.keySet()) {
-                addTag(key, poiTags.get(key), false, Collections.singletonList(poiTags.get(key)), this.getItemCount(), tagTypeMap.get(key), true);
+                addTag(key, poiTags.get(key), false, tagValueSuggestionsMap.get(key), Collections.singletonList(poiTags.get(key)), this.getItemCount(), true);
             }
         }
+    }
+
+    private List<String> getPossibleValuesAsList(String possibleValuesAsString) {
+        if (possibleValuesAsString == null || possibleValuesAsString.isEmpty()) {
+            return null;
+        }
+
+        return Arrays.asList(possibleValuesAsString.split(String.valueOf((char) 29)));
     }
 
     /**
@@ -145,20 +155,21 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 View poiTagImposedLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_text_imposed, parent, false);
                 return new TagItemTextImposedViewHolder(poiTagImposedLayout);
 
-            case MULTI_CHOICE:
-                View poiTagFewValuesLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_multi_choice, parent, false);
-                return new TagItemMultiChoiceViewHolder(poiTagFewValuesLayout);
-
-            case TEXT:
-                View poiTagManyValuesLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_text, parent, false);
-                return new TagItemTextViewHolder(poiTagManyValuesLayout);
-
             case OPENING_HOURS:
                 View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_hours, parent, false);
                 return new TagItemOpeningHoursViewHolder(poiTagOpeningHoursLayout);
 
+            case SINGLE_CHOICE_SHORT:
+                View booleanChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_radio, parent, false);
+                return new TagRadioChoiceHolder(booleanChoiceLayout);
+
+            case AUTOCOMPLETE:
+                View multiChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_multi_choice, parent, false);
+                return new TagItemMultiChoiceViewHolder(multiChoiceLayout);
+
             default:
-                return null;
+                View poiTagManyValuesLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_text, parent, false);
+                return new TagItemTextViewHolder(poiTagManyValuesLayout);
         }
     }
 
@@ -178,21 +189,22 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     intent.putExtra(PickValueActivity.KEY, tagParser.parseTagName(tagItem.getKey()));
                     intent.putExtra(PickValueActivity.VALUE, tagItem.getValue());
                     intent.putExtra(PickValueActivity.AUTOCOMPLETE, tagItem.getAutocompleteValues().toArray(new String[tagItem.getAutocompleteValues().size()]));
-                    ((Activity) context).startActivityForResult(intent, PickValueActivity.PICK_VALUE_ACTIVITY_CODE);
+                    context.startActivityForResult(intent, PickValueActivity.PICK_VALUE_ACTIVITY_CODE);
 
                 }
             };
 
             holder.getPoiTagLayout().setOnClickListener(editTagClickListener);
-            holder.getEditButton().setOnClickListener(editTagClickListener);
-        } else {
-            holder.getEditButton().setVisibility(View.GONE);
+            holder.getTextViewValue().setOnClickListener(editTagClickListener);
         }
     }
 
-    public void onBindViewHolder(final TagItemTextViewHolder holder,
-                                 final int position) {
+    public void onBindViewHolder(final TagItemTextViewHolder holder, final int position) {
         final TagItem tagItem = tagItemList.get(position);
+
+        if (tagItem.getTagType() == TagItem.TagType.PHONE || tagItem.getTagType() == TagItem.TagType.NUMBER) {
+            holder.getTextViewValue().setInputType(InputType.TYPE_CLASS_NUMBER);
+        }
 
         if (configManager.hasPoiModification()) {
             holder.getGridViewLayoutWrapper().setVisibility(View.VISIBLE);
@@ -239,27 +251,81 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.getTextViewHoursValue().setOnClickListener(onClickListener);
     }
 
+    public void onBindViewHolder(TagRadioChoiceHolder holder, int position) {
+        final TagItem tagItem = tagItemList.get(position);
+        holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
+
+        List<String> values = removeDuplicate(tagItem.getPossibleValues(), tagItem.getAutocompleteValues());
+        Log.i(TAG, "onBindViewHolder: " + tagItem.getKey() + ";" + tagItem.getValue() + " {" + values + "}");
+
+        boolean isFourElements = values.size() == 3;
+        RadioButton[] radioButtons = holder.getRadioButtons();
+        int pos = 0;
+        for (int i = 0; i < radioButtons.length; i++) {
+            if (!values.isEmpty()) {
+                if (isFourElements && i == 1) {
+                    radioButtons[i].setVisibility(View.INVISIBLE);
+                    i++;
+                    isFourElements = false;
+                }
+                if (pos < values.size()) {
+                    radioButtons[i].setVisibility(View.VISIBLE);
+                    radioButtons[i].setText(values.get(pos));
+                    if (tagItem.getValue() != null && tagItem.getValue().equals(values.get(pos))) {
+                        holder.getUndefinedRadioButton().setChecked(false);
+                        radioButtons[i].setChecked(true);
+                    }
+                    pos++;
+                } else {
+                    radioButtons[i].setVisibility(View.INVISIBLE);
+                }
+            }
+        }
+    }
+
+    private List<String> removeDuplicate(List<String> possibleValues, List<String> autoCompleteValues) {
+        List<String> values = Collections.emptyList();
+        if (possibleValues != null) {
+            values = new ArrayList<>(possibleValues);
+        }
+
+        if (autoCompleteValues != null) {
+            if (values.isEmpty()) {
+                values = new ArrayList<>(autoCompleteValues);
+            }
+
+            for (String possibleValue : autoCompleteValues) {
+                if (!values.contains(possibleValue) && (!possibleValue.isEmpty() || !possibleValue.trim().isEmpty())) {
+                    values.add(possibleValue);
+                }
+            }
+        }
+        return values;
+    }
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder,
                                  int position) {
         switch (tagItemList.get(position).getTagType()) {
-            case MULTI_CHOICE:
-                onBindViewHolder((TagItemMultiChoiceViewHolder) holder, position);
-                return;
-
-            case TEXT:
-                onBindViewHolder((TagItemTextViewHolder) holder, position);
-                return;
-
             case TEXT_IMPOSED:
                 onBindViewHolder((TagItemTextImposedViewHolder) holder, position);
-                return;
+                break;
 
             case OPENING_HOURS:
                 onBindViewHolder((TagItemOpeningHoursViewHolder) holder, position);
-                return;
+                break;
+
+            case SINGLE_CHOICE_SHORT:
+                onBindViewHolder((TagRadioChoiceHolder) holder, position);
+                break;
+
+            case AUTOCOMPLETE:
+                onBindViewHolder((TagItemMultiChoiceViewHolder) holder, position);
+                break;
 
             default:
+                onBindViewHolder((TagItemTextViewHolder) holder, position);
+                break;
         }
 
     }
@@ -275,11 +341,14 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return tagItemList.size();
     }
 
-    public void addTag(String key, String value, boolean mandatory, List<String> autocompleteValues, int position, TagItem.TagType tagType, boolean updatable) {
+    public void addTag(String key, String value, boolean mandatory, List<String> possiblesValues, List<String> autocompleteValues, int position, boolean updatable) {
+        TagItem.TagType tagType = TagParser.getTagType(key, possiblesValues, autocompleteValues);
+        value = ValueParser.getFormatedValue(tagType, value, removeDuplicate(possiblesValues, autocompleteValues));
+
         if (!updatable) {
-            tagItemList.add(position, new TagItem(key, value, mandatory, autocompleteValues, TagItem.TagType.TEXT_IMPOSED));
+            tagItemList.add(position, new TagItem(key, value, mandatory, possiblesValues, autocompleteValues, TagItem.TagType.TEXT_IMPOSED));
         } else {
-            tagItemList.add(position, new TagItem(key, value, mandatory, autocompleteValues, tagType == null ? TagItem.TagType.TEXT : tagType));
+            tagItemList.add(position, new TagItem(key, value, mandatory, possiblesValues, autocompleteValues, tagType));
         }
         notifyItemInserted(position);
     }
@@ -289,8 +358,8 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      *
      * @return The position of the inserted element
      */
-    public int addLast(String key, String value, List<String> autocompleteValues, TagItem.TagType tagType, boolean updatable) {
-        addTag(key, value, false, autocompleteValues, tagItemList.size(), tagType == null ? TagItem.TagType.TEXT : tagType, updatable);
+    public int addLast(String key, String value, List<String> possibleValues, List<String> autocompleteValues, TagItem.TagType tagType, boolean updatable) {
+        addTag(key, value, false, possibleValues, autocompleteValues, tagItemList.size(), updatable);
         return tagItemList.size() - 1;
     }
 

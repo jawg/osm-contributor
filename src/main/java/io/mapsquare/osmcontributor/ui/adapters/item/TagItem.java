@@ -28,6 +28,7 @@ public class TagItem implements Parcelable {
     private String key;
     private String value;
     private boolean mandatory;
+    private List<String> possibleValues = new ArrayList<>();
     private List<String> autocompleteValues = new ArrayList<>();
     private TagType type;
 
@@ -35,17 +36,19 @@ public class TagItem implements Parcelable {
      * Use the best UI widget based on the tag name and possible values.
      */
     public enum TagType {
-        OPENING_HOURS,      // Use when tag value is opening_hours
-        MULTI_CHOICE,       // Use when a tag can contain multiple values
-        BOOLEAN_CHOICE,     // Use when tag value can be yes, no or undefined
-        LIST,               // Use when tag value must be choose in a list of element
-        TEXT_IMPOSED,       // Use when tag value can't be modified
-        TEXT                // Use by default
+        OPENING_HOURS,          // Use when tag value is opening_hours
+        SINGLE_CHOICE_SHORT,    // Use when tag value can be choose in a short list (< 7)
+        AUTOCOMPLETE,           // Use when tag value can be choose in a long list (>20)
+        TEXT_IMPOSED,           // Use when tag value can't be modified
+        PHONE,
+        NUMBER,
+        TEXT;                   // Use by default
     }
 
-    public TagItem(String key, String value, boolean mandatory, List<String> autocompleteValues, TagType separator) {
+    public TagItem(String key, String value, boolean mandatory, List<String> possibleValues, List<String> autocompleteValues, TagType separator) {
         this.key = key;
         this.value = value;
+        this.possibleValues = possibleValues;
         this.autocompleteValues = autocompleteValues;
         this.mandatory = mandatory;
         this.type = separator;
@@ -103,6 +106,10 @@ public class TagItem implements Parcelable {
 
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
+    }
+
+    public List<String> getPossibleValues() {
+        return possibleValues;
     }
 
     @Override

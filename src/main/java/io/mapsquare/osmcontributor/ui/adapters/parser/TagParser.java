@@ -19,22 +19,12 @@
 package io.mapsquare.osmcontributor.ui.adapters.parser;
 
 import android.app.Application;
-import android.content.Context;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.mapsquare.osmcontributor.model.entities.PoiType;
-import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 
 /**
@@ -50,112 +40,75 @@ import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 public class TagParser {
     private static final String TAG = "TagParser";
 
-    private JSONArray h2geoJson;
-
     @Inject
-    public TagParser(Application application) {
-        instantiateH2geoJson(application.getApplicationContext());
-    }
-
-    /**
-     * The main idea of this method is to get the tag of poi type and return, for each tag,
-     * the widget to use.
-     *
-     * This is a first proposition.
-     *
-     * @param poiType poi type to process
-     * @return map of tag name with the widget corresponding
-     */
-    public Map<String, TagItem.TagType> getTagTypeMap(PoiType poiType) {
-        // Map to return
-        Map<String, TagItem.TagType> tagTypes = new HashMap<>();
-
-        // Loop over tag of the poi type
-        for (PoiTypeTag tag : poiType.getTags()) {
-            // Print all tag key / value just for info
-            //Log.i(TAG, tag.getKey() + "=" + tag.getValue());
-
-            // Get tag info about the current poi type from h2geo file
-            JSONArray tagsInfoFromH2geo = getTagsInfoFromH2Geo(tag.getKey() + "=" + tag.getValue());
-
-            try {
-                if (tagsInfoFromH2geo != null) {
-                    for (int i = 0; i < tagsInfoFromH2geo.length(); i++) {
-                        String key = tagsInfoFromH2geo.getJSONObject(i).getString("key");
-                        if (key.equals("opening_hours")) {
-                            tagTypes.put(key, TagItem.TagType.OPENING_HOURS);
-                        } else if (tagsInfoFromH2geo.getJSONObject(i).has("possibleValues")) {
-                            // Get possible values. If exists, possible values can be yes / no, a name,
-                            // a number, 24 / 7, a word.
-                            tagTypes.put(key, TagItem.TagType.MULTI_CHOICE);
-                        } else {
-                            tagTypes.put(key, TagItem.TagType.TEXT);
-                        }
-                    }
-                }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return tagTypes;
-    }
-
-
-    /**
-     * Get the info tag from h2geo.
-     *
-     * @param name Name of poi type (ex : amenity=pharmacy or shop=e-cig)
-     * @return a Json Array with all tags for the poi type
-     */
-    private JSONArray getTagsInfoFromH2Geo(String name) {
-        try {
-            for (int i = 0; i < h2geoJson.length(); i++) {
-                if (h2geoJson.getJSONObject(i).getString("name").equals(name)) {
-                    return h2geoJson.getJSONObject(i).getJSONArray("tags");
-                }
-            }
-        } catch (JSONException exception) {
-            throw new RuntimeException(exception);
-        }
-        return null;
-    }
-
-
-    /**
-     * Parse h2geo.json in a JSONArray object.
-     *
-     * @param context context to access assets
-     */
-    private void instantiateH2geoJson(Context context) {
-        if (h2geoJson == null) {
-            try {
-                h2geoJson = new JSONObject(loadJsonFromAsset(context)).getJSONArray("data");
-            } catch (JSONException exception) {
-                throw new RuntimeException(exception);
-            }
-        }
-    }
-
-    private String loadJsonFromAsset(Context context) {
-        String json;
-        try {
-            InputStream is = context.getAssets().open("h2geo.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-        return json;
-    }
+    public TagParser(Application application) { }
 
     public String parseTagName(String tagName) {
         return Character.toUpperCase(tagName.charAt(0)) + tagName.substring(1).replace("_", " ");
     }
 
-    public void parseOpeningHoursToValue() {
+    public static TagItem.TagType getTagType(String key, List<String> possibleValues, List<String> autoCompleteValues) {
+        if (key.equals("opening_hours")) {
+            return TagItem.TagType.OPENING_HOURS;
+        } else if (key.equals("name")) {
+            return TagItem.TagType.AUTOCOMPLETE;
+        } else if (key.contains("phone")) {
+            return TagItem.TagType.PHONE;
+        } else if (key.contains("height")) {
+            return TagItem.TagType.NUMBER;
+        }
 
+        TagItem.TagType tagType = TagItem.TagType.TEXT;
+        // Check possible values from h2geo.json to identify tag type. First step.
+        int sizePossibleValues = 0;
+        if (possibleValues != null && !possibleValues.isEmpty()) {
+            sizePossibleValues = possibleValues.size();
+            if (possibleValues.contains("yes") || possibleValues.contains("no")) {
+                if (sizePossibleValues < 7) {
+                    tagType = TagItem.TagType.SINGLE_CHOICE_SHORT;
+                } else if (sizePossibleValues >= 7) {
+                    tagType = TagItem.TagType.AUTOCOMPLETE;
+                }
+            } else if (autoCompleteValues.size() > 1) {
+                tagType = TagItem.TagType.AUTOCOMPLETE;
+            }
+        }
+
+        int autoCompleteValuesSize = countAutoCompleteValues(possibleValues, autoCompleteValues);
+
+        // Check auto complete values to provide more choice to the user. Next step.
+        int globalSize = sizePossibleValues;
+        if (autoCompleteValues != null && !autoCompleteValues.isEmpty()) {
+            globalSize += autoCompleteValuesSize;
+            if (autoCompleteValues.contains("yes") || autoCompleteValues.contains("no")) {
+                if (globalSize < 7) {
+                    tagType = TagItem.TagType.SINGLE_CHOICE_SHORT;
+                } else if (globalSize >= 7 && globalSize < 20) {
+                    tagType = TagItem.TagType.AUTOCOMPLETE;
+                }
+            } else if (autoCompleteValues.size() > 1) {
+                tagType = TagItem.TagType.AUTOCOMPLETE;
+            }
+        }
+        return tagType;
+    }
+
+    /**
+     * Count values that are not in possible values.
+     * @param possibleValues List of possible values
+     * @param autoCompleteValues List of propositions
+     * @return Size of autocomplete values that are not in possible values list
+     */
+    private static int countAutoCompleteValues(List<String> possibleValues, List<String> autoCompleteValues) {
+        int autoCompleteValuesSize = 0;
+        if (possibleValues != null && autoCompleteValues != null) {
+            autoCompleteValuesSize = autoCompleteValues.size();
+            for (String possibleValue : possibleValues) {
+                if (autoCompleteValues.contains(possibleValue)) {
+                    autoCompleteValuesSize -= 1;
+                }
+            }
+        }
+        return autoCompleteValuesSize;
     }
 }

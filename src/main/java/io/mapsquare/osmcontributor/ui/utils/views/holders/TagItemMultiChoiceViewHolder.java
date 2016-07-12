@@ -20,11 +20,10 @@ package io.mapsquare.osmcontributor.ui.utils.views.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.R;
 
 public class TagItemMultiChoiceViewHolder extends RecyclerView.ViewHolder {
@@ -35,9 +34,6 @@ public class TagItemMultiChoiceViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.poi_value)
     TextView textViewValue;
-
-    @BindView(R.id.edit_btn)
-    ImageButton editButton;
 
     public TagItemMultiChoiceViewHolder(View v) {
         super(v);
@@ -67,13 +63,5 @@ public class TagItemMultiChoiceViewHolder extends RecyclerView.ViewHolder {
 
     public void setTextViewValue(TextView textViewValue) {
         this.textViewValue = textViewValue;
-    }
-
-    public ImageButton getEditButton() {
-        return editButton;
-    }
-
-    public void setEditButton(ImageButton editButton) {
-        this.editButton = editButton;
     }
 }
