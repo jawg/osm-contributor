@@ -41,7 +41,7 @@
             android:layout_marginTop="16dp"
             android:padding="8dp">
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
                 android:id="@+id/dialog_edit_day_monday_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                 android:textSize="20sp"
                 app:typeface="Roboto-Light.ttf" />
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
                 android:id="@+id/dialog_edit_day_tuesday_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
                 android:textSize="20sp"
                 app:typeface="Roboto-Light.ttf" />
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
                 android:id="@+id/dialog_edit_day_wednesday_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                 android:textSize="20sp"
                 app:typeface="Roboto-Light.ttf" />
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
                 android:id="@+id/dialog_edit_day_thursday_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
                 android:textSize="20sp"
                 app:typeface="Roboto-Light.ttf" />
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
                 android:id="@+id/dialog_edit_day_friday_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -106,7 +106,7 @@
                 android:textSize="20sp"
                 app:typeface="Roboto-Light.ttf" />
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
                 android:id="@+id/dialog_edit_day_saturday_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
                 android:textSize="20sp"
                 app:typeface="Roboto-Light.ttf" />
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
                 android:id="@+id/dialog_edit_day_sunday_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

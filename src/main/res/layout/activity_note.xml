@@ -25,7 +25,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ui.activities.NoteActivity">
+    tools:activity=".ui.activities.NoteActivity">
 
     <include layout="@layout/toolbar_layout"/>
 

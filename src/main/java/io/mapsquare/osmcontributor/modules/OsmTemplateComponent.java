@@ -43,6 +43,7 @@ import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.activities.SplashScreenActivity;
 import io.mapsquare.osmcontributor.ui.activities.TypeListActivity;
 import io.mapsquare.osmcontributor.ui.activities.UploadActivity;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParser;
 import io.mapsquare.osmcontributor.ui.dialogs.AddValueDialogFragment;
 import io.mapsquare.osmcontributor.ui.fragments.EditPoiFragment;
 import io.mapsquare.osmcontributor.ui.dialogs.EditPoiTagDialogFragment;
@@ -148,11 +149,9 @@ public interface OsmTemplateComponent {
     NoteManager getNoteManager();
 
     // Login
-
     LoginManager getLoginManager();
 
     // Sync
-
     Gson getGson();
 
     EditPoiManager getEditPoiManager();
@@ -162,5 +161,7 @@ public interface OsmTemplateComponent {
     // Poi type
     TypeManager getTypeManager();
 
-    TagParser getTagParserManager();
+    TagParser getTagParser();
+
+    OpeningTimeParser getOpeningTimeParser();
 }

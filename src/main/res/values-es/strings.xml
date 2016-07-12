@@ -174,7 +174,9 @@
     <string name="poi_tag_value_hint">valor</string>
     <string name="poi_tag_mandatory">Obligatorio</string>
     <string name="poi_tag_days">Días</string>
+    <string name="poi_tag_months">Mes</string>
     <string name="poi_tag_hours">Horarios</string>
+    <string name="hours">Horas</string>
     <string name="day_monday_letter">L</string>
     <string name="day_tuesday_letter">M</string>
     <string name="day_wednesday_letter">M</string>

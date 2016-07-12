@@ -19,8 +19,9 @@
 package io.mapsquare.osmcontributor.ui.adapters;
 
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.content.Intent;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
@@ -33,7 +34,6 @@ import android.widget.RadioButton;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,17 +44,20 @@ import java.util.Map;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
+import io.mapsquare.osmcontributor.model.utils.OpeningMonth;
+import io.mapsquare.osmcontributor.model.utils.OpeningTime;
 import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 import io.mapsquare.osmcontributor.ui.adapters.parser.ShortListParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParser;
 import io.mapsquare.osmcontributor.ui.adapters.parser.TagParser;
-import io.mapsquare.osmcontributor.ui.dialogs.EditDaysTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
 import io.mapsquare.osmcontributor.ui.utils.SimpleTextWatcher;
+import io.mapsquare.osmcontributor.ui.utils.views.DividerItemDecoration;
 import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHolder;
 import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemConstantViewHolder;
-import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemOpeningHoursViewHolder;
+import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemOpeningTimeViewHolder;
 import io.mapsquare.osmcontributor.ui.utils.views.holders.TagRadioChoiceHolder;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.StringUtils;
@@ -65,20 +68,21 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<TagItem> tagItemList = new ArrayList<>();
     private Poi poi;
-    private Activity context;
+    private Activity activity;
     private EventBus eventBus;
     private ConfigManager configManager;
     private boolean change = false;
     private boolean expertMode = false;
     private TagParser tagParser;
+    private OpeningTimeParser openingTimeParser;
 
-    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity context, TagParser tagParser,
-                       Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
+    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity activity, TagParser tagParser, OpeningTimeParser openingTimeParser, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
-        this.context = context;
+        this.activity = activity;
         this.configManager = configManager;
         this.expertMode = expertMode;
         this.tagParser = tagParser;
+        this.openingTimeParser = openingTimeParser;
 
         if (tagItemList == null) {
             loadTags(poi.getTagsMap(), tagValueSuggestionsMap);
@@ -102,8 +106,8 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 return new TagItemConstantViewHolder(poiTagImposedLayout);
 
             case OPENING_HOURS:
-                View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_hours, parent, false);
-                return new TagItemOpeningHoursViewHolder(poiTagOpeningHoursLayout);
+                View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_time, parent, false);
+                return new TagItemOpeningTimeViewHolder(poiTagOpeningHoursLayout);
 
             case SINGLE_CHOICE:
                 View booleanChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_radio, parent, false);
@@ -307,8 +311,8 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 break;
 
             case OPENING_HOURS:
-                onBindViewHolder((TagItemOpeningHoursViewHolder) holder, position);
-                break;
+                onBindViewHolder((TagItemOpeningTimeViewHolder) holder, position);
+                return;
 
             case SINGLE_CHOICE:
                 onBindViewHolder((TagRadioChoiceHolder) holder, position);
@@ -318,7 +322,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 onBindViewHolder((TagItemAutoCompleteViewHolder) holder, position);
                 break;
         }
-
     }
 
     /**
@@ -352,12 +355,12 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
                     if (hasFocus) {
-                        Intent intent = new Intent(context, PickValueActivity.class);
+                        Intent intent = new Intent(activity, PickValueActivity.class);
                         intent.putExtra(PickValueActivity.KEY, tagParser.parseTagName(tagItem.getKey()));
                         intent.putExtra(PickValueActivity.VALUE, tagItem.getValue());
                         intent.putExtra(PickValueActivity.AUTOCOMPLETE, values.toArray(new String[values.size()]));
                         intent.putExtra(PickValueActivity.TAG_TYPE, tagItem.getTagType().toString());
-                        context.startActivityForResult(intent, PickValueActivity.PICK_VALUE_ACTIVITY_CODE);
+                        activity.startActivityForResult(intent, PickValueActivity.PICK_VALUE_ACTIVITY_CODE);
                     }
                     holder.getTextViewValue().clearFocus();
                 }
@@ -389,35 +392,38 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /**
-     * Holder for tag type hours.
-     * @param holder holder
-     * @param position tag item position
+     * Binding tag item for opening time
+     * @param holder
+     * @param position
      */
-    private void onBindViewHolder(TagItemOpeningHoursViewHolder holder, int position) {
+    public void onBindViewHolder(final TagItemOpeningTimeViewHolder holder, int position) {
         final TagItem tagItem = tagItemList.get(position);
         holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
 
-        View.OnClickListener onClickListener = new View.OnClickListener() {
+        final OpeningTime openingTime = new OpeningTime();
+
+
+        if (openingTime.getOpeningMonths().isEmpty()) {
+            openingTime.addOpeningMonth(new OpeningMonth());
+        }
+
+        final OpeningMonthAdapter adapter = new OpeningMonthAdapter(openingTime, openingTimeParser, activity);
+        holder.getOpeningTimeRecyclerView().setAdapter(adapter);
+        holder.getOpeningTimeRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
+        holder.getOpeningTimeRecyclerView().setHasFixedSize(false);
+        RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
+        itemAnimator.setAddDuration(300);
+        holder.getOpeningTimeRecyclerView().setItemAnimator(itemAnimator);
+        holder.getOpeningTimeRecyclerView().addItemDecoration(new DividerItemDecoration(activity));
+
+        holder.getAddButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditDaysTagDialogFragment fragment = new EditDaysTagDialogFragment();
-                fragment.setOnEditDaysTagListener(new EditDaysTagDialogFragment.OnEditDaysTagListener() {
-                    @Override
-                    public void onOpeningDaysChanged(boolean[] days) {
-
-                    }
-
-                    @Override
-                    public void onOpeningHoursChanged(LocalTime from, LocalTime to) {
-
-                    }
-                });
-                fragment.show(context.getFragmentManager(), DialogFragment.class.getSimpleName());
+                openingTime.addOpeningMonth(new OpeningMonth());
+                adapter.notifyItemInserted(adapter.getItemCount() - 1);
             }
-        };
+        });
 
-        holder.getTextViewDaysValue().setOnClickListener(onClickListener);
-        holder.getTextViewHoursValue().setOnClickListener(onClickListener);
     }
 
     /**
@@ -474,8 +480,9 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /*------------GETTER/SETTER----------------*/
     /*=========================================*/
     /**
-     * Get all changes.
-     * @return a poiChange object containing all changes made by the user
+     * Add an element at the end of the List
+     *
+     * @return The position of the inserted element
      */
     public PoiChanges getPoiChanges() {
         PoiChanges result = new PoiChanges(poi.getId());

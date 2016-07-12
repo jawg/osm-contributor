@@ -24,7 +24,7 @@
     android:id="@+id/poi_info_panel"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".ui.fragments.PoiDetailFragment">
+    tools:activity=".ui.fragments.PoiDetailFragment">
 
     <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:id="@+id/osm_copyright"

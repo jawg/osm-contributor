@@ -26,7 +26,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".ui.activities.MyPreferencesActivity">
+    tools:activity=".ui.activities.MyPreferencesActivity">
 
     <include layout="@layout/toolbar_layout"/>
 

@@ -28,7 +28,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:theme="@style/AppTheme.Transparent"
-    tools:context=".ui.activities.MapActivity">
+    tools:activity=".ui.activities.MapActivity">
 
 
     <RelativeLayout

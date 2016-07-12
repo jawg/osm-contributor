@@ -212,7 +212,9 @@
     <string name="poi_tag_value_hint">value</string>
     <string name="poi_tag_mandatory">Mandatory</string>
     <string name="poi_tag_days">Days</string>
+    <string name="poi_tag_months">Months</string>
     <string name="poi_tag_hours">Opening time</string>
+    <string name="hours">Hours</string>
     <string name="day_monday_letter">M</string>
     <string name="day_tuesday_letter">T</string>
     <string name="day_wednesday_letter">W</string>

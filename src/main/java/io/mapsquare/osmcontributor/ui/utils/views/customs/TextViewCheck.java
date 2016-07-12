@@ -65,18 +65,19 @@ public class TextViewCheck extends TypeFaceTextView {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                setSelected((checked = !checked));
-                setTextColor(checked ? COLOR_CHECKED : COLOR_UNCHECKED);
-                if (listener != null) {
-                    listener.onChecked(checked);
-                }
+                checked = !checked;
+                setChecked(checked);
             }
         });
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec);
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+        setSelected(checked);
+        setTextColor(checked ? COLOR_CHECKED : COLOR_UNCHECKED);
+        if (listener != null) {
+            listener.onChecked(checked);
+        }
     }
 
     public boolean isChecked() {

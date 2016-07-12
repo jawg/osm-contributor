@@ -42,17 +42,17 @@ import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.ui.adapters.OpeningHours;
+import io.mapsquare.osmcontributor.model.utils.OpeningHours;
 import io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck;
 
 /**
  * @author Tommy Buonomo on 04/07/16.
  */
-public class EditDaysTagDialogFragment extends DialogFragment {
+public class EditDaysDialogFragment extends DialogFragment {
     private boolean from = true;
     private int rightViewX;
     private boolean viewPositionFixed;
-    private OnEditDaysTagListener listener;
+    private OnEditDaysListener listener;
 
     private OpeningHours openingHours;
 
@@ -82,22 +82,22 @@ public class EditDaysTagDialogFragment extends DialogFragment {
 
     @BindViews(value = {R.id.dialog_edit_day_monday_check,
             R.id.dialog_edit_day_tuesday_check,
-    R.id.dialog_edit_day_wednesday_check,
-    R.id.dialog_edit_day_thursday_check,
-    R.id.dialog_edit_day_friday_check,
-    R.id.dialog_edit_day_saturday_check,
-    R.id.dialog_edit_day_sunday_check})
+            R.id.dialog_edit_day_wednesday_check,
+            R.id.dialog_edit_day_thursday_check,
+            R.id.dialog_edit_day_friday_check,
+            R.id.dialog_edit_day_saturday_check,
+            R.id.dialog_edit_day_sunday_check})
     TextViewCheck[] daysTextCheck;
+
+    public EditDaysDialogFragment() {
+        openingHours = new OpeningHours();
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.dialog_edit_days, container, false);
+        View rootView = inflater.inflate(R.layout.dialog_edit_days_tag, container, false);
         ButterKnife.bind(this, rootView);
-
-        openingHours = new OpeningHours(new boolean[OpeningHours.DAY_COUNT],
-                new LocalTime(8, 0),
-                new LocalTime(18, 0));
 
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -179,10 +179,11 @@ public class EditDaysTagDialogFragment extends DialogFragment {
         // If user click on one day letter, set the daysChanged to true
         for (int i = 0; i < daysTextCheck.length; i++) {
             final int finalI = i;
+            daysTextCheck[i].setChecked(openingHours.getDays()[i] != null);
             daysTextCheck[i].setOnCheckListener(new TextViewCheck.OnCheckListener() {
                 @Override
                 public void onChecked(boolean checked) {
-                    openingHours.setDay(finalI, checked);
+                    openingHours.setDayActivated(finalI, checked);
                 }
             });
         }
@@ -190,13 +191,9 @@ public class EditDaysTagDialogFragment extends DialogFragment {
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (openingHours.isDaysChanged() && listener != null) {
+                if (openingHours.isChanged() && listener != null) {
                     // Handle the listener
-                    listener.onOpeningDaysChanged(openingHours.getDays());
-                }
-                if (openingHours.isDaysChanged() && listener != null) {
-                    //Handle the listener
-                    listener.onOpeningHoursChanged(openingHours.getFromTime(), openingHours.getToTime());
+                    listener.onOpeningTimeChanged(openingHours);
                 }
                 dismiss();
             }
@@ -219,11 +216,6 @@ public class EditDaysTagDialogFragment extends DialogFragment {
         fromTextView.setTextColor(from ? Color.WHITE : Color.BLACK);
         toTextView.setTextColor(from ? Color.BLACK : Color.WHITE);
         (from ? fromTimePicker : toTimePicker).bringToFront();
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
     }
 
     private void setUpViewPositions() {
@@ -265,12 +257,15 @@ public class EditDaysTagDialogFragment extends DialogFragment {
         return animatorSet;
     }
 
-    public void setOnEditDaysTagListener(OnEditDaysTagListener listener) {
+    public void setOpeningHours(OpeningHours openingHours) {
+        this.openingHours = openingHours;
+    }
+
+    public void setOnEditDaysListener(OnEditDaysListener listener) {
         this.listener = listener;
     }
 
-    public interface OnEditDaysTagListener {
-        void onOpeningDaysChanged(boolean[] days);
-        void onOpeningHoursChanged(LocalTime from, LocalTime to);
+    public interface OnEditDaysListener {
+        void onOpeningTimeChanged(OpeningHours openingTime);
     }
 }

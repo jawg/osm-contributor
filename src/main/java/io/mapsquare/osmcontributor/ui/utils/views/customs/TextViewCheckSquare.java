@@ -16,27 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.modules;
+package io.mapsquare.osmcontributor.ui.utils.views.customs;
 
+import android.content.Context;
+import android.util.AttributeSet;
 
-import android.app.Application;
+/**
+ * @author Tommy Buonomo on 04/07/16.
+ */
+public class TextViewCheckSquare extends TextViewCheck {
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-
-@Module
-@Singleton
-public class OsmTemplateModule {
-    private Application application;
-
-    public OsmTemplateModule(Application application) {
-        this.application = application;
+    public TextViewCheckSquare(Context context) {
+        super(context);
     }
 
-    @Provides
-    Application getApplication() {
-        return application;
+    public TextViewCheckSquare(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public TextViewCheckSquare(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, widthMeasureSpec);
     }
 }

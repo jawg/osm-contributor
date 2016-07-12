@@ -16,27 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.modules;
+package io.mapsquare.osmcontributor.ui.events.edition;
 
+import io.mapsquare.osmcontributor.model.utils.OpeningTime;
 
-import android.app.Application;
+/**
+ * @author Tommy Buonomo on 11/07/16.
+ */
+public class PleaseApplyOpeningTimeChange {
+    private OpeningTime openingTime;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-
-@Module
-@Singleton
-public class OsmTemplateModule {
-    private Application application;
-
-    public OsmTemplateModule(Application application) {
-        this.application = application;
+    public PleaseApplyOpeningTimeChange(OpeningTime openingTime) {
+        this.openingTime = openingTime;
     }
 
-    @Provides
-    Application getApplication() {
-        return application;
+    public OpeningTime getOpeningTime() {
+        return openingTime;
     }
 }

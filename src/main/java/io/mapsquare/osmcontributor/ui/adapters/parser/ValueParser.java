@@ -16,27 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.modules;
+package io.mapsquare.osmcontributor.ui.adapters.parser;
 
+import io.mapsquare.osmcontributor.model.utils.OpeningTime;
 
-import android.app.Application;
-
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-
-@Module
-@Singleton
-public class OsmTemplateModule {
-    private Application application;
-
-    public OsmTemplateModule(Application application) {
-        this.application = application;
-    }
-
-    @Provides
-    Application getApplication() {
-        return application;
-    }
+/**
+ * @author Tommy Buonomo on 07/07/16.
+ */
+public interface ValueParser<T> {
+    T fromValue(String value);
+    String toValue(OpeningTime openingTime);
 }

@@ -35,7 +35,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="16dp"
-        tools:context=".ui.activities.PickValueActivity">
+        tools:activity=".ui.activities.PickValueActivity">
 
 
         <TextView

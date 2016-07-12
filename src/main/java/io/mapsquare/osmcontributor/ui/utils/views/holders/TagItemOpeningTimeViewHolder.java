@@ -21,26 +21,25 @@ package io.mapsquare.osmcontributor.ui.utils.views.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.R;
 
-public class TagItemOpeningHoursViewHolder extends RecyclerView.ViewHolder {
-    public View poiTagLayout;
+public class TagItemOpeningTimeViewHolder extends RecyclerView.ViewHolder {
+    private View poiTagLayout;
+
+    @BindView(R.id.opening_time_list_view)
+    RecyclerView openingTimeRecyclerView;
 
     @BindView(R.id.poi_key)
     TextView textViewKey;
 
-    @BindView(R.id.poi_days_value)
-    EditText textViewDaysValue;
+    @BindView(R.id.tag_item_opening_time_add_button)
+    View addButton;
 
-    @BindView(R.id.poi_hours_value)
-    EditText textViewHoursValue;
-
-    public TagItemOpeningHoursViewHolder(View v) {
+    public TagItemOpeningTimeViewHolder(View v) {
         super(v);
         poiTagLayout = v;
         ButterKnife.bind(this, v);
@@ -54,11 +53,11 @@ public class TagItemOpeningHoursViewHolder extends RecyclerView.ViewHolder {
         return textViewKey;
     }
 
-    public TextView getTextViewDaysValue() {
-        return textViewDaysValue;
+    public RecyclerView getOpeningTimeRecyclerView() {
+        return openingTimeRecyclerView;
     }
 
-    public EditText getTextViewHoursValue() {
-        return textViewHoursValue;
+    public View getAddButton() {
+        return addButton;
     }
 }

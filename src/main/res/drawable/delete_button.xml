@@ -19,16 +19,20 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:activity=".ui.activities.UploadActivity">
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <layer-list>
+            <item android:width="2dp" android:gravity="center">
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/colorCreationDark"/>
+                </shape>
+            </item>
 
-    <item
-        android:id="@+id/action_confirm"
-        android:icon="@drawable/content_save"
-        android:orderInCategory="100"
-        android:title=""
-        app:showAsAction="always"/>
-
-</menu>
+            <item android:height="2dp" android:gravity="center">
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/colorCreationDark"/>
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+</selector>
