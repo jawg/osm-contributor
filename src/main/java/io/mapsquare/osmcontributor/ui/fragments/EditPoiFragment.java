@@ -31,6 +31,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -366,7 +367,7 @@ public class EditPoiFragment extends Fragment {
             actionBar.setSubtitle(poi.getType().getName());
         }
 
-
+        Log.i(TAG, "onPoiForEditionLoadedEvent: " + poi);
         tagsAdapter = new TagsAdapter(poi,
                 tagItemList,
                 getActivity(),
@@ -379,8 +380,7 @@ public class EditPoiFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewPoiTagAddedEvent(NewPoiTagAddedEvent event) {
-        /**TODO remove null for tag type **/
-        recyclerView.smoothScrollToPosition(tagsAdapter.addLast(event.getTagKey(), event.getTagValue(), Collections.<String>emptyList(), Collections.<String>emptyList(), null, true));
+        recyclerView.smoothScrollToPosition(tagsAdapter.addLast(event.getTagKey(), event.getTagValue(), Collections.<String>emptyList(), Collections.<String>emptyList(), true));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

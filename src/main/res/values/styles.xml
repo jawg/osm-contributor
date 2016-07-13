@@ -56,24 +56,27 @@
 
     <style name="CustomTitle" parent="TextAppearance.ShowcaseView.Title">
         <item name="android:textColor">#81D4FA</item>
+        <item name="android:textColorPrimary">#333333</item>
+        <item name="android:textColorLink">#333333</item>
         <item name="android:textSize">26sp</item>
+        <item name="android:textColorHighlight">#333333</item>
     </style>
 
     <style name="CustomDetailText" parent="TextAppearance.ShowcaseView.Detail">
         <item name="android:textColor">#FFFFFF</item>
         <item name="android:textSize">21sp</item>
-    </style>
-
-    <style name="TextAppearance.ShowcaseView.Detail" parent="android:style/TextAppearance">
-        <item name="android:textColor">#333333</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowRadius">20</item>
+        <item name="android:textColorPrimary">#333333</item>
+        <item name="android:textColorLink">#333333</item>
+        <item name="android:textColorHighlight">#333333</item>
     </style>
 
     <style name="TextInputLayout" parent="TextAppearance.AppCompat">
         <!-- Hint color and label color in FALSE state -->
         <item name="android:textColorHint">@color/disable_text</item>
         <item name="android:textColor">@color/hint_color</item>
+        <item name="android:textColorPrimary">#333333</item>
+        <item name="android:textColorLink">#333333</item>
+        <item name="android:textColorHighlight">#333333</item>
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorAccent">@color/disable_text</item>
         <item name="colorControlNormal">#dfdfdf</item>

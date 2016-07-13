@@ -21,8 +21,8 @@ package io.mapsquare.osmcontributor.ui.adapters;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,15 +46,15 @@ import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
 import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
+import io.mapsquare.osmcontributor.ui.adapters.parser.ShortListParser;
 import io.mapsquare.osmcontributor.ui.adapters.parser.TagParser;
-import io.mapsquare.osmcontributor.ui.adapters.parser.ValueParser;
 import io.mapsquare.osmcontributor.ui.dialogs.EditDaysTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
-import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemMultiChoiceViewHolder;
+import io.mapsquare.osmcontributor.ui.utils.SimpleTextWatcher;
+import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHolder;
+import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemConstantViewHolder;
 import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemOpeningHoursViewHolder;
-import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemTextImposedViewHolder;
-import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemTextViewHolder;
 import io.mapsquare.osmcontributor.ui.utils.views.holders.TagRadioChoiceHolder;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.StringUtils;
@@ -62,6 +62,7 @@ import io.mapsquare.osmcontributor.utils.edition.PoiChanges;
 
 public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "TagsAdapter";
+
     private List<TagItem> tagItemList = new ArrayList<>();
     private Poi poi;
     private Activity context;
@@ -71,7 +72,8 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private boolean expertMode = false;
     private TagParser tagParser;
 
-    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity context, TagParser tagParser, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
+    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity context, TagParser tagParser,
+                       Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
         this.context = context;
         this.configManager = configManager;
@@ -88,143 +90,310 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         eventBus.register(this);
     }
 
-    private void loadTags(Map<String, String> poiTags, Map<String, List<String>> tagValueSuggestionsMap) {
-        int nbMandatory = 0;
-        int nbImposed = 0;
-
-        for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
-            // Tags not in the PoiType should not be displayed if we are not in expert mode
-            if (poiTypeTag.getValue() == null) {
-                String key = poiTypeTag.getKey();
-                // Display tags as mandatory if they are mandatory and we are not in expert mode
-                if (poiTypeTag.getMandatory() && !expertMode) {
-                    addTag(key, poiTags.remove(key), true, getPossibleValuesAsList(poiTypeTag.getPossibleValues()), tagValueSuggestionsMap.get(key), nbMandatory + nbImposed, true);
-                    nbMandatory++;
-                } else {
-                    addTag(key, poiTags.remove(key), false, getPossibleValuesAsList(poiTypeTag.getPossibleValues()), tagValueSuggestionsMap.get(key), this.getItemCount(), true);
-                }
-            } else if (expertMode) {
-                // Display the tags of the poi that are not in the PoiType
-                String key = poiTypeTag.getKey();
-                addTag(key, poiTags.remove(key), true, getPossibleValuesAsList(poiTypeTag.getPossibleValues()), tagValueSuggestionsMap.get(key), nbImposed, false);
-                nbImposed++;
-            }
-        }
-        if (expertMode) {
-            for (String key : poiTags.keySet()) {
-                addTag(key, poiTags.get(key), false, tagValueSuggestionsMap.get(key), Collections.singletonList(poiTags.get(key)), this.getItemCount(), true);
-            }
-        }
-    }
-
-    private List<String> getPossibleValuesAsList(String possibleValuesAsString) {
-        if (possibleValuesAsString == null || possibleValuesAsString.isEmpty()) {
-            return null;
-        }
-
-        return Arrays.asList(possibleValuesAsString.split(String.valueOf((char) 29)));
-    }
-
-    /**
-     * @return a poiChange object containing all changes made by the user
-     */
-    public PoiChanges getPoiChanges() {
-        PoiChanges result = new PoiChanges(poi.getId());
-        for (TagItem tagItem : tagItemList) {
-            // Only mandatory tags and optional tags that have been changed are saved
-            if (tagItem.isMandatory() || tagItem.getValue() != null) {
-                result.getTagsMap().put(tagItem.getKey(), tagItem.getValue());
-            }
-        }
-        return result;
-    }
-
-    public List<TagItem> getTagItemList() {
-        return tagItemList;
-    }
-
-    public boolean isChange() {
-        return change;
-    }
-
+    /*=========================================*/
+    /*---------------ADAPTER-------------------*/
+    /*=========================================*/
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         /* Create different views depending of type of the tag */
         switch (TagItem.TagType.values()[viewType]) {
-            case TEXT_IMPOSED:
-                View poiTagImposedLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_text_imposed, parent, false);
-                return new TagItemTextImposedViewHolder(poiTagImposedLayout);
+            case CONSTANT:
+                View poiTagImposedLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_constant, parent, false);
+                return new TagItemConstantViewHolder(poiTagImposedLayout);
 
             case OPENING_HOURS:
                 View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_hours, parent, false);
                 return new TagItemOpeningHoursViewHolder(poiTagOpeningHoursLayout);
 
-            case SINGLE_CHOICE_SHORT:
+            case SINGLE_CHOICE:
                 View booleanChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_radio, parent, false);
                 return new TagRadioChoiceHolder(booleanChoiceLayout);
 
-            case AUTOCOMPLETE:
-                View multiChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_multi_choice, parent, false);
-                return new TagItemMultiChoiceViewHolder(multiChoiceLayout);
+            default:
+                View autoCompleteLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_multi_choice, parent, false);
+                return new TagItemAutoCompleteViewHolder(autoCompleteLayout);
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return tagItemList.get(position).getTagType().ordinal();
+    }
+
+    @Override
+    public int getItemCount() {
+        return tagItemList.size();
+    }
+
+    /*=========================================*/
+    /*------------CODE-------------------------*/
+    /*=========================================*/
+    /**
+     * Add an element at the end of the List.
+     * @return the position of the inserted element
+     */
+    public int addLast(String key, String value, List<String> possibleValues, List<String> autocompleteValues, boolean updatable) {
+        addTag(key, value, false, removeDuplicate(possibleValues, autocompleteValues), tagItemList.size(), updatable);
+        return tagItemList.size() - 1;
+    }
+
+    public boolean isValidChanges() {
+        for (TagItem tagItem : tagItemList) {
+            if (tagItem.isMandatory() && StringUtils.isEmpty(tagItem.getValue())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /*=========================================*/
+    /*----------------EVENTS-------------------*/
+    /*=========================================*/
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onPleaseApplyTagChange(PleaseApplyTagChange event) {
+        eventBus.removeStickyEvent(event);
+        for (TagItem tagItem : tagItemList) {
+            if (tagParser.parseTagName(tagItem.getKey()).equals(event.getKey())) {
+                editTag(tagItem, event.getValue());
+            }
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onPleaseApplyTagChangeView(PleaseApplyTagChangeView event) {
+        eventBus.removeStickyEvent(event);
+        for (TagItem tagItem : tagItemList) {
+            if (tagParser.parseTagName(tagItem.getKey()).equals(event.getKey())) {
+                editTag(tagItem, event.getValue());
+                notifyItemChanged(tagItemList.indexOf(tagItem));
+            }
+        }
+    }
+
+    /*=========================================*/
+    /*------------PRIVATE CODE-----------------*/
+    /*=========================================*/
+    /**
+     * Edit tag value
+     * @param tagItem tag item to edit
+     * @param newValue new value
+     */
+    private void editTag(TagItem tagItem, String newValue) {
+        tagItem.setValue(newValue);
+        change = true;
+        Log.i(TAG, "editTag: " + tagItem.getValue());
+    }
+
+    /**
+     * Add tag into global list of tag
+     * @param key tag key
+     * @param value tag value
+     * @param mandatory is mandatory
+     * @param values possible values for the tag, can be empty or null
+     * @param position position inside the list
+     * @param updatable is updatable
+     */
+    private void addTag(String key, String value, boolean mandatory, List<String> values, int position, boolean updatable) {
+        // Get the tag type
+        TagItem.TagType tagType = TagParser.getTagType(key, values);
+
+        // Parse value if needed
+        if (tagType == TagItem.TagType.SINGLE_CHOICE) {
+            value = ShortListParser.getFormatedValue(tagType, value, values);
+        }
+
+        // Add into the list
+        if (!updatable) {
+            tagItemList.add(position, new TagItem(key, value, mandatory, values, TagItem.TagType.CONSTANT));
+        } else {
+            tagItemList.add(position, new TagItem(key, value, mandatory, values, tagType));
+        }
+
+        // Notify changes
+        notifyItemInserted(position);
+    }
+
+    /**
+     * Get a list of all possible values without duplicate
+     * @param possibleValues possible values from h2geo
+     * @param autoCompleteValues proposition from last used values
+     * @return a merged list
+     */
+    private List<String> removeDuplicate(List<String> possibleValues, List<String> autoCompleteValues) {
+        // Create a default empty list to avoid null pointer exception
+        List<String> values = new ArrayList<>();
+
+        if (possibleValues != null) {
+            // If possible values are not null, init values with it
+            values.addAll(possibleValues);
+        }
+
+        if (autoCompleteValues != null) {
+            // If auto complete values are not null and values are empty, fill it with it
+            if (values.isEmpty()) {
+                values.addAll(autoCompleteValues);
+            }
+
+            // For each auto complete values, if the value does not exist, add it to the new list
+            for (String possibleValue : autoCompleteValues) {
+                if (!values.contains(possibleValue) && (!possibleValue.isEmpty() || !possibleValue.trim().isEmpty())) {
+                    values.add(possibleValue);
+                }
+            }
+        }
+
+        // Sometimes, with yes value there is no value, this is a non sens
+        if (values.contains("yes") && !values.contains("no")) {
+            values.add("no");
+        } else if (values.contains("no") && !values.contains("yes")) {
+            values.add("yes");
+        }
+        return values;
+    }
+
+    /**
+     * Convert possible values from String to List.
+     * @param possibleValuesAsString string of possible values
+     * @return list of possible values
+     */
+    private List<String> getPossibleValuesAsList(String possibleValuesAsString) {
+        if (possibleValuesAsString == null || possibleValuesAsString.isEmpty()) {
+            return null;
+        }
+        return Arrays.asList(possibleValuesAsString.split(String.valueOf((char) 29)));
+    }
+
+    private void loadTags(Map<String, String> poiTags, Map<String, List<String>> tagValueSuggestionsMap) {
+        int nbMandatory = 0;
+        int nbImposed = 0;
+
+        for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
+            List<String> values = removeDuplicate(getPossibleValuesAsList(poiTypeTag.getPossibleValues()),
+                    tagValueSuggestionsMap.get(poiTypeTag.getKey()));
+            // Tags not in the PoiType should not be displayed if we are not in expert mode
+            if (poiTypeTag.getValue() == null) {
+                String key = poiTypeTag.getKey();
+                // Display tags as mandatory if they are mandatory and we are not in expert mode
+                if (poiTypeTag.getMandatory() && !expertMode) {
+                    addTag(key, poiTags.remove(key), true, values, nbMandatory + nbImposed, true);
+                    nbMandatory++;
+                } else {
+                    addTag(key, poiTags.remove(key), false, values, this.getItemCount(), true);
+                }
+            } else if (expertMode) {
+                // Display the tags of the poi that are not in the PoiType
+                String key = poiTypeTag.getKey();
+                addTag(key, poiTags.remove(key), true, values, nbImposed, false);
+                nbImposed++;
+            }
+        }
+        if (expertMode) {
+            for (String key : poiTags.keySet()) {
+                addTag(key, poiTags.get(key), false, removeDuplicate(tagValueSuggestionsMap.get(key),
+                        Collections.singletonList(poiTags.get(key))), this.getItemCount(), true);
+            }
+        }
+    }
+
+    /*=========================================*/
+    /*---------------HOLDERS-------------------*/
+    /*=========================================*/
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder,
+                                 int position) {
+        switch (tagItemList.get(position).getTagType()) {
+            case CONSTANT:
+                onBindViewHolder((TagItemConstantViewHolder) holder, position);
+                break;
+
+            case OPENING_HOURS:
+                onBindViewHolder((TagItemOpeningHoursViewHolder) holder, position);
+                break;
+
+            case SINGLE_CHOICE:
+                onBindViewHolder((TagRadioChoiceHolder) holder, position);
+                break;
 
             default:
-                View poiTagManyValuesLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_text, parent, false);
-                return new TagItemTextViewHolder(poiTagManyValuesLayout);
+                onBindViewHolder((TagItemAutoCompleteViewHolder) holder, position);
+                break;
         }
+
     }
 
-    public void onBindViewHolder(final TagItemMultiChoiceViewHolder holder,
-                                 final int position) {
+    /**
+     * View for tag type text.
+     * @param holder holder
+     * @param position position of tag item
+     */
+    private void onBindViewHolder(final TagItemAutoCompleteViewHolder holder, int position) {
+        final TagItem tagItem = tagItemList.get(holder.getAdapterPosition());
 
-        final TagItem tagItem = tagItemList.get(position);
-
+        // Set values input
         holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
         holder.getTextViewValue().setText(tagItem.getValue());
+        holder.getTextInputLayout().setHint(tagItem.getKey());
 
-        if (configManager.hasPoiModification()) {
-            View.OnClickListener editTagClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, PickValueActivity.class);
-                    intent.putExtra(PickValueActivity.KEY, tagParser.parseTagName(tagItem.getKey()));
-                    intent.putExtra(PickValueActivity.VALUE, tagItem.getValue());
-                    intent.putExtra(PickValueActivity.AUTOCOMPLETE, tagItem.getAutocompleteValues().toArray(new String[tagItem.getAutocompleteValues().size()]));
-                    context.startActivityForResult(intent, PickValueActivity.PICK_VALUE_ACTIVITY_CODE);
-
-                }
-            };
-
-            holder.getPoiTagLayout().setOnClickListener(editTagClickListener);
-            holder.getTextViewValue().setOnClickListener(editTagClickListener);
-        }
-    }
-
-    public void onBindViewHolder(final TagItemTextViewHolder holder, final int position) {
-        final TagItem tagItem = tagItemList.get(position);
-
+        // If phone type if phone, set input type to number
         if (tagItem.getTagType() == TagItem.TagType.PHONE || tagItem.getTagType() == TagItem.TagType.NUMBER) {
             holder.getTextViewValue().setInputType(InputType.TYPE_CLASS_NUMBER);
         }
 
-        if (configManager.hasPoiModification()) {
-            holder.getGridViewLayoutWrapper().setVisibility(View.VISIBLE);
+        // Get possible values
+        final List<String> values = tagItem.getValues();
 
-            holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
-
-            ((TextInputLayout) (holder.getTextViewValue().getParent())).setHint(tagItem.getKey());
-            holder.getTextViewValue().setText(tagItem.getValue());
+        if (values.size() > 2) {
+            // If there are some modification, change the value
+            if (configManager.hasPoiModification()) {
+                holder.getTextViewValue().setText(tagItem.getValue());
+            }
+            // If there are more than two propositions, auto complete view
+            holder.getTextViewValue().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        Intent intent = new Intent(context, PickValueActivity.class);
+                        intent.putExtra(PickValueActivity.KEY, tagParser.parseTagName(tagItem.getKey()));
+                        intent.putExtra(PickValueActivity.VALUE, tagItem.getValue());
+                        intent.putExtra(PickValueActivity.AUTOCOMPLETE, values.toArray(new String[values.size()]));
+                        intent.putExtra(PickValueActivity.TAG_TYPE, tagItem.getTagType().toString());
+                        context.startActivityForResult(intent, PickValueActivity.PICK_VALUE_ACTIVITY_CODE);
+                    }
+                    holder.getTextViewValue().clearFocus();
+                }
+            });
         } else {
-            holder.getGridViewLayoutWrapper().setVisibility(View.GONE);
+            // If there is no proposition, simply print an edit text
+            holder.getTextViewValue().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) { }
+            });
+            holder.getTextViewValue().addTextChangedListener(new SimpleTextWatcher() {
+                @Override
+                public void afterTextChanged(Editable s) {
+                    eventBus.post(new PleaseApplyTagChange(holder.getTextViewKey().getText().toString(), holder.getTextViewValue().getText().toString()));
+                }
+            });
         }
     }
 
-    public void onBindViewHolder(TagItemTextImposedViewHolder holder, int position) {
+    /**
+     * Holder for tag type constant.
+     * @param holder holder
+     * @param position tag item position
+     */
+    private void onBindViewHolder(TagItemConstantViewHolder holder, int position) {
         final TagItem tagItem = tagItemList.get(position);
         holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
         holder.getTextViewValue().setText(tagItem.getValue());
     }
 
-    public void onBindViewHolder(TagItemOpeningHoursViewHolder holder, int position) {
+    /**
+     * Holder for tag type hours.
+     * @param holder holder
+     * @param position tag item position
+     */
+    private void onBindViewHolder(TagItemOpeningHoursViewHolder holder, int position) {
         final TagItem tagItem = tagItemList.get(position);
         holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
 
@@ -251,153 +420,79 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.getTextViewHoursValue().setOnClickListener(onClickListener);
     }
 
-    public void onBindViewHolder(TagRadioChoiceHolder holder, int position) {
+    /**
+     * Bind view for list of 6 elements max.
+     * @param holder holder
+     * @param position position
+     */
+    private void onBindViewHolder(TagRadioChoiceHolder holder, int position) {
+        // Get tag item from list
         final TagItem tagItem = tagItemList.get(position);
+
+        // Set key text view
         holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
 
-        List<String> values = removeDuplicate(tagItem.getPossibleValues(), tagItem.getAutocompleteValues());
-        Log.i(TAG, "onBindViewHolder: " + tagItem.getKey() + ";" + tagItem.getValue() + " {" + values + "}");
-
+        // Check if size of possible values are 3, means special action to organize layout
+        List<String> values = tagItem.getValues();
         boolean isFourElements = values.size() == 3;
+
+        // List of radio buttons without undefined. Undefined is always showing
         RadioButton[] radioButtons = holder.getRadioButtons();
+
+        // Access element for values
         int pos = 0;
         for (int i = 0; i < radioButtons.length; i++) {
             if (!values.isEmpty()) {
+                // If values is not empty...
                 if (isFourElements && i == 1) {
+                    // ... and list contains four values, skip one radio to have a 2/2 side by side printing
                     radioButtons[i].setVisibility(View.INVISIBLE);
                     i++;
                     isFourElements = false;
                 }
+
                 if (pos < values.size()) {
-                    radioButtons[i].setVisibility(View.VISIBLE);
+                    // Set value of radio button and show it
                     radioButtons[i].setText(values.get(pos));
+                    radioButtons[i].setVisibility(View.VISIBLE);
+
+                    // Select radio if value is not undefined
                     if (tagItem.getValue() != null && tagItem.getValue().equals(values.get(pos))) {
                         holder.getUndefinedRadioButton().setChecked(false);
                         radioButtons[i].setChecked(true);
                     }
                     pos++;
                 } else {
+                    // If all values are set, hide radio button not used
                     radioButtons[i].setVisibility(View.INVISIBLE);
                 }
             }
         }
     }
 
-    private List<String> removeDuplicate(List<String> possibleValues, List<String> autoCompleteValues) {
-        List<String> values = Collections.emptyList();
-        if (possibleValues != null) {
-            values = new ArrayList<>(possibleValues);
-        }
-
-        if (autoCompleteValues != null) {
-            if (values.isEmpty()) {
-                values = new ArrayList<>(autoCompleteValues);
-            }
-
-            for (String possibleValue : autoCompleteValues) {
-                if (!values.contains(possibleValue) && (!possibleValue.isEmpty() || !possibleValue.trim().isEmpty())) {
-                    values.add(possibleValue);
-                }
-            }
-        }
-        return values;
-    }
-
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder,
-                                 int position) {
-        switch (tagItemList.get(position).getTagType()) {
-            case TEXT_IMPOSED:
-                onBindViewHolder((TagItemTextImposedViewHolder) holder, position);
-                break;
-
-            case OPENING_HOURS:
-                onBindViewHolder((TagItemOpeningHoursViewHolder) holder, position);
-                break;
-
-            case SINGLE_CHOICE_SHORT:
-                onBindViewHolder((TagRadioChoiceHolder) holder, position);
-                break;
-
-            case AUTOCOMPLETE:
-                onBindViewHolder((TagItemMultiChoiceViewHolder) holder, position);
-                break;
-
-            default:
-                onBindViewHolder((TagItemTextViewHolder) holder, position);
-                break;
-        }
-
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return tagItemList.get(position).getTagType().ordinal();
-    }
-
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
-        return tagItemList.size();
-    }
-
-    public void addTag(String key, String value, boolean mandatory, List<String> possiblesValues, List<String> autocompleteValues, int position, boolean updatable) {
-        TagItem.TagType tagType = TagParser.getTagType(key, possiblesValues, autocompleteValues);
-        value = ValueParser.getFormatedValue(tagType, value, removeDuplicate(possiblesValues, autocompleteValues));
-
-        if (!updatable) {
-            tagItemList.add(position, new TagItem(key, value, mandatory, possiblesValues, autocompleteValues, TagItem.TagType.TEXT_IMPOSED));
-        } else {
-            tagItemList.add(position, new TagItem(key, value, mandatory, possiblesValues, autocompleteValues, tagType));
-        }
-        notifyItemInserted(position);
-    }
-
+    /*=========================================*/
+    /*------------GETTER/SETTER----------------*/
+    /*=========================================*/
     /**
-     * Add an element at the end of the List
-     *
-     * @return The position of the inserted element
+     * Get all changes.
+     * @return a poiChange object containing all changes made by the user
      */
-    public int addLast(String key, String value, List<String> possibleValues, List<String> autocompleteValues, TagItem.TagType tagType, boolean updatable) {
-        addTag(key, value, false, possibleValues, autocompleteValues, tagItemList.size(), updatable);
-        return tagItemList.size() - 1;
-    }
-
-    @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC)
-    public void onPleaseApplyTagChange(PleaseApplyTagChange event) {
-        eventBus.removeStickyEvent(event);
+    public PoiChanges getPoiChanges() {
+        PoiChanges result = new PoiChanges(poi.getId());
         for (TagItem tagItem : tagItemList) {
-            if (tagItem.getKey().equals(event.getKey())) {
-                tagItem.setValue(event.getValue());
-                change = true;
+            // Only mandatory tags and optional tags that have been changed are saved
+            if (tagItem.isMandatory() || tagItem.getValue() != null) {
+                result.getTagsMap().put(tagItem.getKey(), tagItem.getValue());
             }
         }
+        return result;
     }
 
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onPleaseApplyTagChangeView(PleaseApplyTagChangeView event) {
-        eventBus.removeStickyEvent(event);
-        for (TagItem tagItem : tagItemList) {
-            if (tagParser.parseTagName(tagItem.getKey()).equals(event.getKey())) {
-                tagItem.setValue(event.getValue());
-                change = true;
-            }
-        }
+    public List<TagItem> getTagItemList() {
+        return tagItemList;
     }
 
-    private void editTag(TagItem tagItem, String newValue) {
-        tagItem.setValue(newValue);
-        change = true;
-    }
-
-    public boolean isValidChanges() {
-        for (TagItem tagItem : tagItemList) {
-            if (tagItem.isMandatory() && StringUtils.isEmpty(tagItem.getValue())) {
-                return false;
-            }
-        }
-        return true;
+    public boolean isChange() {
+        return change;
     }
 }
-
-

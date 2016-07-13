@@ -18,73 +18,59 @@
  */
 package io.mapsquare.osmcontributor.ui.utils.views.holders;
 
-
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
-import io.mapsquare.osmcontributor.ui.utils.SimpleTextWatcher;
 
-public class TagItemTextViewHolder extends RecyclerView.ViewHolder {
+public class TagItemAutoCompleteViewHolder extends RecyclerView.ViewHolder {
     public View poiTagLayout;
-
-    private EventBus eventBus;
 
     @BindView(R.id.poi_key)
     TextView textViewKey;
 
-    @BindView(R.id.poi_value)
+    @BindView(R.id.complete_value)
     TextInputEditText textViewValue;
 
-    @BindView(R.id.grid_layout_wrapper)
-    LinearLayout gridViewLayoutWrapper;
+    @BindView(R.id.input_wrapper)
+    TextInputLayout textInputLayout;
 
-    @BindView(R.id.edition)
-    RelativeLayout relativeLayoutEdition;
-
-
-    public TagItemTextViewHolder(View v) {
+    public TagItemAutoCompleteViewHolder(View v) {
         super(v);
         poiTagLayout = v;
         ButterKnife.bind(this, v);
-        eventBus = EventBus.getDefault();
-
-        textViewValue.addTextChangedListener(new SimpleTextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (i1 != i2) {
-                    eventBus.post(new PleaseApplyTagChangeView(textViewKey.getText().toString(), charSequence.toString()));
-                }
-            }
-        });
     }
 
     public View getPoiTagLayout() {
         return poiTagLayout;
     }
 
+    public void setPoiTagLayout(View poiTagLayout) {
+        this.poiTagLayout = poiTagLayout;
+    }
+
     public TextView getTextViewKey() {
         return textViewKey;
+    }
+
+    public void setTextViewKey(TextView textViewKey) {
+        this.textViewKey = textViewKey;
     }
 
     public TextInputEditText getTextViewValue() {
         return textViewValue;
     }
 
-    public LinearLayout getGridViewLayoutWrapper() {
-        return gridViewLayoutWrapper;
+    public void setTextViewValue(TextInputEditText textViewValue) {
+        this.textViewValue = textViewValue;
     }
 
-    public RelativeLayout getRelativeLayoutEdition() {
-        return relativeLayoutEdition;
+    public TextInputLayout getTextInputLayout() {
+        return textInputLayout;
     }
 }

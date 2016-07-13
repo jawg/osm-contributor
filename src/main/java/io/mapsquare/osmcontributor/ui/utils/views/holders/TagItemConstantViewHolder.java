@@ -22,11 +22,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.BindView;
 import io.mapsquare.osmcontributor.R;
 
-public class TagItemMultiChoiceViewHolder extends RecyclerView.ViewHolder {
+public class TagItemConstantViewHolder extends RecyclerView.ViewHolder {
     public View poiTagLayout;
 
     @BindView(R.id.poi_key)
@@ -35,7 +35,8 @@ public class TagItemMultiChoiceViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.poi_value)
     TextView textViewValue;
 
-    public TagItemMultiChoiceViewHolder(View v) {
+
+    public TagItemConstantViewHolder(View v) {
         super(v);
         poiTagLayout = v;
         ButterKnife.bind(this, v);
@@ -45,23 +46,11 @@ public class TagItemMultiChoiceViewHolder extends RecyclerView.ViewHolder {
         return poiTagLayout;
     }
 
-    public void setPoiTagLayout(View poiTagLayout) {
-        this.poiTagLayout = poiTagLayout;
-    }
-
     public TextView getTextViewKey() {
         return textViewKey;
     }
 
-    public void setTextViewKey(TextView textViewKey) {
-        this.textViewKey = textViewKey;
-    }
-
     public TextView getTextViewValue() {
         return textViewValue;
-    }
-
-    public void setTextViewValue(TextView textViewValue) {
-        this.textViewValue = textViewValue;
     }
 }

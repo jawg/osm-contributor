@@ -28,8 +28,7 @@ public class TagItem implements Parcelable {
     private String key;
     private String value;
     private boolean mandatory;
-    private List<String> possibleValues = new ArrayList<>();
-    private List<String> autocompleteValues = new ArrayList<>();
+    private List<String> values = new ArrayList<>();
     private TagType type;
 
     /**
@@ -37,19 +36,17 @@ public class TagItem implements Parcelable {
      */
     public enum TagType {
         OPENING_HOURS,          // Use when tag value is opening_hours
-        SINGLE_CHOICE_SHORT,    // Use when tag value can be choose in a short list (< 7)
-        AUTOCOMPLETE,           // Use when tag value can be choose in a long list (>20)
-        TEXT_IMPOSED,           // Use when tag value can't be modified
-        PHONE,
-        NUMBER,
-        TEXT;                   // Use by default
+        SINGLE_CHOICE,    // Use when tag value can be choose in a short list (< 7)
+        CONSTANT,           // Use when tag value can't be modified (ex: type amenity)
+        PHONE,                  // Use when tag value is a phone number
+        NUMBER,                 // Use when tag value is a number (ex: height, floors)
+        TEXT                    // Use by default
     }
 
-    public TagItem(String key, String value, boolean mandatory, List<String> possibleValues, List<String> autocompleteValues, TagType separator) {
+    public TagItem(String key, String value, boolean mandatory, List<String> values, TagType separator) {
         this.key = key;
         this.value = value;
-        this.possibleValues = possibleValues;
-        this.autocompleteValues = autocompleteValues;
+        this.values = values;
         this.mandatory = mandatory;
         this.type = separator;
     }
@@ -68,16 +65,16 @@ public class TagItem implements Parcelable {
 
         for (int i = 0; i < size; i++) {
             final String value = in.readString();
-            this.autocompleteValues.add(value);
+            this.values.add(value);
         }
     }
 
-    public List<String> getAutocompleteValues() {
-        return autocompleteValues;
+    public List<String> getValues() {
+        return values;
     }
 
-    public void setAutocompleteValues(List<String> autocompleteValues) {
-        this.autocompleteValues = autocompleteValues;
+    public void setValues(List<String> values) {
+        this.values = values;
     }
 
     public String getKey() {
@@ -108,10 +105,6 @@ public class TagItem implements Parcelable {
         this.mandatory = mandatory;
     }
 
-    public List<String> getPossibleValues() {
-        return possibleValues;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -124,9 +117,9 @@ public class TagItem implements Parcelable {
         dest.writeByte((byte) (mandatory ? 1 : 0));
         dest.writeString((type == null) ? "" : type.toString());
 
-        if (autocompleteValues != null) {
-            dest.writeInt(autocompleteValues.size());
-            for (String autocomplete : autocompleteValues) {
+        if (values != null) {
+            dest.writeInt(values.size());
+            for (String autocomplete : values) {
                 dest.writeString(autocomplete);
             }
         } else {
@@ -147,4 +140,23 @@ public class TagItem implements Parcelable {
         }
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        TagItem tagItem = (TagItem) o;
+
+        return key != null ? key.equals(tagItem.key) : tagItem.key == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return key != null ? key.hashCode() : 0;
+    }
 }

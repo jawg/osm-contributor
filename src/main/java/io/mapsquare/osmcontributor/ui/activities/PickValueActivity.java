@@ -25,6 +25,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,17 +37,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.ui.adapters.SearchableAdapter;
+import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 
 public class PickValueActivity extends AppCompatActivity {
     public static final int PICK_VALUE_ACTIVITY_CODE = 1;
     public static final String KEY = "KEY";
     public static final String VALUE = "VALUE";
     public static final String AUTOCOMPLETE = "AUTOCOMPLETE";
+    public static final String TAG_TYPE = "TAG_TYPE";
     private String key;
     private List<String> autocompleteValues = new ArrayList<>();
     private SearchableAdapter adapter;
@@ -82,6 +85,7 @@ public class PickValueActivity extends AppCompatActivity {
 
         key = intent.getStringExtra(KEY);
         String value = intent.getStringExtra(VALUE);
+        TagItem.TagType tagType = TagItem.TagType.valueOf(intent.getStringExtra(TAG_TYPE));
         Collections.addAll(autocompleteValues, intent.getStringArrayExtra(AUTOCOMPLETE));
 
         setTitle(key);
@@ -92,6 +96,10 @@ public class PickValueActivity extends AppCompatActivity {
         editTextValue.setText(value);
         editTextValue.setSelectAllOnFocus(true);
         autocompleteListView.setAdapter(adapter);
+
+        if (tagType == TagItem.TagType.NUMBER || tagType == TagItem.TagType.PHONE) {
+            editTextValue.setInputType(InputType.TYPE_CLASS_NUMBER);
+        }
 
         // Add Text Change Listener to EditText
         editTextValue.addTextChangedListener(new TextWatcher() {

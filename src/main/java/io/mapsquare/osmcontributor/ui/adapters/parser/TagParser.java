@@ -47,11 +47,11 @@ public class TagParser {
         return Character.toUpperCase(tagName.charAt(0)) + tagName.substring(1).replace("_", " ");
     }
 
-    public static TagItem.TagType getTagType(String key, List<String> possibleValues, List<String> autoCompleteValues) {
+    public static TagItem.TagType getTagType(String key, List<String> values) {
         if (key.equals("opening_hours")) {
             return TagItem.TagType.OPENING_HOURS;
         } else if (key.equals("name")) {
-            return TagItem.TagType.AUTOCOMPLETE;
+            return TagItem.TagType.TEXT;
         } else if (key.contains("phone")) {
             return TagItem.TagType.PHONE;
         } else if (key.contains("height")) {
@@ -61,54 +61,18 @@ public class TagParser {
         TagItem.TagType tagType = TagItem.TagType.TEXT;
         // Check possible values from h2geo.json to identify tag type. First step.
         int sizePossibleValues = 0;
-        if (possibleValues != null && !possibleValues.isEmpty()) {
-            sizePossibleValues = possibleValues.size();
-            if (possibleValues.contains("yes") || possibleValues.contains("no")) {
+        if (values != null && !values.isEmpty()) {
+            sizePossibleValues = values.size();
+            if (values.contains("yes") || values.contains("no")) {
                 if (sizePossibleValues < 7) {
-                    tagType = TagItem.TagType.SINGLE_CHOICE_SHORT;
-                } else if (sizePossibleValues >= 7) {
-                    tagType = TagItem.TagType.AUTOCOMPLETE;
+                    tagType = TagItem.TagType.SINGLE_CHOICE;
+                } else {
+                    tagType = TagItem.TagType.TEXT;
                 }
-            } else if (autoCompleteValues.size() > 1) {
-                tagType = TagItem.TagType.AUTOCOMPLETE;
-            }
-        }
-
-        int autoCompleteValuesSize = countAutoCompleteValues(possibleValues, autoCompleteValues);
-
-        // Check auto complete values to provide more choice to the user. Next step.
-        int globalSize = sizePossibleValues;
-        if (autoCompleteValues != null && !autoCompleteValues.isEmpty()) {
-            globalSize += autoCompleteValuesSize;
-            if (autoCompleteValues.contains("yes") || autoCompleteValues.contains("no")) {
-                if (globalSize < 7) {
-                    tagType = TagItem.TagType.SINGLE_CHOICE_SHORT;
-                } else if (globalSize >= 7 && globalSize < 20) {
-                    tagType = TagItem.TagType.AUTOCOMPLETE;
-                }
-            } else if (autoCompleteValues.size() > 1) {
-                tagType = TagItem.TagType.AUTOCOMPLETE;
+            } else if (sizePossibleValues > 1) {
+                tagType = TagItem.TagType.TEXT;
             }
         }
         return tagType;
-    }
-
-    /**
-     * Count values that are not in possible values.
-     * @param possibleValues List of possible values
-     * @param autoCompleteValues List of propositions
-     * @return Size of autocomplete values that are not in possible values list
-     */
-    private static int countAutoCompleteValues(List<String> possibleValues, List<String> autoCompleteValues) {
-        int autoCompleteValuesSize = 0;
-        if (possibleValues != null && autoCompleteValues != null) {
-            autoCompleteValuesSize = autoCompleteValues.size();
-            for (String possibleValue : possibleValues) {
-                if (autoCompleteValues.contains(possibleValue)) {
-                    autoCompleteValuesSize -= 1;
-                }
-            }
-        }
-        return autoCompleteValuesSize;
     }
 }

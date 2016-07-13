@@ -25,14 +25,14 @@ import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 /**
  * Parse value from OSM database.
  */
-public class ValueParser {
+public class ShortListParser {
 
     public static String getFormatedValue(TagItem.TagType tagType, String value, List<String> possibleValues) {
         if (value == null || value.isEmpty()) {
-            return tagType == TagItem.TagType.AUTOCOMPLETE ? "undefined" : null;
+            return null;
         }
 
-        if (tagType == TagItem.TagType.SINGLE_CHOICE_SHORT) {
+        if (tagType == TagItem.TagType.SINGLE_CHOICE) {
             if (possibleValues.size() == 2 && (possibleValues.contains("yes") || possibleValues.contains("no"))) {
                 // Case yes/no/undefined
                 if (value.startsWith("y") || value.startsWith("s") || value.startsWith("o") || value.startsWith("1") || value.equals("true")) {
