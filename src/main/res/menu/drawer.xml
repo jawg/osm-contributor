@@ -55,6 +55,10 @@
             android:title="@string/switch_style_satellite"/>
 
         <item
+            android:id="@+id/profile_load"
+            android:title="@string/profile_load"/>
+
+        <item
             android:id="@+id/replay_tuto_menu"
             android:title="@string/replay_tuto"
             android:visible="false"/>

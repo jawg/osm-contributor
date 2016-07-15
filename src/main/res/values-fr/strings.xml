@@ -153,6 +153,10 @@
     <string name="filter_pois">POIs</string>
     <string name="filter_poi_all">Tous</string>
 
+    <!-- Profile -->
+    <string name="profile_load">Charger un profil</string>
+    <string name="profile_refresh_error">Une erreur est survenue lors du rafraîchissement des profils!</string>
+
     <!-- Saving -->
     <string name="save_now">Sauvegarder&#8230;</string>
     <string name="title_activity_upload">Sauvegarde des modifications</string>

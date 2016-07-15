@@ -33,9 +33,11 @@ import io.mapsquare.osmcontributor.database.helper.DatabaseModule;
 import io.mapsquare.osmcontributor.database.helper.OsmSqliteOpenHelper;
 import io.mapsquare.osmcontributor.login.LoginModule;
 import io.mapsquare.osmcontributor.rest.CommonSyncModule;
+import io.mapsquare.osmcontributor.rest.managers.H2GeoPresetsManager;
 import io.mapsquare.osmcontributor.rest.managers.SyncManager;
 import io.mapsquare.osmcontributor.sync.SyncModule;
 import io.mapsquare.osmcontributor.ui.activities.EditPoiActivity;
+import io.mapsquare.osmcontributor.ui.activities.LoadProfileActivity;
 import io.mapsquare.osmcontributor.ui.activities.MapActivity;
 import io.mapsquare.osmcontributor.ui.activities.MyPreferencesActivity;
 import io.mapsquare.osmcontributor.ui.activities.NoteActivity;
@@ -73,6 +75,7 @@ import io.mapsquare.osmcontributor.utils.ways.Geocoder;
         CoreModule.class,
         DatabaseModule.class,
         SyncModule.class,
+        PresetsModule.class,
         CommonSyncModule.class,
         LoginModule.class,
         TypeModule.class
@@ -100,6 +103,8 @@ public interface OsmTemplateComponent {
     void inject(TypeListActivity typeListActivity);
 
     void inject(TypeListActivityPresenter typeListActivityPresenter);
+
+    void inject(LoadProfileActivity loadProfileActivity);
 
     // Fragments
     void inject(MyPreferenceFragment myPreferenceFragment);
@@ -157,6 +162,10 @@ public interface OsmTemplateComponent {
     EditPoiManager getEditPoiManager();
 
     SyncManager getSyncManager();
+
+    // Presets
+
+    H2GeoPresetsManager getPresetsManager();
 
     // Poi type
     TypeManager getTypeManager();

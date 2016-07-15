@@ -467,6 +467,9 @@ public class MapActivity extends AppCompatActivity {
 
     private void onOptionsClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
+            case R.id.profile_load:
+                startProfileLoadingActivity();
+                break;
             case R.id.replay_tuto_menu:
                 replayTutorial();
                 break;
@@ -515,6 +518,12 @@ public class MapActivity extends AppCompatActivity {
     private void startAboutActivity() {
         drawerLayout.closeDrawer(navigationView);
         Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
+    }
+
+    private void startProfileLoadingActivity() {
+        drawerLayout.closeDrawer(navigationView);
+        Intent intent = new Intent(this, LoadProfileActivity.class);
         startActivity(intent);
     }
 

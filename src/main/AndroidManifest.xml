@@ -68,6 +68,9 @@
             android:name=".ui.activities.PickValueActivity"
             android:label="@string/title_activity_pick_value"/>
         <activity
+            android:name=".ui.activities.LoadProfileActivity"
+            android:label="@string/profile_load"/>
+        <activity
             android:name=".ui.activities.MyPreferencesActivity"
             android:label="@string/title_activity_my_preferences"/>
         <activity

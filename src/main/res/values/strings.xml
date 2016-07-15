@@ -168,6 +168,10 @@
     <string name="filter_pois">POIs</string>
     <string name="filter_poi_all">All</string>
 
+    <!-- Profile -->
+    <string name="profile_load">Load profile</string>
+    <string name="profile_refresh_error">An error occurred while refreshing profiles!</string>
+
     <!-- Saving -->
     <string name="save_now">Save&#8230;</string>
     <string name="title_activity_upload">Save modifications</string>
