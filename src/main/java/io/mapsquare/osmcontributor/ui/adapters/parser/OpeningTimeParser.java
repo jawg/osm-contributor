@@ -18,6 +18,8 @@
  */
 package io.mapsquare.osmcontributor.ui.adapters.parser;
 
+import android.util.Log;
+
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
@@ -69,6 +71,7 @@ public class OpeningTimeParser implements ValueParser<OpeningTime> {
             builder.append(dayPart);
         }
 
+        Log.i("OpeningTimeParser", "toValue: " + builder);
         return builder.toString();
     }
 

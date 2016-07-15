@@ -27,12 +27,12 @@ import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
  */
 public class ShortListParser {
 
-    public static String getFormatedValue(TagItem.TagType tagType, String value, List<String> possibleValues) {
+    public static String getFormatedValue(TagItem.Type type, String value, List<String> possibleValues) {
         if (value == null || value.isEmpty()) {
             return null;
         }
 
-        if (tagType == TagItem.TagType.SINGLE_CHOICE) {
+        if (type == TagItem.Type.SINGLE_CHOICE) {
             if (possibleValues.size() == 2 && (possibleValues.contains("yes") || possibleValues.contains("no"))) {
                 // Case yes/no/undefined
                 if (value.startsWith("y") || value.startsWith("s") || value.startsWith("o") || value.startsWith("1") || value.equals("true")) {

@@ -28,6 +28,7 @@ import io.mapsquare.osmcontributor.model.utils.OpeningHours;
 import io.mapsquare.osmcontributor.model.utils.OpeningMonth;
 import io.mapsquare.osmcontributor.model.utils.OpeningTime;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParserImpl;
 
 /**
  * @author Tommy Buonomo on 05/07/16.
@@ -399,6 +400,19 @@ public class OpeningTimeParserTest {
         openingTime.addOpeningMonth(openingMonth2);
 
         Assert.assertEquals(parser.toValue(openingTime), "Feb-Mar: We 08:00-18:00, Sa 05:30-17:30; Apr-May: Su 08:00-18:00, Sa 08:10-19:45");
+    }
+
+    @Test
+    public void regexOpeningTime() {
+        OpeningTimeParserImpl openingTimeParser = new OpeningTimeParserImpl();
+        System.out.println("One period with month");
+        Assert.assertTrue(openingTimeParser.support("May,Jun: Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
+        System.out.println("Without month");
+        Assert.assertTrue(openingTimeParser.support("Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
+        System.out.println("Without month, only a day");
+        Assert.assertTrue(openingTimeParser.support("Th 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
+        System.out.println("Two period month");
+        Assert.assertTrue(openingTimeParser.support("May,Jun: Th 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00; May: Th 08:00-18:00,Th,Su 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
     }
 
 }

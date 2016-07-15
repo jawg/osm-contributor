@@ -29,21 +29,20 @@ public class TagItem implements Parcelable {
     private String value;
     private boolean mandatory;
     private List<String> values = new ArrayList<>();
-    private TagType type;
+    private Type type;
 
     /**
      * Use the best UI widget based on the tag name and possible values.
      */
-    public enum TagType {
+    public enum Type {
         OPENING_HOURS,          // Use when tag value is opening_hours
         SINGLE_CHOICE,    // Use when tag value can be choose in a short list (< 7)
         CONSTANT,           // Use when tag value can't be modified (ex: type amenity)
-        PHONE,                  // Use when tag value is a phone number
         NUMBER,                 // Use when tag value is a number (ex: height, floors)
         TEXT                    // Use by default
     }
 
-    public TagItem(String key, String value, boolean mandatory, List<String> values, TagType separator) {
+    public TagItem(String key, String value, boolean mandatory, List<String> values, Type separator) {
         this.key = key;
         this.value = value;
         this.values = values;
@@ -56,7 +55,7 @@ public class TagItem implements Parcelable {
         this.value = in.readString();
         this.mandatory = in.readByte() != 0;
         try {
-            this.type = TagType.valueOf(in.readString());
+            this.type = Type.valueOf(in.readString());
         } catch (IllegalArgumentException x) {
             this.type = null;
         }
@@ -93,7 +92,7 @@ public class TagItem implements Parcelable {
         this.value = value;
     }
 
-    public TagType getTagType() {
+    public Type getTagType() {
         return type;
     }
 

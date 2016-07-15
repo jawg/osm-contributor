@@ -85,7 +85,7 @@ public class PickValueActivity extends AppCompatActivity {
 
         key = intent.getStringExtra(KEY);
         String value = intent.getStringExtra(VALUE);
-        TagItem.TagType tagType = TagItem.TagType.valueOf(intent.getStringExtra(TAG_TYPE));
+        TagItem.Type type = TagItem.Type.valueOf(intent.getStringExtra(TAG_TYPE));
         Collections.addAll(autocompleteValues, intent.getStringArrayExtra(AUTOCOMPLETE));
 
         setTitle(key);
@@ -97,7 +97,7 @@ public class PickValueActivity extends AppCompatActivity {
         editTextValue.setSelectAllOnFocus(true);
         autocompleteListView.setAdapter(adapter);
 
-        if (tagType == TagItem.TagType.NUMBER || tagType == TagItem.TagType.PHONE) {
+        if (type == TagItem.Type.NUMBER) {
             editTextValue.setInputType(InputType.TYPE_CLASS_NUMBER);
         }
 

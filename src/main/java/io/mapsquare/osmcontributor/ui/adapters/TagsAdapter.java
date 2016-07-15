@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.Poi;
@@ -48,9 +49,15 @@ import io.mapsquare.osmcontributor.model.utils.OpeningMonth;
 import io.mapsquare.osmcontributor.model.utils.OpeningTime;
 import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
-import io.mapsquare.osmcontributor.ui.adapters.parser.ShortListParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.AutoCompleteParserImpl;
+import io.mapsquare.osmcontributor.ui.adapters.parser.NumberParserImpl;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParserImpl;
+import io.mapsquare.osmcontributor.ui.adapters.parser.Parser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.ShortListParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.SingleChoiceParserImpl;
 import io.mapsquare.osmcontributor.ui.adapters.parser.TagParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.TextParserImpl;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
 import io.mapsquare.osmcontributor.ui.utils.SimpleTextWatcher;
@@ -75,6 +82,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private boolean expertMode = false;
     private TagParser tagParser;
     private OpeningTimeParser openingTimeParser;
+    private Map<Integer, Parser> parsers = new TreeMap<>();
 
     public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity activity, TagParser tagParser, OpeningTimeParser openingTimeParser, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
@@ -83,6 +91,17 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.expertMode = expertMode;
         this.tagParser = tagParser;
         this.openingTimeParser = openingTimeParser;
+
+        NumberParserImpl numberParser = new NumberParserImpl();
+        AutoCompleteParserImpl autoCompleteParser = new AutoCompleteParserImpl();
+        TextParserImpl textParser = new TextParserImpl();
+        OpeningTimeParserImpl openingTimeParserImpl = new OpeningTimeParserImpl();
+        SingleChoiceParserImpl singleChoiceParser = new SingleChoiceParserImpl();
+        parsers.put(numberParser.getPriority(), numberParser);
+        parsers.put(autoCompleteParser.getPriority(), autoCompleteParser);
+        parsers.put(textParser.getPriority(), textParser);
+        parsers.put(openingTimeParserImpl.getPriority(), openingTimeParserImpl);
+        parsers.put(singleChoiceParser.getPriority(), singleChoiceParser);
 
         if (tagItemList == null) {
             loadTags(poi.getTagsMap(), tagValueSuggestionsMap);
@@ -100,7 +119,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         /* Create different views depending of type of the tag */
-        switch (TagItem.TagType.values()[viewType]) {
+        switch (TagItem.Type.values()[viewType]) {
             case CONSTANT:
                 View poiTagImposedLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_constant, parent, false);
                 return new TagItemConstantViewHolder(poiTagImposedLayout);
@@ -199,18 +218,18 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     private void addTag(String key, String value, boolean mandatory, List<String> values, int position, boolean updatable) {
         // Get the tag type
-        TagItem.TagType tagType = TagParser.getTagType(key, values);
+        TagItem.Type type = TagParser.getTagType(key, values, parsers);
 
         // Parse value if needed
-        if (tagType == TagItem.TagType.SINGLE_CHOICE) {
-            value = ShortListParser.getFormatedValue(tagType, value, values);
+        if (type == TagItem.Type.SINGLE_CHOICE) {
+            value = ShortListParser.getFormatedValue(type, value, values);
         }
 
         // Add into the list
         if (!updatable) {
-            tagItemList.add(position, new TagItem(key, value, mandatory, values, TagItem.TagType.CONSTANT));
+            tagItemList.add(position, new TagItem(key, value, mandatory, values, TagItem.Type.CONSTANT));
         } else {
-            tagItemList.add(position, new TagItem(key, value, mandatory, values, tagType));
+            tagItemList.add(position, new TagItem(key, value, mandatory, values, type));
         }
 
         // Notify changes
@@ -338,7 +357,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.getTextInputLayout().setHint(tagItem.getKey());
 
         // If phone type if phone, set input type to number
-        if (tagItem.getTagType() == TagItem.TagType.PHONE || tagItem.getTagType() == TagItem.TagType.NUMBER) {
+        if (tagItem.getTagType() == TagItem.Type.NUMBER) {
             holder.getTextViewValue().setInputType(InputType.TYPE_CLASS_NUMBER);
         }
 

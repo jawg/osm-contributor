@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.ui.adapters.parser;
 import android.app.Application;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -47,32 +48,14 @@ public class TagParser {
         return Character.toUpperCase(tagName.charAt(0)) + tagName.substring(1).replace("_", " ");
     }
 
-    public static TagItem.TagType getTagType(String key, List<String> values) {
-        if (key.equals("opening_hours")) {
-            return TagItem.TagType.OPENING_HOURS;
-        } else if (key.equals("name")) {
-            return TagItem.TagType.TEXT;
-        } else if (key.contains("phone")) {
-            return TagItem.TagType.PHONE;
-        } else if (key.contains("height")) {
-            return TagItem.TagType.NUMBER;
-        }
-
-        TagItem.TagType tagType = TagItem.TagType.TEXT;
-        // Check possible values from h2geo.json to identify tag type. First step.
-        int sizePossibleValues = 0;
-        if (values != null && !values.isEmpty()) {
-            sizePossibleValues = values.size();
-            if (values.contains("yes") || values.contains("no")) {
-                if (sizePossibleValues < 7) {
-                    tagType = TagItem.TagType.SINGLE_CHOICE;
-                } else {
-                    tagType = TagItem.TagType.TEXT;
-                }
-            } else if (sizePossibleValues > 1) {
-                tagType = TagItem.TagType.TEXT;
+    public static TagItem.Type getTagType(String key, List<String> values, Map<Integer, Parser> parsers) {
+        TagItem.Type type = TagItem.Type.TEXT;
+        for (Parser parser : parsers.values()) {
+            if (parser.isCandidate(key, values)) {
+                type = parser.getType();
+                break;
             }
         }
-        return tagType;
+        return type;
     }
 }
