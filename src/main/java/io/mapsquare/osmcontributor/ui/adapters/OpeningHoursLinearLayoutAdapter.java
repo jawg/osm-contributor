@@ -26,13 +26,18 @@ import android.widget.LinearLayout;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.inject.Inject;
+
+import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.utils.OpeningHours;
 import io.mapsquare.osmcontributor.model.utils.OpeningTime;
-import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningHoursValueParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.mapsquare.osmcontributor.ui.dialogs.EditDaysDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChange;
 
@@ -44,25 +49,29 @@ import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChang
 public class OpeningHoursLinearLayoutAdapter {
     private static final String TAG = "OpeningHoursAdapter";
 
-    private final OpeningTimeParser openingTimeParser;
     private final EventBus eventBus;
     private Activity activity;
     private OpeningTime openingTime;
     private CopyOnWriteArrayList<OpeningHours> openingHoursList;
     private LinearLayout linearLayout;
 
+    @Inject
+    OpeningHoursValueParser openingHoursValueParser;
+
+    @Inject
+    OpeningTimeValueParser openingTimeValueParser;
+
     public OpeningHoursLinearLayoutAdapter(OpeningTime openingTime,
                                            List<OpeningHours> openingHoursList,
-                                           OpeningTimeParser openingTimeParser,
                                            LinearLayout openingHoursLayout,
                                            Activity activity) {
         this.openingTime = openingTime;
-        this.openingTimeParser = openingTimeParser;
         this.activity = activity;
         this.openingHoursList = new CopyOnWriteArrayList<>();
         this.openingHoursList.addAll(openingHoursList);
         this.linearLayout = openingHoursLayout;
         eventBus = EventBus.getDefault();
+        ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
         initEditOpeningHours(openingHoursList);
         initOpeningHoursList();
     }
@@ -117,7 +126,7 @@ public class OpeningHoursLinearLayoutAdapter {
         final EditText textViewDaysValue = (EditText) openingHoursItem.findViewById(R.id.opening_hours_days_value);
         final EditText textViewHoursValue = (EditText) openingHoursItem.findViewById(R.id.opening_hours_hours_value);
 
-        String[] openingHoursPart = openingTimeParser.buildHoursPart(openingHours).toString().split(" ");
+        String[] openingHoursPart = openingHoursValueParser.toValue(Collections.singletonList(openingHours)).split(" ");
 
         if (openingHoursPart.length > 1) {
             textViewDaysValue.setText(openingHoursPart[0]);
@@ -139,7 +148,7 @@ public class OpeningHoursLinearLayoutAdapter {
                     public void onOpeningTimeChanged(OpeningHours openingHours) {
                         eventBus.post(new PleaseApplyOpeningTimeChange(openingTime));
 
-                        String[] openingHoursPart = openingTimeParser.buildHoursPart(openingHours).toString().split(" ");
+                        String[] openingHoursPart = openingHoursValueParser.toValue(Collections.singletonList(openingHours)).split(" ");
                         if (openingHoursPart.length > 1) {
                             textViewDaysValue.setText(openingHoursPart[0]);
                             textViewHoursValue.setText(openingHoursPart[1]);

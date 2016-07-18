@@ -18,12 +18,10 @@
  */
 package io.mapsquare.osmcontributor.ui.adapters.parser;
 
-import io.mapsquare.osmcontributor.model.utils.OpeningTime;
-
 /**
  * @author Tommy Buonomo on 07/07/16.
  */
 public interface ValueParser<T> {
     T fromValue(String value);
-    String toValue(OpeningTime openingTime);
+    String toValue(T t);
 }

@@ -42,6 +42,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.inject.Inject;
+
+import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
@@ -51,7 +54,7 @@ import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 import io.mapsquare.osmcontributor.ui.adapters.parser.AutoCompleteParserImpl;
 import io.mapsquare.osmcontributor.ui.adapters.parser.NumberParserImpl;
-import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParserImpl;
 import io.mapsquare.osmcontributor.ui.adapters.parser.Parser;
 import io.mapsquare.osmcontributor.ui.adapters.parser.ShortListParser;
@@ -81,16 +84,18 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private boolean change = false;
     private boolean expertMode = false;
     private TagParser tagParser;
-    private OpeningTimeParser openingTimeParser;
     private Map<Integer, Parser> parsers = new TreeMap<>();
 
-    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity activity, TagParser tagParser, OpeningTimeParser openingTimeParser, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
+    @Inject
+    OpeningTimeValueParser openingTimeValueParser;
+
+    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity activity, TagParser tagParser, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
         this.activity = activity;
         this.configManager = configManager;
         this.expertMode = expertMode;
         this.tagParser = tagParser;
-        this.openingTimeParser = openingTimeParser;
+        ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
 
         NumberParserImpl numberParser = new NumberParserImpl();
         AutoCompleteParserImpl autoCompleteParser = new AutoCompleteParserImpl();
@@ -426,7 +431,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             openingTime.addOpeningMonth(new OpeningMonth());
         }
 
-        final OpeningMonthAdapter adapter = new OpeningMonthAdapter(openingTime, openingTimeParser, activity);
+        final OpeningMonthAdapter adapter = new OpeningMonthAdapter(openingTime, activity);
         holder.getOpeningTimeRecyclerView().setAdapter(adapter);
         holder.getOpeningTimeRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
         holder.getOpeningTimeRecyclerView().setHasFixedSize(false);

@@ -71,7 +71,6 @@ import io.mapsquare.osmcontributor.model.events.PoiForEditionLoadedEvent;
 import io.mapsquare.osmcontributor.ui.activities.EditPoiActivity;
 import io.mapsquare.osmcontributor.ui.adapters.TagsAdapter;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
-import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParser;
 import io.mapsquare.osmcontributor.ui.adapters.parser.TagParser;
 import io.mapsquare.osmcontributor.ui.dialogs.AddTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.NewPoiTagAddedEvent;
@@ -123,9 +122,6 @@ public class EditPoiFragment extends Fragment {
 
     @Inject
     TagParser tagParser;
-
-    @Inject
-    OpeningTimeParser openingTimeParser;
 
     @BindView(R.id.fab_add)
     FloatingActionButton fabAdd;
@@ -376,7 +372,6 @@ public class EditPoiFragment extends Fragment {
                 tagItemList,
                 getActivity(),
                 tagParser,
-                openingTimeParser,
                 event.getValuesMap(),
                 configManager,
                 sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));

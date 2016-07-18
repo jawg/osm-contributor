@@ -28,12 +28,16 @@ import android.widget.LinearLayout;
 
 import org.greenrobot.eventbus.EventBus;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.utils.OpeningMonth;
 import io.mapsquare.osmcontributor.model.utils.OpeningTime;
-import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningMonthValueParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.mapsquare.osmcontributor.ui.dialogs.EditDaysDialogFragment;
 import io.mapsquare.osmcontributor.ui.dialogs.EditMonthsDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChange;
@@ -43,16 +47,21 @@ import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChang
  */
 public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapter.OpeningTimeHolder> {
     private static final String TAG = "OpeningMonthAdapter";
-    private final OpeningTimeParser openingTimeParser;
     private OpeningTime openingTime;
     private Activity activity;
     private EventBus eventBus;
 
-    public OpeningMonthAdapter(OpeningTime openingTime, OpeningTimeParser openingTimeParser, Activity activity) {
+    @Inject
+    OpeningMonthValueParser openingMonthValueParser;
+
+    @Inject
+    OpeningTimeValueParser openingTimeValueParser;
+
+    public OpeningMonthAdapter(OpeningTime openingTime, Activity activity) {
         this.openingTime = openingTime;
-        this.openingTimeParser = openingTimeParser;
         this.activity = activity;
         eventBus = EventBus.getDefault();
+        ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
     }
 
     @Override
@@ -65,7 +74,7 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
     public void onBindViewHolder(final OpeningTimeHolder holder, int position) {
         final OpeningMonth openingMonth = openingTime.getOpeningMonths().get(position);
 
-        holder.getTextViewMonthValue().setText(openingTimeParser.buildMonthPart(openingMonth));
+        holder.getTextViewMonthValue().setText(openingMonthValueParser.toValue(openingMonth));
 
         // When the months input text is clicked, we start the dialog to pick
         // the opening months
@@ -78,7 +87,7 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
                     @Override
                     public void onOpeningMonthChanged(OpeningMonth o) {
                         openingMonth.setMonths(o.getMonths());
-                        holder.getTextViewMonthValue().setText(openingTimeParser.buildMonthPart(openingMonth));
+                        holder.getTextViewMonthValue().setText(openingMonthValueParser.toValue(openingMonth));
                         eventBus.post(new PleaseApplyOpeningTimeChange(openingTime));
                     }
                 });
@@ -99,7 +108,6 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
 
         new OpeningHoursLinearLayoutAdapter(openingTime,
                 openingMonth.getOpeningHours(),
-                openingTimeParser,
                 holder.getOpeningHoursLayout(),
                 activity);
     }

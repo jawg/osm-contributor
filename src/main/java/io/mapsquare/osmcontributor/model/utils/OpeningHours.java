@@ -70,6 +70,12 @@ public class OpeningHours {
         }
     }
 
+    public void setAllDaysActivated(boolean active) {
+        for (int i = 0; i < days.length; i++) {
+            setDayActivated(i, active);
+        }
+    }
+
     public Days[] getDays() {
         return days;
     }

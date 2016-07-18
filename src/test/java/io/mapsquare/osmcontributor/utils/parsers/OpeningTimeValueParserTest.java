@@ -24,93 +24,25 @@ import org.joda.time.LocalTime;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import io.mapsquare.osmcontributor.model.utils.OpeningHours;
 import io.mapsquare.osmcontributor.model.utils.OpeningMonth;
 import io.mapsquare.osmcontributor.model.utils.OpeningTime;
-import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParser;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParserImpl;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 
 /**
  * @author Tommy Buonomo on 05/07/16.
  */
 
-public class OpeningTimeParserTest {
-    private static OpeningTimeParser parser;
-
+public class OpeningTimeValueParserTest {
+    private static OpeningTimeValueParser parser;
 
     @BeforeClass
     public static void init() {
-        parser = new OpeningTimeParser();
-    }
-
-    @Test
-    public void isNonStop1() {
-        OpeningHours openingHours = new OpeningHours();
-        openingHours.setFromTime(new LocalTime(0, 0));
-        openingHours.setToTime(new LocalTime(0, 0));
-        openingHours.setDays(OpeningHours.Days.values());
-
-        Assert.assertTrue(parser.isNonStop(openingHours));
-    }
-
-    @Test
-    public void isNonStop2() {
-        OpeningHours openingHours = new OpeningHours();
-        openingHours.setFromTime(new LocalTime(0, 0));
-        openingHours.setToTime(new LocalTime(23, 50));
-        openingHours.setDays(OpeningHours.Days.values());
-
-        Assert.assertTrue(parser.isNonStop(openingHours));
-    }
-
-    @Test
-    public void isNonStop3() {
-        OpeningHours openingHours = new OpeningHours();
-        openingHours.setFromTime(new LocalTime(0, 0));
-        openingHours.setToTime(new LocalTime(23, 49));
-        openingHours.setDays(OpeningHours.Days.values());
-
-        Assert.assertFalse(parser.isNonStop(openingHours));
-    }
-
-    @Test
-    public void isNonStop4() {
-        OpeningHours openingHours = new OpeningHours();
-        openingHours.setFromTime(new LocalTime(21, 59));
-        openingHours.setToTime(new LocalTime(21, 58));
-        openingHours.setDays(OpeningHours.Days.values());
-
-        Assert.assertTrue(parser.isNonStop(openingHours));
-    }
-
-    @Test
-    public void isNonStop5() {
-        OpeningHours openingHours = new OpeningHours();
-        openingHours.setFromTime(new LocalTime(7, 36));
-        openingHours.setToTime(new LocalTime(7, 33));
-        openingHours.setDays(OpeningHours.Days.values());
-
-        Assert.assertTrue(parser.isNonStop(openingHours));
-    }
-
-    @Test
-    public void isNonStop6() {
-        OpeningHours openingHours = new OpeningHours();
-        openingHours.setFromTime(new LocalTime(0, 2));
-        openingHours.setToTime(new LocalTime(0, 1));
-        openingHours.setDays(OpeningHours.Days.values());
-
-        Assert.assertTrue(parser.isNonStop(openingHours));
-    }
-
-    @Test
-    public void isNonStop7() {
-        OpeningHours openingHours = new OpeningHours();
-        openingHours.setFromTime(new LocalTime(23, 59));
-        openingHours.setToTime(new LocalTime(23, 58));
-        openingHours.setDays(OpeningHours.Days.values());
-
-        Assert.assertTrue(parser.isNonStop(openingHours));
+        parser = new OpeningTimeValueParser();
     }
 
     @Test
@@ -217,6 +149,7 @@ public class OpeningTimeParserTest {
         OpeningTime openingTime = new OpeningTime();
         OpeningMonth openingMonth = new OpeningMonth();
         OpeningHours openingHours = new OpeningHours();
+        openingHours.setAllDaysActivated(false);
         openingHours.setDayActivated(0, true);
         openingHours.setDayActivated(1, true);
         openingHours.setDayActivated(6, true);
@@ -231,6 +164,7 @@ public class OpeningTimeParserTest {
         OpeningTime openingTime = new OpeningTime();
         OpeningMonth openingMonth = new OpeningMonth();
         OpeningHours openingHours = new OpeningHours();
+        openingHours.setAllDaysActivated(false);
         openingMonth.addOpeningHours(openingHours);
         openingTime.addOpeningMonth(openingMonth);
         openingHours.setDayActivated(5, true);
@@ -264,6 +198,7 @@ public class OpeningTimeParserTest {
         OpeningTime openingTime = new OpeningTime();
         OpeningMonth openingMonth = new OpeningMonth();
         OpeningHours openingHours = new OpeningHours();
+        openingHours.setAllDaysActivated(false);
         openingMonth.addOpeningHours(openingHours);
 
         openingMonth.setMonthActivated(0, true);
@@ -290,6 +225,7 @@ public class OpeningTimeParserTest {
         OpeningTime openingTime = new OpeningTime();
         OpeningMonth openingMonth = new OpeningMonth();
         OpeningHours openingHours = new OpeningHours();
+        openingHours.setAllDaysActivated(false);
         openingMonth.addOpeningHours(openingHours);
 
         openingMonth.setMonthActivated(2, true);
@@ -312,8 +248,10 @@ public class OpeningTimeParserTest {
 
         openingMonth.setMonthActivated(2, true);
 
+        openingHours1.setAllDaysActivated(false);
         openingHours1.setDayActivated(2, true);
 
+        openingHours2.setAllDaysActivated(false);
         openingHours2.setDayActivated(5, true);
         openingHours2.setFromTime(new LocalTime(5, 30));
         openingHours2.setToTime(new LocalTime(17, 30));
@@ -341,18 +279,21 @@ public class OpeningTimeParserTest {
         openingMonth.setMonthActivated(6, true);
         openingMonth.setMonthActivated(10, true);
 
+        openingHours1.setAllDaysActivated(false);
         openingHours1.setDayActivated(2, true);
         openingHours1.setDayActivated(4, true);
         openingHours1.setDayActivated(5, true);
         openingHours1.setFromTime(new LocalTime(10, 45));
         openingHours1.setToTime(new LocalTime(19, 15));
 
+        openingHours2.setAllDaysActivated(false);
         openingHours2.setDayActivated(5, true);
         openingHours2.setDayActivated(6, true);
         openingHours2.setDayActivated(1, true);
         openingHours2.setFromTime(new LocalTime(5, 30));
         openingHours2.setToTime(new LocalTime(17, 30));
 
+        openingHours3.setAllDaysActivated(false);
         openingHours3.setDayActivated(2, true);
 
         openingTime.addOpeningMonth(openingMonth);
@@ -373,8 +314,10 @@ public class OpeningTimeParserTest {
         openingMonth1.setMonthActivated(1, true);
         openingMonth1.setMonthActivated(2, true);
 
+        openingHours1.setAllDaysActivated(false);
         openingHours1.setDayActivated(2, true);
 
+        openingHours2.setAllDaysActivated(false);
         openingHours2.setDayActivated(5, true);
         openingHours2.setFromTime(new LocalTime(5, 30));
         openingHours2.setToTime(new LocalTime(17, 30));
@@ -389,8 +332,10 @@ public class OpeningTimeParserTest {
         openingMonth2.setMonthActivated(3, true);
         openingMonth2.setMonthActivated(4, true);
 
+        openingHours3.setAllDaysActivated(false);
         openingHours3.setDayActivated(6, true);
 
+        openingHours4.setAllDaysActivated(false);
         openingHours4.setDayActivated(5, true);
 
         openingHours4.setFromTime(new LocalTime(8, 10));
@@ -400,6 +345,34 @@ public class OpeningTimeParserTest {
         openingTime.addOpeningMonth(openingMonth2);
 
         Assert.assertEquals(parser.toValue(openingTime), "Feb-Mar: We 08:00-18:00, Sa 05:30-17:30; Apr-May: Su 08:00-18:00, Sa 08:10-19:45");
+    }
+
+    public static final String PATTERN_MONTH = "(\\bJan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec\\b)";
+
+    public static final String PATTERN_DAY = "(\\bMo|Tu|We|Th|Fr|Sa|Su\\b)";
+
+    public static final String PATTERN_HOUR = "\\d{2}:\\d{2}-\\d{2}:\\d{2}";
+
+    public static final String PATTERN =
+            "(" + PATTERN_MONTH + "(-" + PATTERN_MONTH + ")?" + "(,\\s?" + PATTERN_MONTH +
+                    "(-" + PATTERN_MONTH + ")?)*:\\s?)?" +
+                    "(" + PATTERN_DAY + "(-" + PATTERN_DAY + ")?" +
+                    "((,\\s?" + PATTERN_DAY + "(-" + PATTERN_DAY + ")?)?)*\\s" +
+                    PATTERN_HOUR + ")(,\\s?(" + PATTERN_DAY +
+                    "(-" + PATTERN_DAY + ")?" +
+                    "((,\\s?" + PATTERN_DAY +
+                    "(-" + PATTERN_DAY + ")?)?)*\\s" +
+                    PATTERN_HOUR + "))*";
+
+    public static final String PATTERN_FINAL = PATTERN + "(;\\s?" + PATTERN + ")*";
+
+    @Test
+    public void fromValueTest1() {
+        String s = "May,Jun: Th 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00; May: Th 08:00-18:00,Th,Su 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00";
+
+        Pattern pattern = Pattern.compile(PATTERN_FINAL);
+        Matcher matcher = pattern.matcher(s);
+
     }
 
     @Test
