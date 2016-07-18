@@ -50,13 +50,13 @@ import io.mapsquare.osmcontributor.ui.adapters.OpeningMonthAdapter;
 import io.mapsquare.osmcontributor.ui.adapters.TagsAdapter;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.mapsquare.osmcontributor.ui.dialogs.AddValueDialogFragment;
-import io.mapsquare.osmcontributor.ui.fragments.EditPoiFragment;
 import io.mapsquare.osmcontributor.ui.dialogs.EditPoiTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.dialogs.EditPoiTypeDialogFragment;
 import io.mapsquare.osmcontributor.ui.dialogs.EditPoiTypeNameDialogFragment;
+import io.mapsquare.osmcontributor.ui.dialogs.NoteCommentDialogFragment;
+import io.mapsquare.osmcontributor.ui.fragments.EditPoiFragment;
 import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
 import io.mapsquare.osmcontributor.ui.fragments.MyPreferenceFragment;
-import io.mapsquare.osmcontributor.ui.dialogs.NoteCommentDialogFragment;
 import io.mapsquare.osmcontributor.ui.fragments.NoteDetailFragment;
 import io.mapsquare.osmcontributor.ui.fragments.PoiDetailFragment;
 import io.mapsquare.osmcontributor.ui.managers.EditPoiManager;
@@ -69,7 +69,6 @@ import io.mapsquare.osmcontributor.ui.presenters.MapFragmentPresenter;
 import io.mapsquare.osmcontributor.ui.presenters.TypeListActivityPresenter;
 import io.mapsquare.osmcontributor.utils.core.ArpiInitializer;
 import io.mapsquare.osmcontributor.utils.core.CoreModule;
-import io.mapsquare.osmcontributor.ui.adapters.parser.TagParser;
 import io.mapsquare.osmcontributor.utils.ways.Geocoder;
 
 @Singleton
@@ -179,9 +178,5 @@ public interface OsmTemplateComponent {
     // Poi type
     TypeManager getTypeManager();
 
-    TagParser getTagParser();
-
     OpeningTimeValueParser getOpeningTimeParser();
-
-
 }

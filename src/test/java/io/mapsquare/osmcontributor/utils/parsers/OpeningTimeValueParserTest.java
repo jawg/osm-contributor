@@ -21,8 +21,11 @@ package io.mapsquare.osmcontributor.utils.parsers;
 import junit.framework.Assert;
 
 import org.joda.time.LocalTime;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +33,8 @@ import java.util.regex.Pattern;
 import io.mapsquare.osmcontributor.model.utils.OpeningHours;
 import io.mapsquare.osmcontributor.model.utils.OpeningMonth;
 import io.mapsquare.osmcontributor.model.utils.OpeningTime;
+import io.mapsquare.osmcontributor.modules.DaggerOsmTemplateComponent;
+import io.mapsquare.osmcontributor.modules.OsmTemplateModule;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParserImpl;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 
@@ -37,12 +42,15 @@ import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
  * @author Tommy Buonomo on 05/07/16.
  */
 
+@RunWith(RobolectricTestRunner.class)
 public class OpeningTimeValueParserTest {
-    private static OpeningTimeValueParser parser;
 
-    @BeforeClass
-    public static void init() {
-        parser = new OpeningTimeValueParser();
+    OpeningTimeValueParser parser;
+
+    @Before
+    public void before() {
+        parser = DaggerOsmTemplateComponent.builder()
+                .osmTemplateModule(new OsmTemplateModule(Robolectric.application)).build().getOpeningTimeParser();
     }
 
     @Test
