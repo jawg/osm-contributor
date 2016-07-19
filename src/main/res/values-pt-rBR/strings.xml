@@ -181,4 +181,7 @@
   <string name="revert_snack_bar">Reverter mudanças</string>
   <string name="undo_snack_bar">Desfazer</string>
   <string name="node_ref_title">Ponto</string>
+  <string name="malformated_tag">O valor da tag não respeita os convenções de OSM</string>
+  <string name="malformated_value">Valor actual : </string>
+
 </resources>

@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.ui.utils.views.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -31,7 +32,7 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
+import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 
 public class TagRadioChoiceHolder extends RecyclerView.ViewHolder {
     public View poiTagLayout;
@@ -46,6 +47,9 @@ public class TagRadioChoiceHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.rb_1)
     RadioButton undefinedRadioButton;
+
+    @BindView(R.id.content_layout)
+    LinearLayout content;
 
     public TagRadioChoiceHolder(View v) {
         super(v);
@@ -74,18 +78,26 @@ public class TagRadioChoiceHolder extends RecyclerView.ViewHolder {
         return undefinedRadioButton;
     }
 
+    public LinearLayout getContent() {
+        return content;
+    }
+
     @OnClick({R.id.rb_1, R.id.rb_2, R.id.rb_3, R.id.rb_4, R.id.rb_5, R.id.rb_6})
     public void onClick(View v) {
         // Uncheck all radio buttons
-        undefinedRadioButton.setChecked(false);
-        for (RadioButton radioButton : radioButtons) {
-            radioButton.setChecked(false);
+        RadioButton radioButtonSelected = (RadioButton) v;
+
+        if (undefinedRadioButton.isChecked() && undefinedRadioButton.getId() != v.getId()) {
+            undefinedRadioButton.setChecked(false);
         }
-        // Check selected radio button
-        RadioButton radioButton = (RadioButton) v;
-        radioButton.setChecked(true);
+
+        for (int i = 0; i < radioButtons.length; i++) {
+            if (radioButtons[i].getId() != v.getId() && radioButtons[i].isChecked()) {
+                radioButtons[i].setChecked(false);
+            }
+        }
 
         // Apply change
-        eventBus.post(new PleaseApplyTagChangeView(textViewKey.getText().toString(), radioButton.getText().toString()));
+        eventBus.post(new PleaseApplyTagChange(textViewKey.getText().toString(), radioButtonSelected.getText().toString()));
     }
 }

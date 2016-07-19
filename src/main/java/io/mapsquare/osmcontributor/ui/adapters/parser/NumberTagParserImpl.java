@@ -18,44 +18,44 @@
  */
 package io.mapsquare.osmcontributor.ui.adapters.parser;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 
-public class SingleChoiceParserImpl implements Parser {
+public class NumberTagParserImpl implements TagParser {
 
-    /**
-     * Limit to consider the use of a single choice widget. If size of possible values
-     * are higher that 7, we use another widget (AUTOCOMPLETE).
-     */
-    private static final int LIMIT = 7;
+    private static final List<String> TAG_KEY_POSSIBLE = Arrays.asList("phone", "height", "floors", "level", "layer", "visitors");
 
-    /**
-     * Possible values.
-     */
-    private List<String> possibleValues = new ArrayList<>(0);
+    private static final String NUMBER_PATTERN = "[0-9]*(.[0-9]*)?";
 
     @Override
     public TagItem.Type getType() {
-        return TagItem.Type.SINGLE_CHOICE;
+        return TagItem.Type.NUMBER;
     }
 
     @Override
     public boolean isCandidate(String key, List<String> values) {
-        this.possibleValues = values;
-        // If size is < 7 and values must be choose in a list with yes/no.
-        return values.size() < LIMIT && values.contains("yes") || values.contains("no");
+        for (String possibleKey : TAG_KEY_POSSIBLE) {
+            if (key.contains(possibleKey)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean support(String value) {
-        // If value is not in possible values, user have to format the value.
-        return possibleValues.contains(value);
+        return value == null || value.matches(NUMBER_PATTERN);
     }
 
     @Override
     public int getPriority() {
-        return PRIORITY_IMPORTANT;
+        return ParserManager.PRIORITY_NOT_IMPORTANT;
+    }
+
+    @Override
+    public int hashCode() {
+        return getPriority();
     }
 }

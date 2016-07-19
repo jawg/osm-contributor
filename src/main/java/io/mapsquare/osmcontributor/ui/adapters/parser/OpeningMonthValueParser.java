@@ -134,4 +134,9 @@ public class OpeningMonthValueParser implements ValueParser<OpeningMonth> {
     public boolean isMonthPresent(String expr) {
         return expr.contains(MONTH_SEP) || expr.matches(PATTERN);
     }
+
+    @Override
+    public int getPriority() {
+        return ParserManager.PRIORITY_HIGH;
+    }
 }

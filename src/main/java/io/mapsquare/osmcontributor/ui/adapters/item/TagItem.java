@@ -30,6 +30,7 @@ public class TagItem implements Parcelable {
     private boolean mandatory;
     private List<String> values = new ArrayList<>();
     private Type type;
+    private boolean isConform;
 
     /**
      * Use the best UI widget based on the tag name and possible values.
@@ -42,12 +43,13 @@ public class TagItem implements Parcelable {
         TEXT                    // Use by default
     }
 
-    public TagItem(String key, String value, boolean mandatory, List<String> values, Type separator) {
+    public TagItem(String key, String value, boolean mandatory, List<String> values, Type separator, boolean isConform) {
         this.key = key;
         this.value = value;
         this.values = values;
         this.mandatory = mandatory;
         this.type = separator;
+        this.isConform = isConform;
     }
 
     public TagItem(Parcel in) {
@@ -102,6 +104,10 @@ public class TagItem implements Parcelable {
 
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
+    }
+
+    public boolean isConform() {
+        return isConform;
     }
 
     @Override

@@ -33,7 +33,7 @@ import io.mapsquare.osmcontributor.model.utils.OpeningMonth;
 import io.mapsquare.osmcontributor.model.utils.OpeningTime;
 import io.mapsquare.osmcontributor.modules.DaggerOsmTemplateComponent;
 import io.mapsquare.osmcontributor.modules.OsmTemplateModule;
-import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParserImpl;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeTagParserImpl;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 
 /**
@@ -296,28 +296,28 @@ public class OpeningTimeValueParserTest {
 
     @Test
     public void regexOpeningTime1() {
-        OpeningTimeParserImpl openingTimeParser = new OpeningTimeParserImpl();
+        OpeningTimeTagParserImpl openingTimeParser = new OpeningTimeTagParserImpl();
         System.out.println("One period with month");
         Assert.assertTrue(openingTimeParser.support("May,Jun: Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
     }
 
     @Test
     public void regexOpeningTime2() {
-        OpeningTimeParserImpl openingTimeParser = new OpeningTimeParserImpl();
+        OpeningTimeTagParserImpl openingTimeParser = new OpeningTimeTagParserImpl();
         System.out.println("Without month");
         Assert.assertTrue(openingTimeParser.support("May,Jun: Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
     }
 
     @Test
     public void regexOpeningTime3() {
-        OpeningTimeParserImpl openingTimeParser = new OpeningTimeParserImpl();
+        OpeningTimeTagParserImpl openingTimeParser = new OpeningTimeTagParserImpl();
         System.out.println("Without month, only a day");
         Assert.assertTrue(openingTimeParser.support("Th 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
     }
 
     @Test
     public void regexOpeningTime4() {
-        OpeningTimeParserImpl openingTimeParser = new OpeningTimeParserImpl();
+        OpeningTimeTagParserImpl openingTimeParser = new OpeningTimeTagParserImpl();
         System.out.println("Two period month");
         Assert.assertTrue(openingTimeParser.support("May,Jun: Th 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00; May: Th 08:00-18:00,Th,Su 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
     }

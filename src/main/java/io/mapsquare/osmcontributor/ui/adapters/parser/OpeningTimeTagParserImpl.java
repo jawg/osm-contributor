@@ -23,7 +23,7 @@ import java.util.List;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 
 
-public class OpeningTimeParserImpl implements Parser {
+public class OpeningTimeTagParserImpl implements TagParser {
 
     public static final String PATTERN_MONTH = "(\\bJan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec\\b)";
 
@@ -63,7 +63,7 @@ public class OpeningTimeParserImpl implements Parser {
 
     @Override
     public int getPriority() {
-        return PRIORITY_HIGH;
+        return ParserManager.PRIORITY_HIGH;
     }
 
     @Override

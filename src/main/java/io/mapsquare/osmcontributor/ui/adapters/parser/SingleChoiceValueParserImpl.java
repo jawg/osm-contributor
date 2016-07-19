@@ -18,37 +18,32 @@
  */
 package io.mapsquare.osmcontributor.ui.adapters.parser;
 
-
-import java.util.List;
-
-import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
-
-public class AutoCompleteParserImpl implements Parser {
-
-    private static final int LIMIT = 6;
+/**
+ * Parse value from OSM database.
+ */
+public class SingleChoiceValueParserImpl implements ValueParser<String> {
 
     @Override
-    public TagItem.Type getType() {
-        return TagItem.Type.TEXT;
+    public String fromValue(String value) {
+        if (value.startsWith("y") || value.startsWith("s") || value.startsWith("ou") || value.startsWith("1") || value.equals("true") || value.equals("yes")) {
+            value = "yes";
+        } else if (value.startsWith("n") || value.startsWith("0") || value.equals("false") || value.equals("no")) {
+            value = "no";
+        } else if (value.startsWith("on")) {
+            value = "only";
+        } else {
+            value = "undefined";
+        }
+        return value;
     }
 
     @Override
-    public boolean isCandidate(String key, List<String> values) {
-        return values.size() > LIMIT;
-    }
-
-    @Override
-    public boolean support(String value) {
-        return true;
+    public String toValue(String s) {
+        return null;
     }
 
     @Override
     public int getPriority() {
-        return PRIORITY_NORMAL;
-    }
-
-    @Override
-    public int hashCode() {
-        return getPriority();
+        return ParserManager.PRIORITY_IMPORTANT;
     }
 }

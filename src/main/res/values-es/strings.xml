@@ -201,4 +201,8 @@
   <string name="permissions_information">El permiso de ubicación y el permiso de acceso de escritura son
 requeridos para manejar el mapa y la base de datos. No recopilamos información personal.
 Sin estos permisos, la aplicación no puede funcionar correctamente.</string>
+
+    <string name="malformated_tag">El valor del tag no respeta los convenios de OSM</string>
+    <string name="malformated_value">Valor actual : </string>
+
 </resources>

@@ -227,7 +227,7 @@ public class PoisAdapter extends RecyclerView.Adapter<PoisAdapter.PoiViewHolder>
         @BindView(R.id.changes_details)
         LinearLayout detailsWrapper;
 
-        @BindView(R.id.header)
+        @BindView(R.id.content_layout)
         RelativeLayout header;
 
         @BindView(R.id.expend_button)

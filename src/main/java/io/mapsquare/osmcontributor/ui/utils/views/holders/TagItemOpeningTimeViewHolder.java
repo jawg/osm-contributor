@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.ui.utils.views.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -38,6 +39,9 @@ public class TagItemOpeningTimeViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.tag_item_opening_time_add_button)
     View addButton;
+
+    @BindView(R.id.content_layout)
+    LinearLayout content;
 
     public TagItemOpeningTimeViewHolder(View v) {
         super(v);
@@ -59,5 +63,9 @@ public class TagItemOpeningTimeViewHolder extends RecyclerView.ViewHolder {
 
     public View getAddButton() {
         return addButton;
+    }
+
+    public LinearLayout getContent() {
+        return content;
     }
 }

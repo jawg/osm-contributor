@@ -29,7 +29,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -40,7 +42,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.inject.Inject;
 
@@ -52,15 +53,8 @@ import io.mapsquare.osmcontributor.model.utils.OpeningMonth;
 import io.mapsquare.osmcontributor.model.utils.OpeningTime;
 import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
-import io.mapsquare.osmcontributor.ui.adapters.parser.AutoCompleteParserImpl;
-import io.mapsquare.osmcontributor.ui.adapters.parser.NumberParserImpl;
+import io.mapsquare.osmcontributor.ui.adapters.parser.ParserManager;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
-import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeParserImpl;
-import io.mapsquare.osmcontributor.ui.adapters.parser.Parser;
-import io.mapsquare.osmcontributor.ui.adapters.parser.ShortListParser;
-import io.mapsquare.osmcontributor.ui.adapters.parser.SingleChoiceParserImpl;
-import io.mapsquare.osmcontributor.ui.adapters.parser.TagParser;
-import io.mapsquare.osmcontributor.ui.adapters.parser.TextParserImpl;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
 import io.mapsquare.osmcontributor.ui.utils.SimpleTextWatcher;
@@ -83,30 +77,16 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ConfigManager configManager;
     private boolean change = false;
     private boolean expertMode = false;
-    private TagParser tagParser;
-    private Map<Integer, Parser> parsers = new TreeMap<>();
 
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
 
-    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity activity, TagParser tagParser, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
+    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity activity, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
         this.activity = activity;
         this.configManager = configManager;
         this.expertMode = expertMode;
-        this.tagParser = tagParser;
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
-
-        NumberParserImpl numberParser = new NumberParserImpl();
-        AutoCompleteParserImpl autoCompleteParser = new AutoCompleteParserImpl();
-        TextParserImpl textParser = new TextParserImpl();
-        OpeningTimeParserImpl openingTimeParserImpl = new OpeningTimeParserImpl();
-        SingleChoiceParserImpl singleChoiceParser = new SingleChoiceParserImpl();
-        parsers.put(numberParser.getPriority(), numberParser);
-        parsers.put(autoCompleteParser.getPriority(), autoCompleteParser);
-        parsers.put(textParser.getPriority(), textParser);
-        parsers.put(openingTimeParserImpl.getPriority(), openingTimeParserImpl);
-        parsers.put(singleChoiceParser.getPriority(), singleChoiceParser);
 
         if (tagItemList == null) {
             loadTags(poi.getTagsMap(), tagValueSuggestionsMap);
@@ -181,7 +161,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onPleaseApplyTagChange(PleaseApplyTagChange event) {
         eventBus.removeStickyEvent(event);
         for (TagItem tagItem : tagItemList) {
-            if (tagParser.parseTagName(tagItem.getKey()).equals(event.getKey())) {
+            if (ParserManager.parseTagName(tagItem.getKey()).equals(event.getKey())) {
                 editTag(tagItem, event.getValue());
             }
         }
@@ -191,7 +171,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onPleaseApplyTagChangeView(PleaseApplyTagChangeView event) {
         eventBus.removeStickyEvent(event);
         for (TagItem tagItem : tagItemList) {
-            if (tagParser.parseTagName(tagItem.getKey()).equals(event.getKey())) {
+            if (ParserManager.parseTagName(tagItem.getKey()).equals(event.getKey())) {
                 editTag(tagItem, event.getValue());
                 notifyItemChanged(tagItemList.indexOf(tagItem));
             }
@@ -223,18 +203,17 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     private void addTag(String key, String value, boolean mandatory, List<String> values, int position, boolean updatable) {
         // Get the tag type
-        TagItem.Type type = TagParser.getTagType(key, values, parsers);
+        TagItem.Type type = ParserManager.getTagType(key, values);
 
         // Parse value if needed
-        if (type == TagItem.Type.SINGLE_CHOICE) {
-            value = ShortListParser.getFormatedValue(type, value, values);
-        }
+        String valueFormatted = ParserManager.getValue(value, type);
+        Log.i(TAG, "addTag: " + value);
 
         // Add into the list
         if (!updatable) {
-            tagItemList.add(position, new TagItem(key, value, mandatory, values, TagItem.Type.CONSTANT));
+            tagItemList.add(position, new TagItem(key, value, mandatory, values, TagItem.Type.CONSTANT, valueFormatted != null));
         } else {
-            tagItemList.add(position, new TagItem(key, value, mandatory, values, type));
+            tagItemList.add(position, new TagItem(key, value, mandatory, values, type, valueFormatted != null));
         }
 
         // Notify changes
@@ -357,13 +336,13 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final TagItem tagItem = tagItemList.get(holder.getAdapterPosition());
 
         // Set values input
-        holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
         holder.getTextViewValue().setText(tagItem.getValue());
         holder.getTextInputLayout().setHint(tagItem.getKey());
 
         // If phone type if phone, set input type to number
         if (tagItem.getTagType() == TagItem.Type.NUMBER) {
-            holder.getTextViewValue().setInputType(InputType.TYPE_CLASS_NUMBER);
+            holder.getTextViewValue().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         }
 
         // Get possible values
@@ -380,7 +359,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onFocusChange(View v, boolean hasFocus) {
                     if (hasFocus) {
                         Intent intent = new Intent(activity, PickValueActivity.class);
-                        intent.putExtra(PickValueActivity.KEY, tagParser.parseTagName(tagItem.getKey()));
+                        intent.putExtra(PickValueActivity.KEY, ParserManager.parseTagName(tagItem.getKey()));
                         intent.putExtra(PickValueActivity.VALUE, tagItem.getValue());
                         intent.putExtra(PickValueActivity.AUTOCOMPLETE, values.toArray(new String[values.size()]));
                         intent.putExtra(PickValueActivity.TAG_TYPE, tagItem.getTagType().toString());
@@ -402,6 +381,12 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
         }
+        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
+            holder.getContent().addView(LayoutInflater.from(activity).inflate(
+                    R.layout.malformated_layout, holder.getContent(), false), 1);
+            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
+            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
+        }
     }
 
     /**
@@ -411,7 +396,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     private void onBindViewHolder(TagItemConstantViewHolder holder, int position) {
         final TagItem tagItem = tagItemList.get(position);
-        holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
         holder.getTextViewValue().setText(tagItem.getValue());
     }
 
@@ -422,7 +407,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     public void onBindViewHolder(final TagItemOpeningTimeViewHolder holder, int position) {
         final TagItem tagItem = tagItemList.get(position);
-        holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
 
         final OpeningTime openingTime = new OpeningTime();
 
@@ -448,6 +433,13 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         });
 
+        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
+            holder.getContent().addView(LayoutInflater.from(activity).inflate(
+                    R.layout.malformated_layout, holder.getContent(), false), 1);
+            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
+            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
+        }
+
     }
 
     /**
@@ -460,7 +452,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final TagItem tagItem = tagItemList.get(position);
 
         // Set key text view
-        holder.getTextViewKey().setText(tagParser.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
 
         // Check if size of possible values are 3, means special action to organize layout
         List<String> values = tagItem.getValues();
@@ -498,7 +490,15 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
         }
+
+        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
+            holder.getContent().addView(LayoutInflater.from(activity).inflate(
+                    R.layout.malformated_layout, holder.getContent(), false), 1);
+            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
+            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
+        }
     }
+
 
     /*=========================================*/
     /*------------GETTER/SETTER----------------*/

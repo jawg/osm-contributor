@@ -36,7 +36,7 @@
         >
 
         <RelativeLayout
-            android:id="@+id/header"
+            android:id="@+id/content_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="16dp">
@@ -97,7 +97,7 @@
             android:id="@+id/changes_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/header"
+            android:layout_below="@+id/content_layout"
             android:orientation="vertical"
             android:paddingBottom="16dp"
             android:paddingLeft="16dp"

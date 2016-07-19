@@ -37,9 +37,7 @@ import io.mapsquare.osmcontributor.model.utils.OpeningHours;
 
 @Singleton
 public class OpeningHoursValueParser implements ValueParser<List<OpeningHours>> {
-    public static final String TIME_SEP = ":";
     public static final String NON_STOP = "24/7";
-    public static final String NON_STOP_HOURS = "00:00-24:00";
     public static final String RANGE_SEP = "-";
     public static final String RULE_SEP = ",";
     public static final String HOURS_SEP = ", ";
@@ -186,6 +184,11 @@ public class OpeningHoursValueParser implements ValueParser<List<OpeningHours>> 
             openingHours.setToTime(to);
         }
         return openingHours;
+    }
+
+    @Override
+    public int getPriority() {
+        return ParserManager.PRIORITY_HIGH;
     }
 
     /**

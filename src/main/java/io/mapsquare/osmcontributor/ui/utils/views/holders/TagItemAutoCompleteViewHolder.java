@@ -22,6 +22,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -39,6 +40,9 @@ public class TagItemAutoCompleteViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.input_wrapper)
     TextInputLayout textInputLayout;
+
+    @BindView(R.id.content_layout)
+    LinearLayout content;
 
     public TagItemAutoCompleteViewHolder(View v) {
         super(v);
@@ -72,5 +76,9 @@ public class TagItemAutoCompleteViewHolder extends RecyclerView.ViewHolder {
 
     public TextInputLayout getTextInputLayout() {
         return textInputLayout;
+    }
+
+    public LinearLayout getContent() {
+        return content;
     }
 }

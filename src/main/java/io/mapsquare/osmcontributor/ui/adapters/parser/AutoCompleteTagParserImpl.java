@@ -18,27 +18,37 @@
  */
 package io.mapsquare.osmcontributor.ui.adapters.parser;
 
+
 import java.util.List;
 
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 
-public interface Parser {
+public class AutoCompleteTagParserImpl implements TagParser {
 
-    int PRIORITY_LOW = 100;
+    private static final int LIMIT = 6;
 
-    int PRIORITY_NOT_IMPORTANT = 75;
+    @Override
+    public TagItem.Type getType() {
+        return TagItem.Type.TEXT;
+    }
 
-    int PRIORITY_NORMAL = 50;
+    @Override
+    public boolean isCandidate(String key, List<String> values) {
+        return values.size() > LIMIT;
+    }
 
-    int PRIORITY_IMPORTANT = 25;
+    @Override
+    public boolean support(String value) {
+        return true;
+    }
 
-    int PRIORITY_HIGH = 0;
+    @Override
+    public int getPriority() {
+        return ParserManager.PRIORITY_NORMAL;
+    }
 
-    TagItem.Type getType();
-
-    boolean isCandidate(String key, List<String> values);
-
-    boolean support(String value);
-
-    int getPriority();
+    @Override
+    public int hashCode() {
+        return getPriority();
+    }
 }

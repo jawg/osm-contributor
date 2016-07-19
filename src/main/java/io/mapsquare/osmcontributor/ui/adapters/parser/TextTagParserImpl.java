@@ -24,7 +24,7 @@ import java.util.List;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 
 
-public class TextParserImpl implements Parser {
+public class TextTagParserImpl implements TagParser {
 
     private static final List<String> TAG_KEYS_SUPPORTED = Arrays.asList("name");
 
@@ -45,7 +45,7 @@ public class TextParserImpl implements Parser {
 
     @Override
     public int getPriority() {
-        return PRIORITY_LOW;
+        return ParserManager.PRIORITY_LOW;
     }
 
     @Override

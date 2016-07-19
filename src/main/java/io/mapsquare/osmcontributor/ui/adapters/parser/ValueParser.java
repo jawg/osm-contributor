@@ -24,4 +24,5 @@ package io.mapsquare.osmcontributor.ui.adapters.parser;
 public interface ValueParser<T> {
     T fromValue(String value);
     String toValue(T t);
+    int getPriority();
 }

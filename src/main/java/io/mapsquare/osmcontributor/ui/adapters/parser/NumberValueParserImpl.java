@@ -18,17 +18,21 @@
  */
 package io.mapsquare.osmcontributor.ui.adapters.parser;
 
-import java.util.List;
 
-import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
+public class NumberValueParserImpl implements ValueParser<String> {
 
-public interface TagParser {
+    @Override
+    public String fromValue(String value) {
+        return value;
+    }
 
-    TagItem.Type getType();
+    @Override
+    public String toValue(String s) {
+        return s;
+    }
 
-    boolean isCandidate(String key, List<String> values);
-
-    boolean support(String value);
-
-    int getPriority();
+    @Override
+    public int getPriority() {
+        return ParserManager.PRIORITY_NOT_IMPORTANT;
+    }
 }

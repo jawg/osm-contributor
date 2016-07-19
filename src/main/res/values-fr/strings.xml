@@ -227,4 +227,7 @@
         deux permissions, l\'application ne peut fonctionner correctement.
     </string>
 
+    <string name="malformated_tag">La valeur du tag ne respecte pas les conventions d\'OSM</string>
+    <string name="malformated_value">Valeur actuelle : </string>
+
 </resources>

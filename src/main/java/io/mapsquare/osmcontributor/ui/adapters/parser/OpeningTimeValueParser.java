@@ -68,4 +68,9 @@ public class OpeningTimeValueParser implements ValueParser<OpeningTime> {
         return openingTime;
     }
 
+    @Override
+    public int getPriority() {
+        return ParserManager.PRIORITY_HIGH;
+    }
+
 }

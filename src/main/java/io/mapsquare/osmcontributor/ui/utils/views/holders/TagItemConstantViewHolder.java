@@ -20,10 +20,11 @@ package io.mapsquare.osmcontributor.ui.utils.views.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.R;
 
 public class TagItemConstantViewHolder extends RecyclerView.ViewHolder {
@@ -34,6 +35,9 @@ public class TagItemConstantViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.poi_value)
     TextView textViewValue;
+
+    @BindView(R.id.content_layout)
+    RelativeLayout content;
 
 
     public TagItemConstantViewHolder(View v) {
@@ -52,5 +56,9 @@ public class TagItemConstantViewHolder extends RecyclerView.ViewHolder {
 
     public TextView getTextViewValue() {
         return textViewValue;
+    }
+
+    public RelativeLayout getContent() {
+        return content;
     }
 }
