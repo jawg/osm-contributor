@@ -23,6 +23,7 @@ import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -42,16 +43,12 @@ public class OpeningHoursValueParser implements ValueParser<List<OpeningHours>> 
     public static final String RANGE_SEP = "-";
     public static final String RULE_SEP = ",";
     public static final String HOURS_SEP = ", ";
+    public static final String DAYS_SEP = " ";
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("kk:mm");
 
     @Inject
     public OpeningHoursValueParser() {
-    }
-
-    @Override
-    public List<OpeningHours> fromValue(String value) {
-        return null;
     }
 
     @Override
@@ -131,4 +128,74 @@ public class OpeningHoursValueParser implements ValueParser<List<OpeningHours>> 
 
         return diff.minus(new Period(23, 50, 0, 0)).getMinuteOfHour() < 10;
     }
+
+    @Override
+    public List<OpeningHours> fromValue(String value) {
+        if (value.trim().isEmpty()) {
+            return null;
+        }
+
+        List<OpeningHours> openingHoursList = new ArrayList<>();
+        String[] openingHours = value.split(HOURS_SEP);
+
+        for (String o : openingHours) {
+            if (!o.trim().isEmpty()) {
+                openingHoursList.add(fromSingleValue(o));
+            }
+        }
+
+        return openingHoursList;
+    }
+
+    public OpeningHours fromSingleValue(String value) {
+        // TODO: 19/07/16 We,Fr-Sa 10:45-19:15, Tu,Sa-Su 05:30-17:30, We 08:00-18:00
+        OpeningHours openingHours = new OpeningHours();
+        openingHours.setAllDaysActivated(false);
+
+        String[] openingHoursValues = value.split(DAYS_SEP);
+        String daysPart = null;
+        String hoursPart = null;
+
+        if (openingHoursValues.length == 2) {
+            daysPart = openingHoursValues[0];
+            hoursPart = openingHoursValues[1];
+        } else if (openingHoursValues.length == 1) {
+            hoursPart = openingHoursValues[0];
+        }
+
+
+        if (daysPart != null) {
+            String[] dayPeriods = daysPart.split(RULE_SEP);
+            for (String period : dayPeriods) {
+                if (isPeriod(period)) {
+                    OpeningHours.Days[] d = OpeningHours.Days.fromDatas(period.split(RANGE_SEP));
+                    for (int i = d[0].ordinal(); i <= d[1].ordinal(); i++) {
+                        openingHours.setDayActivated(i, true);
+                    }
+                } else {
+                    openingHours.setDayActivated(OpeningHours.Days.fromData(period).ordinal(), true);
+                }
+            }
+        }
+
+        if (hoursPart != null) {
+            String[] hourPeriod = hoursPart.split(RANGE_SEP);
+            LocalTime from = TIME_FORMATTER.parseLocalTime(hourPeriod[0]);
+            LocalTime to = TIME_FORMATTER.parseLocalTime(hourPeriod[1]);
+            openingHours.setFromTime(from);
+            openingHours.setToTime(to);
+        }
+        return openingHours;
+    }
+
+    /**
+     * Return true if the days expression is a period
+     * For example 'Sa-Su' is a period, 'Tu' is not.
+     * @param period
+     * @return
+     */
+    private boolean isPeriod(String period) {
+        return period.contains(RANGE_SEP);
+    }
+
 }

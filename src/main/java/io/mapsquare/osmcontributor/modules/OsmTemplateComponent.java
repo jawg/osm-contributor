@@ -48,6 +48,7 @@ import io.mapsquare.osmcontributor.ui.activities.UploadActivity;
 import io.mapsquare.osmcontributor.ui.adapters.OpeningHoursLinearLayoutAdapter;
 import io.mapsquare.osmcontributor.ui.adapters.OpeningMonthAdapter;
 import io.mapsquare.osmcontributor.ui.adapters.TagsAdapter;
+import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningMonthValueParser;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.mapsquare.osmcontributor.ui.dialogs.AddValueDialogFragment;
 import io.mapsquare.osmcontributor.ui.dialogs.EditPoiTagDialogFragment;
@@ -179,4 +180,6 @@ public interface OsmTemplateComponent {
     TypeManager getTypeManager();
 
     OpeningTimeValueParser getOpeningTimeParser();
+
+    OpeningMonthValueParser getOpeningMonthParser();
 }

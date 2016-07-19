@@ -47,13 +47,24 @@ public class OpeningMonth {
         Month(String data) {
             this.data = data;
         }
+
         public String getData() {
             return data;
         }
-        public Month fromData(String data) {
-            return valueOf(data.toUpperCase());
+
+        public static Month fromData(String m) {
+            return valueOf(m.toUpperCase());
+        }
+
+        public static Month[] fromDatas(String[] ms) {
+            Month[] months = new Month[ms.length];
+            for (int i = 0; i < ms.length; i++) {
+                months[i] = fromData(ms[i]);
+            }
+            return months;
         }
     }
+
     private Month[] months;
 
     private boolean changed;
@@ -102,6 +113,12 @@ public class OpeningMonth {
         }
     }
 
+    public void addOpeningHours(List<OpeningHours> openingHoursList) {
+        for (OpeningHours o : openingHoursList) {
+            addOpeningHours(o);
+        }
+    }
+
     public void setOpeningHours(int i, OpeningHours o) {
         if (o != null) {
             openingHours.set(i, o);
@@ -114,6 +131,32 @@ public class OpeningMonth {
 
     public List<OpeningHours> getOpeningHours() {
         return openingHours;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof OpeningMonth)) {
+            return false;
+        }
+
+        OpeningMonth that = (OpeningMonth) o;
+
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if (!Arrays.equals(months, that.months)) {
+            return false;
+        }
+        return openingHours != null ? openingHours.equals(that.openingHours) : that.openingHours == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(months);
+        result = 31 * result + (openingHours != null ? openingHours.hashCode() : 0);
+        return result;
     }
 
     @Override

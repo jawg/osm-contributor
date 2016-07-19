@@ -23,9 +23,7 @@ import junit.framework.Assert;
 import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,66 +40,13 @@ import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
  * @author Tommy Buonomo on 05/07/16.
  */
 
-@RunWith(RobolectricTestRunner.class)
 public class OpeningTimeValueParserTest {
-
-    OpeningTimeValueParser parser;
+    private OpeningTimeValueParser parser;
 
     @Before
     public void before() {
         parser = DaggerOsmTemplateComponent.builder()
                 .osmTemplateModule(new OsmTemplateModule(Robolectric.application)).build().getOpeningTimeParser();
-    }
-
-    @Test
-    public void nonStop1() {
-        OpeningTime openingTime = new OpeningTime();
-        OpeningMonth openingMonth = new OpeningMonth();
-        OpeningHours openingHours = new OpeningHours();
-        openingHours.setDayActivated(0, true);
-        openingHours.setDayActivated(1, true);
-        openingHours.setDayActivated(2, true);
-        openingHours.setDayActivated(3, true);
-        openingHours.setDayActivated(4, true);
-        openingHours.setDayActivated(5, true);
-        openingHours.setDayActivated(6, true);
-
-        openingMonth.addOpeningHours(openingHours);
-        openingTime.addOpeningMonth(openingMonth);
-
-        openingHours.setFromTime(new LocalTime(23, 59));
-        openingHours.setToTime(new LocalTime(23, 58));
-
-        Assert.assertEquals(parser.toValue(openingTime), "24/7");
-    }
-
-    @Test
-    public void nonStop2() {
-        OpeningTime openingTime = new OpeningTime();
-        OpeningMonth openingMonth = new OpeningMonth();
-        OpeningHours openingHours = new OpeningHours();
-        openingMonth.setMonthActivated(0, true);
-        openingMonth.setMonthActivated(1, true);
-        openingMonth.setMonthActivated(7, true);
-        openingMonth.setMonthActivated(8, true);
-        openingMonth.setMonthActivated(10, true);
-
-        openingMonth.addOpeningHours(openingHours);
-
-        openingHours.setDayActivated(0, true);
-        openingHours.setDayActivated(1, true);
-        openingHours.setDayActivated(2, true);
-        openingHours.setDayActivated(3, true);
-        openingHours.setDayActivated(4, true);
-        openingHours.setDayActivated(5, true);
-        openingHours.setDayActivated(6, true);
-
-        openingHours.setFromTime(new LocalTime(23, 59));
-        openingHours.setToTime(new LocalTime(23, 58));
-
-        openingTime.addOpeningMonth(openingMonth);
-
-        Assert.assertEquals(parser.toValue(openingTime), "Jan-Feb,Aug-Sep,Nov: 24/7");
     }
 
     @Test
@@ -116,40 +61,6 @@ public class OpeningTimeValueParserTest {
 
         openingTime.addOpeningMonth(openingMonth);
         Assert.assertEquals(parser.toValue(openingTime), "Jan-Feb,Aug-Sep,Nov");
-    }
-
-    @Test
-    public void parseMonths2() {
-        OpeningTime openingTime = new OpeningTime();
-        OpeningMonth openingMonth = new OpeningMonth();
-        openingMonth.setMonthActivated(5, true);
-        openingTime.addOpeningMonth(openingMonth);
-        Assert.assertEquals(parser.toValue(openingTime), "Jun");
-    }
-
-    @Test
-    public void parseMonths3() {
-        OpeningTime openingTime = new OpeningTime();
-        OpeningMonth openingMonth = new OpeningMonth();
-        openingMonth.setMonthActivated(0, true);
-        openingMonth.setMonthActivated(2, true);
-        openingMonth.setMonthActivated(4, true);
-        openingMonth.setMonthActivated(5, true);
-        openingMonth.setMonthActivated(6, true);
-        openingMonth.setMonthActivated(7, true);
-        openingMonth.setMonthActivated(8, true);
-        openingMonth.setMonthActivated(10, true);
-        openingMonth.setMonthActivated(11, true);
-
-        openingMonth.setMonthActivated(4, false);
-        openingTime.addOpeningMonth(openingMonth);
-        Assert.assertEquals(parser.toValue(openingTime), "Jan,Mar,Jun-Sep,Nov-Dec");
-    }
-
-    @Test
-    public void parseMonths4() {
-        OpeningTime openingTime = new OpeningTime();
-        Assert.assertTrue(parser.toValue(openingTime).length() == 0);
     }
 
     @Test
@@ -384,16 +295,30 @@ public class OpeningTimeValueParserTest {
     }
 
     @Test
-    public void regexOpeningTime() {
+    public void regexOpeningTime1() {
         OpeningTimeParserImpl openingTimeParser = new OpeningTimeParserImpl();
         System.out.println("One period with month");
         Assert.assertTrue(openingTimeParser.support("May,Jun: Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
+    }
+
+    @Test
+    public void regexOpeningTime2() {
+        OpeningTimeParserImpl openingTimeParser = new OpeningTimeParserImpl();
         System.out.println("Without month");
-        Assert.assertTrue(openingTimeParser.support("Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
+        Assert.assertTrue(openingTimeParser.support("May,Jun: Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
+    }
+
+    @Test
+    public void regexOpeningTime3() {
+        OpeningTimeParserImpl openingTimeParser = new OpeningTimeParserImpl();
         System.out.println("Without month, only a day");
         Assert.assertTrue(openingTimeParser.support("Th 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
+    }
+
+    @Test
+    public void regexOpeningTime4() {
+        OpeningTimeParserImpl openingTimeParser = new OpeningTimeParserImpl();
         System.out.println("Two period month");
         Assert.assertTrue(openingTimeParser.support("May,Jun: Th 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00; May: Th 08:00-18:00,Th,Su 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
     }
-
 }

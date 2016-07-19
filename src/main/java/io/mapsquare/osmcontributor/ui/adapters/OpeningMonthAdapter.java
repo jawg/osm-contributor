@@ -46,7 +46,6 @@ import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChang
  * @author Tommy Buonomo on 11/07/16.
  */
 public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapter.OpeningTimeHolder> {
-    private static final String TAG = "OpeningMonthAdapter";
     private OpeningTime openingTime;
     private Activity activity;
     private EventBus eventBus;

@@ -32,15 +32,17 @@ public class OpeningTimeParserImpl implements Parser {
     public static final String PATTERN_HOUR = "\\d{2}:\\d{2}-\\d{2}:\\d{2}";
 
     public static final String PATTERN =
-            "(" + PATTERN_MONTH + "(-" + PATTERN_MONTH + ")?" + "(,\\s?" + PATTERN_MONTH +
-            "(-" + PATTERN_MONTH + ")?)*:\\s?)?" +
-            "(" + PATTERN_DAY + "(-" + PATTERN_DAY + ")?" +
-            "((,\\s?" + PATTERN_DAY + "(-" + PATTERN_DAY + ")?)?)*\\s" +
-            PATTERN_HOUR + ")(,\\s?(" + PATTERN_DAY +
-            "(-" + PATTERN_DAY + ")?" +
-            "((,\\s?" + PATTERN_DAY +
-            "(-" + PATTERN_DAY + ")?)?)*\\s" +
-            PATTERN_HOUR + "))*";
+            "(((" + PATTERN_MONTH + "(-" + PATTERN_MONTH + ")?" + "(,\\s?" + PATTERN_MONTH +
+                    "(-" + PATTERN_MONTH + ")?)*:\\s?)?" +
+                    "(" + PATTERN_DAY + "(-" + PATTERN_DAY + ")?" +
+                    "((,\\s?" + PATTERN_DAY + "(-" + PATTERN_DAY + ")?)?)*\\s" +
+                    PATTERN_HOUR + ")(,\\s?(" + PATTERN_DAY +
+                    "(-" + PATTERN_DAY + ")?" +
+                    "((,\\s?" + PATTERN_DAY +
+                    "(-" + PATTERN_DAY + ")?)?)*\\s" +
+                    PATTERN_HOUR + "))*)" +
+                    "|" + "(" + PATTERN_MONTH + "(-" + PATTERN_MONTH + ")?" + "(,\\s?" + PATTERN_MONTH +
+                    "(-" + PATTERN_MONTH + ")?)*))";
 
     public static final String PATTERN_FINAL = PATTERN + "(;\\s?" + PATTERN + ")*";
 

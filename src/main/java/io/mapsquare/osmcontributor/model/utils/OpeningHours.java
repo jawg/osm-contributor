@@ -29,13 +29,13 @@ public class OpeningHours {
     public static final int DAY_COUNT = 7;
 
     public enum Days {
-        MON("Mo"),
-        TUE("Tu"),
-        WED("We"),
-        THU("Th"),
-        FRI("Fr"),
-        SAT("Sa"),
-        SUN("Su");
+        MO("Mo"),
+        TU("Tu"),
+        WE("We"),
+        TH("Th"),
+        FR("Fr"),
+        SA("Sa"),
+        SU("Su");
 
         private String data;
 
@@ -45,6 +45,18 @@ public class OpeningHours {
 
         public String getData() {
             return data;
+        }
+
+        public static Days fromData(String data) {
+            return valueOf(data.toUpperCase());
+        }
+
+        public static Days[] fromDatas(String [] datas) {
+            Days[] days = new Days[datas.length];
+            for (int i = 0; i < datas.length; i++) {
+                days[i] = fromData(datas[i]);
+            }
+            return days;
         }
 
     }
