@@ -114,8 +114,10 @@ public class OpeningMonth {
     }
 
     public void addOpeningHours(List<OpeningHours> openingHoursList) {
-        for (OpeningHours o : openingHoursList) {
-            addOpeningHours(o);
+        if (openingHoursList != null) {
+            for (OpeningHours o : openingHoursList) {
+                addOpeningHours(o);
+            }
         }
     }
 

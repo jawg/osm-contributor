@@ -40,6 +40,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,8 +54,9 @@ import io.mapsquare.osmcontributor.model.utils.OpeningMonth;
 import io.mapsquare.osmcontributor.model.utils.OpeningTime;
 import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
-import io.mapsquare.osmcontributor.ui.adapters.parser.ParserManager;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
+import io.mapsquare.osmcontributor.ui.adapters.parser.ParserManager;
+import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
 import io.mapsquare.osmcontributor.ui.utils.SimpleTextWatcher;
@@ -71,6 +73,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "TagsAdapter";
 
     private List<TagItem> tagItemList = new ArrayList<>();
+    private Map<String, TagItem> keyTagItem = new HashMap<>();
     private Poi poi;
     private Activity activity;
     private EventBus eventBus;
@@ -160,21 +163,27 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onPleaseApplyTagChange(PleaseApplyTagChange event) {
         eventBus.removeStickyEvent(event);
-        for (TagItem tagItem : tagItemList) {
-            if (ParserManager.parseTagName(tagItem.getKey()).equals(event.getKey())) {
-                editTag(tagItem, event.getValue());
-            }
+        TagItem tagItem = keyTagItem.get(event.getKey());
+        if (tagItem != null) {
+            editTag(tagItem, event.getValue());
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onPleaseApplyOpeningTimeChange(PleaseApplyOpeningTimeChange event) {
+        eventBus.removeStickyEvent(event);
+        TagItem tagItem = keyTagItem.get("opening_hours");
+        if (tagItem != null) {
+            editTag(tagItem, openingTimeValueParser.toValue(event.getOpeningTime()));
         }
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onPleaseApplyTagChangeView(PleaseApplyTagChangeView event) {
         eventBus.removeStickyEvent(event);
-        for (TagItem tagItem : tagItemList) {
-            if (ParserManager.parseTagName(tagItem.getKey()).equals(event.getKey())) {
-                editTag(tagItem, event.getValue());
-                notifyItemChanged(tagItemList.indexOf(tagItem));
-            }
+        TagItem tagItem = keyTagItem.get(event.getKey());
+        if (tagItem != null) {
+            editTag(tagItem, event.getValue());
         }
     }
 
@@ -207,14 +216,11 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         // Parse value if needed
         String valueFormatted = ParserManager.getValue(value, type);
-        Log.i(TAG, "addTag: " + value);
 
+        TagItem tagItem = new TagItem(key, value, mandatory, values, updatable ? type : TagItem.Type.CONSTANT, valueFormatted != null);
         // Add into the list
-        if (!updatable) {
-            tagItemList.add(position, new TagItem(key, value, mandatory, values, TagItem.Type.CONSTANT, valueFormatted != null));
-        } else {
-            tagItemList.add(position, new TagItem(key, value, mandatory, values, type, valueFormatted != null));
-        }
+        tagItemList.add(position, tagItem);
+        keyTagItem.put(key, tagItem);
 
         // Notify changes
         notifyItemInserted(position);
@@ -409,11 +415,9 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final TagItem tagItem = tagItemList.get(position);
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
 
-        final OpeningTime openingTime = new OpeningTime();
-
-
-        if (openingTime.getOpeningMonths().isEmpty()) {
-            openingTime.addOpeningMonth(new OpeningMonth());
+        OpeningTime openingTime = openingTimeValueParser.fromValue(tagItem.getValue());
+        if (openingTime == null) {
+            openingTime = new OpeningTime();
         }
 
         final OpeningMonthAdapter adapter = new OpeningMonthAdapter(openingTime, activity);
@@ -425,10 +429,11 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.getOpeningTimeRecyclerView().setItemAnimator(itemAnimator);
         holder.getOpeningTimeRecyclerView().addItemDecoration(new DividerItemDecoration(activity));
 
+        final OpeningTime finalOpeningTime = openingTime;
         holder.getAddButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openingTime.addOpeningMonth(new OpeningMonth());
+                finalOpeningTime.addOpeningMonth(new OpeningMonth());
                 adapter.notifyItemInserted(adapter.getItemCount() - 1);
             }
         });

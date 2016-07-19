@@ -54,7 +54,10 @@ public class OpeningTimeValueParser implements ValueParser<OpeningTime> {
 
     @Override
     public OpeningTime fromValue(String data) {
-        /**TODO Jan-Apr,Sep: Mo-Tu,Th,Sa 11:27-09:25, Mo-We,Fr 10:12-18:15; Feb,Apr-May: Mo-Fr 10:00-18:00 */
+        if (data == null || data.trim().isEmpty()) {
+            return null;
+        }
+
         OpeningTime openingTime = new OpeningTime();
         String[] openingTimes = data.split(RULESET_SEP);
 

@@ -66,6 +66,26 @@ public class OpeningTime {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof OpeningTime)) {
+            return false;
+        }
+
+        OpeningTime that = (OpeningTime) o;
+
+        return openingMonths != null ? openingMonths.equals(that.openingMonths) : that.openingMonths == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return openingMonths != null ? openingMonths.hashCode() : 0;
+    }
+
+    @Override
     public String toString() {
         return "OpeningTime{" +
                 "changed=" + changed +

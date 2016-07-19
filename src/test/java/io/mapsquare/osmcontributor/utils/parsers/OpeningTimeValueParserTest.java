@@ -221,6 +221,25 @@ public class OpeningTimeValueParserTest {
     }
 
     @Test
+    public void fromValue1() {
+        String value = "Apr-May: Mo-Fr 10:15-01:30";
+        OpeningTime openingTime = parser.fromValue(value);
+        OpeningTime openingTimeExpected = new OpeningTime();
+        OpeningMonth openingMonth = new OpeningMonth();
+        openingTimeExpected.addOpeningMonth(openingMonth);
+        openingMonth.setMonthActivated(3, true);
+        openingMonth.setMonthActivated(4, true);
+
+        OpeningHours openingHours = new OpeningHours();
+        openingMonth.addOpeningHours(openingHours);
+
+        openingHours.setFromTime(new LocalTime(10, 15));
+        openingHours.setToTime(new LocalTime(1, 30));
+
+        Assert.assertEquals(openingTimeExpected, openingTime);
+    }
+
+    @Test
     public void parseAllFields1() {
         OpeningTime openingTime = new OpeningTime();
         OpeningMonth openingMonth1 = new OpeningMonth();

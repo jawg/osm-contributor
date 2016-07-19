@@ -111,7 +111,7 @@ public class OpeningMonthValueParser implements ValueParser<OpeningMonth> {
         if (split.length == 2) {
             String openingHoursValue = split[1];
             if (openingHoursValue != null && !openingHoursValue.trim().isEmpty()) {
-                List<OpeningHours> openingHours = openingHoursValueParser.fromValue(value);
+                List<OpeningHours> openingHours = openingHoursValueParser.fromValue(openingHoursValue);
                 if (openingHours != null) {
                     openingMonth.addOpeningHours(openingHours);
                 }
