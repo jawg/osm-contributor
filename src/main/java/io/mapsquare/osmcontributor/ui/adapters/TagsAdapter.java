@@ -184,6 +184,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TagItem tagItem = keyTagItem.get(event.getKey());
         if (tagItem != null) {
             editTag(tagItem, event.getValue());
+            Log.i("osmcontributorlog", "onPleaseApplyTagChangeView: ");
             notifyItemChanged(tagItemList.indexOf(tagItem));
         }
     }
@@ -366,7 +367,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onFocusChange(View v, boolean hasFocus) {
                     if (hasFocus) {
                         Intent intent = new Intent(activity, PickValueActivity.class);
-                        intent.putExtra(PickValueActivity.KEY, ParserManager.parseTagName(tagItem.getKey()));
+                        intent.putExtra(PickValueActivity.KEY, tagItem.getKey());
                         intent.putExtra(PickValueActivity.VALUE, tagItem.getValue());
                         intent.putExtra(PickValueActivity.AUTOCOMPLETE, values.toArray(new String[values.size()]));
                         intent.putExtra(PickValueActivity.TAG_TYPE, tagItem.getTagType().toString());
