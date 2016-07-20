@@ -184,6 +184,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TagItem tagItem = keyTagItem.get(event.getKey());
         if (tagItem != null) {
             editTag(tagItem, event.getValue());
+            notifyItemChanged(tagItemList.indexOf(tagItem));
         }
     }
 

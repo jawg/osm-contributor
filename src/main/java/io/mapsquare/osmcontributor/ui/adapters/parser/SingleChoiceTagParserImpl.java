@@ -62,7 +62,7 @@ public class SingleChoiceTagParserImpl implements TagParser {
     @Override
     public boolean support(String value) {
         // If value is not in possible values, user have to format the value.
-        return possibleValues.contains(value) || supportedValues.contains(value);
+        return value == null || possibleValues.contains(value) || supportedValues.contains(value);
     }
 
     @Override
