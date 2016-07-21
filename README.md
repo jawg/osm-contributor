@@ -86,6 +86,8 @@ This app is actively developed by:
  + [nicolasfavier](https://github.com/nicolasfavier)
  + [tonymanou](https://github.com/tonymanou)
  + [loicortola](https://github.com/loicortola)
+ + [tommybuonomo](https://github.com/tommybuonomo)
+ + [Hugoo13](https://github.com/Hugoo13)
 
 ### Translations
 
