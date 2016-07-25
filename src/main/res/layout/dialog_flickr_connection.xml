@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
 
     Copyright (C) 2016 eBusiness Information
 
@@ -18,9 +19,10 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<resources>
-    <!-- Example customization of dimensions originally defined in res/values/dimens.xml
-         (such as screen margins) for screens with more than 820dp of available width. This
-         would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively). -->
-    <dimen name="activity_horizontal_margin">64dp</dimen>
-</resources>
+<WebView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_flickr_connection"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="1000dp"
+    android:minWidth="1000dp">
+</WebView>

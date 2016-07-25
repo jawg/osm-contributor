@@ -126,12 +126,11 @@ android {
             buildConfigField "String", "MAP_URL", '"http://tile.openstreetmap.org/{z}/{x}/{y}.png"'
             buildConfigField "String", "BASE_OSM_URL", osmUrl()
             buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass-api.de/api/interpreter"'
-            // Load bing API key from the conf.properties file
-            buildConfigField "String", "BING_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("bingApiKey") + '"'
+            buildConfigField "String", "FLICKR_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_key") + '"'
+            buildConfigField "String", "FLICKR_API_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_secret") + '"'
         }
         template {
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.template"'
-            buildConfigField "String", "BING_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("bingApiKey") + '"'
         }
         poi_storage {
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.poistorage"'
@@ -183,6 +182,11 @@ dependencies {
     compile "com.github.amlcurran.showcaseview:library:$showcaseviewVersion"
     compile "com.yarolegovich:lovely-dialog:$lovelyDialog"
     compile 'com.github.clans:fab:1.6.4'
+
+    // https://mvnrepository.com/artifact/com.flickr4java/flickr4java
+    compile group: 'com.flickr4java', name: 'flickr4java', version: '2.16'
+    compile 'com.github.scribejava:scribejava-apis:2.8.1'
+    compile 'com.facebook.fresco:fresco:0.12.0'
 
     compile("com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion@aar") { transitive = true }
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"

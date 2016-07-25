@@ -110,10 +110,7 @@ public interface ConfigManager {
      */
     String getBaseOverpassApiUrl();
 
-    /**
-     * Get the Bing API key.
-     *
-     * @return The Bing API key.
-     */
-    String getBingApiKey();
+    String getFlickrApiKey();
+
+    String getFlickrApiKeySecret();
 }

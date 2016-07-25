@@ -31,6 +31,7 @@ import io.mapsquare.osmcontributor.database.PoiAssetLoader;
 import io.mapsquare.osmcontributor.database.helper.DatabaseHelper;
 import io.mapsquare.osmcontributor.database.helper.DatabaseModule;
 import io.mapsquare.osmcontributor.database.helper.OsmSqliteOpenHelper;
+import io.mapsquare.osmcontributor.flickr.oauth.FlickrOAuth;
 import io.mapsquare.osmcontributor.login.LoginModule;
 import io.mapsquare.osmcontributor.rest.CommonSyncModule;
 import io.mapsquare.osmcontributor.rest.managers.H2GeoPresetsManager;
@@ -137,6 +138,8 @@ public interface OsmTemplateComponent {
     void inject(OpeningHoursLinearLayoutAdapter openingHoursLinearLayoutAdapter);
 
     void inject(TagsAdapter tagsAdapter);
+
+    void inject(FlickrOAuth flickrOAuth);
 
 
     // PROVIDING

@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-
+<?xml version="1.0" encoding="utf-8"?><!--
     Copyright (C) 2015 eBusiness Information
 
     This file is part of OSM Contributor.
@@ -17,20 +15,18 @@
 
     You should have received a copy of the GNU General Public License
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
-
 -->
-<manifest
-    package="io.mapsquare.osmcontributor"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="io.mapsquare.osmcontributor">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CONNECTIVITY_CHANGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CONNECTIVITY_CHANGE" />
 
     <application
         android:name=".OsmTemplateApplication"
@@ -42,52 +38,53 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/gms_version"
-            tools:replace="android:value"/>
+            tools:replace="android:value" />
         <meta-data
             android:name="com.crashlytics.ApiKey"
-            android:value="fa5f6bab15b8638cbf45357060825fcdcb6e0050"/>
+            android:value="fa5f6bab15b8638cbf45357060825fcdcb6e0050" />
 
         <activity
             android:name=".ui.activities.SplashScreenActivity"
             android:label="@string/name"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.activities.MapActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/name"/>
+            android:label="@string/name" />
         <activity
             android:name=".ui.activities.EditPoiActivity"
-            android:label="@string/title_activity_edit_poi"/>
+            android:label="@string/title_activity_edit_poi" />
         <activity
             android:name=".ui.activities.PickValueActivity"
-            android:label="@string/title_activity_pick_value"/>
+            android:label="@string/title_activity_pick_value" />
         <activity
             android:name=".ui.activities.LoadProfileActivity"
-            android:label="@string/profile_load"/>
+            android:label="@string/profile_load" />
         <activity
             android:name=".ui.activities.MyPreferencesActivity"
-            android:label="@string/title_activity_my_preferences"/>
+            android:label="@string/title_activity_my_preferences" />
         <activity
             android:name=".ui.activities.TypeListActivity"
-            android:label="@string/manage_poi_types"/>
+            android:label="@string/manage_poi_types" />
         <activity
             android:name=".ui.activities.NoteActivity"
-            android:label="@string/title_activity_note"/>
+            android:label="@string/title_activity_note" />
         <activity
             android:name=".ui.activities.UploadActivity"
-            android:label="@string/title_activity_upload"/>
+            android:label="@string/title_activity_upload" />
         <activity
             android:name=".ui.activities.AboutActivity"
-            android:label="@string/title_activity_about"/>
+            android:label="@string/title_activity_about" />
 
-        <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService"/>
+        <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService" />
 
+        <activity android:name=".ui.activities.PhotosActivity"></activity>
     </application>
 
 </manifest>

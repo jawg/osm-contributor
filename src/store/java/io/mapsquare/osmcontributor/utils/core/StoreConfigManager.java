@@ -93,7 +93,12 @@ public class StoreConfigManager implements ConfigManager {
     }
 
     @Override
-    public String getBingApiKey() {
-        return BuildConfig.BING_API_KEY;
+    public String getFlickrApiKey() {
+        return BuildConfig.FLICKR_API_KEY;
+    }
+
+    @Override
+    public String getFlickrApiKeySecret() {
+        return BuildConfig.FLICKR_API_SECRET;
     }
 }
