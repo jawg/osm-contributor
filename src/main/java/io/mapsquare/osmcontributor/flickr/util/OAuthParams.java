@@ -23,6 +23,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 
+import io.mapsquare.osmcontributor.rest.utils.MapParams;
+
 public class OAuthParams {
 
     /**
@@ -45,6 +47,10 @@ public class OAuthParams {
      */
     public static final String SIGNATURE_METHOD =  "HMAC-SHA1";
 
+    /**
+     * Get OAuth param for all request.
+     * @return map with params. Call to map to get a Map.
+     */
     public static MapParams<String, String> getOAuthParams() {
         return new MapParams<String, String>()
                 .put("oauth_timestamp", String.valueOf(TIMESTAMP))

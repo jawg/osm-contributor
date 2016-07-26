@@ -47,11 +47,27 @@
         android:background="@android:color/white"
         android:clickable="true">
 
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/thumbnail"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="5dp"
+            android:layout_alignParentBottom="true"
+            app:actualImageScaleType="fitCenter"
+            app:placeholderImage="@drawable/add_photo_img"
+            app:placeholderImageScaleType="fitXY"
+            app:progressBarImage="@drawable/progress"
+            app:progressBarAutoRotateInterval="1000" />
+
         <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
             android:id="@+id/poi_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:layout_toEndOf="@+id/thumbnail"
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
@@ -65,6 +81,8 @@
             android:layout_below="@+id/poi_name"
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:layout_toEndOf="@+id/thumbnail"
             android:textSize="16sp"
             app:typeface="Roboto-Light.ttf" />
 

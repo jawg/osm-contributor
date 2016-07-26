@@ -318,7 +318,7 @@ public class MapFragmentPresenter {
                         eventBus.post(new PleaseChangeValuesDetailNoteFragmentEvent((Note) mapElement));
                     } else {
                         Poi poi = (Poi) mapElement;
-                        eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(poi.getType().getName(), poi.getName(), poi.getWay()));
+                        eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(poi));
                     }
                 }
             }

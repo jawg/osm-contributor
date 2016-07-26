@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.flickr.util;
+package io.mapsquare.osmcontributor.rest.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import retrofit.mime.TypedInput;
 import retrofit.mime.TypedOutput;
 
 /**
- * Retrofit converter for string response. Use when the app try to use Flickr OAuth.
+ * Retrofit converter for string response.
  */
 public class StringConverter implements Converter {
 

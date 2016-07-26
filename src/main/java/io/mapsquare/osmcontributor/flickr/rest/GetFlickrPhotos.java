@@ -25,15 +25,19 @@ import com.flickr4java.flickr.FlickrException;
 import com.flickr4java.flickr.photos.Photo;
 import com.flickr4java.flickr.photos.PhotoList;
 import com.flickr4java.flickr.photos.SearchParameters;
+import com.flickr4java.flickr.photos.Size;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.mapsquare.osmcontributor.flickr.event.PhotosFoundEvent;
 
 /**
  * Get a list of photos from FLickr by latitude/longitude for openstreetmap tag.
  */
-public class GetFlickrPhotos extends AsyncTask<Void, Void, PhotoList<Photo>> {
+public class GetFlickrPhotos extends AsyncTask<Void, Void, List<List<Size>>> {
 
     private Flickr flickr;
 
@@ -45,21 +49,32 @@ public class GetFlickrPhotos extends AsyncTask<Void, Void, PhotoList<Photo>> {
 
     private Double latitude;
 
-    public GetFlickrPhotos(Double longitude, Double latitude, Flickr flickr) {
+    private Integer limitPerPage;
+
+    private Integer nbPage = 1;
+
+    public GetFlickrPhotos(Double longitude, Double latitude, Flickr flickr, Integer limitPerPage, Integer nbPage) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.flickr = flickr;
+        this.limitPerPage = limitPerPage;
+        this.nbPage = nbPage;
     }
 
     @Override
-    protected PhotoList<Photo> doInBackground(Void... params) {
+    protected List<List<Size>> doInBackground(Void... params) {
         SearchParameters parameters = new SearchParameters();
         parameters.setLatitude(String.valueOf(latitude));
         parameters.setLongitude(String.valueOf(longitude));
         parameters.setRadius(RADIUS);
         parameters.setTags(TAGS);
         try {
-            return flickr.getPhotosInterface().search(parameters, 10, 1);
+            PhotoList<Photo> photos = flickr.getPhotosInterface().search(parameters, limitPerPage, nbPage);
+            List<List<Size>> photosList = new ArrayList<>();
+            for (Photo photo : photos) {
+                photosList.add((List<Size>) flickr.getPhotosInterface().getSizes(photo.getId()));
+            }
+            return photosList;
         } catch (FlickrException e) {
             e.printStackTrace();
         }
@@ -67,7 +82,7 @@ public class GetFlickrPhotos extends AsyncTask<Void, Void, PhotoList<Photo>> {
     }
 
     @Override
-    protected void onPostExecute(PhotoList<Photo> photos) {
+    protected void onPostExecute(List<List<Size>>  photos) {
         EventBus.getDefault().post(new PhotosFoundEvent(photos));
     }
 }

@@ -18,18 +18,19 @@
  */
 package io.mapsquare.osmcontributor.flickr.event;
 
-import com.flickr4java.flickr.photos.Photo;
-import com.flickr4java.flickr.photos.PhotoList;
+import com.flickr4java.flickr.photos.Size;
+
+import java.util.List;
 
 public class PhotosFoundEvent {
 
-    private PhotoList<Photo> photos;
+    private List<List<Size>> photos;
 
-    public PhotosFoundEvent(PhotoList<Photo> photos) {
+    public PhotosFoundEvent(List<List<Size>> photos) {
         this.photos = photos;
     }
 
-    public PhotoList<Photo> getPhotos() {
+    public List<List<Size>> getPhotos() {
         return photos;
     }
 }

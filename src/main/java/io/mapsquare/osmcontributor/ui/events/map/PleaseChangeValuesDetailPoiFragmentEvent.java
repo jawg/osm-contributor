@@ -18,15 +18,19 @@
  */
 package io.mapsquare.osmcontributor.ui.events.map;
 
+import io.mapsquare.osmcontributor.model.entities.Poi;
+
 public class PleaseChangeValuesDetailPoiFragmentEvent {
     private final String poiType;
     private final String poiName;
     private final boolean isWay;
+    private Poi poi;
 
-    public PleaseChangeValuesDetailPoiFragmentEvent(String poiType, String poiName, boolean isWay) {
-        this.poiType = poiType;
-        this.poiName = poiName;
-        this.isWay = isWay;
+    public PleaseChangeValuesDetailPoiFragmentEvent(Poi poi) {
+        this.poiType = poi.getType().getName();
+        this.poiName = poi.getName();
+        this.isWay = poi.getWay();
+        this.poi = poi;
     }
 
     public String getPoiType() {
@@ -39,5 +43,9 @@ public class PleaseChangeValuesDetailPoiFragmentEvent {
 
     public boolean isWay() {
         return isWay;
+    }
+
+    public Poi getPoi() {
+        return poi;
     }
 }

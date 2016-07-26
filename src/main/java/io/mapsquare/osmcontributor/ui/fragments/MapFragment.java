@@ -1373,10 +1373,7 @@ public class MapFragment extends Fragment {
         if (display) {
             if (markerSelected != null) {
                 Poi poi = (Poi) markerSelected.getRelatedObject();
-                eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(
-                        poi.getType().getName(),
-                        poi.getName(),
-                        poi.getWay()));
+                eventBus.post(new PleaseChangeValuesDetailPoiFragmentEvent(poi));
             }
 
             if (poiDetailWrapper.getVisibility() != View.VISIBLE) {

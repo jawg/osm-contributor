@@ -21,9 +21,15 @@ package io.mapsquare.osmcontributor;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Environment;
 import android.support.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
+import com.facebook.cache.disk.DiskCacheConfig;
+import com.facebook.common.internal.Supplier;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.cache.MemoryCacheParams;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.REST;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -31,6 +37,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.File;
 import java.util.HashMap;
 
 import io.fabric.sdk.android.Fabric;
@@ -75,6 +82,21 @@ public class OsmTemplateApplication extends Application {
         StoreConfigManager configManager = new StoreConfigManager();
 
         flickr = new Flickr(configManager.getFlickrApiKey(), configManager.getFlickrApiKeySecret(), new REST());
+        DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(this)
+                .setBaseDirectoryPath(new File(Environment.getExternalStorageDirectory().getAbsoluteFile(), getPackageName()))
+                .setBaseDirectoryName("images")
+                .build();
+
+        ImagePipelineConfig imagePipelineConfig = ImagePipelineConfig.newBuilder(this)
+                .setBitmapMemoryCacheParamsSupplier(new Supplier<MemoryCacheParams>() {
+                    @Override
+                    public MemoryCacheParams get() {
+                        return new MemoryCacheParams(10485760, 100, 100, 100, 100);
+                    }
+                })
+                .setMainDiskCacheConfig(diskCacheConfig)
+                .build();
+        Fresco.initialize(this, imagePipelineConfig);
 
         EventBus bus = osmTemplateComponent.getEventBus();
 

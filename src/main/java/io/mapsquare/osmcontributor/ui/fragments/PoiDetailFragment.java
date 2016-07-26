@@ -21,21 +21,29 @@ package io.mapsquare.osmcontributor.ui.fragments;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.common.util.UriUtil;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.flickr4java.flickr.photos.Size;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -44,6 +52,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
+import io.mapsquare.osmcontributor.flickr.event.PhotosFoundEvent;
+import io.mapsquare.osmcontributor.flickr.rest.GetFlickrPhotos;
+import io.mapsquare.osmcontributor.model.entities.Poi;
+import io.mapsquare.osmcontributor.ui.activities.PhotoActivity;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseChangePoiPosition;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseDeletePoiFromMapEvent;
@@ -55,12 +67,18 @@ import io.mapsquare.osmcontributor.utils.ConfigManager;
  * and want to see details.
  */
 public class PoiDetailFragment extends Fragment {
+    /*=========================================*/
+    /*--------------INJECTIONS-----------------*/
+    /*=========================================*/
     @Inject
     EventBus eventBus;
 
     @Inject
     ConfigManager configManager;
 
+    /*=========================================*/
+    /*----------------VIEWS--------------------*/
+    /*=========================================*/
     @BindView(R.id.poi_name)
     TextView editTextPoiName;
 
@@ -79,8 +97,13 @@ public class PoiDetailFragment extends Fragment {
     @BindView(R.id.edit_poi_position_floating_button)
     FloatingActionButton floatingButtonEditPosition;
 
-    public PoiDetailFragment() {
-    }
+    @BindView(R.id.thumbnail)
+    SimpleDraweeView thumbnail;
+
+    /*=========================================*/
+    /*--------------ATTRIBUTES-----------------*/
+    /*=========================================*/
+    private Poi poi;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,7 +111,6 @@ public class PoiDetailFragment extends Fragment {
 
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
         ButterKnife.bind(this, rootView);
-
         osmCopyrightTextView.setText(Html.fromHtml(getString(R.string.osm_copyright)));
 
         if (!configManager.hasPoiModification()) {
@@ -108,6 +130,48 @@ public class PoiDetailFragment extends Fragment {
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    /*=========================================*/
+    /*---------------EVENTS--------------------*/
+    /*=========================================*/
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPhotosFoundEvent(PhotosFoundEvent photosFoundEvent) {
+        Log.i("PoiDetail", "onPhotosFoundEvent: ");
+        List<List<Size>> photos = photosFoundEvent.getPhotos();
+        // If photos are not null and not empty, a photo is in the map.
+        if (photos != null && !photos.isEmpty()) {
+            // Both index are 0 because we are requested one image and we print the thumbail
+            // contained at the index 0 of size list.
+            thumbnail.setImageURI(Uri.parse(photos.get(0).get(0).getSource()));
+        } else {
+            // Default image when there is no image. The user can click to add an image.
+            thumbnail.setImageURI(new Uri.Builder()
+                    .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                    .path(String.valueOf(R.drawable.add_photo_img))
+                    .build());
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseChangeValuesDetailPoiFragmentEvent(PleaseChangeValuesDetailPoiFragmentEvent event) {
+        setPoiType(event.getPoiType());
+        setPoiName(event.getPoiName());
+        showMovePoi(!event.isWay());
+        this.poi = event.getPoi();
+        new GetFlickrPhotos(poi.getLongitude(), poi.getLatitude(),
+                ((OsmTemplateApplication) getActivity().getApplication()).getFlickr(), 1, 1).execute();
+    }
+
+    /*=========================================*/
+    /*---------------ONCLICK-------------------*/
+    /*=========================================*/
+    @OnClick(R.id.thumbnail)
+    public void onThumbnailClick(View view) {
+        Intent photoActivity = new Intent(getActivity(), PhotoActivity.class);
+        photoActivity.putExtra("latitude", poi.getLatitude());
+        photoActivity.putExtra("longitude", poi.getLongitude());
+        startActivity(photoActivity);
     }
 
     @OnClick(R.id.edit_poi_detail_floating_button)
@@ -145,6 +209,9 @@ public class PoiDetailFragment extends Fragment {
         }
     }
 
+    /*=========================================*/
+    /*-------------PRIVATE CODE----------------*/
+    /*=========================================*/
     private void setPoiName(String poiName) {
         floatingActionMenu.close(true);
         if (poiName != null && !poiName.isEmpty()) {
@@ -168,12 +235,5 @@ public class PoiDetailFragment extends Fragment {
 
     private void showMovePoi(boolean showing) {
         floatingButtonEditPosition.setVisibility(showing ? View.VISIBLE : View.GONE);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPleaseChangeValuesDetailPoiFragmentEvent(PleaseChangeValuesDetailPoiFragmentEvent event) {
-        setPoiType(event.getPoiType());
-        setPoiName(event.getPoiName());
-        showMovePoi(!event.isWay());
     }
 }

@@ -84,7 +84,7 @@
 
         <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService" />
 
-        <activity android:name=".ui.activities.PhotosActivity"></activity>
+        <activity android:name=".ui.activities.PhotoActivity" />
     </application>
 
 </manifest>
