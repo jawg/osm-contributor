@@ -76,6 +76,8 @@ public class PhotoActivity extends AppCompatActivity {
 
     private int lastVisiblePos;
 
+    private Long poiId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,12 +121,13 @@ public class PhotoActivity extends AppCompatActivity {
         OsmTemplateApplication application = (OsmTemplateApplication) getApplication();
         double latitude = getIntent().getDoubleExtra("latitude", 0);
         double longitude = getIntent().getDoubleExtra("longitude", 0);
+        poiId = getIntent().getLongExtra("poiId", 0);
         EventBus.getDefault().register(this);
-        imageAdapter = new ImageAdapter(this);
+        imageAdapter = new ImageAdapter(this, poiId);
         gridPhotos.setAdapter(imageAdapter);
 
         // If some picture are cached, show them.
-        if (ImageAdapter.getPhotoUrlsCached().isEmpty()) {
+        if (ImageAdapter.getPhotoUrlsCached(poiId) == null || ImageAdapter.getPhotoUrlsCached(poiId).isEmpty()) {
             gridPhotos.setVisibility(View.INVISIBLE);
             loadingImage.setVisibility(View.VISIBLE);
         }
@@ -145,7 +148,7 @@ public class PhotoActivity extends AppCompatActivity {
         List<List<Size>> photos = photosFoundEvent.getPhotos();
         if (photos != null && !photos.isEmpty()) {
             for (List<Size> size : photos) {
-                imageAdapter.addPhoto(size.get(1).getSource());
+                imageAdapter.addPhoto(size.get(1).getSource(), poiId);
             }
         }
         loadingImage.setVisibility(View.INVISIBLE);

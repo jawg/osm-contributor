@@ -29,46 +29,55 @@ import android.widget.BaseAdapter;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ImageAdapter extends BaseAdapter {
 
     /**
      * List of photos url. Also use as cache.
      */
-    private static List<String> photoUrlsCached = new ArrayList<>();
+    private static Map<Long, List<String>> photoUrlsCached = new HashMap<>();
+
+    private List<String> photosUrl;
 
     /**
      * Context.
      */
     private Context context;
 
-    public ImageAdapter(Context context) {
+    public ImageAdapter(Context context, Long poiId) {
         this.context = context;
+        photosUrl = photoUrlsCached.get(poiId);
+        if (photosUrl == null) {
+            photosUrl = new ArrayList<>();
+            photoUrlsCached.put(poiId, photosUrl);
+        }
     }
 
     @Override
     public int getCount() {
-        return photoUrlsCached.size();
+        return photosUrl.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return !photoUrlsCached.isEmpty() ? photoUrlsCached.get(position) : null;
+        return !photosUrl.isEmpty() ? photosUrl.get(position) : null;
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     /**
      * Add photo if not in the cache.
      * @param url photo url to add.
      */
-    public void addPhoto(String url) {
-        if (!photoUrlsCached.contains(url)) {
-            photoUrlsCached.add(url);
+    public void addPhoto(String url, Long poiId) {
+        if (!photoUrlsCached.get(poiId).contains(url)) {
+            photoUrlsCached.get(poiId).add(url);
             notifyDataSetChanged();
         }
     }
@@ -76,7 +85,7 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         SimpleDraweeView image = new SimpleDraweeView(context);
-        image.setImageURI(Uri.parse(photoUrlsCached.get(position)));
+        image.setImageURI(Uri.parse(photosUrl.get(position)));
         image.setLayoutParams(new ViewGroup.LayoutParams(
                 (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 110, context.getResources().getDisplayMetrics()),
                 (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 110, context.getResources().getDisplayMetrics())));
@@ -87,7 +96,7 @@ public class ImageAdapter extends BaseAdapter {
      * Get cache.
      * @return cache of photo urls
      */
-    public static List<String> getPhotoUrlsCached() {
-        return photoUrlsCached;
+    public static List<String> getPhotoUrlsCached(Long poiId) {
+        return photoUrlsCached.get(poiId);
     }
 }

@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.flickr4java.flickr.photos.Size;
 import com.github.clans.fab.FloatingActionButton;
@@ -146,10 +145,7 @@ public class PoiDetailFragment extends Fragment {
             thumbnail.setImageURI(Uri.parse(photos.get(0).get(0).getSource()));
         } else {
             // Default image when there is no image. The user can click to add an image.
-            thumbnail.setImageURI(new Uri.Builder()
-                    .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                    .path(String.valueOf(R.drawable.add_photo_img))
-                    .build());
+            thumbnail.setImageURI(Uri.parse("res:///" + R.drawable.ic_picture));
         }
     }
 
@@ -171,6 +167,7 @@ public class PoiDetailFragment extends Fragment {
         Intent photoActivity = new Intent(getActivity(), PhotoActivity.class);
         photoActivity.putExtra("latitude", poi.getLatitude());
         photoActivity.putExtra("longitude", poi.getLongitude());
+        photoActivity.putExtra("poiId", poi.getId());
         startActivity(photoActivity);
     }
 

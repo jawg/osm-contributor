@@ -56,9 +56,10 @@
             android:layout_marginBottom="5dp"
             android:layout_alignParentBottom="true"
             app:actualImageScaleType="fitCenter"
-            app:placeholderImage="@drawable/add_photo_img"
-            app:placeholderImageScaleType="fitXY"
+            app:placeholderImage="@drawable/ic_picture"
+            app:placeholderImageScaleType="fitCenter"
             app:progressBarImage="@drawable/progress"
+            app:progressBarImageScaleType="centerInside"
             app:progressBarAutoRotateInterval="1000" />
 
         <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
