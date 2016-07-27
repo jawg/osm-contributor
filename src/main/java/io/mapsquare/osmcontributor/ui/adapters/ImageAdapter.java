@@ -44,8 +44,6 @@ public class ImageAdapter extends BaseAdapter {
 
     private List<String> photosUrl;
 
-    private List<String> photosOriginals;
-
     private Long poiId;
 
     /**
@@ -57,15 +55,13 @@ public class ImageAdapter extends BaseAdapter {
         this.context = context;
         this.poiId = poiId;
         photosUrl = photoUrlsCachedThumbs.get(poiId);
-        photosOriginals = photoUrlsCachedOriginal.get(poiId);
         if (photosUrl == null) {
             photosUrl = new ArrayList<>();
             photoUrlsCachedThumbs.put(poiId, photosUrl);
         }
 
-        if (photosOriginals == null) {
-            photosOriginals = new ArrayList<>();
-            photoUrlsCachedOriginal.put(poiId, photosOriginals);
+        if (photoUrlsCachedOriginal.get(poiId) == null) {
+            photoUrlsCachedOriginal.put(poiId, new ArrayList<String>());
         }
     }
 

@@ -130,6 +130,7 @@ public class PhotoActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 zoomPhoto.setImageURI(Uri.parse(ImageAdapter.getPhotosOriginals(poiId).get(position)));
                 zoomPhoto.setVisibility(View.VISIBLE);
+                addPhoto.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -137,6 +138,7 @@ public class PhotoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 zoomPhoto.setVisibility(View.INVISIBLE);
+                addPhoto.setVisibility(View.VISIBLE);
             }
         });
 
