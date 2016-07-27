@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.flickr4java.flickr.photos.Size;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,9 +39,14 @@ public class ImageAdapter extends BaseAdapter {
     /**
      * List of photos url. Also use as cache.
      */
-    private static Map<Long, List<String>> photoUrlsCached = new HashMap<>();
+    private static Map<Long, List<String>> photoUrlsCachedThumbs = new HashMap<>();
+    private static Map<Long, List<String>> photoUrlsCachedOriginal = new HashMap<>();
 
     private List<String> photosUrl;
+
+    private List<String> photosOriginals;
+
+    private Long poiId;
 
     /**
      * Context.
@@ -49,10 +55,17 @@ public class ImageAdapter extends BaseAdapter {
 
     public ImageAdapter(Context context, Long poiId) {
         this.context = context;
-        photosUrl = photoUrlsCached.get(poiId);
+        this.poiId = poiId;
+        photosUrl = photoUrlsCachedThumbs.get(poiId);
+        photosOriginals = photoUrlsCachedOriginal.get(poiId);
         if (photosUrl == null) {
             photosUrl = new ArrayList<>();
-            photoUrlsCached.put(poiId, photosUrl);
+            photoUrlsCachedThumbs.put(poiId, photosUrl);
+        }
+
+        if (photosOriginals == null) {
+            photosOriginals = new ArrayList<>();
+            photoUrlsCachedOriginal.put(poiId, photosOriginals);
         }
     }
 
@@ -68,17 +81,19 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return poiId;
     }
 
     /**
      * Add photo if not in the cache.
      * @param url photo url to add.
      */
-    public void addPhoto(String url, Long poiId) {
-        if (!photoUrlsCached.get(poiId).contains(url)) {
-            photoUrlsCached.get(poiId).add(url);
+    public void addPhoto(String url, Long poiId, int size) {
+        if (size == Size.SQUARE && !photoUrlsCachedThumbs.get(poiId).contains(url)) {
+            photoUrlsCachedThumbs.get(poiId).add(url);
             notifyDataSetChanged();
+        } else if (size == Size.ORIGINAL && !photoUrlsCachedOriginal.get(poiId).contains(url)) {
+            photoUrlsCachedOriginal.get(poiId).add(url);
         }
     }
 
@@ -96,7 +111,11 @@ public class ImageAdapter extends BaseAdapter {
      * Get cache.
      * @return cache of photo urls
      */
-    public static List<String> getPhotoUrlsCached(Long poiId) {
-        return photoUrlsCached.get(poiId);
+    public static List<String> getPhotoUrlsCachedThumbs(Long poiId) {
+        return photoUrlsCachedThumbs.get(poiId);
+    }
+
+    public static List<String> getPhotosOriginals(Long poiId) {
+        return photoUrlsCachedOriginal.get(poiId);
     }
 }

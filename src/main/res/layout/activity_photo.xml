@@ -22,6 +22,7 @@
 <RelativeLayout
     android:id="@+id/photos_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -39,6 +40,19 @@
         android:gravity="center"
         android:stretchMode="columnWidth"
         android:layout_below="@+id/toolbar"/>
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/zoom_photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:actualImageScaleType="fitCenter"
+        app:progressBarImage="@drawable/progress"
+        app:progressBarImageScaleType="centerInside"
+        app:progressBarAutoRotateInterval="1000"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:background="#80000000"
+        android:layout_below="@+id/toolbar"
+        android:visibility="invisible"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_photo"
