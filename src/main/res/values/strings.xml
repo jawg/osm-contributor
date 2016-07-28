@@ -118,7 +118,7 @@
     <string name="shared_prefs_consumer_secret" translatable="false">SHARED_PREFS_CONSUMER_SECRET</string>
     <string name="shared_prefs_server_key" translatable="false">SHARED_PREFS_SERVER_KEY</string>
     <string name="shared_prefs_google_connection_key" translatable="false">SHARED_PREFS_GOOLE_CONNECTION</string>
-    <string name="shared_prefs_google_connection" translatable="false">Connect with google</string>
+    <string name="shared_prefs_google_connection" translatable="false">Login with Google</string>
     <string name="shared_prefs_reset" translatable="false">SHARED_PREFS_RESET</string>
     <string name="shared_prefs_reset_type" translatable="false">SHARED_PREFS_RESET_TYPE</string>
     <string name="shared_prefs_expert_mode" translatable="false">SHARED_PREFS_EXPERT</string>
@@ -130,6 +130,13 @@
     <string name="shared_prefs_server" translatable="false">OSM Server</string>
     <string name="shared_prefs_oauth_token_flickr" translatable="false">oauthTokenFlickr</string>
     <string name="shared_prefs_oauth_token_secret_flickr" translatable="false">oauthTokenSecretFlickr</string>
+
+    <!--Login-->
+    <string name="login_google_error">Vous ne pouvez pas vous connecter avec votre compte Google.\n
+        Cependant, vous pouvez vous connecter avec en utilisant votre nom d’utilisateur et votre mot de passe.\n\n
+        Si vous souhaitez vous connecter avec votre compte Google, associez le compte avec votre ID dans vos préférences utilisateur.</string>
+
+
 
     <!-- Tuto -->
     <string name="tuto_title_press_create">Poi creation</string>

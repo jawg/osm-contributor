@@ -20,6 +20,7 @@ package io.mapsquare.osmcontributor.ui.dialogs;
 
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -32,6 +33,9 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.Map;
 
@@ -46,7 +50,18 @@ public class WebViewDialogFragment extends DialogFragment {
     @BindView(R.id.dialog_web_view)
     WebView webView;
 
+    @BindView(R.id.dialog_google_progress_bar)
+    ProgressBar progressBar;
+
+    @BindView(R.id.dialog_google_ok_button)
+    Button okButton;
+
+    @BindView(R.id.dialog_google_error_text)
+    TextView errorTextView;
+
     private String url;
+    private boolean isRedirect;
+    private boolean isProgressing;
     private Map<String, String> params;
     private OnPageFinishedListener onPageFinishedListener;
 
@@ -63,20 +78,32 @@ public class WebViewDialogFragment extends DialogFragment {
         final View rootView = inflater.inflate(R.layout.dialog_google_connection, container, false);
         ButterKnife.bind(this, rootView);
 
+        okButton.setVisibility(View.GONE);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
+
+        errorTextView.setVisibility(View.GONE);
+
+        startProgressBar();
+
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.clearCache(true);
-        webView.clearHistory();
         clearCookies(getActivity());
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
+                isRedirect = false;
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
+                isRedirect = true;
                 return true;
             }
 
@@ -84,7 +111,7 @@ public class WebViewDialogFragment extends DialogFragment {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 if (onPageFinishedListener != null) {
-                    onPageFinishedListener.onPageFinished(webView, url);
+                    onPageFinishedListener.onPageFinished(webView, url, isRedirect);
                 }
             }
         });
@@ -102,6 +129,30 @@ public class WebViewDialogFragment extends DialogFragment {
                 refreshParams();
             }
         }
+    }
+
+    public void startProgressBar() {
+        progressBar.setVisibility(View.VISIBLE);
+        webView.animate().alpha(0).setDuration(300);
+        isProgressing = true;
+    }
+
+    public void stopProgressBar() {
+        progressBar.setVisibility(View.GONE);
+        webView.animate().alpha(1).setDuration(300);
+        isProgressing = false;
+    }
+
+    public void showErrorText(String text) {
+        webView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        errorTextView.setText(text);
+        errorTextView.setVisibility(View.VISIBLE);
+        okButton.setVisibility(View.VISIBLE);
+    }
+
+    public boolean isProgressing() {
+        return isProgressing;
     }
 
     public void setParams(Map<String, String> params) {
@@ -127,7 +178,7 @@ public class WebViewDialogFragment extends DialogFragment {
     }
 
     public interface OnPageFinishedListener {
-        void onPageFinished(WebView webView, String url);
+        void onPageFinished(WebView webView, String url, boolean isRedirect);
     }
 
     @SuppressWarnings("deprecation")
@@ -144,6 +195,14 @@ public class WebViewDialogFragment extends DialogFragment {
             cookieManager.removeSessionCookie();
             cookieSyncMngr.stopSync();
             cookieSyncMngr.sync();
+        }
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (webView != null) {
+            webView.stopLoading();
         }
     }
 }

@@ -48,6 +48,12 @@
     <PreferenceCategory
         android:title="@string/shared_prefs_login_title">
 
+        <Preference
+            android:inputType="none"
+            android:key="@string/shared_prefs_google_connection_key"
+            android:title="@string/shared_prefs_google_connection"
+            android:icon="@drawable/ic_google"/>
+
         <EditTextPreference
             android:inputType="textNoSuggestions"
             android:key="@string/shared_prefs_login"
@@ -59,11 +65,6 @@
             android:key="@string/shared_prefs_password"
             android:summary="@string/summary_password"
             android:title="@string/prompt_password"/>
-
-        <Preference
-            android:inputType="none"
-            android:key="@string/shared_prefs_google_connection_key"
-            android:title="@string/shared_prefs_google_connection"/>
 
         <Preference
             android:inputType="none"

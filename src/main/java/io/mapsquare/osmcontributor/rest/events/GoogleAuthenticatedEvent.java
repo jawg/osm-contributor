@@ -49,4 +49,9 @@ public class GoogleAuthenticatedEvent {
     public String getConsumerSecret() {
         return consumerSecret;
     }
+
+    public boolean isSuccessful() {
+        return consumer != null && consumerSecret != null && token != null && tokenSecret != null
+                && !consumer.isEmpty() && !consumerSecret.isEmpty() && !tokenSecret.isEmpty() && !token.isEmpty();
+    }
 }

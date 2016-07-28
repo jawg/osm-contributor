@@ -34,6 +34,7 @@
     <color name="theme_grey">#ff999999</color>
     <color name="material_amber_800">#ffff8f00</color>
     <color name="material_amber_900">#ffff6f00</color>
+    <color name="error_color">#F44336</color>
 
     <color name="material_green_500">#4CAF50</color>
     <color name="material_green_700">#388E3C</color>

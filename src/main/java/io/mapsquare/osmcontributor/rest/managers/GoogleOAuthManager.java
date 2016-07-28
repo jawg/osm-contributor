@@ -19,24 +19,20 @@
 package io.mapsquare.osmcontributor.rest.managers;
 
 import android.app.Activity;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.rest.events.GoogleAuthenticatedEvent;
 import io.mapsquare.osmcontributor.rest.utils.MapParams;
 import io.mapsquare.osmcontributor.ui.dialogs.WebViewDialogFragment;
-import okhttp3.OkHttpClient;
 
 /**
  * @author Tommy Buonomo on 25/07/16.
@@ -45,27 +41,34 @@ import okhttp3.OkHttpClient;
 public class GoogleOAuthManager {
     public static final String LOGIN_HINT_PARAM = "login_hint";
     public static final String OSM_GOOGLE_AUTH_URL = "https://www.openstreetmap.org/auth/google";
+    public static final String OSM_MAP_URL = "https://www.openstreetmap.org/#map";
+    public static final String OSM_NEW_USER_URL = "https://www.openstreetmap.org/user/new";
+    public static final String OSM_TERMS_URL = "https://www.openstreetmap.org/user/terms#";
+    public static final String GOOGLE_SERVICE_LOGIN_URL = "https://accounts.google.com/ServiceLogin";
+    public static final String OSM_WELCOME_URL = "https://www.openstreetmap.org/welcome";
 
     private EventBus eventBus;
-    private OkHttpClient okHttpClient;
+    private String email;
 
     private boolean finish;
 
     @Inject
     public GoogleOAuthManager(EventBus eventBus) {
         this.eventBus = eventBus;
-        okHttpClient = new OkHttpClient();
     }
 
-    public void authenticate(final Activity activity, String email) {
+    public void authenticate(final Activity activity, final String email) {
         final WebViewDialogFragment dialog = WebViewDialogFragment.newInstance(OSM_GOOGLE_AUTH_URL, new MapParams<String, String>().put(LOGIN_HINT_PARAM, email).toMap());
         dialog.show(activity.getFragmentManager(), WebViewDialogFragment.class.getSimpleName());
         finish = false;
         dialog.setOnPageFinishedListener(new WebViewDialogFragment.OnPageFinishedListener() {
             @Override
-            public void onPageFinished(WebView webView, String url) {
-                webView.addJavascriptInterface(new JsInterface(activity, webView), "Android");
-                if (!finish && url.contains("https://www.openstreetmap.org/#map")) {
+            public void onPageFinished(WebView webView, String url, boolean isRedirect) {
+                webView.addJavascriptInterface(new JsInterface(activity, webView, dialog), "Android");
+                if (!finish && url.contains(OSM_MAP_URL) && !isRedirect) {
+                    if (dialog.isProgressing()) {
+                        dialog.stopProgressBar();
+                    }
                     webView.loadUrl("javascript:Android.showToken(" +
                             "OSM.oauth_token " +
                             "+ ' ' " +
@@ -74,122 +77,90 @@ public class GoogleOAuthManager {
                             "+ OSM.oauth_consumer_key" +
                             "+ ' ' " +
                             "+ OSM.oauth_consumer_secret)");
-                    webView.stopLoading();
-                    dialog.dismiss();
-                    finish = true;
                 }
 
-                if (url.contains("https://www.openstreetmap.org/user/new")) {
-                    webView.loadUrl("javascript:Android.showUserParams(" +
-                            "document.getElementsByName('authenticity_token')[0].value" +
-                            "+ ' ' " +
-                            "+ document.getElementsByName('user[email]')[0].value" +
-                            "+ ' ' " +
-                            "+ document.getElementsByName('user[auth_uid]')[0].value)");
+                if (url.contains(OSM_NEW_USER_URL) && !url.equals(OSM_NEW_USER_URL)) {
+                    dialog.startProgressBar();
+                    webView.loadUrl("javascript:Android.showEmail(" +
+                            "+ document.getElementsByName('user[email]')[0].value)");
+                    // Skip the inscription page
+                    webView.loadUrl("javascript:" +
+                            "document.getElementsByName('user[display_name]')[0].value = '"
+                            + email.substring(0, email.indexOf('@')) + UUID.randomUUID().toString().substring(0, 5)
+                            + "';" +
+                            "document.getElementsByName('commit')[0].click();");
+                }
+
+                if (url.equals(OSM_NEW_USER_URL)) {
+                    dialog.showErrorText(activity.getString(R.string.login_google_error));
+                }
+
+                if (url.contains(OSM_TERMS_URL) && !isRedirect) {
+                    dialog.stopProgressBar();
+                }
+
+                if (url.contains(GOOGLE_SERVICE_LOGIN_URL) && !isRedirect) {
+                    webView.loadUrl("javascript:" +
+                            "if (!document.getElementById('password-shown').hasChildNodes()) {" +
+                            "   document.getElementById('next').click()" +
+                            "} else {" +
+                            "   Android.stopProgressBar();" +
+                            "}");
+                }
+
+                if (url.contains(OSM_WELCOME_URL) && !isRedirect) {
+                    webView.loadUrl(OSM_MAP_URL);
+                }
+
+                if (url.contains(OSM_WELCOME_URL) && isRedirect) {
+                    dialog.startProgressBar();
                 }
             }
         });
-    }
-
-    private static final String UTF8 = "utf8";
-    private static final String AUTHENTICITY_TOKEN = "authenticity_token";
-    private static final String USER_EMAIL = "user[email]";
-    private static final String USER_EMAIL_CONFIRMATION = "user[email_confirmation]";
-    private static final String USER_DISPLAY_NAME = "user[display_name]";
-    private static final String USER_AUTH_PROVIDER = "user[auth_provider]";
-    private static final String USER_AUTH_UID = "user[auth_uid]";
-    private static final String USER_PASS_CRYPT = "user[pass_crypt]";
-    private static final String USER_PASS_CRYPT_CONFIRMATION = "user[pass_crypt_confirmation]";
-    private static final String COMMIT = "commit";
-    private static final String SEPARATOR = "&";
-    private static final String EQUALS = "=";
-    private static final String TAG = "GoogleOAuthManager";
-    private static final String NEW_USER_URL = "https://www.openstreetmap.org/user/new";
-
-    private void skipInscriptionStep(Activity activity, final WebView webView, String authenticityToken, String email, String authUid) {
-        MapParams<String, String> mapParams = new MapParams<String, String>()
-                .put(UTF8, "✓")
-                .put(AUTHENTICITY_TOKEN, authenticityToken)
-                .put(USER_EMAIL, email)
-                .put(USER_EMAIL_CONFIRMATION, email)
-                .put(USER_DISPLAY_NAME, email.substring(0, email.indexOf("@")))
-                .put(USER_AUTH_PROVIDER, "google")
-                .put(USER_AUTH_UID, authUid)
-                .put(USER_PASS_CRYPT, "")
-                .put(USER_PASS_CRYPT_CONFIRMATION, "")
-                .put(COMMIT, "S’inscrire");
-
-
-
-        StringBuilder builder = new StringBuilder();
-        for (Map.Entry<String, String> e : mapParams.toMap().entrySet()) {
-            builder.append(e.getKey())
-                    .append(EQUALS)
-                    .append(e.getValue())
-                    .append(SEPARATOR);
-        }
-        builder.deleteCharAt(builder.length() - 1);
-        String data = "";
-        try {
-            data = URLEncoder.encode(builder.toString(), "UTF-8");
-            data = URLEncoder.encode(data, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        final String finalData = data;
-        Log.i(TAG, "skipInscriptionStep: " + builder);
-        Log.i(TAG, "skipInscriptionStep: " + data);
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                webView.postUrl(NEW_USER_URL, finalData.getBytes());
-            }
-        });
-    }
-
-    private class NewUserTask extends AsyncTask<Void, Void, String> {
-        Map<String, String> params;
-
-        public NewUserTask(Map<String, String> params) {
-            this.params = params;
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-//            RequestBody requestBody = new FormBody.Builder()
-//                    .addEncoded()
-//
-//// Do whatever you want with the content
-//
-//// Show the web page
-//            webView.loadDataWithBaseURL(url, content, "text/html", "UTF-8", null);
-            return null;
-        }
     }
 
     private class JsInterface {
         private WebView webView;
         private Activity activity;
+        private WebViewDialogFragment dialog;
 
-        public JsInterface(Activity activity, WebView webView) {
+        public JsInterface(Activity activity, WebView webView, WebViewDialogFragment dialog) {
             this.webView = webView;
             this.activity = activity;
+            this.dialog = dialog;
         }
 
         @JavascriptInterface
-        public void showToken(String attr) {
+        @SuppressWarnings("unused")
+        public synchronized void showToken(String attr) {
+            finish = true;
             String[] tokens = attr.split(" ");
-            eventBus.post(new GoogleAuthenticatedEvent(tokens[0], tokens[1], tokens[2], tokens[3]));
+            final GoogleAuthenticatedEvent event = new GoogleAuthenticatedEvent(tokens[0], tokens[1], tokens[2], tokens[3]);
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    webView.stopLoading();
+                    dialog.dismiss();
+                    eventBus.post(event);
+                }
+            });
         }
 
         @JavascriptInterface
-        public void showUserParams(String value) {
-            String[] params = value.split(" ");
-            String authenticityToken = params[0];
-            String email = params[1];
-            String authUid = params[2];
-            Log.i(GoogleOAuthManager.class.getSimpleName(), "showUserParams: " + value);
-            skipInscriptionStep(activity, webView, authenticityToken, email, authUid);
+        @SuppressWarnings("unused")
+        public void showEmail(String email) {
+            GoogleOAuthManager.this.email = email;
+        }
+
+        @JavascriptInterface
+        @SuppressWarnings("unused")
+        public void stopProgressBar() {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    dialog.stopProgressBar();
+                }
+            });
         }
     }
 }

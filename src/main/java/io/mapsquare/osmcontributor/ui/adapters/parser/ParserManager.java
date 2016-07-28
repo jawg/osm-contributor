@@ -78,6 +78,15 @@ public class ParserManager {
     }
 
     /**
+     * Get tag name formated.
+     * @param tagName tag name
+     * @return tag name correctly formated
+     */
+    public static String deparseTagName(String tagName) {
+        return Character.toLowerCase(tagName.charAt(0)) + tagName.substring(1).replace(" ", "_");
+    }
+
+    /**
      * Get tag type.
      * @param key tag key
      * @param values tag possible values

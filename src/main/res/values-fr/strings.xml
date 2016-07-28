@@ -108,6 +108,7 @@
     <!-- Shared preferences -->
     <string name="shared_prefs_login_title">Connexion</string>
     <string name="shared_prefs_server">Serveur OSM</string>
+    <string name="shared_prefs_google_connection" translatable="false">Se connecter avec Google</string>
 
     <!-- Tuto -->
     <string name="tuto_title_press_create">Création de poi</string>

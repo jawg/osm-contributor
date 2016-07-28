@@ -25,6 +25,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,7 +60,6 @@ import io.mapsquare.osmcontributor.ui.adapters.parser.ParserManager;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
-import io.mapsquare.osmcontributor.ui.utils.SimpleTextWatcher;
 import io.mapsquare.osmcontributor.ui.utils.views.DividerItemDecoration;
 import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHolder;
 import io.mapsquare.osmcontributor.ui.utils.views.holders.TagItemConstantViewHolder;
@@ -163,7 +163,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onPleaseApplyTagChange(PleaseApplyTagChange event) {
         eventBus.removeStickyEvent(event);
-        TagItem tagItem = keyTagItem.get(event.getKey());
+        TagItem tagItem = keyTagItem.get(ParserManager.deparseTagName(event.getKey()));
         if (tagItem != null) {
             editTag(tagItem, event.getValue());
         }
@@ -181,7 +181,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onPleaseApplyTagChangeView(PleaseApplyTagChangeView event) {
         eventBus.removeStickyEvent(event);
-        TagItem tagItem = keyTagItem.get(event.getKey());
+        TagItem tagItem = keyTagItem.get(ParserManager.deparseTagName(event.getKey()));
         if (tagItem != null) {
             editTag(tagItem, event.getValue());
             Log.i("osmcontributorlog", "onPleaseApplyTagChangeView: ");
@@ -377,15 +377,19 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
         } else {
-            // If there is no proposition, simply print an edit text
-            holder.getTextViewValue().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            holder.getTextViewValue().addTextChangedListener(new TextWatcher() {
                 @Override
-                public void onFocusChange(View v, boolean hasFocus) { }
-            });
-            holder.getTextViewValue().addTextChangedListener(new SimpleTextWatcher() {
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    if (i1 != i2) {
+                        eventBus.post(new PleaseApplyTagChange(holder.getTextViewKey().getText().toString(), holder.getTextViewValue().getText().toString()));
+                    }
+                }
                 @Override
                 public void afterTextChanged(Editable s) {
-                    eventBus.post(new PleaseApplyTagChange(holder.getTextViewKey().getText().toString(), holder.getTextViewValue().getText().toString()));
                 }
             });
         }

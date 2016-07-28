@@ -29,4 +29,33 @@
         android:id="@+id/dialog_web_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <ProgressBar
+        android:id="@+id/dialog_google_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/progress"/>
+
+    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+        android:id="@+id/dialog_google_error_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/error_color"
+        android:textSize="18sp"
+        android:layout_margin="16dp"
+        android:gravity="center"
+        android:text="@string/login_google_error"
+        android:layout_gravity="center"/>
+
+    <Button
+        android:id="@+id/dialog_google_ok_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:text="@string/ok"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:layout_margin="16dp"/>
 </FrameLayout>

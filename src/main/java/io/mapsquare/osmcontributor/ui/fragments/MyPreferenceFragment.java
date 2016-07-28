@@ -303,14 +303,18 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
     }
 
     @Subscribe
-    public void onGoogleAutenticatedEvent(GoogleAuthenticatedEvent event) {
-        Snackbar.make(getView(), R.string.valid_login, Snackbar.LENGTH_SHORT).show();
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(getString(R.string.shared_prefs_consumer_secret), event.getConsumerSecret());
-        editor.putString(getString(R.string.shared_prefs_consumer), event.getConsumer());
-        editor.putString(getString(R.string.shared_prefs_token), event.getToken());
-        editor.putString(getString(R.string.shared_prefs_token_secret), event.getTokenSecret());
-        editor.apply();
+    public void onGoogleAuthenticatedEvent(GoogleAuthenticatedEvent event) {
+        if (event.isSuccessful()) {
+            Snackbar.make(getView(), R.string.valid_login, Snackbar.LENGTH_SHORT).show();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(getString(R.string.shared_prefs_consumer_secret), event.getConsumerSecret());
+            editor.putString(getString(R.string.shared_prefs_consumer), event.getConsumer());
+            editor.putString(getString(R.string.shared_prefs_token), event.getToken());
+            editor.putString(getString(R.string.shared_prefs_token_secret), event.getTokenSecret());
+            editor.apply();
+        } else {
+            Snackbar.make(getView(), R.string.error_login, Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
