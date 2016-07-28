@@ -14,7 +14,7 @@ ext {
     timberVersion = '2.7.1'
     ormliteVersion = '4.48'
     jodatimeVersion = '2.9.4'
-    mapboxVersion = '4.1.1'
+    mapboxVersion = '4.1.0-beta.3'
     retrofitVersion = '1.9.0'
     okhttpVersion = '2.3.0'
     simplexmlRetrofitVersion = '1.1'
@@ -25,6 +25,7 @@ ext {
     licensesdialogVersion = '1.7.0'
     arpiglVersion = '0.3.3'
     lovelyDialog = '1.0.4'
+    playServicesVersion = '9.2.0'
 }
 
 buildscript {
@@ -210,7 +211,7 @@ dependencies {
 // The official API url is http://api.openstreetmap.org/api/0.6
 def osmUrl() {
     def osmUrl = project.getProperties().get("osmUrl")
-    return osmUrl != null ? '"' + osmUrl + '"' : '"http://api06.dev.openstreetmap.org/api/0.6"'
+    return osmUrl != null ? '"' + osmUrl + '"' : '"http://www.openstreetmap.org/api/0.6"'
 }
 
 // Load the properties from the given file

@@ -62,6 +62,11 @@
 
         <Preference
             android:inputType="none"
+            android:key="@string/shared_prefs_google_connection_key"
+            android:title="@string/shared_prefs_google_connection"/>
+
+        <Preference
+            android:inputType="none"
             android:key="@string/shared_prefs_server_key"
             android:title="@string/shared_prefs_server"/>
     </PreferenceCategory>

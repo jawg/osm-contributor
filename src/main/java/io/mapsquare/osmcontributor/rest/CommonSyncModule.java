@@ -31,14 +31,16 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.mapsquare.osmcontributor.rest.mappers.JodaTimeDateTimeTransform;
+import io.mapsquare.osmcontributor.rest.utils.AuthenticationRequestInterceptor;
 
 @Module
 @Singleton
 public class CommonSyncModule {
-
     @Provides
-    OkHttpClient getOkHttpClient() {
-        return new OkHttpClient();
+    OkHttpClient getOkHttpClient(AuthenticationRequestInterceptor interceptor) {
+        final OkHttpClient client = new OkHttpClient();
+        client.setAuthenticator(interceptor);
+        return client;
     }
 
     @Provides

@@ -18,6 +18,8 @@
  */
 package io.mapsquare.osmcontributor.rest.clients;
 
+import java.util.Map;
+
 import io.mapsquare.osmcontributor.rest.dtos.osm.OsmDto;
 import io.mapsquare.osmcontributor.rest.utils.BODY_DELETE;
 import retrofit.client.Response;
@@ -27,6 +29,7 @@ import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import retrofit.http.QueryMap;
 
 /**
  * Rest interface for requests to OpenStreetMap.
@@ -40,6 +43,14 @@ public interface OsmRestClient {
      */
     @GET("/permissions")
     OsmDto getPermissions();
+
+    /**
+     * Get the permissions granted to the current API connection.
+     *
+     * @return The list of permissions granted to the current API client. Empty if the client is not authorized.
+     */
+    @GET("/permissions")
+    OsmDto getPermissions(@QueryMap Map<String, String> mapParams);
 
     /**
      * Get a node from it's OSM id.

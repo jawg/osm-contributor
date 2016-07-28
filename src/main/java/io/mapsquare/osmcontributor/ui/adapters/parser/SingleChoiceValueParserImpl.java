@@ -25,6 +25,9 @@ public class SingleChoiceValueParserImpl implements ValueParser<String> {
 
     @Override
     public String fromValue(String value) {
+        if (value == null) {
+            return "";
+        }
         if (value.startsWith("y") || value.startsWith("s") || value.startsWith("ou") || value.startsWith("1") || value.equals("true") || value.equals("yes")) {
             value = "yes";
         } else if (value.startsWith("n") || value.startsWith("0") || value.equals("false") || value.equals("no")) {

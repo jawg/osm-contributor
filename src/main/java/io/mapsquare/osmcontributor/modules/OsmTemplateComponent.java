@@ -34,6 +34,7 @@ import io.mapsquare.osmcontributor.database.helper.OsmSqliteOpenHelper;
 import io.mapsquare.osmcontributor.flickr.oauth.FlickrOAuth;
 import io.mapsquare.osmcontributor.login.LoginModule;
 import io.mapsquare.osmcontributor.rest.CommonSyncModule;
+import io.mapsquare.osmcontributor.rest.managers.GoogleOAuthManager;
 import io.mapsquare.osmcontributor.rest.managers.H2GeoPresetsManager;
 import io.mapsquare.osmcontributor.rest.managers.SyncManager;
 import io.mapsquare.osmcontributor.sync.SyncModule;
@@ -188,4 +189,6 @@ public interface OsmTemplateComponent {
     OpeningTimeValueParser getOpeningTimeParser();
 
     OpeningMonthValueParser getOpeningMonthParser();
+
+    GoogleOAuthManager getGoogleOAuthManager();
 }

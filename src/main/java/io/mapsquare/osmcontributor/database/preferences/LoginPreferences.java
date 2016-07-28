@@ -21,10 +21,14 @@ package io.mapsquare.osmcontributor.database.preferences;
 import android.app.Application;
 import android.content.SharedPreferences;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.mapsquare.osmcontributor.R;
+import io.mapsquare.osmcontributor.rest.utils.AuthenticationRequestInterceptor;
+import io.mapsquare.osmcontributor.rest.utils.MapParams;
 
 /**
  * Class managing the credentials preferences of the application.
@@ -67,5 +71,26 @@ public class LoginPreferences {
      */
     public void updateCredentials(String login, String password) {
         sharedPreferences.edit().putString(application.getString(R.string.shared_prefs_login), login).putString(application.getString(R.string.shared_prefs_password), password).apply();
+    }
+
+    /**
+     * Get the OAuth params from the preferences
+     * @return the OAuth params
+     */
+    public Map<String, String> retrieveOAuthParams() {
+        String consumer = sharedPreferences.getString(application.getString(R.string.shared_prefs_consumer), null);
+        String consumerSecret = sharedPreferences.getString(application.getString(R.string.shared_prefs_consumer_secret), null);
+        String token = sharedPreferences.getString(application.getString(R.string.shared_prefs_token), null);
+        String token_secret = sharedPreferences.getString(application.getString(R.string.shared_prefs_token_secret), null);
+
+        if (consumer != null && consumerSecret != null && token != null && token_secret != null) {
+            return new MapParams<String, String>().put(AuthenticationRequestInterceptor.CONSUMER_PARAM, consumer)
+                    .put(AuthenticationRequestInterceptor.CONSUMER_SECRET_PARAM, consumerSecret)
+                    .put(AuthenticationRequestInterceptor.TOKEN_PARAM, token)
+                    .put(AuthenticationRequestInterceptor.TOKEN_SECRET_PARAM, token_secret)
+                    .toMap();
+        }
+
+        return null;
     }
 }

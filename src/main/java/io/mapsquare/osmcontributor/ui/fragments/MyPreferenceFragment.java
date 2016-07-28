@@ -18,46 +18,57 @@
  */
 package io.mapsquare.osmcontributor.ui.fragments;
 
+import android.accounts.AccountManager;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-
-import javax.inject.Inject;
+import com.google.android.gms.common.AccountPicker;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import javax.inject.Inject;
+
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.model.events.DatabaseResetFinishedEvent;
 import io.mapsquare.osmcontributor.model.events.ResetDatabaseEvent;
 import io.mapsquare.osmcontributor.model.events.ResetTypeDatabaseEvent;
+import io.mapsquare.osmcontributor.rest.events.GoogleAuthenticatedEvent;
+import io.mapsquare.osmcontributor.rest.managers.GoogleOAuthManager;
 import io.mapsquare.osmcontributor.ui.events.login.AttemptLoginEvent;
 import io.mapsquare.osmcontributor.ui.events.login.ErrorLoginEvent;
 import io.mapsquare.osmcontributor.ui.events.login.ValidLoginEvent;
+import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 
 public class MyPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
-
-    String loginKey;
-    String passwordKey;
-    Preference loginPref;
-    Preference passwordPref;
-    Preference resetTypePref;
+    private static final int PICK_ACCOUNT_CODE = 1;
+    public static final int RC_SIGN_IN = 2;
+    private String loginKey;
+    private String passwordKey;
+    private Preference loginPref;
+    private Preference passwordPref;
+    private Preference resetTypePref;
+    private Preference googleConnectPref;
 
     private Tracker tracker;
+
+    @Inject
+    GoogleOAuthManager googleOAuthManager;
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -162,10 +173,40 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
                 return false;
             }
         });
+
+
+        googleConnectPref = findPreference(getString(R.string.shared_prefs_google_connection_key));
+        googleConnectPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                //dialog.show(getFragmentManager(), WebViewDialogFragment.class.getSimpleName());
+                Intent intent = AccountPicker.newChooseAccountIntent(
+                        null, null,
+                        new String[]{"com.google"},
+                        false, null, null, null, null);
+                startActivityForResult(intent, PICK_ACCOUNT_CODE);
+                return false;
+            }
+        });
+
         if (!sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false)) {
             getPreferenceScreen().removePreference(resetTypePref);
         }
     }
+
+    private static final String TAG = "MyPreferenceFragment";
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_ACCOUNT_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                String email = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                googleOAuthManager.authenticate(getActivity(), email);
+            }
+        }
+    }
+
 
     @Override
     public void onResume() {
@@ -232,6 +273,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
 
     private void updatePrefsSummary(SharedPreferences sharedPreferences, String key) {
         if (loginKey.equals(key)) {
+            // Login changed
             updateLoginSummary(sharedPreferences);
             attemptLoginIfValidFields(sharedPreferences);
 
@@ -241,6 +283,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
                     .build());
 
         } else if (passwordKey.equals(key)) {
+            // Password changed
             updatePasswordSummary(sharedPreferences);
             attemptLoginIfValidFields(sharedPreferences);
 
@@ -259,18 +302,29 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
         return sharedPreferences.getString(passwordKey, null);
     }
 
+    @Subscribe
+    public void onGoogleAutenticatedEvent(GoogleAuthenticatedEvent event) {
+        Snackbar.make(getView(), R.string.valid_login, Snackbar.LENGTH_SHORT).show();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.shared_prefs_consumer_secret), event.getConsumerSecret());
+        editor.putString(getString(R.string.shared_prefs_consumer), event.getConsumer());
+        editor.putString(getString(R.string.shared_prefs_token), event.getToken());
+        editor.putString(getString(R.string.shared_prefs_token_secret), event.getTokenSecret());
+        editor.apply();
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onValidLoginEvent(ValidLoginEvent event) {
-        Toast.makeText(getActivity(), R.string.valid_login, Toast.LENGTH_SHORT).show();
+        Snackbar.make(getView(), R.string.valid_login, Snackbar.LENGTH_SHORT).show();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onErrorLoginEvent(ErrorLoginEvent event) {
-        Toast.makeText(getActivity(), R.string.error_login, Toast.LENGTH_LONG).show();
+        Snackbar.make(getView(), R.string.error_login, Snackbar.LENGTH_LONG).show();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDatabaseResetFinishedEvent(DatabaseResetFinishedEvent event) {
-        Toast.makeText(getActivity(), event.isSuccess() ? R.string.reset_success : R.string.reset_failure, Toast.LENGTH_SHORT).show();
+        Snackbar.make(getView(), event.isSuccess() ? R.string.reset_success : R.string.reset_failure, Snackbar.LENGTH_SHORT).show();
     }
 }

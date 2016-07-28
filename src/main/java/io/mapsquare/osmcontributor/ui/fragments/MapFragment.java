@@ -771,6 +771,8 @@ public class MapFragment extends Fragment {
         //the marker is displayed at the end of the animation
         creationPin.setVisibility(properties.isShowCreationPin() ? View.VISIBLE : View.GONE);
         wayCreationPin.setVisibility(properties.isShowCreationPin() ? View.VISIBLE : View.GONE);
+
+        addPoiFloatingMenu.toggle(true);
     }
 
     private void switchToolbarMode(MapMode mode) {

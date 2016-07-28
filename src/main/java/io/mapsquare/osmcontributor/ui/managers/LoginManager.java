@@ -42,6 +42,7 @@ public abstract class LoginManager {
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
+    @SuppressWarnings("unused")
     public void onAttemptLoginEvent(final AttemptLoginEvent event) {
         if (isValidLogin(event.getLogin(), event.getPassword())) {
             bus.post(new ValidLoginEvent());
