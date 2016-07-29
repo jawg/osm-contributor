@@ -113,4 +113,8 @@ public interface ConfigManager {
     String getFlickrApiKey();
 
     String getFlickrApiKeySecret();
+
+    String getFlickrToken();
+
+    String getFlickrTokenSecret();
 }

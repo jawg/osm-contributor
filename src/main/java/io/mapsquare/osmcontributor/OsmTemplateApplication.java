@@ -45,7 +45,6 @@ import io.mapsquare.osmcontributor.modules.DaggerOsmTemplateComponent;
 import io.mapsquare.osmcontributor.modules.OsmTemplateComponent;
 import io.mapsquare.osmcontributor.modules.OsmTemplateModule;
 import io.mapsquare.osmcontributor.utils.core.StoreConfigManager;
-import io.mapsquare.osmcontributor.utils.crashlytics.CrashContextWrapper;
 import io.mapsquare.osmcontributor.utils.crashlytics.CrashlyticsTree;
 import timber.log.Timber;
 
@@ -71,7 +70,7 @@ public class OsmTemplateApplication extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         } else {
-            Fabric.with(new CrashContextWrapper(this, getPackageName()), new Crashlytics());
+            Fabric.with(this, new Crashlytics());
             Timber.plant(new CrashlyticsTree());
         }
 

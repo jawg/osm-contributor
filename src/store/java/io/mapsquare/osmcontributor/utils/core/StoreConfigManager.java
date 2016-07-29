@@ -101,4 +101,12 @@ public class StoreConfigManager implements ConfigManager {
     public String getFlickrApiKeySecret() {
         return BuildConfig.FLICKR_API_SECRET;
     }
+
+    public String getFlickrToken() {
+        return BuildConfig.FLICKR_TOKEN;
+    }
+
+    public String getFlickrTokenSecret() {
+        return BuildConfig.FLICKR_TOKEN_SECRET;
+    }
 }

@@ -206,11 +206,7 @@ public class PhotoActivity extends AppCompatActivity {
     /*=========================================*/
     @OnClick(R.id.add_photo)
     public void onClickAddPhoto(View v) {
-        if (sharedPreferences.getString(getString(R.string.shared_prefs_oauth_token_flickr), null) == null) {
-            showInfoMessage();
-        } else {
-            takePicture();
-        }
+        takePicture();
     }
 
     @OnClick(R.id.zoom_photo)
@@ -294,11 +290,7 @@ public class PhotoActivity extends AppCompatActivity {
             asyncGetPhotos = new GetFlickrPhotos(longitude, latitude, application.getFlickr(), NB_IMAGE_REQUESTED, NB_PAGE_REQUESTED);
             asyncGetPhotos.execute();
         } else {
-            if (sharedPreferences.getString(getString(R.string.shared_prefs_oauth_token_flickr), null) == null) {
-                showInfoMessage();
-            } else {
-                takePicture();
-            }
+            takePicture();
         }
     }
 
@@ -392,8 +384,8 @@ public class PhotoActivity extends AppCompatActivity {
         OAuthRequest oAuthRequest = flickrOAuth.getOAuthRequest();
         if (oAuthRequest == null) {
             oAuthRequest = new OAuthRequest(application.getFlickr().getApiKey(), application.getFlickr().getSharedSecret());
-            oAuthRequest.setOAuthToken(sharedPreferences.getString(application.getString(R.string.shared_prefs_oauth_token_flickr), null));
-            oAuthRequest.setOAuthTokenSecret(sharedPreferences.getString(application.getString(R.string.shared_prefs_oauth_token_secret_flickr), null));
+            oAuthRequest.setOAuthToken(configManager.getFlickrToken());
+            oAuthRequest.setOAuthTokenSecret(configManager.getFlickrTokenSecret());
             flickrOAuth.setOAuthRequest(oAuthRequest);
         }
         oAuthRequest.setRequestUrl("https://up.flickr.com/services/upload");
@@ -432,13 +424,14 @@ public class PhotoActivity extends AppCompatActivity {
         }
         OAuthRequest oauthRequest = new OAuthRequest(configManager.getFlickrApiKey(), configManager.getFlickrApiKeySecret());
         oauthRequest.setRequestUrl("https://api.flickr.com/services/rest");
+        oauthRequest.setOAuthToken(configManager.getFlickrToken());
+        oauthRequest.setOAuthTokenSecret(configManager.getFlickrTokenSecret());
         oauthRequest.initParam(OAuthParams.getOAuthParams()
-                .put(OAuthParams.OAUTH_TOKEN, flickrOAuth.getOAuthRequest().getOAuthToken())
+                .put(OAuthParams.OAUTH_TOKEN, configManager.getFlickrToken())
                 .put("method", "flickr.photos.geo.setLocation")
                 .put("photo_id", photoId)
                 .put("lat", String.valueOf(latitude))
                 .put("lon", String.valueOf(longitude)).toMap());
-        oauthRequest.setOAuthTokenSecret(sharedPreferences.getString(getString(R.string.shared_prefs_oauth_token_secret_flickr), null));
         oauthRequest.signRequest(Verb.GET);
         flickrPhotoClient.setProperties(oauthRequest.getParams(), new Callback<String>() {
             @Override
@@ -456,12 +449,13 @@ public class PhotoActivity extends AppCompatActivity {
     private void setPhotoTag(final String photoId) {
         OAuthRequest oauthRequest = new OAuthRequest(configManager.getFlickrApiKey(), configManager.getFlickrApiKeySecret());
         oauthRequest.setRequestUrl("https://api.flickr.com/services/rest");
+        oauthRequest.setOAuthToken(configManager.getFlickrToken());
+        oauthRequest.setOAuthTokenSecret(configManager.getFlickrTokenSecret());
         oauthRequest.initParam(OAuthParams.getOAuthParams()
-                .put(OAuthParams.OAUTH_TOKEN, flickrOAuth.getOAuthRequest().getOAuthToken())
+                .put(OAuthParams.OAUTH_TOKEN, configManager.getFlickrToken())
                 .put("method", "flickr.photos.addTags")
                 .put("photo_id", photoId)
                 .put("tags", "openstreetmap").toMap());
-        oauthRequest.setOAuthTokenSecret(sharedPreferences.getString(getString(R.string.shared_prefs_oauth_token_secret_flickr), null));
         oauthRequest.signRequest(Verb.GET);
         flickrPhotoClient.setProperties(oauthRequest.getParams(), new Callback<String>() {
             @Override

@@ -129,6 +129,8 @@ android {
             buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass-api.de/api/interpreter"'
             buildConfigField "String", "FLICKR_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_key") + '"'
             buildConfigField "String", "FLICKR_API_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_secret") + '"'
+            buildConfigField "String", "FLICKR_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token") + '"'
+            buildConfigField "String", "FLICKR_TOKEN_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token_secret") + '"'
         }
         template {
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.template"'
