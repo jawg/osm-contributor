@@ -204,9 +204,7 @@ public class PhotoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (!hasPhotos) {
-            finish();
-        }
+        loadingImage.setVisibility(View.INVISIBLE);
     }
 
     /*=========================================*/
@@ -214,7 +212,11 @@ public class PhotoActivity extends AppCompatActivity {
     /*=========================================*/
     @OnClick(R.id.add_photo)
     public void onClickAddPhoto(View v) {
-        takePicture();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissionIfNeeded();
+        } else {
+            takePicture();
+        }
     }
 
     @OnClick(R.id.zoom_photo)
@@ -298,7 +300,11 @@ public class PhotoActivity extends AppCompatActivity {
             asyncGetPhotos = new GetFlickrPhotos(longitude, latitude, application.getFlickr(), NB_IMAGE_REQUESTED, NB_PAGE_REQUESTED);
             asyncGetPhotos.execute();
         } else {
-            takePicture();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissionIfNeeded();
+            } else {
+                takePicture();
+            }
         }
     }
 
