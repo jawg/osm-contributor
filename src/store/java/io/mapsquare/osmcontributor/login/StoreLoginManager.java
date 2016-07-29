@@ -18,6 +18,8 @@
  */
 package io.mapsquare.osmcontributor.login;
 
+import android.util.Base64;
+
 import com.github.scribejava.core.model.Verb;
 
 import org.greenrobot.eventbus.EventBus;
@@ -72,7 +74,8 @@ public class StoreLoginManager extends LoginManager {
                 permissions = osmRestClient.getPermissions(oAuthRequest.getParams());
             } else {
                 // Basic Auth connection
-                permissions = osmRestClient.getPermissions();
+                String authorization = "Basic " + Base64.encodeToString((login + ":" + password).getBytes(), Base64.NO_WRAP);
+                permissions = osmRestClient.getPermissions(authorization);
             }
 
             if (permissions.getPermissionsDto() != null && permissions.getPermissionsDto().getPermissionDtoList() != null) {
@@ -95,5 +98,10 @@ public class StoreLoginManager extends LoginManager {
      */
     @Override
     public void initializeCredentials() {
+    }
+
+    @Override
+    public boolean checkFirstConnection() {
+        return loginPreferences.retrieveFirstConnection();
     }
 }

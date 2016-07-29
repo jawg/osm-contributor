@@ -48,7 +48,6 @@ public class GoogleOAuthManager {
     public static final String OSM_WELCOME_URL = "https://www.openstreetmap.org/welcome";
 
     private EventBus eventBus;
-    private String email;
 
     private boolean finish;
 
@@ -58,9 +57,11 @@ public class GoogleOAuthManager {
     }
 
     public void authenticate(final Activity activity, final String email) {
-        final WebViewDialogFragment dialog = WebViewDialogFragment.newInstance(OSM_GOOGLE_AUTH_URL, new MapParams<String, String>().put(LOGIN_HINT_PARAM, email).toMap());
-        dialog.show(activity.getFragmentManager(), WebViewDialogFragment.class.getSimpleName());
         finish = false;
+        final WebViewDialogFragment dialog = WebViewDialogFragment.newInstance(OSM_GOOGLE_AUTH_URL,
+                new MapParams<String, String>().put(LOGIN_HINT_PARAM, email).toMap());
+
+        dialog.show(activity.getFragmentManager(), WebViewDialogFragment.class.getSimpleName());
         dialog.setOnPageFinishedListener(new WebViewDialogFragment.OnPageFinishedListener() {
             @Override
             public void onPageFinished(WebView webView, String url, boolean isRedirect) {
@@ -69,6 +70,7 @@ public class GoogleOAuthManager {
                     if (dialog.isProgressing()) {
                         dialog.stopProgressBar();
                     }
+                    // Get the tokens in hidden input in the html page
                     webView.loadUrl("javascript:Android.showToken(" +
                             "OSM.oauth_token " +
                             "+ ' ' " +
@@ -81,8 +83,6 @@ public class GoogleOAuthManager {
 
                 if (url.contains(OSM_NEW_USER_URL) && !url.equals(OSM_NEW_USER_URL)) {
                     dialog.startProgressBar();
-                    webView.loadUrl("javascript:Android.showEmail(" +
-                            "+ document.getElementsByName('user[email]')[0].value)");
                     // Skip the inscription page
                     webView.loadUrl("javascript:" +
                             "document.getElementsByName('user[display_name]')[0].value = '"
@@ -93,6 +93,7 @@ public class GoogleOAuthManager {
 
                 if (url.equals(OSM_NEW_USER_URL)) {
                     dialog.showErrorText(activity.getString(R.string.login_google_error));
+
                 }
 
                 if (url.contains(OSM_TERMS_URL) && !isRedirect) {
@@ -100,6 +101,7 @@ public class GoogleOAuthManager {
                 }
 
                 if (url.contains(GOOGLE_SERVICE_LOGIN_URL) && !isRedirect) {
+                    // Skip the google email next page
                     webView.loadUrl("javascript:" +
                             "if (!document.getElementById('password-shown').hasChildNodes()) {" +
                             "   document.getElementById('next').click()" +
@@ -144,12 +146,6 @@ public class GoogleOAuthManager {
                     eventBus.post(event);
                 }
             });
-        }
-
-        @JavascriptInterface
-        @SuppressWarnings("unused")
-        public void showEmail(String email) {
-            GoogleOAuthManager.this.email = email;
         }
 
         @JavascriptInterface

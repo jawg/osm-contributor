@@ -78,6 +78,7 @@
   <string name="summary_login">Por favor, coloque seu login</string>
   <string name="summary_password">Por favor, coloque sua senha</string>
   <string name="error_login">Não foi possível conectar com esse login e senha. Você tem certeza de que tem direitos de edição?</string>
+  <string name="error_first_login">Não foi possível conectar com esse login e senha.</string>
   <string name="valid_login">Conexão efetuada com sucesso.</string>
   <string name="reset_title">Resetar o Banco de Dados.</string>
   <string name="reset_summary">Remover todos os POIs do Banco de Dados</string>
@@ -187,5 +188,9 @@
   <string name="flickr_title">Flickr consideram precisado</string>
   <string name="flickr_need">You need a Yahoo account (Flickr) to post a photo</string>
   <string name="upload_message">Envio da imagem…</string>
+  <string name="login_using">Faça o login usando</string>
+  <string name="login_verb">Entrar</string>
+  <string name="login_later">Ligar mais tarde</string>
+  <string name="empty_fields">Empty fields!</string>
 
 </resources>

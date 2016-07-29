@@ -62,6 +62,7 @@ public class WebViewDialogFragment extends DialogFragment {
     private String url;
     private boolean isRedirect;
     private boolean isProgressing;
+    private boolean error;
     private Map<String, String> params;
     private OnPageFinishedListener onPageFinishedListener;
 
@@ -149,6 +150,7 @@ public class WebViewDialogFragment extends DialogFragment {
         errorTextView.setText(text);
         errorTextView.setVisibility(View.VISIBLE);
         okButton.setVisibility(View.VISIBLE);
+        error = true;
     }
 
     public boolean isProgressing() {
@@ -183,7 +185,6 @@ public class WebViewDialogFragment extends DialogFragment {
 
     @SuppressWarnings("deprecation")
     public static void clearCookies(Context context) {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             CookieManager.getInstance().removeAllCookies(null);
             CookieManager.getInstance().flush();

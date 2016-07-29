@@ -52,6 +52,7 @@ import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.PoiType;
+import io.mapsquare.osmcontributor.ui.events.login.UpdateFirstConnectionEvent;
 import io.mapsquare.osmcontributor.ui.events.map.ChangeMapModeEvent;
 import io.mapsquare.osmcontributor.ui.events.map.ChangesInDB;
 import io.mapsquare.osmcontributor.ui.events.map.MapCenterValueEvent;
@@ -144,6 +145,8 @@ public class MapActivity extends AppCompatActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         setSupportActionBar(toolbar);
+
+        eventBus.post(new UpdateFirstConnectionEvent());
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override

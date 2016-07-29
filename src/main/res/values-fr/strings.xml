@@ -90,6 +90,7 @@
     <string name="summary_login">Veuillez saisir votre identifiant OSM</string>
     <string name="summary_password">Veuillez saisir votre mot de passe</string>
     <string name="error_login">Impossible de se connecter avec ces identifiants. Etes-vous sûr d\'avoir les droits d\'édition?</string>
+    <string name="error_first_login">Impossible de se connecter avec ces identifiants.</string>
     <string name="valid_login">Connexion réussie</string>
     <string name="expert_mode_summary">Vous permet de gérer les types de pois</string>
     <string name="expert_mode_title">Mode expert</string>
@@ -222,6 +223,7 @@
 
     <!-- Android 6.0 dialog messages -->
     <string name="permissions_title">Permissions nécessaires</string>
+    <string name="login_title">Connexion</string>
     <string name="permissions_information">L\'accès à la localisation et en écriture au téléphone
         sont nécessaires pour gérer la carte et la base de données.
         Nous ne récupérons aucunes données personnelles sur votre téléphone. En refusant ces
@@ -235,5 +237,8 @@
     <string name="flickr_need">Vous avez besoin d\'un compte Yahoo (Flickr) pour poster une photo</string>
 
     <string name="upload_message">Envoi de l\'image en cours</string>
-
+    <string name="login_using">Se connecter via</string>
+    <string name="login_verb">Se connecter</string>
+    <string name="login_later">Se connecter plus tard</string>
+    <string name="empty_fields">Champs vides!</string>
 </resources>

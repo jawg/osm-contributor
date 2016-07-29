@@ -25,7 +25,7 @@ ext {
     licensesdialogVersion = '1.7.0'
     arpiglVersion = '0.3.3'
     lovelyDialog = '1.0.4'
-    playServicesVersion = '9.2.1'
+    playServicesVersion = '9.2.0'
 }
 
 buildscript {

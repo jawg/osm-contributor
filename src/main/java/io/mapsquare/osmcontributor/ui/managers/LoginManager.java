@@ -26,6 +26,11 @@ import io.mapsquare.osmcontributor.database.preferences.LoginPreferences;
 import io.mapsquare.osmcontributor.model.events.InitCredentialsEvent;
 import io.mapsquare.osmcontributor.ui.events.login.AttemptLoginEvent;
 import io.mapsquare.osmcontributor.ui.events.login.ErrorLoginEvent;
+import io.mapsquare.osmcontributor.ui.events.login.CheckFirstConnectionEvent;
+import io.mapsquare.osmcontributor.ui.events.login.LoginInitializedEvent;
+import io.mapsquare.osmcontributor.ui.events.login.PleaseOpenLoginDialogEvent;
+import io.mapsquare.osmcontributor.ui.events.login.UpdateFirstConnectionEvent;
+import io.mapsquare.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;
 import io.mapsquare.osmcontributor.ui.events.login.ValidLoginEvent;
 
 /**
@@ -46,6 +51,7 @@ public abstract class LoginManager {
     public void onAttemptLoginEvent(final AttemptLoginEvent event) {
         if (isValidLogin(event.getLogin(), event.getPassword())) {
             bus.post(new ValidLoginEvent());
+            loginPreferences.updateCredentials(event.getLogin(), event.getPassword());
         } else {
             bus.post(new ErrorLoginEvent());
         }
@@ -56,6 +62,15 @@ public abstract class LoginManager {
         initializeCredentials();
     }
 
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onCheckFirstConnectionEvent(CheckFirstConnectionEvent event) {
+        if (checkFirstConnection()) {
+            bus.post(new PleaseOpenLoginDialogEvent());
+        } else {
+            bus.postSticky(new LoginInitializedEvent());
+        }
+    }
+
     /**
      * Check if the credentials in the SharedPreferences are valid.
      *
@@ -63,6 +78,16 @@ public abstract class LoginManager {
      */
     public boolean checkCredentials() {
         return isValidLogin(loginPreferences.retrieveLogin(), loginPreferences.retrievePassword());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateGoogleCredentialsEvent(UpdateGoogleCredentialsEvent event) {
+        loginPreferences.updateGoogleCredentials(event.getConsumer(), event.getConsumerSecret(), event.getToken(), event.getTokenSecret());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateFisrtConnectionEvent(UpdateFirstConnectionEvent event) {
+        loginPreferences.updateFirstConnection(false);
     }
 
     /**
@@ -78,4 +103,6 @@ public abstract class LoginManager {
      * Initialize the value of the credentials in the preferences.
      */
     public abstract void initializeCredentials();
+
+    public abstract boolean checkFirstConnection();
 }

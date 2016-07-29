@@ -56,7 +56,6 @@ public class TypeFaceTextView extends TextView {
             Log.e(TAG, "Could not get typeface: " + e.getMessage());
             return false;
         }
-
         setTypeface(tf);
         return true;
     }

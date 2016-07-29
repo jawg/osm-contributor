@@ -25,6 +25,7 @@ import io.mapsquare.osmcontributor.rest.utils.BODY_DELETE;
 import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
@@ -42,7 +43,7 @@ public interface OsmRestClient {
      * @return The list of permissions granted to the current API client. Empty if the client is not authorized.
      */
     @GET("/permissions")
-    OsmDto getPermissions();
+    OsmDto getPermissions(@Header("Authorization") String auth);
 
     /**
      * Get the permissions granted to the current API connection.

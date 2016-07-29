@@ -84,6 +84,7 @@
     <string name="summary_login">Proporcione un nombre de usuario</string>
     <string name="summary_password">Proporcione una contraseña</string>
     <string name="error_login">No se pudo conectar con estas credenciales. ¿Está seguro que tiene permisos de edición?</string>
+    <string name="error_first_login">No se pudo conectar con estas credenciales.</string>
     <string name="valid_login">Conectado con éxito</string>
     <string name="reset_title">Reiniciar la base de datos</string>
     <string name="reset_summary">Quita todos los PDIs de la base de datos</string>
@@ -209,5 +210,9 @@ Sin estos permisos, la aplicación no puede funcionar correctamente.</string>
     <string name="flickr_need">Necesita una cuenta Yahoo (Flickr) para enviar una foto</string>
 
     <string name="upload_message">Envío de la imagen...</string>
+    <string name="login_using">Inicie la sesión utilizando</string>
+    <string name="login_verb">Iniciar</string>
+    <string name="login_later">Conectar más tarde</string>
+    <string name="empty_fields">Empty fields!</string>
 
 </resources>

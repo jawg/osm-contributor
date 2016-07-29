@@ -51,6 +51,7 @@ import io.mapsquare.osmcontributor.rest.events.GoogleAuthenticatedEvent;
 import io.mapsquare.osmcontributor.rest.managers.GoogleOAuthManager;
 import io.mapsquare.osmcontributor.ui.events.login.AttemptLoginEvent;
 import io.mapsquare.osmcontributor.ui.events.login.ErrorLoginEvent;
+import io.mapsquare.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;
 import io.mapsquare.osmcontributor.ui.events.login.ValidLoginEvent;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.StringUtils;
@@ -179,7 +180,6 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
         googleConnectPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                //dialog.show(getFragmentManager(), WebViewDialogFragment.class.getSimpleName());
                 Intent intent = AccountPicker.newChooseAccountIntent(
                         null, null,
                         new String[]{"com.google"},
@@ -306,12 +306,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
     public void onGoogleAuthenticatedEvent(GoogleAuthenticatedEvent event) {
         if (event.isSuccessful()) {
             Snackbar.make(getView(), R.string.valid_login, Snackbar.LENGTH_SHORT).show();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(getString(R.string.shared_prefs_consumer_secret), event.getConsumerSecret());
-            editor.putString(getString(R.string.shared_prefs_consumer), event.getConsumer());
-            editor.putString(getString(R.string.shared_prefs_token), event.getToken());
-            editor.putString(getString(R.string.shared_prefs_token_secret), event.getTokenSecret());
-            editor.apply();
+            bus.post(new UpdateGoogleCredentialsEvent(event.getToken(), event.getTokenSecret(), event.getConsumer(), event.getConsumerSecret()));
         } else {
             Snackbar.make(getView(), R.string.error_login, Snackbar.LENGTH_SHORT).show();
         }

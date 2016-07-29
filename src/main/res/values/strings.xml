@@ -94,6 +94,7 @@
     <string name="summary_login">Please provide a login</string>
     <string name="summary_password">Please provide a password</string>
     <string name="error_login">Couldn’t connect with these credentials. Are you sure you have editing rights?</string>
+    <string name="error_first_login">Couldn’t connect with these credentials.</string>
     <string name="valid_login">Successfully connected</string>
     <string name="reset_title">Reset the database</string>
     <string name="reset_summary">Remove all the Pois from the database</string>
@@ -112,6 +113,7 @@
     <!-- Shared preferences -->
     <string name="shared_prefs_login" translatable="false">SHARED_PREFS_LOGIN</string>
     <string name="shared_prefs_password" translatable="false">SHARED_PREFS_PASSWORD</string>
+    <string name="shared_prefs_first_connection" translatable="false">SHARED_PREFS_FIRST_CONNECTION</string>
     <string name="shared_prefs_token" translatable="false">SHARED_PREFS_TOKEN</string>
     <string name="shared_prefs_token_secret" translatable="false">SHARED_PREFS_TOKEN_SECRET</string>
     <string name="shared_prefs_consumer" translatable="false">SHARED_PREFS_CONSUMER</string>
@@ -135,8 +137,7 @@
     <string name="login_google_error">Vous ne pouvez pas vous connecter avec votre compte Google.\n
         Cependant, vous pouvez vous connecter avec en utilisant votre nom d’utilisateur et votre mot de passe.\n\n
         Si vous souhaitez vous connecter avec votre compte Google, associez le compte avec votre ID dans vos préférences utilisateur.</string>
-
-
+    <string name="login_title">Connection</string>
 
     <!-- Tuto -->
     <string name="tuto_title_press_create">Poi creation</string>
@@ -271,4 +272,9 @@
     <string name="flickr_title">Flickr account needed</string>
     <string name="flickr_need">You need a Yahoo account (Flickr) to post a photo</string>
     <string name="upload_message">Upload in progress</string>
+    <string name="login_using">Log in using</string>
+    <string name="login_verb">Login</string>
+    <string name="login_later">Log in later</string>
+    <string name="google">Google</string>
+    <string name="empty_fields">Empty fields!</string>
 </resources>

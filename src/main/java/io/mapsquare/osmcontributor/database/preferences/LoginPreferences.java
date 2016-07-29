@@ -64,6 +64,14 @@ public class LoginPreferences {
     }
 
     /**
+     * Return true if the user login for the first time
+     * @return
+     */
+    public boolean retrieveFirstConnection() {
+        return sharedPreferences.getBoolean(application.getString(R.string.shared_prefs_first_connection), true);
+    }
+
+    /**
      * Update the login and the password in the preferences.
      *
      * @param login    The new login.
@@ -92,5 +100,20 @@ public class LoginPreferences {
         }
 
         return null;
+    }
+
+    public void updateGoogleCredentials(String consumerKey, String consumerKeySecret, String token, String tokenSecret) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(application.getString(R.string.shared_prefs_consumer_secret), consumerKeySecret);
+        editor.putString(application.getString(R.string.shared_prefs_consumer), consumerKey);
+        editor.putString(application.getString(R.string.shared_prefs_token), token);
+        editor.putString(application.getString(R.string.shared_prefs_token_secret), tokenSecret);
+        editor.apply();
+    }
+
+    public void updateFirstConnection(boolean b) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(application.getString(R.string.shared_prefs_first_connection), b);
+        editor.apply();
     }
 }

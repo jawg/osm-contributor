@@ -57,6 +57,7 @@ import io.mapsquare.osmcontributor.ui.dialogs.AddValueDialogFragment;
 import io.mapsquare.osmcontributor.ui.dialogs.EditPoiTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.dialogs.EditPoiTypeDialogFragment;
 import io.mapsquare.osmcontributor.ui.dialogs.EditPoiTypeNameDialogFragment;
+import io.mapsquare.osmcontributor.ui.dialogs.LoginDialogFragment;
 import io.mapsquare.osmcontributor.ui.dialogs.NoteCommentDialogFragment;
 import io.mapsquare.osmcontributor.ui.fragments.EditPoiFragment;
 import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
@@ -145,6 +146,7 @@ public interface OsmTemplateComponent {
 
     void inject(FlickrOAuth flickrOAuth);
 
+    void inject(LoginDialogFragment loginDialogFragment);
 
     // PROVIDING
 
