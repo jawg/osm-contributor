@@ -205,4 +205,9 @@ Sin estos permisos, la aplicación no puede funcionar correctamente.</string>
     <string name="malformated_tag">El valor del tag no respeta los convenios de OSM</string>
     <string name="malformated_value">Valor actual : </string>
 
+    <string name="flickr_title">Una cuenta Flickr es necesaria</string>
+    <string name="flickr_need">Necesita una cuenta Yahoo (Flickr) para enviar una foto</string>
+
+    <string name="upload_message">Envío de la imagen...</string>
+
 </resources>

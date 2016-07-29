@@ -60,4 +60,14 @@ public class ResponseConverter {
         }
         return responseElements;
     }
+
+    /**
+     * Get image id when response is obtained.
+     * @param response response from request
+     * @return photo id as string
+     */
+    public static String convertImageId(String response) {
+        String model = "<photoid>";
+        return response.substring(response.indexOf(model) + model.length(), response.indexOf("</photoid>"));
+    }
 }

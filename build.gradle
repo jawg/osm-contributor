@@ -187,6 +187,7 @@ dependencies {
     compile group: 'com.flickr4java', name: 'flickr4java', version: '2.16'
     compile 'com.github.scribejava:scribejava-apis:2.8.1'
     compile 'com.facebook.fresco:fresco:0.12.0'
+    compile 'info.guardianproject.netcipher:netcipher:1.2'
 
     compile("com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion@aar") { transitive = true }
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"

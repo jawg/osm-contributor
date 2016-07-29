@@ -230,4 +230,9 @@
     <string name="malformated_tag">La valeur du tag ne respecte pas les conventions d\'OSM</string>
     <string name="malformated_value">Valeur actuelle : </string>
 
+    <string name="flickr_title">Compte Flickr nécessaire</string>
+    <string name="flickr_need">Vous avez besoin d\'un compte Yahoo (Flickr) pour poster une photo</string>
+
+    <string name="upload_message">Envoi de l\'image en cours</string>
+
 </resources>

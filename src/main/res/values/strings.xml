@@ -120,8 +120,10 @@
     <string name="shared_prefs_h2geo_date" translatable="false">SHARED_PREFS_H2GEO_DATE</string>
     <string name="easter_egg" translatable="false">EASTER_EGG</string>
     <string name="shared_prefs_h2geo_title" translatable="false">H2Geo</string>
-    <string name="shared_prefs_login_title">Connection</string>
-    <string name="shared_prefs_server">OSM Server</string>
+    <string name="shared_prefs_login_title" translatable="false">Connection</string>
+    <string name="shared_prefs_server" translatable="false">OSM Server</string>
+    <string name="shared_prefs_oauth_token_flickr" translatable="false">oauthTokenFlickr</string>
+    <string name="shared_prefs_oauth_token_secret_flickr" translatable="false">oauthTokenSecretFlickr</string>
 
     <!-- Tuto -->
     <string name="tuto_title_press_create">Poi creation</string>
@@ -252,4 +254,8 @@
     <string name="malformated_value">Current value : </string>
 
     <string name="mapbox_api_key" translatable="false">pk.eyJ1IjoiYmVyaHVnIiwiYSI6ImNpb2VmdjRraDAwMmZ2Z2x4bDJ5bmJlY3YifQ.CGm3KMpBeX5fSD-kzZUS8Q</string>
+
+    <string name="flickr_title">Flickr account needed</string>
+    <string name="flickr_need">You need a Yahoo account (Flickr) to post a photo</string>
+    <string name="upload_message">Upload in progress</string>
 </resources>

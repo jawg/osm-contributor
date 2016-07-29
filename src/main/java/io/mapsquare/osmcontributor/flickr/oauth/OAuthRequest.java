@@ -58,18 +58,18 @@ public class OAuthRequest {
     /*----------------CODE---------------------*/
     /*=========================================*/
     public void initParam(Map<String, String> params) {
-        params.clear();
+        this.params.clear();
         this.params.put("oauth_consumer_key", apiKey);
         for (Map.Entry<String, String> param : params.entrySet()) {
-            params.put(param.getKey(), param.getValue());
+            this.params.put(param.getKey(), param.getValue());
         }
     }
 
     /**
      * Sign request.
      */
-    public void signRequest() {
-        String convertedUrl = FlickrSecurityUtils.convertUrl(requestUrl, Verb.GET, params);
+    public void signRequest(Verb verb) {
+        String convertedUrl = FlickrSecurityUtils.convertUrl(requestUrl, verb, params);
         if (convertedUrl != null) {
             params.put("oauth_signature", FlickrSecurityUtils.getSignatureFromRequest(convertedUrl,
                     apiKeySecret + SEPARATOR + (oAuthTokenSecret == null ? "" : oAuthTokenSecret)));
@@ -96,18 +96,18 @@ public class OAuthRequest {
         return params;
     }
 
-    public String getoAuthToken() {
+    public String getOAuthToken() {
         return oAuthToken;
     }
 
     /*=========================================*/
     /*---------------SETTERS-------------------*/
     /*=========================================*/
-    public void setoAuthToken(String oAuthToken) {
+    public void setOAuthToken(String oAuthToken) {
         this.oAuthToken = oAuthToken;
     }
 
-    public void setoAuthTokenSecret(String oAuthTokenSecret) {
+    public void setOAuthTokenSecret(String oAuthTokenSecret) {
         this.oAuthTokenSecret = oAuthTokenSecret;
     }
 

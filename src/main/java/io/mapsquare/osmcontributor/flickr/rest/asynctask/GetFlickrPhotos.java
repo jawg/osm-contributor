@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.flickr.rest;
+package io.mapsquare.osmcontributor.flickr.rest.asynctask;
 
 import android.os.AsyncTask;
 
@@ -39,11 +39,20 @@ import io.mapsquare.osmcontributor.flickr.event.PhotosFoundEvent;
  */
 public class GetFlickrPhotos extends AsyncTask<Void, Void, List<List<Size>>> {
 
+    /*=========================================*/
+    /*-------------CONSTANTS-------------------*/
+    /*=========================================*/
+    /**
+     * Radius in km
+     */
+    private static final Integer RADIUS = 1;
+
+    private static final String[] TAGS = {"openstreetmap"};
+
+    /*=========================================*/
+    /*------------ATTRIBUTES-------------------*/
+    /*=========================================*/
     private Flickr flickr;
-
-    private final Integer RADIUS = 1;
-
-    private final String[] TAGS = {"openstreetmap"};
 
     private Double longitude;
 

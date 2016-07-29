@@ -16,31 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.flickr.model;
+package io.mapsquare.osmcontributor.flickr.rest;
 
 import java.util.Map;
 
-import io.mapsquare.osmcontributor.flickr.util.OAuthParams;
+import retrofit.Callback;
+import retrofit.http.GET;
+import retrofit.http.QueryMap;
 
-/**
- * This class contains all information about the connected user.
- */
-public class FlickrUser {
+public interface FlickrPhotoClient {
 
-    private String oAuthToken;
-
-    private String oAuthTokenSecret;
-
-    public FlickrUser(Map<String, String> userInfos) {
-        this.oAuthToken = userInfos.get(OAuthParams.OAUTH_TOKEN);
-        this.oAuthTokenSecret = userInfos.get(OAuthParams.OAUTH_TOKEN_SECRET);
-    }
-
-    public String getoAuthToken() {
-        return oAuthToken;
-    }
-
-    public String getoAuthTokenSecret() {
-        return oAuthTokenSecret;
-    }
+    @GET("/rest")
+    void setProperties(@QueryMap Map<String, String> params, Callback<String> callback);
 }

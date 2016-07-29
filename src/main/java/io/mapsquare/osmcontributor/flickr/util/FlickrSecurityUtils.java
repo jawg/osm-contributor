@@ -41,6 +41,9 @@ public class FlickrSecurityUtils {
 
     private static final String EQUAL = "=";
 
+    private static final String HMAC_SHA1 = "HmacSHA1";
+
+    private static final String UTF_8 = "UTF-8";
 
     /*=========================================*/
     /*------------UTILS METHOD-----------------*/
@@ -53,8 +56,8 @@ public class FlickrSecurityUtils {
      */
     public static String getSignatureFromRequest(String convertedRequestUrl, String key) {
         try {
-            Mac mac = Mac.getInstance("HmacSHA1");
-            mac.init(new SecretKeySpec(key.getBytes(), "HmacSHA1"));
+            Mac mac = Mac.getInstance(HMAC_SHA1);
+            mac.init(new SecretKeySpec(key.getBytes(), HMAC_SHA1));
             byte[] digest = mac.doFinal(convertedRequestUrl.getBytes());
             return new String(Base64.encode(digest));
         } catch (NoSuchAlgorithmException | InvalidKeyException exception) {
@@ -75,7 +78,7 @@ public class FlickrSecurityUtils {
         try {
             StringBuilder urlBuilder = new StringBuilder(httpVerb.name())
                     .append(SEPARATOR)
-                    .append(URLEncoder.encode(baseUrl, "UTF-8"))
+                    .append(URLEncoder.encode(baseUrl, UTF_8))
                     .append(SEPARATOR);
 
             StringBuilder paramsBuilder = new StringBuilder();
@@ -84,10 +87,23 @@ public class FlickrSecurityUtils {
                 paramsBuilder.append(param.getKey()).append(EQUAL).append(param.getValue()).append(SEPARATOR);
             }
 
-            String paramsEncoded = URLEncoder.encode(paramsBuilder.deleteCharAt(paramsBuilder.lastIndexOf(SEPARATOR)).toString(), "UTF-8");
+            String paramsEncoded = URLEncoder.encode(paramsBuilder.deleteCharAt(paramsBuilder.lastIndexOf(SEPARATOR)).toString(), UTF_8);
             return urlBuilder.append(paramsEncoded).toString();
         } catch (UnsupportedEncodingException e) {
             return null;
         }
+    }
+
+    /**
+     * Create an Authorization header for Oauth params.
+     * @param params oauth params
+     * @return authorization string
+     */
+    public static String getAuthorizationHeader(Map<String, String> params) {
+        StringBuilder authorizationBuilder = new StringBuilder("OAuth ");
+        for (Map.Entry<String, String> param : params.entrySet()) {
+            authorizationBuilder.append(param.getKey()).append("=\"").append(param.getValue()).append("\",");
+        }
+        return authorizationBuilder.deleteCharAt(authorizationBuilder.lastIndexOf(",")).toString();
     }
 }

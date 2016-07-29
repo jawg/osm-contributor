@@ -20,19 +20,20 @@ package io.mapsquare.osmcontributor.flickr.ui;
  */
 
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.lang.reflect.Field;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +43,7 @@ import io.mapsquare.osmcontributor.flickr.event.AuthorizeGrantedEvent;
 /**
  * @author Tommy Buonomo on 21/07/16.
  */
+@SuppressWarnings("all")
 public class FlickrConnectionDialog extends DialogFragment {
     private static final String TAG = "FlickrFragment";
 
@@ -67,23 +69,16 @@ public class FlickrConnectionDialog extends DialogFragment {
         });
 
         webView.getSettings().setJavaScriptEnabled(true);
-
-        webView.setWebChromeClient(new WebChromeClient() {
-            public void onProgressChanged(WebView view, int progress) {
-                Log.i(TAG, "onProgressChanged: " + progress);
-            }
-        });
-
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                Log.i(TAG, "onPageStarted: " + webView.getWidth() + " " + webView.getHeight());
                 super.onPageStarted(view, url, favicon);
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
+                // If last view, close dialog and continue. On mobile there is no callback URL !
                 if (url.contains("oauth_verifier") && !url.contains("AND")) {
                     EventBus.getDefault().post(new AuthorizeGrantedEvent(url));
                     dismiss();
@@ -94,5 +89,19 @@ public class FlickrConnectionDialog extends DialogFragment {
 
         webView.loadUrl(getArguments().getString("code"));
         return rootView;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        try {
+            Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
+            childFragmentManager.setAccessible(true);
+            childFragmentManager.set(this, null);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

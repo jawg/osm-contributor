@@ -27,25 +27,35 @@ import io.mapsquare.osmcontributor.rest.utils.MapParams;
 
 public class OAuthParams {
 
-    /**
-     * Timestamp for request.
-     */
-    public static final Long TIMESTAMP =  new Timestamp(new Date().getTime()).getTime();
+    public static final String OAUTH_TOKEN = "oauth_token";
 
-    /**
-     * Random unique once for each request.
-     */
-    public static final String NONCE = UUID.randomUUID().toString();
+    public static final String OAUTH_TOKEN_SECRET = "oauth_token_secret";
+
+    public static final String OAUTH_VERIFIER = "oauth_verifier";
+
+    public static final String OAUTH_CALLBACK = "oauth_callback";
+
+    public static final String OAUTH_CONSUMER_KEY = "oauth_consumer_key";
+
+    public static final String OAUTH_CONSUMER_SECRET = "oauth_consumer_secret";
+
+    public static final String OAUTH_TIMESTAMP = "oauth_timestamp";
+
+    public static final String OAUTH_NONCE = "oauth_nonce";
+
+    public static final String OAUTH_VERSION = "oauth_version";
+
+    public static final String OAUTH_SIGNATURE_METHOD = "oauth_signature_method";
 
     /**
      * Flickr use OAuth 1.0.
      */
-    public static final String OAUTH_VERSION = "1.0";
+    public static String VERSION = "1.0";
 
     /**
      * Flick use HMAC-SHA1 to sign request.
      */
-    public static final String SIGNATURE_METHOD =  "HMAC-SHA1";
+    public static String SIGNATURE_METHOD =  "HMAC-SHA1";
 
     /**
      * Get OAuth param for all request.
@@ -53,9 +63,9 @@ public class OAuthParams {
      */
     public static MapParams<String, String> getOAuthParams() {
         return new MapParams<String, String>()
-                .put("oauth_timestamp", String.valueOf(TIMESTAMP))
-                .put("oauth_nonce", NONCE)
-                .put("oauth_version", OAUTH_VERSION)
-                .put("oauth_signature_method", SIGNATURE_METHOD);
+                .put(OAUTH_TIMESTAMP, String.valueOf(new Timestamp(new Date().getTime()).getTime()).substring(0, 10))
+                .put(OAUTH_NONCE, UUID.randomUUID().toString().substring(0, 6))
+                .put(OAUTH_VERSION, VERSION)
+                .put(OAUTH_SIGNATURE_METHOD, SIGNATURE_METHOD);
     }
 }

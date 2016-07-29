@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.flickr.oauth;
 
 import android.util.Log;
 
+import com.github.scribejava.core.model.Verb;
 import com.squareup.okhttp.OkHttpClient;
 
 import org.greenrobot.eventbus.EventBus;
@@ -32,9 +33,9 @@ import javax.inject.Inject;
 import io.mapsquare.osmcontributor.flickr.event.FlickrUserConnectedEvent;
 import io.mapsquare.osmcontributor.flickr.event.PleaseAuthorizeEvent;
 import io.mapsquare.osmcontributor.flickr.rest.FlickrOauthClient;
-import io.mapsquare.osmcontributor.rest.utils.MapParams;
 import io.mapsquare.osmcontributor.flickr.util.OAuthParams;
 import io.mapsquare.osmcontributor.flickr.util.ResponseConverter;
+import io.mapsquare.osmcontributor.rest.utils.MapParams;
 import io.mapsquare.osmcontributor.rest.utils.StringConverter;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 import retrofit.Callback;
@@ -48,7 +49,22 @@ import retrofit.client.Response;
  */
 public class FlickrOAuth {
 
+    /*=========================================*/
+    /*-------------CONSTANTS-------------------*/
+    /*=========================================*/
     private static final String TAG = "FlickrOAuth";
+
+    private static final String OAUTH_URL = "http://www.flickr.com/services/oauth";
+
+    private static final String REQUEST_TOKEN_URL = OAUTH_URL + "/request_token";
+
+    private static final String AUTHORIZE_URL = OAUTH_URL + "/authorize";
+
+    private static final String ACCESS_TOKEN_URL = OAUTH_URL + "/access_token";
+
+    private static final String PERMS = "perms";
+
+    private static final String WRITE_PERM = "write";
 
     /*=========================================*/
     /*------------INJECTIONS-------------------*/
@@ -64,9 +80,6 @@ public class FlickrOAuth {
     /*=========================================*/
     private FlickrOauthClient flickrOauthClient;
 
-    /**
-     * Request used during the process of authentication.
-     */
     private OAuthRequest oAuthRequest;
 
     /*=========================================*/
@@ -76,11 +89,12 @@ public class FlickrOAuth {
         // Init Flickr retrofit client
         RestAdapter adapter = new RestAdapter.Builder()
                 .setConverter(new StringConverter())
-                .setEndpoint("https://www.flickr.com/services/oauth")
-                .setClient(new OkClient(new OkHttpClient())).build();
+                .setEndpoint(OAUTH_URL)
+                .setClient(new OkClient(new OkHttpClient()))
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .build();
         flickrOauthClient = adapter.create(FlickrOauthClient.class);
     }
-
 
     /*=========================================*/
     /*-------------FLICKR API------------------*/
@@ -90,17 +104,14 @@ public class FlickrOAuth {
      * First step: Request a token.
      */
     public void flickrRequestToken() {
-        // Request creation. First step : Ask for a oauth_token.
-        final String oauthRequestUrl = "https://www.flickr.com/services/oauth/request_token";
-
         // Creation of the request with API_KEY and API_KEY_SECRET.
         oAuthRequest = new OAuthRequest(configManager.getFlickrApiKey(), configManager.getFlickrApiKeySecret());
-        oAuthRequest.setRequestUrl(oauthRequestUrl);
+        oAuthRequest.setRequestUrl(REQUEST_TOKEN_URL);
 
-        // Creation of request parameters
-        oAuthRequest.initParam(OAuthParams.getOAuthParams().put("oauth_callback", "1").toMap());
+        // Creation of request parameters. Callback is set to one by default (no need for callback)
+        oAuthRequest.initParam(OAuthParams.getOAuthParams().put(OAuthParams.OAUTH_CALLBACK, "1").toMap());
         // Sign request with HMAC-SHA1 algorithm.
-        oAuthRequest.signRequest();
+        oAuthRequest.signRequest(Verb.GET);
 
         // Make the request.
         flickrOauthClient.requestToken(oAuthRequest.getParams(), new Callback<String>() {
@@ -110,22 +121,22 @@ public class FlickrOAuth {
                 if (response.getStatus() == 200) {
                     // Response is not JSON. Parse it and get oauth_token and oauth_token_secret.
                     Map<String, String> responseConverted = ResponseConverter.convertOAuthResponse(oauthResponse);
-                    String oauthToken = responseConverted.get("oauth_token");
-                    String oauthTokenSecret = responseConverted.get("oauth_token_secret");
+                    String oauthToken = responseConverted.get(OAuthParams.OAUTH_TOKEN);
+                    String oauthTokenSecret = responseConverted.get(OAuthParams.OAUTH_TOKEN_SECRET);
                     // Set the request object with values.
                     if (oauthToken != null) {
-                        oAuthRequest.setoAuthToken(oauthToken);
-                        oAuthRequest.setoAuthTokenSecret(oauthTokenSecret);
+                        oAuthRequest.setOAuthToken(oauthToken);
+                        oAuthRequest.setOAuthTokenSecret(oauthTokenSecret);
                         flickrAuthorize();
                         return;
                     }
                 }
-                Log.e(TAG, "Request 1 failed with status : " + response.getStatus() + " " + response.getReason());
+                Log.e(TAG, response.getStatus() + " " + response.getReason());
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Log.e(TAG, "Request 1 failed. RetrofitError is : " + error.getBody());
+                error.printStackTrace();
             }
         });
     }
@@ -136,11 +147,10 @@ public class FlickrOAuth {
      */
     public void flickrAuthorize() {
         // Request creation. Second step : Ask for user authorization.
-        final String authorizeUrl = "https://www.flickr.com/services/oauth/authorize";
-        oAuthRequest.setRequestUrl(authorizeUrl);
+        oAuthRequest.setRequestUrl(AUTHORIZE_URL);
         // Init request param.
-        oAuthRequest.initParam(new MapParams<String, String>().put("oauth_token", oAuthRequest.getoAuthToken()).put("perms", "write").toMap());
-        oAuthRequest.signRequest();
+        oAuthRequest.initParam(new MapParams<String, String>().put(OAuthParams.OAUTH_TOKEN, oAuthRequest.getOAuthToken()).put(PERMS, WRITE_PERM).toMap());
+        oAuthRequest.signRequest(Verb.GET);
         // Launch the webview.
         eventBus.post(new PleaseAuthorizeEvent(oAuthRequest));
     }
@@ -151,13 +161,11 @@ public class FlickrOAuth {
      * @param oAuthVerfier verifier token obtained with authorize method
      */
     public void flickrAccessToken(String oAuthToken, String oAuthVerfier) {
-        // Request creation. Final step: Get token.
-        final String accessTokenUrl = "https://www.flickr.com/services/oauth/access_token";
-        oAuthRequest.setRequestUrl(accessTokenUrl);
-        oAuthRequest.setoAuthToken(oAuthToken);
+        oAuthRequest.setRequestUrl(ACCESS_TOKEN_URL);
+        oAuthRequest.setOAuthToken(oAuthToken);
         // Init request params.
-        oAuthRequest.initParam(OAuthParams.getOAuthParams().put("oauth_token", oAuthToken).put("oauth_verifier", oAuthVerfier).toMap());
-        oAuthRequest.signRequest();
+        oAuthRequest.initParam(OAuthParams.getOAuthParams().put(OAuthParams.OAUTH_TOKEN, oAuthToken).put(OAuthParams.OAUTH_VERIFIER, oAuthVerfier).toMap());
+        oAuthRequest.signRequest(Verb.GET);
 
         // Send request.
         flickrOauthClient.accessToken(oAuthRequest.getParams(), new Callback<String>() {
@@ -166,15 +174,26 @@ public class FlickrOAuth {
                 if (response.getStatus() == 200) {
                     // Get user informations.
                     eventBus.post(new FlickrUserConnectedEvent(ResponseConverter.convertOAuthResponse(oauthResponse)));
-                    return;
+                } else {
+                    Log.e(TAG, response.getStatus() + " " + response.getReason());
                 }
-                Log.e(TAG, "Request 2 failed with status : " + response.getStatus() + " " + response.getReason());
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Log.e(TAG, "Request 2 failed. RetrofitError is : " + error.getBody());
+                error.printStackTrace();
             }
         });
+    }
+
+    /*=========================================*/
+    /*------------GETTERS/SETTERS--------------*/
+    /*=========================================*/
+    public OAuthRequest getOAuthRequest() {
+        return oAuthRequest;
+    }
+
+    public void setOAuthRequest(OAuthRequest oAuthRequest) {
+        this.oAuthRequest = oAuthRequest;
     }
 }

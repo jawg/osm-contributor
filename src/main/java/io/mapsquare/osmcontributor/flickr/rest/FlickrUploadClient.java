@@ -16,31 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.flickr.model;
+package io.mapsquare.osmcontributor.flickr.rest;
 
-import java.util.Map;
+import retrofit.Callback;
+import retrofit.http.Multipart;
+import retrofit.http.POST;
+import retrofit.http.Part;
+import retrofit.mime.TypedFile;
 
-import io.mapsquare.osmcontributor.flickr.util.OAuthParams;
+public interface FlickrUploadClient {
 
-/**
- * This class contains all information about the connected user.
- */
-public class FlickrUser {
-
-    private String oAuthToken;
-
-    private String oAuthTokenSecret;
-
-    public FlickrUser(Map<String, String> userInfos) {
-        this.oAuthToken = userInfos.get(OAuthParams.OAUTH_TOKEN);
-        this.oAuthTokenSecret = userInfos.get(OAuthParams.OAUTH_TOKEN_SECRET);
-    }
-
-    public String getoAuthToken() {
-        return oAuthToken;
-    }
-
-    public String getoAuthTokenSecret() {
-        return oAuthTokenSecret;
-    }
+    @POST("/upload")
+    @Multipart
+    void upload(@Part("photo") TypedFile photo, Callback<String> stringCallback);
 }

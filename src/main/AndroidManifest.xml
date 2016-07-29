@@ -27,6 +27,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CONNECTIVITY_CHANGE" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:name=".OsmTemplateApplication"
@@ -85,6 +86,16 @@
         <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService" />
 
         <activity android:name=".ui.activities.PhotoActivity" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="io.mapsquare.osmcontributor.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/path"/>
+        </provider>
     </application>
 
 </manifest>

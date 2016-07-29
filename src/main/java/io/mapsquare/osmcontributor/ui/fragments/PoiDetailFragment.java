@@ -26,7 +26,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -52,7 +53,7 @@ import butterknife.OnClick;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.flickr.event.PhotosFoundEvent;
-import io.mapsquare.osmcontributor.flickr.rest.GetFlickrPhotos;
+import io.mapsquare.osmcontributor.flickr.rest.asynctask.GetFlickrPhotos;
 import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.ui.activities.PhotoActivity;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseChangePoiPosition;
@@ -66,6 +67,9 @@ import io.mapsquare.osmcontributor.utils.ConfigManager;
  * and want to see details.
  */
 public class PoiDetailFragment extends Fragment {
+
+    private Map<Long, String> thumbnailsCache = new HashMap<>();
+
     /*=========================================*/
     /*--------------INJECTIONS-----------------*/
     /*=========================================*/
@@ -104,6 +108,10 @@ public class PoiDetailFragment extends Fragment {
     /*=========================================*/
     private Poi poi;
 
+    private GetFlickrPhotos asyncGetPhotos;
+
+    private boolean hasPhotos;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_poi_detail, container, false);
@@ -136,16 +144,19 @@ public class PoiDetailFragment extends Fragment {
     /*=========================================*/
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPhotosFoundEvent(PhotosFoundEvent photosFoundEvent) {
-        Log.i("PoiDetail", "onPhotosFoundEvent: ");
         List<List<Size>> photos = photosFoundEvent.getPhotos();
+        hasPhotos = false;
         // If photos are not null and not empty, a photo is in the map.
         if (photos != null && !photos.isEmpty()) {
             // Both index are 0 because we are requested one image and we print the thumbail
             // contained at the index 0 of size list.
-            thumbnail.setImageURI(Uri.parse(photos.get(0).get(0).getSource()));
-        } else {
+            thumbnail.setImageURI(Uri.parse(photos.get(0).get(Size.THUMB).getSource()));
+            thumbnailsCache.put(poi.getId(), photos.get(0).get(Size.THUMB).getSource());
+            hasPhotos = true;
+        } else if (!hasPhotos || thumbnailsCache.get(poi.getId()) == null) {
             // Default image when there is no image. The user can click to add an image.
             thumbnail.setImageURI(Uri.parse("res:///" + R.drawable.ic_picture));
+            hasPhotos = false;
         }
     }
 
@@ -155,8 +166,16 @@ public class PoiDetailFragment extends Fragment {
         setPoiName(event.getPoiName());
         showMovePoi(!event.isWay());
         this.poi = event.getPoi();
-        new GetFlickrPhotos(poi.getLongitude(), poi.getLatitude(),
-                ((OsmTemplateApplication) getActivity().getApplication()).getFlickr(), 1, 1).execute();
+
+        if (thumbnailsCache.get(poi.getId()) == null) {
+            // Param 1, 1 : One photo and one page
+            asyncGetPhotos = new GetFlickrPhotos(poi.getLongitude(), poi.getLatitude(),
+                    ((OsmTemplateApplication) getActivity().getApplication()).getFlickr(), 1, 1);
+            asyncGetPhotos.execute();
+        } else {
+            thumbnail.setImageURI(Uri.parse(thumbnailsCache.get(poi.getId())));
+            hasPhotos = true;
+        }
     }
 
     /*=========================================*/
@@ -168,6 +187,7 @@ public class PoiDetailFragment extends Fragment {
         photoActivity.putExtra("latitude", poi.getLatitude());
         photoActivity.putExtra("longitude", poi.getLongitude());
         photoActivity.putExtra("poiId", poi.getId());
+        photoActivity.putExtra("hasPhotos", hasPhotos);
         startActivity(photoActivity);
     }
 
@@ -232,5 +252,13 @@ public class PoiDetailFragment extends Fragment {
 
     private void showMovePoi(boolean showing) {
         floatingButtonEditPosition.setVisibility(showing ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onStop() {
+        if (asyncGetPhotos != null) {
+            asyncGetPhotos.cancel(true);
+        }
+        super.onStop();
     }
 }

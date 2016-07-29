@@ -184,4 +184,8 @@
   <string name="malformated_tag">O valor da tag não respeita os convenções de OSM</string>
   <string name="malformated_value">Valor actual : </string>
 
+  <string name="flickr_title">Flickr consideram precisado</string>
+  <string name="flickr_need">You need a Yahoo account (Flickr) to post a photo</string>
+  <string name="upload_message">Envio da imagem…</string>
+
 </resources>

@@ -42,6 +42,7 @@ import io.mapsquare.osmcontributor.ui.activities.LoadProfileActivity;
 import io.mapsquare.osmcontributor.ui.activities.MapActivity;
 import io.mapsquare.osmcontributor.ui.activities.MyPreferencesActivity;
 import io.mapsquare.osmcontributor.ui.activities.NoteActivity;
+import io.mapsquare.osmcontributor.ui.activities.PhotoActivity;
 import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.activities.SplashScreenActivity;
 import io.mapsquare.osmcontributor.ui.activities.TypeListActivity;
@@ -138,6 +139,8 @@ public interface OsmTemplateComponent {
     void inject(OpeningHoursLinearLayoutAdapter openingHoursLinearLayoutAdapter);
 
     void inject(TagsAdapter tagsAdapter);
+
+    void inject(PhotoActivity photoActivity);
 
     void inject(FlickrOAuth flickrOAuth);
 
