@@ -21,31 +21,47 @@ package io.mapsquare.osmcontributor.rest.mappers;
 import io.mapsquare.osmcontributor.model.entities.H2GeoPresetsItem;
 import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoPresetsItemDto;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import javax.inject.Inject;
 
 public class H2GeoPresetsItemMapper {
 
-  @Inject public H2GeoPresetsItemMapper() {
-  }
+    String language = "";
 
-  public Map<String, H2GeoPresetsItem> convertToH2GeoPresetsItem(
-      Map<String, H2GeoPresetsItemDto> h2GeoPresetsItemDtos) {
-    Map<String, H2GeoPresetsItem> h2GeoPresetsItems = new HashMap<>();
-    if (h2GeoPresetsItemDtos == null || h2GeoPresetsItemDtos.isEmpty()) {
-      return h2GeoPresetsItems;
+    @Inject public H2GeoPresetsItemMapper() {
+        language = Locale.getDefault().getLanguage();
+        if (language.isEmpty()) {
+            language = "en";
+        }
     }
 
-    for (Map.Entry<String, H2GeoPresetsItemDto> entry : h2GeoPresetsItemDtos.entrySet()) {
-      H2GeoPresetsItemDto h2GeoPresetsItemDto = entry.getValue();
-      H2GeoPresetsItem h2GeoPresetsItem = new H2GeoPresetsItem();
-      h2GeoPresetsItem.setName(h2GeoPresetsItemDto.getName());
-      h2GeoPresetsItem.setDescription(h2GeoPresetsItemDto.getDescription());
-      h2GeoPresetsItem.setFile(h2GeoPresetsItemDto.getFile());
+    public Map<String, H2GeoPresetsItem> convertToH2GeoPresetsItem(
+        Map<String, H2GeoPresetsItemDto> h2GeoPresetsItemDtos) {
+        Map<String, H2GeoPresetsItem> h2GeoPresetsItems = new HashMap<>();
+        if (h2GeoPresetsItemDtos == null || h2GeoPresetsItemDtos.isEmpty()) {
+            return h2GeoPresetsItems;
+        }
 
-      h2GeoPresetsItems.put(entry.getKey(), h2GeoPresetsItem);
+        for (Map.Entry<String, H2GeoPresetsItemDto> entry : h2GeoPresetsItemDtos.entrySet()) {
+            H2GeoPresetsItemDto h2GeoPresetsItemDto = entry.getValue();
+            H2GeoPresetsItem h2GeoPresetsItem = new H2GeoPresetsItem();
+            h2GeoPresetsItem.setName(getName(h2GeoPresetsItemDto.getName()));
+            h2GeoPresetsItem.setDescription(h2GeoPresetsItemDto.getDescription());
+            h2GeoPresetsItem.setFile(h2GeoPresetsItemDto.getFile());
+            h2GeoPresetsItems.put(entry.getKey(), h2GeoPresetsItem);
+        }
+
+        return h2GeoPresetsItems;
     }
 
-    return h2GeoPresetsItems;
-  }
+    private String getName(Map<String, String> mapName) {
+        if (mapName != null && mapName.containsKey(language)) {
+            return mapName.get(language);
+        }
+        if (mapName != null && mapName.containsKey("en")) {
+            return mapName.get("en");
+        }
+        return "No name provided";
+    }
 }

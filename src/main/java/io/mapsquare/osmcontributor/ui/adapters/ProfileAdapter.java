@@ -27,104 +27,86 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.model.entities.Comment;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import io.mapsquare.osmcontributor.model.entities.H2GeoPresets;
+import io.mapsquare.osmcontributor.model.entities.H2GeoPresetsItem;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ProfileAdapter extends BaseAdapter {
-  private List<Comment> comments = new ArrayList<>();
-  private Context context;
+    private Map<String, H2GeoPresetsItem> presets = new TreeMap<>();
+    private String[] keys;
+    private Context context;
+    private ProfileSelectedListener profileSelectedListenerListener;
 
-  public ProfileAdapter(Context context, List<Comment> comments) {
-    this.context = context;
-    this.comments = comments;
-  }
-
-  public void addAll(Collection<Comment> comments) {
-    if (comments != null) {
-      this.comments.clear();
-      this.comments.addAll(comments);
-    }
-    notifyDataSetChanged();
-  }
-
-  public void add(Comment comment) {
-    if (comment != null) {
-      if (!comments.contains(comment)) {
-        comments.add(comment);
-        notifyDataSetChanged();
-      }
-    }
-  }
-
-  @Override public int getCount() {
-    return comments.size();
-  }
-
-  @Override public Object getItem(int position) {
-    return comments.get(position);
-  }
-
-  @Override public long getItemId(int position) {
-    return 0;
-  }
-
-  @Override public View getView(final int position, View view, final ViewGroup parent) {
-    LayoutInflater inflater =
-        (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    final Comment comment = comments.get(position);
-    final ViewHolder holder;
-
-    if (view != null) {
-      holder = (ViewHolder) view.getTag();
-    } else {
-      view = inflater.inflate(R.layout.single_comment_layout, parent, false);
-      holder = new ViewHolder(view);
-      view.setTag(holder);
+    public ProfileAdapter(Context context, ProfileSelectedListener profileSelectedListener) {
+        this.context = context;
+        this.profileSelectedListenerListener = profileSelectedListener;
     }
 
-    holder.getCommentContentTextView().setText(comment.getText());
-    holder.getActionTextView().setText(comment.getAction());
-
-    DateTimeFormatter fmt = DateTimeFormat.forPattern("MM/dd/yy");
-    String date = comment.getCreatedDate() == null ? "" : fmt.print(comment.getCreatedDate());
-
-    if (comment.getUpdated()) {
-      date = context.getResources().getString(R.string.synchronizing);
+    @Override public int getCount() {
+        return presets.size() + 1;
     }
 
-    holder.getDateTextView().setText(date);
-    return view;
-  }
-
-  @Override public void notifyDataSetChanged() {
-    Collections.sort(comments);
-    super.notifyDataSetChanged();
-  }
-
-  static class ViewHolder {
-    @BindView(R.id.comment_content_text) TextView commentContentTextView;
-    @BindView(R.id.date) TextView dateTextView;
-    @BindView(R.id.action) TextView actionTextView;
-
-    public ViewHolder(View view) {
-      ButterKnife.bind(this, view);
+    @Override public H2GeoPresetsItem getItem(int position) {
+        if (position == 0) {
+            return null;
+        }
+        return presets.get(keys[position - 1]);
     }
 
-    public TextView getCommentContentTextView() {
-      return commentContentTextView;
+    @Override public long getItemId(int position) {
+        return 0;
     }
 
-    public TextView getDateTextView() {
-      return dateTextView;
+    @Override public View getView(final int position, View view, final ViewGroup parent) {
+        LayoutInflater inflater =
+            (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final H2GeoPresetsItem h2GeoPreset = getItem(position);
+        final ViewHolder holder;
+
+        if (view != null) {
+            holder = (ViewHolder) view.getTag();
+        } else {
+            view = inflater.inflate(R.layout.single_profile_layout, parent, false);
+            holder = new ViewHolder(view);
+            view.setTag(holder);
+        }
+
+        holder.getNameTextView().setText(h2GeoPreset == null ? "Default" : h2GeoPreset.getName());
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View view) {
+                if (profileSelectedListenerListener != null) {
+                    if (h2GeoPreset == null) {
+                        profileSelectedListenerListener.resetProfile();
+                    } else {
+                        profileSelectedListenerListener.profileClicked(h2GeoPreset);
+                    }
+                }
+            }
+        });
+        return view;
     }
 
-    public TextView getActionTextView() {
-      return actionTextView;
+    public void addAll(H2GeoPresets h2GeoPresets) {
+        this.presets.putAll(h2GeoPresets.getPresets());
+        keys = presets.keySet().toArray(new String[presets.size()]);
     }
-  }
+
+    static class ViewHolder {
+        @BindView(R.id.text_view) TextView name;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+
+        public TextView getNameTextView() {
+            return name;
+        }
+    }
+
+    public interface ProfileSelectedListener {
+        void profileClicked(H2GeoPresetsItem h2GeoPresetsItem);
+
+        void resetProfile();
+    }
 }

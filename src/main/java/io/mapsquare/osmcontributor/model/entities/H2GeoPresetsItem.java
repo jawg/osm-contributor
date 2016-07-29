@@ -22,17 +22,17 @@ import java.util.Map;
 
 public class H2GeoPresetsItem {
 
-    private Map<String, String> name;
+    private String name;
 
     private Map<String, String> description;
 
     private String file;
 
-    public Map<String, String> getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(Map<String, String> name) {
+    public void setName(String name) {
         this.name = name;
     }
 

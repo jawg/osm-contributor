@@ -18,12 +18,6 @@
  */
 package io.mapsquare.osmcontributor.rest.managers;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import javax.inject.Inject;
-
 import io.mapsquare.osmcontributor.rest.clients.H2GeoPresetsRestClient;
 import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoPresetDto;
 import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoPresetsDto;
@@ -31,48 +25,55 @@ import io.mapsquare.osmcontributor.rest.events.PresetDownloadedEvent;
 import io.mapsquare.osmcontributor.rest.events.PresetListDownloadedEvent;
 import io.mapsquare.osmcontributor.rest.events.error.PresetDownloadErrorEvent;
 import io.mapsquare.osmcontributor.rest.events.error.PresetListDownloadErrorEvent;
+import io.mapsquare.osmcontributor.rest.mappers.H2GeoPresetsMapper;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetEvent;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetListEvent;
+import javax.inject.Inject;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import retrofit.RetrofitError;
 import timber.log.Timber;
 
 public class H2GeoPresetsManager {
 
-    private final H2GeoPresetsRestClient presetsRestClient;
-    private final EventBus bus;
+  private final H2GeoPresetsRestClient presetsRestClient;
+  private final EventBus bus;
+  private final H2GeoPresetsMapper presetsMapper;
 
-    @Inject
-    public H2GeoPresetsManager(H2GeoPresetsRestClient presetsRestClient, EventBus bus) {
-        this.presetsRestClient = presetsRestClient;
-        this.bus = bus;
+  @Inject public H2GeoPresetsManager(H2GeoPresetsRestClient presetsRestClient, EventBus bus,
+      H2GeoPresetsMapper presetsMapper) {
+    this.presetsRestClient = presetsRestClient;
+    this.bus = bus;
+    this.presetsMapper = presetsMapper;
+  }
+
+  // ********************************
+  // ************ Events ************
+  // ********************************
+
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  public void onPleaseDownloadPresetListEvent(PleaseDownloadPresetListEvent event) {
+    Timber.d("Requesting preset list download");
+    try {
+      H2GeoPresetsDto presets = presetsRestClient.loadProfiles();
+      bus.post(new PresetListDownloadedEvent(presetsMapper.convertToH2GeoPresets(presets)));
+    } catch (RetrofitError error) {
+      Timber.e(error, "Retrofit error, couldn't download preset list");
+      bus.post(new PresetListDownloadErrorEvent());
     }
+  }
 
-    // ********************************
-    // ************ Events ************
-    // ********************************
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseDownloadPresetListEvent(PleaseDownloadPresetListEvent event) {
-        Timber.d("Requesting preset list download");
-        try {
-            H2GeoPresetsDto presets = presetsRestClient.loadProfiles();
-            bus.post(new PresetListDownloadedEvent(presets));
-        } catch (RetrofitError error) {
-            Timber.e(error, "Retrofit error, couldn't download preset list");
-            bus.post(new PresetListDownloadErrorEvent());
-        }
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  public void onPleaseDownloadPresetEvent(PleaseDownloadPresetEvent event) {
+    String filename = event.getFilename();
+    Timber.d("Requesting preset '%s' download", filename);
+    try {
+      H2GeoPresetDto preset = presetsRestClient.loadProfile(filename);
+      bus.post(new PresetDownloadedEvent(preset));
+    } catch (RetrofitError error) {
+      Timber.e(error, "Retrofit error, couldn't download preset '%s'", filename);
+      bus.post(new PresetDownloadErrorEvent(filename));
     }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseDownloadPresetEvent(PleaseDownloadPresetEvent event) {
-        String filename = event.getFilename();
-        Timber.d("Requesting preset '%s' download", filename);
-        try {
-            H2GeoPresetDto preset = presetsRestClient.loadProfile(filename);
-            bus.post(new PresetDownloadedEvent(preset));
-        } catch (RetrofitError error) {
-            Timber.e(error, "Retrofit error, couldn't download preset '%s'", filename);
-            bus.post(new PresetDownloadErrorEvent(filename));
-        }
-    }
+  }
 }

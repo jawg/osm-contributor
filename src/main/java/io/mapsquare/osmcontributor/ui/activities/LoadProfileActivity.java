@@ -22,46 +22,42 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
+import io.mapsquare.osmcontributor.model.entities.H2GeoPresetsItem;
 import io.mapsquare.osmcontributor.rest.events.PresetDownloadedEvent;
 import io.mapsquare.osmcontributor.rest.events.PresetListDownloadedEvent;
 import io.mapsquare.osmcontributor.rest.events.error.PresetDownloadErrorEvent;
 import io.mapsquare.osmcontributor.rest.events.error.PresetListDownloadErrorEvent;
+import io.mapsquare.osmcontributor.ui.adapters.ProfileAdapter;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetEvent;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetListEvent;
+import javax.inject.Inject;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-public class LoadProfileActivity extends AppCompatActivity {
+public class LoadProfileActivity extends AppCompatActivity
+    implements ProfileAdapter.ProfileSelectedListener {
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    @BindView(R.id.toolbar) Toolbar toolbar;
 
-    @BindView(R.id.progress_content_switcher)
-    ViewSwitcher viewSwitcher;
+    @BindView(R.id.progress_content_switcher) ViewSwitcher viewSwitcher;
 
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
+    @BindView(R.id.list_view) ListView listView;
 
-    @Inject
-    EventBus eventBus;
+    @Inject EventBus eventBus;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    private ProfileAdapter profileAdapter;
+
+    @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_load_profile);
@@ -75,23 +71,19 @@ public class LoadProfileActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        /* TODO create a suitable adapter (with combo-boxes?) and add the "default" preset
-         * recyclerView.setAdapter(adapter);
-         */
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        profileAdapter = new ProfileAdapter(this, this);
+        listView.setAdapter(profileAdapter);
 
         eventBus.register(this);
         startLoadingPresetList();
     }
 
-    @Override
-    protected void onStop() {
+    @Override protected void onStop() {
         eventBus.unregister(this);
         super.onStop();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
@@ -110,6 +102,7 @@ public class LoadProfileActivity extends AppCompatActivity {
         /* TODO In order to refresh a particular preset, call the following:
          * eventBus.post(new PleaseDownloadPresetEvent("filename.json"));
          */
+        profileAdapter.addAll(event.getPresets());
         hideLoadingSeekBar();
     }
 
@@ -154,5 +147,13 @@ public class LoadProfileActivity extends AppCompatActivity {
 
     private void hideLoadingSeekBar() {
         viewSwitcher.showNext(); // TODO handle this better
+    }
+
+    @Override public void profileClicked(H2GeoPresetsItem h2GeoPresetsItem) {
+        Toast.makeText(this, "profile clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override public void resetProfile() {
+        Toast.makeText(this, "profile reset", Toast.LENGTH_SHORT).show();
     }
 }

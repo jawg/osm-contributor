@@ -18,17 +18,17 @@
  */
 package io.mapsquare.osmcontributor.rest.events;
 
-import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoPresetsDto;
+import io.mapsquare.osmcontributor.model.entities.H2GeoPresets;
 
 public class PresetListDownloadedEvent {
 
-    private final H2GeoPresetsDto presets; // TODO use real model, not DTO
+    private final H2GeoPresets presets; // TODO use real model, not DTO
 
-    public PresetListDownloadedEvent(H2GeoPresetsDto presets) {
+    public PresetListDownloadedEvent(H2GeoPresets presets) {
         this.presets = presets;
     }
 
-    public H2GeoPresetsDto getPresets() {
+    public H2GeoPresets getPresets() {
         return presets;
     }
 }
