@@ -85,7 +85,8 @@
 
         <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService" />
 
-        <activity android:name=".ui.activities.PhotoActivity" />
+        <activity android:name=".ui.activities.PhotoActivity"
+            android:screenOrientation="portrait"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

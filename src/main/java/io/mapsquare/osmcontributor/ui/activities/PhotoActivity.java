@@ -201,6 +201,14 @@ public class PhotoActivity extends AppCompatActivity {
         initView();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!hasPhotos) {
+            finish();
+        }
+    }
+
     /*=========================================*/
     /*----------------ONCLICK------------------*/
     /*=========================================*/
