@@ -32,6 +32,9 @@ import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.H2GeoPresetsItem;
+import io.mapsquare.osmcontributor.model.events.DatabaseResetFinishedEvent;
+import io.mapsquare.osmcontributor.model.events.PleaseLoadPoiTypes;
+import io.mapsquare.osmcontributor.model.events.ResetTypeDatabaseEvent;
 import io.mapsquare.osmcontributor.rest.events.PresetDownloadedEvent;
 import io.mapsquare.osmcontributor.rest.events.PresetListDownloadedEvent;
 import io.mapsquare.osmcontributor.rest.events.error.PresetDownloadErrorEvent;
@@ -122,6 +125,12 @@ public class LoadProfileActivity extends AppCompatActivity
         handleDownloadError();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDatabaseResetFinishedEvent(DatabaseResetFinishedEvent event) {
+        eventBus.post(new PleaseLoadPoiTypes());
+        finish();
+    }
+
     // *********************************
     // ************ private ************
     // *********************************
@@ -150,10 +159,10 @@ public class LoadProfileActivity extends AppCompatActivity
     }
 
     @Override public void profileClicked(H2GeoPresetsItem h2GeoPresetsItem) {
-        Toast.makeText(this, "profile clicked", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override public void resetProfile() {
-        Toast.makeText(this, "profile reset", Toast.LENGTH_SHORT).show();
+        if (h2GeoPresetsItem == null) {
+            eventBus.post(new ResetTypeDatabaseEvent(null));
+        } else {
+            eventBus.post(new PleaseDownloadPresetEvent(h2GeoPresetsItem.getFile()));
+        }
     }
 }

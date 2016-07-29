@@ -155,7 +155,7 @@ public class PoiTypeMapper {
         Map<String, List<String>> map = gson.fromJson(jsonElement, mapType);
 
         // if there is a translation for the user language
-        if (map.containsKey(language)) {
+        if (map != null && map.containsKey(language)) {
             List<String> strList = map.get(language);
             for (String keyword : strList) {
                 stringBuilder.append(keyword);

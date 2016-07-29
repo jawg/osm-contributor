@@ -76,11 +76,7 @@ public class ProfileAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View view) {
                 if (profileSelectedListenerListener != null) {
-                    if (h2GeoPreset == null) {
-                        profileSelectedListenerListener.resetProfile();
-                    } else {
-                        profileSelectedListenerListener.profileClicked(h2GeoPreset);
-                    }
+                    profileSelectedListenerListener.profileClicked(h2GeoPreset);
                 }
             }
         });
@@ -106,7 +102,5 @@ public class ProfileAdapter extends BaseAdapter {
 
     public interface ProfileSelectedListener {
         void profileClicked(H2GeoPresetsItem h2GeoPresetsItem);
-
-        void resetProfile();
     }
 }

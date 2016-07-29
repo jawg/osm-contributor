@@ -20,6 +20,8 @@ package io.mapsquare.osmcontributor.ui.managers;
 
 import android.app.Application;
 
+import android.support.annotation.Nullable;
+import java.io.InputStreamReader;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -191,7 +193,7 @@ public class PoiManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onResetTypeDatabaseEvent(ResetTypeDatabaseEvent event) {
-        bus.post(new DatabaseResetFinishedEvent(resetTypes()));
+        bus.post(new DatabaseResetFinishedEvent(resetTypes(event.getInputStreamReader())));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -223,7 +225,7 @@ public class PoiManager {
     public void initDb() {
         if (!isDbInitialized()) {
             // No data, initializing from assets
-            savePoiTypesFromAssets();
+            savePoiTypesFromStream(null);
             savePoisFromAssets();
         }
         Timber.d("Database initialized");
@@ -231,9 +233,10 @@ public class PoiManager {
 
     /**
      * Load poi types from assets and save them in the database.
+     * @param inputStreamReader, the inputstream to load or null for default
      */
-    public void savePoiTypesFromAssets() {
-        List<PoiType> poiTypes = poiAssetLoader.loadPoiTypesFromAssets();
+    public void savePoiTypesFromStream(@Nullable InputStreamReader inputStreamReader) {
+        List<PoiType> poiTypes = poiAssetLoader.loadPoiTypesFromStream(inputStreamReader);
         if (poiTypes != null) {
             Timber.d("Loaded %s poiTypes, trying to insert them", poiTypes.size());
             for (PoiType poiType : poiTypes) {
@@ -760,7 +763,7 @@ public class PoiManager {
      *
      * @return Whether the reset was successful.
      */
-    public Boolean resetTypes() {
+    public Boolean resetTypes(@Nullable final InputStreamReader inputStreamReader) {
         return databaseHelper.callInTransaction(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
@@ -771,7 +774,7 @@ public class PoiManager {
                 poiTypeDao.deleteAll();
                 poiTypeTagDao.deleteAll();
                 Timber.d("All Pois en PoiTypes deleted from database");
-                savePoiTypesFromAssets();
+                savePoiTypesFromStream(inputStreamReader);
                 Timber.d("Finished reloading and saving PoiTypes from assets");
                 return true;
             }

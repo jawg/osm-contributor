@@ -18,5 +18,17 @@
  */
 package io.mapsquare.osmcontributor.model.events;
 
+import android.support.annotation.Nullable;
+import java.io.InputStreamReader;
+
 public class ResetTypeDatabaseEvent {
+    private final InputStreamReader inputStreamReader;
+
+    public ResetTypeDatabaseEvent(@Nullable InputStreamReader inputStreamReader) {
+        this.inputStreamReader = inputStreamReader;
+    }
+
+    public InputStreamReader getInputStreamReader() {
+        return inputStreamReader;
+    }
 }

@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.database;
 import android.app.Application;
 import android.content.SharedPreferences;
 
+import android.support.annotation.Nullable;
 import com.google.gson.Gson;
 
 import org.simpleframework.xml.core.Persister;
@@ -64,13 +65,15 @@ public class PoiAssetLoader {
 
     /**
      * Load the PoiTypes from the poitypes.json file located in the assets directory.
-     *
+     *@param inputStreamReader, on the json to load or nu for default.
      * @return The loaded PoiTypes.
      */
-    public List<PoiType> loadPoiTypesFromAssets() {
-        Reader reader = null;
+    public List<PoiType> loadPoiTypesFromStream(@Nullable InputStreamReader inputStreamReader) {
+        Reader reader = inputStreamReader;
         try {
-            reader = new InputStreamReader(application.getAssets().open("h2geo.json"));
+            if (inputStreamReader == null) {
+                reader = new InputStreamReader(application.getAssets().open("h2geo.json"));
+            }
             H2GeoDto h2GeoDto = gson.fromJson(reader, H2GeoDto.class);
             // Save the h2Geo version and generation date in the shared preferences.
             sharedPreferences.edit()

@@ -370,6 +370,6 @@ public class OsmBackend implements Backend {
      */
     @Override
     public List<PoiType> getPoiTypes() {
-        return poiAssetLoader.loadPoiTypesFromAssets();
+        return poiAssetLoader.loadPoiTypesFromStream(null);
     }
 }
