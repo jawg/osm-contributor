@@ -25,7 +25,7 @@ ext {
     licensesdialogVersion = '1.7.0'
     arpiglVersion = '0.3.3'
     lovelyDialog = '1.0.4'
-    playServicesVersion = '9.2.0'
+    playServicesVersion = '9.2.1'
 }
 
 buildscript {
@@ -175,6 +175,7 @@ dependencies {
     compile "com.squareup.okhttp:okhttp:$okhttpVersion"
     compile "com.mobprofs:retrofit-simplexmlconverter:$simplexmlRetrofitVersion"
     compile "org.simpleframework:simple-xml:$simplexmlVersion"
+
     // UI libraries
     compile "com.melnykov:floatingactionbutton:$floatingactionbuttonVersion"
     compile "com.android.support:cardview-v7:$androidSupportVersion"

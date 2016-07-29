@@ -91,7 +91,7 @@ public class GetFlickrPhotos extends AsyncTask<Void, Void, List<List<Size>>> {
     }
 
     @Override
-    protected void onPostExecute(List<List<Size>>  photos) {
+    protected void onPostExecute(List<List<Size>> photos) {
         EventBus.getDefault().post(new PhotosFoundEvent(photos));
     }
 }

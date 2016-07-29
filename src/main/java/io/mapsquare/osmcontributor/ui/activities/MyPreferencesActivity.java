@@ -24,19 +24,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.ui.fragments.MyPreferenceFragment;
 
 public class MyPreferencesActivity extends AppCompatActivity {
     private static final String TAG = "MyPreferencesActivity";
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -61,25 +56,6 @@ public class MyPreferencesActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (fragment != null) {
             fragment.onActivityResult(requestCode, resultCode, data);
-        }
-
-        if (requestCode == MyPreferenceFragment.RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
-        }
-    }
-
-    private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
-            // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
-            if (acct != null) {
-                Log.i(TAG, "handleSignInResult: " + acct.getIdToken() + " " + acct.getGrantedScopes() + " " + acct.getId() + " " + acct.getServerAuthCode());
-
-            }
-        } else {
-            Log.i(TAG, "handleSignInResult: FAILURE " + result.getStatus() + " " + result.getSignInAccount());
         }
     }
 }

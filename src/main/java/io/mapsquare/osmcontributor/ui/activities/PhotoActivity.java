@@ -375,6 +375,7 @@ public class PhotoActivity extends AppCompatActivity {
     @Subscribe
     public void onFlickrUserConnected(FlickrUserConnectedEvent flickrUserConnectedEvent) {
         FlickrUser flickrUser = new FlickrUser(flickrUserConnectedEvent.getUserInfos());
+        flickrOAuth.getOAuthRequest().setOAuthToken(flickrUser.getoAuthToken());
         flickrOAuth.getOAuthRequest().setOAuthTokenSecret(flickrUser.getoAuthTokenSecret());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(application.getString(R.string.shared_prefs_oauth_token_flickr), flickrUser.getoAuthToken());
@@ -419,6 +420,7 @@ public class PhotoActivity extends AppCompatActivity {
                 } else {
                     nbTry = 0;
                     Toast.makeText(PhotoActivity.this, "La communication avec Flickr a échoué, réessayer", Toast.LENGTH_LONG).show();
+                    progressDialog.dismiss();
                 }
             }
         });
