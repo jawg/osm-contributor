@@ -29,6 +29,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -234,7 +235,18 @@ public class MapActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-        navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
+
+        if (sharedPreferences.getBoolean(getString(R.string.shared_prefs_preset_default), false)) {
+            navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(false);
+        } else {
+            navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
+        }
+
+        if (sharedPreferences.getBoolean(getString(R.string.shared_prefs_preset_default), false)) {
+            navigationView.getMenu().findItem(R.id.edit_way).setVisible(false);
+        } else {
+            navigationView.getMenu().findItem(R.id.edit_way).setVisible(true);
+        }
         poiProvider.register();
     }
 
@@ -329,6 +341,7 @@ public class MapActivity extends AppCompatActivity {
     public void onPleaseInitializeDrawer(PleaseInitializeDrawer event) {
         Timber.d("initializing drawer with poiType");
 
+        Log.i("MapActivity", "onPleaseInitializeDrawer: " + event.getPoiTypes());
         if (filtersItemList == null) {
             filtersItemList = new ArrayList<>();
         }

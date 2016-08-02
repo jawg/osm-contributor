@@ -18,15 +18,24 @@
  */
 package io.mapsquare.osmcontributor.ui.activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
@@ -34,6 +43,7 @@ import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.H2GeoPresetsItem;
 import io.mapsquare.osmcontributor.model.events.DatabaseResetFinishedEvent;
 import io.mapsquare.osmcontributor.model.events.PleaseLoadPoiTypes;
+import io.mapsquare.osmcontributor.model.events.RefreshPresetFilters;
 import io.mapsquare.osmcontributor.model.events.ResetTypeDatabaseEvent;
 import io.mapsquare.osmcontributor.rest.events.PresetDownloadedEvent;
 import io.mapsquare.osmcontributor.rest.events.PresetListDownloadedEvent;
@@ -42,25 +52,29 @@ import io.mapsquare.osmcontributor.rest.events.error.PresetListDownloadErrorEven
 import io.mapsquare.osmcontributor.ui.adapters.ProfileAdapter;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetEvent;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetListEvent;
-import javax.inject.Inject;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 public class LoadProfileActivity extends AppCompatActivity
     implements ProfileAdapter.ProfileSelectedListener {
 
-    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
-    @BindView(R.id.progress_content_switcher) ViewSwitcher viewSwitcher;
+    @BindView(R.id.progressbar)
+    ProgressBar progressBar;
 
-    @BindView(R.id.list_view) ListView listView;
+    @BindView(R.id.list_view)
+    ListView listView;
 
-    @Inject EventBus eventBus;
+    @Inject
+    EventBus eventBus;
+
+    @Inject
+    SharedPreferences sharedPreferences;
 
     private ProfileAdapter profileAdapter;
 
-    @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_load_profile);
@@ -74,6 +88,7 @@ public class LoadProfileActivity extends AppCompatActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        showLoadingSeekBar();
         profileAdapter = new ProfileAdapter(this, this);
         listView.setAdapter(profileAdapter);
 
@@ -81,12 +96,14 @@ public class LoadProfileActivity extends AppCompatActivity
         startLoadingPresetList();
     }
 
-    @Override protected void onStop() {
+    @Override
+    protected void onStop() {
         eventBus.unregister(this);
         super.onStop();
     }
 
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
@@ -127,7 +144,14 @@ public class LoadProfileActivity extends AppCompatActivity
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDatabaseResetFinishedEvent(DatabaseResetFinishedEvent event) {
-        eventBus.post(new PleaseLoadPoiTypes());
+        PleaseLoadPoiTypes pleaseLoadPoiTypes = new PleaseLoadPoiTypes();
+        pleaseLoadPoiTypes.setPreset(true);
+        eventBus.post(pleaseLoadPoiTypes);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshPresetFilter(RefreshPresetFilters event) {
+
         finish();
     }
 
@@ -151,17 +175,27 @@ public class LoadProfileActivity extends AppCompatActivity
     }
 
     private void showLoadingSeekBar() {
-        viewSwitcher.showNext(); // TODO handle this better
+        listView.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     private void hideLoadingSeekBar() {
-        viewSwitcher.showNext(); // TODO handle this better
+        listView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
-    @Override public void profileClicked(H2GeoPresetsItem h2GeoPresetsItem) {
+    @Override
+    public void profileClicked(H2GeoPresetsItem h2GeoPresetsItem) {
+        showLoadingSeekBar();
         if (h2GeoPresetsItem == null) {
             eventBus.post(new ResetTypeDatabaseEvent(null));
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(getString(R.string.shared_prefs_preset_default), false);
+            editor.apply();
         } else {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(getString(R.string.shared_prefs_preset_default), true);
+            editor.apply();
             eventBus.post(new PleaseDownloadPresetEvent(h2GeoPresetsItem.getFile()));
         }
     }

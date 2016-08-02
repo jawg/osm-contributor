@@ -18,8 +18,6 @@
  */
 package io.mapsquare.osmcontributor.ui.adapters.parser;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,7 +53,6 @@ public class SingleChoiceTagParserImpl implements TagParser {
     public boolean isCandidate(String key, List<String> values) {
         this.possibleValues = values;
         // If size is < 7 and values must be choose in a list with yes/no.
-        Log.i(TAG, "isCandidate: " + key + " " + values);
         return values.size() < LIMIT && values.contains("yes") || values.contains("no");
     }
 

@@ -18,6 +18,8 @@
  */
 package io.mapsquare.osmcontributor.rest.mappers;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
@@ -39,7 +41,7 @@ import io.mapsquare.osmcontributor.rest.dtos.dma.PoiTypeDto;
 import io.mapsquare.osmcontributor.rest.dtos.dma.PoiTypeTagDto;
 
 public class PoiTypeMapper {
-
+    private static final String TAG = "PoiTypeMapper";
     private String language;
     private DateTime dateTime;
     private Gson gson;
@@ -79,7 +81,9 @@ public class PoiTypeMapper {
                     poiTypeTag.setMandatory(tagDto.isMandatory());
                     poiTypeTag.setOrdinal(ordinal++);
                     poiTypeTag.setPossibleValues(getPossibleValues(tagDto.getPossibleValues()));
+                    poiTypeTag.setTagType(tagDto.getType());
                     tags.add(poiTypeTag);
+                    Log.i(TAG, "convert: " + poiTypeTag);
                 }
             }
         }

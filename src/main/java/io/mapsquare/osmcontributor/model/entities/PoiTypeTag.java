@@ -24,6 +24,8 @@ import android.support.annotation.NonNull;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
+
 @DatabaseTable(tableName = PoiTypeTag.TABLE_NAME)
 public class PoiTypeTag implements Comparable<PoiTypeTag> {
     public static final String TABLE_NAME = "POI_TYPE_TAG";
@@ -34,6 +36,8 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
     public static final String POI_TYPE_ID = "POI_TYPE_ID";
     public static final String MANDATORY = "MANDATORY";
     public static final String ORDINAL = "ORDINAL";
+    public static final String POSSIBLE_VALUES = "POSSIBLE_VALUES";
+    public static final String TAG_TYPE = "TAG_TYPE";
 
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
@@ -53,8 +57,11 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
     @DatabaseField(foreign = true, columnName = POI_TYPE_ID, canBeNull = false)
     private PoiType poiType;
 
-    @DatabaseField(columnName = "POSSIBLE_VALUES")
+    @DatabaseField(columnName = POSSIBLE_VALUES)
     private String possibleValues;
+
+    @DatabaseField(columnName = TAG_TYPE)
+    private TagItem.Type tagType;
 
     public Long getId() {
         return id;
@@ -112,6 +119,14 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
         this.possibleValues = possibleValues;
     }
 
+    public TagItem.Type getTagType() {
+        return tagType;
+    }
+
+    public void setTagType(TagItem.Type tagType) {
+        this.tagType = tagType;
+    }
+
     @Override
     public String toString() {
         return "PoiTypeTag{" +
@@ -122,6 +137,7 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
                 ", mandatory=" + mandatory +
                 ", poiType=" + (poiType == null ? null : poiType.getId()) +
                 ", possibleValues=" + possibleValues +
+                ", tagType=" + tagType +
                 '}';
     }
 
@@ -189,6 +205,11 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
 
         public Builder poiType(PoiType poiType) {
             this.poiTypeTag.poiType = poiType;
+            return this;
+        }
+
+        public Builder poiTypeTag(TagItem.Type poiTagType) {
+            this.poiTypeTag.tagType = poiTagType;
             return this;
         }
 

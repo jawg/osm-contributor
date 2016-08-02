@@ -23,28 +23,21 @@ import java.util.List;
 
 import io.mapsquare.osmcontributor.model.entities.PoiType;
 
-public class PoiTypesLoaded {
+public class RefreshPresetFilters {
+
     private List<PoiType> poiTypes;
+    private List<Long> poiTypeHidden;
 
-    private boolean isPreset;
-
-    public PoiTypesLoaded(List<PoiType> poiTypes) {
+    public RefreshPresetFilters(List<PoiType> poiTypes, List<Long> poiTypeHidden) {
         this.poiTypes = poiTypes;
+        this.poiTypeHidden = poiTypeHidden;
     }
 
     public List<PoiType> getPoiTypes() {
         return poiTypes;
     }
 
-    public void setPoiTypes(List<PoiType> poiTypes) {
-        this.poiTypes = poiTypes;
-    }
-
-    public boolean isPreset() {
-        return isPreset;
-    }
-
-    public void setPreset(boolean preset) {
-        isPreset = preset;
+    public List<Long> getPoiTypeHidden() {
+        return poiTypeHidden;
     }
 }

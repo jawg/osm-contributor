@@ -46,6 +46,7 @@ import io.mapsquare.osmcontributor.model.events.PleaseLoadPoisEvent;
 import io.mapsquare.osmcontributor.model.events.PoiTypesLoaded;
 import io.mapsquare.osmcontributor.model.events.PoisAndNotesDownloadedEvent;
 import io.mapsquare.osmcontributor.model.events.PoisLoadedEvent;
+import io.mapsquare.osmcontributor.model.events.RefreshPresetFilters;
 import io.mapsquare.osmcontributor.model.events.RevertFinishedEvent;
 import io.mapsquare.osmcontributor.rest.events.SyncDownloadPoisAndNotesEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseChangeValuesDetailNoteFragmentEvent;
@@ -126,7 +127,11 @@ public class MapFragmentPresenter {
         poiTypes = event.getPoiTypes();
         setForceRefreshPoi();
         setForceRefreshNotes();
-        eventBus.post(new PleaseInitializeDrawer(poiTypes, mapFragment.getPoiTypeHidden()));
+        if (event.isPreset()) {
+            eventBus.post(new RefreshPresetFilters(poiTypes, mapFragment.getPoiTypeHidden()));
+        } else {
+            eventBus.post(new PleaseInitializeDrawer(poiTypes, mapFragment.getPoiTypeHidden()));
+        }
         mapFragment.loadPoiTypeSpinner();
         mapFragment.loadPoiTypeFloatingBtn();
         eventBus.removeStickyEvent(event);

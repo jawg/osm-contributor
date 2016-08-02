@@ -20,7 +20,6 @@ package io.mapsquare.osmcontributor.ui.adapters.parser;
 
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -84,23 +83,6 @@ public class ParserManager {
      */
     public static String deparseTagName(String tagName) {
         return Character.toLowerCase(tagName.charAt(0)) + tagName.substring(1).replace(" ", "_");
-    }
-
-    /**
-     * Get tag type.
-     * @param key tag key
-     * @param values tag possible values
-     * @return tag type
-     */
-    public static TagItem.Type getTagType(String key, List<String> values) {
-        TagItem.Type type = TagItem.Type.TEXT;
-        for (TagParser tagParser : tagParsers.values()) {
-            if (tagParser.isCandidate(key, values)) {
-                type = tagParser.getType();
-                break;
-            }
-        }
-        return type;
     }
 
     @SuppressWarnings("unchecked")

@@ -144,7 +144,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * @return the position of the inserted element
      */
     public int addLast(String key, String value, List<String> possibleValues, List<String> autocompleteValues, boolean updatable) {
-        addTag(key, value, false, removeDuplicate(possibleValues, autocompleteValues), tagItemList.size(), updatable);
+        addTag(key, value, false, removeDuplicate(possibleValues, autocompleteValues), tagItemList.size(), updatable, keyTagItem.get(key).getTagType());
         return tagItemList.size() - 1;
     }
 
@@ -212,14 +212,11 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * @param position position inside the list
      * @param updatable is updatable
      */
-    private void addTag(String key, String value, boolean mandatory, List<String> values, int position, boolean updatable) {
-        // Get the tag type
-        TagItem.Type type = ParserManager.getTagType(key, values);
-
+    private void addTag(String key, String value, boolean mandatory, List<String> values, int position, boolean updatable, TagItem.Type type) {
         // Parse value if needed
         String valueFormatted = ParserManager.getValue(value, type);
 
-        TagItem tagItem = new TagItem(key, value, mandatory, values, updatable ? type : TagItem.Type.CONSTANT, valueFormatted != null);
+        TagItem tagItem = new TagItem(key, value, mandatory, values, updatable ? type : TagItem.Type.CONSTANT, valueFormatted != null || type == TagItem.Type.NUMBER);
         // Add into the list
         tagItemList.add(position, tagItem);
         keyTagItem.put(key, tagItem);
@@ -290,22 +287,22 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 String key = poiTypeTag.getKey();
                 // Display tags as mandatory if they are mandatory and we are not in expert mode
                 if (poiTypeTag.getMandatory() && !expertMode) {
-                    addTag(key, poiTags.remove(key), true, values, nbMandatory + nbImposed, true);
+                    addTag(key, poiTags.remove(key), true, values, nbMandatory + nbImposed, true, poiTypeTag.getTagType());
                     nbMandatory++;
                 } else {
-                    addTag(key, poiTags.remove(key), false, values, this.getItemCount(), true);
+                    addTag(key, poiTags.remove(key), false, values, this.getItemCount(), true, poiTypeTag.getTagType());
                 }
             } else if (expertMode) {
                 // Display the tags of the poi that are not in the PoiType
                 String key = poiTypeTag.getKey();
-                addTag(key, poiTags.remove(key), true, values, nbImposed, false);
+                addTag(key, poiTags.remove(key), true, values, nbImposed, false, poiTypeTag.getTagType());
                 nbImposed++;
             }
         }
         if (expertMode) {
             for (String key : poiTags.keySet()) {
                 addTag(key, poiTags.get(key), false, removeDuplicate(tagValueSuggestionsMap.get(key),
-                        Collections.singletonList(poiTags.get(key))), this.getItemCount(), true);
+                        Collections.singletonList(poiTags.get(key))), this.getItemCount(), true, keyTagItem.get(key).getTagType());
             }
         }
     }

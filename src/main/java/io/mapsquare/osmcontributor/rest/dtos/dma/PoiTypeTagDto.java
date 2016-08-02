@@ -22,6 +22,8 @@ package io.mapsquare.osmcontributor.rest.dtos.dma;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
+import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
+
 public class PoiTypeTagDto {
 
     @SerializedName("key")
@@ -36,8 +38,11 @@ public class PoiTypeTagDto {
     @SerializedName("implied")
     private boolean implied;
 
-    @SerializedName("possibleValues")
+    @SerializedName("values")
     private JsonElement possibleValues;
+
+    @SerializedName("type")
+    private TagItem.Type type;
 
     public String getKey() {
         return key;
@@ -77,5 +82,13 @@ public class PoiTypeTagDto {
 
     public void setPossibleValues(JsonElement possibleValues) {
         this.possibleValues = possibleValues;
+    }
+
+    public TagItem.Type getType() {
+        return type;
+    }
+
+    public void setType(TagItem.Type type) {
+        this.type = type;
     }
 }
