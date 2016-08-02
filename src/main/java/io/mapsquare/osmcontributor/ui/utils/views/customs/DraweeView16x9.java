@@ -16,47 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.model.entities;
+package io.mapsquare.osmcontributor.ui.utils.views.customs;
 
-public class H2GeoPresetsItem {
+import android.content.Context;
+import android.util.AttributeSet;
+import com.facebook.drawee.view.SimpleDraweeView;
 
-    private String name;
+public class DraweeView16x9 extends SimpleDraweeView {
 
-    private String description;
-
-    private String file;
-
-    private String image;
-
-    public String getName() {
-        return name;
+    public DraweeView16x9(Context context) {
+        super(context);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public DraweeView16x9(Context context, AttributeSet attrs) {
+        super(context, attrs);
     }
 
-    public String getDescription() {
-        return description;
+    public DraweeView16x9(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getFile() {
-        return file;
-    }
-
-    public void setFile(String file) {
-        this.file = file;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth() * 9 / 16);
     }
 }

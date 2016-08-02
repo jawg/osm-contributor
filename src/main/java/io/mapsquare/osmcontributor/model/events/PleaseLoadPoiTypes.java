@@ -21,13 +21,4 @@ package io.mapsquare.osmcontributor.model.events;
 
 public class PleaseLoadPoiTypes {
 
-    private boolean isPreset;
-
-    public boolean isPreset() {
-        return isPreset;
-    }
-
-    public void setPreset(boolean preset) {
-        isPreset = preset;
-    }
 }

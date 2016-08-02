@@ -43,12 +43,13 @@ import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.H2GeoPresetsItem;
 import io.mapsquare.osmcontributor.model.events.DatabaseResetFinishedEvent;
 import io.mapsquare.osmcontributor.model.events.PleaseLoadPoiTypes;
-import io.mapsquare.osmcontributor.model.events.RefreshPresetFilters;
 import io.mapsquare.osmcontributor.model.events.ResetTypeDatabaseEvent;
+import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoDto;
 import io.mapsquare.osmcontributor.rest.events.PresetDownloadedEvent;
 import io.mapsquare.osmcontributor.rest.events.PresetListDownloadedEvent;
 import io.mapsquare.osmcontributor.rest.events.error.PresetDownloadErrorEvent;
 import io.mapsquare.osmcontributor.rest.events.error.PresetListDownloadErrorEvent;
+import io.mapsquare.osmcontributor.rest.mappers.H2GeoPresetsItemMapper;
 import io.mapsquare.osmcontributor.ui.adapters.ProfileAdapter;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetEvent;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetListEvent;
@@ -71,6 +72,9 @@ public class LoadProfileActivity extends AppCompatActivity
     @Inject
     SharedPreferences sharedPreferences;
 
+    @Inject
+    H2GeoPresetsItemMapper mapper;
+
     private ProfileAdapter profileAdapter;
 
     @Override
@@ -90,6 +94,7 @@ public class LoadProfileActivity extends AppCompatActivity
 
         showLoadingSeekBar();
         profileAdapter = new ProfileAdapter(this, this);
+        ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(profileAdapter);
         listView.setAdapter(profileAdapter);
 
         eventBus.register(this);
@@ -129,7 +134,6 @@ public class LoadProfileActivity extends AppCompatActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPresetDownloadedEvent(PresetDownloadedEvent event) {
         // TODO cache/display preset data
-        hideLoadingSeekBar();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -144,14 +148,7 @@ public class LoadProfileActivity extends AppCompatActivity
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDatabaseResetFinishedEvent(DatabaseResetFinishedEvent event) {
-        PleaseLoadPoiTypes pleaseLoadPoiTypes = new PleaseLoadPoiTypes();
-        pleaseLoadPoiTypes.setPreset(true);
-        eventBus.post(pleaseLoadPoiTypes);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRefreshPresetFilter(RefreshPresetFilters event) {
-
+        eventBus.post(new PleaseLoadPoiTypes());
         finish();
     }
 
@@ -160,7 +157,6 @@ public class LoadProfileActivity extends AppCompatActivity
     // *********************************
 
     private void startLoadingPresetList() {
-        showLoadingSeekBar();
         eventBus.post(new PleaseDownloadPresetListEvent());
     }
 
@@ -186,15 +182,20 @@ public class LoadProfileActivity extends AppCompatActivity
 
     @Override
     public void profileClicked(H2GeoPresetsItem h2GeoPresetsItem) {
+        showLoadingSeekBar();
         if (h2GeoPresetsItem == null) {
             eventBus.post(new ResetTypeDatabaseEvent());
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean(getString(R.string.shared_prefs_preset_default), false);
+            editor.putString(getString(R.string.shared_prefs_preset_selected), mapper.getCurrentLanguage(H2GeoDto.getDefaultPreset(this).getName()));
             editor.apply();
+            profileAdapter.notifyDataSetChanged();
         } else {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean(getString(R.string.shared_prefs_preset_default), true);
+            editor.putString(getString(R.string.shared_prefs_preset_selected), h2GeoPresetsItem.getName());
             editor.apply();
+            profileAdapter.notifyDataSetChanged();
             eventBus.post(new PleaseDownloadPresetEvent(h2GeoPresetsItem.getFile()));
         }
     }

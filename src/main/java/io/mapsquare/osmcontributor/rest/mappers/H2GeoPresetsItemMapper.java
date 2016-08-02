@@ -49,8 +49,8 @@ public class H2GeoPresetsItemMapper {
         for (Map.Entry<String, H2GeoPresetsItemDto> entry : h2GeoPresetsItemDtos.entrySet()) {
             H2GeoPresetsItemDto h2GeoPresetsItemDto = entry.getValue();
             H2GeoPresetsItem h2GeoPresetsItem = new H2GeoPresetsItem();
-            h2GeoPresetsItem.setName(getName(h2GeoPresetsItemDto.getName()));
-            h2GeoPresetsItem.setDescription(h2GeoPresetsItemDto.getDescription());
+            h2GeoPresetsItem.setName(getCurrentLanguage(h2GeoPresetsItemDto.getName()));
+            h2GeoPresetsItem.setDescription(getCurrentLanguage((h2GeoPresetsItemDto.getDescription())));
             h2GeoPresetsItem.setFile(h2GeoPresetsItemDto.getFile());
             h2GeoPresetsItem.setImage(h2GeoPresetsItemDto.getImage());
             h2GeoPresetsItems.put(entry.getKey(), h2GeoPresetsItem);
@@ -59,12 +59,12 @@ public class H2GeoPresetsItemMapper {
         return h2GeoPresetsItems;
     }
 
-    private String getName(Map<String, String> mapName) {
-        if (mapName != null && mapName.containsKey(language)) {
-            return mapName.get(language);
+    public String getCurrentLanguage(Map<String, String> map) {
+        if (map != null && map.containsKey(language)) {
+            return map.get(language);
         }
-        if (mapName != null && mapName.containsKey("en")) {
-            return mapName.get("en");
+        if (map != null && map.containsKey("en")) {
+            return map.get("en");
         }
         return "No name provided";
     }

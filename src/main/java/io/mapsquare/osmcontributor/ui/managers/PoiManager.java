@@ -177,9 +177,7 @@ public class PoiManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseLoadPoiTypes(PleaseLoadPoiTypes event) {
-        PoiTypesLoaded poiTypesLoaded = new PoiTypesLoaded(getPoiTypesSortedByName());
-        poiTypesLoaded.setPreset(event.isPreset());
-        bus.postSticky(poiTypesLoaded);
+        bus.postSticky(new PoiTypesLoaded(getPoiTypesSortedByName()));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)

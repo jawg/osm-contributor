@@ -50,6 +50,7 @@ import io.mapsquare.osmcontributor.ui.activities.TypeListActivity;
 import io.mapsquare.osmcontributor.ui.activities.UploadActivity;
 import io.mapsquare.osmcontributor.ui.adapters.OpeningHoursLinearLayoutAdapter;
 import io.mapsquare.osmcontributor.ui.adapters.OpeningMonthAdapter;
+import io.mapsquare.osmcontributor.ui.adapters.ProfileAdapter;
 import io.mapsquare.osmcontributor.ui.adapters.TagsAdapter;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningMonthValueParser;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
@@ -147,6 +148,8 @@ public interface OsmTemplateComponent {
     void inject(FlickrOAuth flickrOAuth);
 
     void inject(LoginDialogFragment loginDialogFragment);
+
+    void inject(ProfileAdapter profileAdapter);
 
     // PROVIDING
 

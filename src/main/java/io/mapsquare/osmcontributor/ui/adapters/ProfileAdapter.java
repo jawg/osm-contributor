@@ -19,46 +19,67 @@
 package io.mapsquare.osmcontributor.ui.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.H2GeoPresets;
 import io.mapsquare.osmcontributor.model.entities.H2GeoPresetsItem;
-import java.util.Map;
-import java.util.TreeMap;
+import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoDto;
+import io.mapsquare.osmcontributor.rest.mappers.H2GeoPresetsItemMapper;
+import io.mapsquare.osmcontributor.ui.utils.views.customs.DraweeView16x9;
 
 public class ProfileAdapter extends BaseAdapter {
+    @Inject
+    SharedPreferences sharedPreferences;
+
+    @Inject
+    H2GeoPresetsItemMapper mapper;
+
     private Map<String, H2GeoPresetsItem> presets = new TreeMap<>();
     private String[] keys;
     private Context context;
     private ProfileSelectedListener profileSelectedListenerListener;
+    private H2GeoDto defaultPreset;
 
     public ProfileAdapter(Context context, ProfileSelectedListener profileSelectedListener) {
         this.context = context;
         this.profileSelectedListenerListener = profileSelectedListener;
+        this.defaultPreset = H2GeoDto.getDefaultPreset(context);
     }
 
-    @Override public int getCount() {
+    @Override
+    public int getCount() {
         return presets.size() + 1;
     }
 
-    @Override public H2GeoPresetsItem getItem(int position) {
+    @Override
+    public H2GeoPresetsItem getItem(int position) {
         if (position == 0) {
             return null;
         }
         return presets.get(keys[position - 1]);
     }
 
-    @Override public long getItemId(int position) {
+    @Override
+    public long getItemId(int position) {
         return 0;
     }
 
-    @Override public View getView(final int position, View view, final ViewGroup parent) {
+    @Override
+    public View getView(final int position, View view, final ViewGroup parent) {
         LayoutInflater inflater =
             (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final H2GeoPresetsItem h2GeoPreset = getItem(position);
@@ -72,7 +93,14 @@ public class ProfileAdapter extends BaseAdapter {
             view.setTag(holder);
         }
 
-        holder.getNameTextView().setText(h2GeoPreset == null ? "Default" : h2GeoPreset.getName());
+        holder.getNameTextView().setText(h2GeoPreset == null ? mapper.getCurrentLanguage(defaultPreset.getName()) : h2GeoPreset.getName());
+        holder.getDescriptionTextView().setText(h2GeoPreset == null ? mapper.getCurrentLanguage(defaultPreset.getDescription()) : h2GeoPreset.getDescription());
+        holder.getImage().setImageURI(h2GeoPreset == null ? defaultPreset.getImage() : h2GeoPreset.getImage());
+        if (sharedPreferences.getString(context.getString(R.string.shared_prefs_preset_selected), "Default").equals(holder.getNameTextView().getText())) {
+            holder.getIsSeleted().setVisibility(View.VISIBLE);
+        } else {
+            holder.getIsSeleted().setVisibility(View.INVISIBLE);
+        }
         view.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View view) {
                 if (profileSelectedListenerListener != null) {
@@ -89,7 +117,17 @@ public class ProfileAdapter extends BaseAdapter {
     }
 
     static class ViewHolder {
-        @BindView(R.id.text_view) TextView name;
+        @BindView(R.id.title_preset)
+        TextView name;
+
+        @BindView(R.id.description_preset)
+        TextView description;
+
+        @BindView(R.id.banner)
+        DraweeView16x9 banner;
+
+        @BindView(R.id.is_selected)
+        ImageView isSeleted;
 
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);
@@ -97,6 +135,18 @@ public class ProfileAdapter extends BaseAdapter {
 
         public TextView getNameTextView() {
             return name;
+        }
+
+        public TextView getDescriptionTextView() {
+            return description;
+        }
+
+        public DraweeView16x9 getImage() {
+            return banner;
+        }
+
+        public ImageView getIsSeleted() {
+            return isSeleted;
         }
     }
 

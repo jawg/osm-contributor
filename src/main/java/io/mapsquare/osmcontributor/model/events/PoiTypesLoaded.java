@@ -26,8 +26,6 @@ import io.mapsquare.osmcontributor.model.entities.PoiType;
 public class PoiTypesLoaded {
     private List<PoiType> poiTypes;
 
-    private boolean isPreset;
-
     public PoiTypesLoaded(List<PoiType> poiTypes) {
         this.poiTypes = poiTypes;
     }
@@ -38,13 +36,5 @@ public class PoiTypesLoaded {
 
     public void setPoiTypes(List<PoiType> poiTypes) {
         this.poiTypes = poiTypes;
-    }
-
-    public boolean isPreset() {
-        return isPreset;
-    }
-
-    public void setPreset(boolean preset) {
-        isPreset = preset;
     }
 }

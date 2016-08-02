@@ -18,12 +18,22 @@
  */
 package io.mapsquare.osmcontributor.rest.dtos.dma;
 
+import android.content.Context;
+
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
+import io.mapsquare.osmcontributor.utils.CloseableUtils;
+import timber.log.Timber;
+
 public class H2GeoDto {
+
+    private static H2GeoDto h2GeoDto;
+
     @SerializedName("version")
     private String version;
 
@@ -99,5 +109,21 @@ public class H2GeoDto {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public static H2GeoDto getDefaultPreset(Context context) {
+        if (h2GeoDto == null) {
+            InputStreamReader reader = null;
+            try {
+                reader = new InputStreamReader(context.getAssets().open("h2geo.json"));
+                return new Gson().fromJson(reader, H2GeoDto.class);
+            } catch (Exception e) {
+                Timber.e(e, "Error while loading POI Types from assets");
+                throw new RuntimeException(e);
+            } finally {
+                CloseableUtils.closeQuietly(reader);
+            }
+        }
+        return h2GeoDto;
     }
 }

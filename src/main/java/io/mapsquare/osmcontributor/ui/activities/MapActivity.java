@@ -29,7 +29,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,6 +52,7 @@ import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.PoiType;
+import io.mapsquare.osmcontributor.model.events.PleaseLoadPoiTypes;
 import io.mapsquare.osmcontributor.ui.events.login.UpdateFirstConnectionEvent;
 import io.mapsquare.osmcontributor.ui.events.map.ChangeMapModeEvent;
 import io.mapsquare.osmcontributor.ui.events.map.ChangesInDB;
@@ -237,15 +237,12 @@ public class MapActivity extends AppCompatActivity {
         eventBus.register(this);
 
         if (sharedPreferences.getBoolean(getString(R.string.shared_prefs_preset_default), false)) {
-            navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(false);
-        } else {
-            navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
-        }
-
-        if (sharedPreferences.getBoolean(getString(R.string.shared_prefs_preset_default), false)) {
             navigationView.getMenu().findItem(R.id.edit_way).setVisible(false);
+            navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(false);
+            eventBus.post(new PleaseLoadPoiTypes());
         } else {
             navigationView.getMenu().findItem(R.id.edit_way).setVisible(true);
+            navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
         }
         poiProvider.register();
     }
@@ -341,7 +338,6 @@ public class MapActivity extends AppCompatActivity {
     public void onPleaseInitializeDrawer(PleaseInitializeDrawer event) {
         Timber.d("initializing drawer with poiType");
 
-        Log.i("MapActivity", "onPleaseInitializeDrawer: " + event.getPoiTypes());
         if (filtersItemList == null) {
             filtersItemList = new ArrayList<>();
         }

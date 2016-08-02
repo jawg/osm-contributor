@@ -134,6 +134,7 @@
     <string name="shared_prefs_oauth_token_flickr" translatable="false">oauthTokenFlickr</string>
     <string name="shared_prefs_oauth_token_secret_flickr" translatable="false">oauthTokenSecretFlickr</string>
     <string name="shared_prefs_preset_default" translatable="false">presetDefault</string>
+    <string name="shared_prefs_preset_selected" translatable="false">presetSelected</string>
 
     <!--Login-->
     <string name="login_google_error">Vous ne pouvez pas vous connecter avec votre compte Google.\n
