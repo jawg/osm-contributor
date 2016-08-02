@@ -55,7 +55,7 @@ import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetListEve
 
 public class LoadProfileActivity extends AppCompatActivity
         implements ProfileAdapter.ProfileSelectedListener {
-
+    private static final String TAG = "LoadProfileActivity";
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -187,7 +187,7 @@ public class LoadProfileActivity extends AppCompatActivity
     @Override
     public void profileClicked(H2GeoPresetsItem h2GeoPresetsItem) {
         if (h2GeoPresetsItem == null) {
-            eventBus.post(new ResetTypeDatabaseEvent(null));
+            eventBus.post(new ResetTypeDatabaseEvent());
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean(getString(R.string.shared_prefs_preset_default), false);
             editor.apply();

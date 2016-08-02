@@ -66,7 +66,7 @@ public class PoiAssetLoader {
      * Load the PoiTypes from the h2geo.json file located in the assets directory.
      * @return The loaded PoiTypes.
      */
-    public List<PoiType> loadPoiTypesDefault() {
+    public List<PoiType> loadPoiTypesByDefault() {
         InputStreamReader reader = null;
         try {
             reader = new InputStreamReader(application.getAssets().open("h2geo.json"));

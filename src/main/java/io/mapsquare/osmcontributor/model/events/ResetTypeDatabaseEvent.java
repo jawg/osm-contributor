@@ -18,17 +18,26 @@
  */
 package io.mapsquare.osmcontributor.model.events;
 
-import android.support.annotation.Nullable;
-import java.io.InputStreamReader;
+import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoDto;
 
 public class ResetTypeDatabaseEvent {
-    private final InputStreamReader inputStreamReader;
+    private H2GeoDto h2GeoDto;
+    private final boolean byDefault;
 
-    public ResetTypeDatabaseEvent(@Nullable InputStreamReader inputStreamReader) {
-        this.inputStreamReader = inputStreamReader;
+    public ResetTypeDatabaseEvent(H2GeoDto h2GeoDto) {
+        this.h2GeoDto = h2GeoDto;
+        byDefault = h2GeoDto == null;
     }
 
-    public InputStreamReader getInputStreamReader() {
-        return inputStreamReader;
+    public ResetTypeDatabaseEvent() {
+        byDefault = true;
+    }
+
+    public boolean isByDefault() {
+        return byDefault;
+    }
+
+    public H2GeoDto getH2GeoDto() {
+        return h2GeoDto;
     }
 }

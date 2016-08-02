@@ -19,14 +19,12 @@
 package io.mapsquare.osmcontributor.ui.managers;
 
 import android.app.Application;
-import android.support.annotation.Nullable;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.joda.time.DateTime;
 
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -70,6 +68,7 @@ import io.mapsquare.osmcontributor.model.events.PoisToUpdateLoadedEvent;
 import io.mapsquare.osmcontributor.model.events.ResetDatabaseEvent;
 import io.mapsquare.osmcontributor.model.events.ResetTypeDatabaseEvent;
 import io.mapsquare.osmcontributor.model.events.RevertFinishedEvent;
+import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoDto;
 import io.mapsquare.osmcontributor.ui.events.map.ChangesInDB;
 import io.mapsquare.osmcontributor.ui.events.map.LastUsePoiTypeLoaded;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseLoadLastUsedPoiType;
@@ -195,7 +194,11 @@ public class PoiManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onResetTypeDatabaseEvent(ResetTypeDatabaseEvent event) {
-        bus.post(new DatabaseResetFinishedEvent(resetTypes(event.getInputStreamReader())));
+        if (event.isByDefault()) {
+            bus.post(new DatabaseResetFinishedEvent(resetTypesByDefault()));
+        } else if (event.getH2GeoDto() != null) {
+            bus.post(new DatabaseResetFinishedEvent(resetTypes(event.getH2GeoDto())));
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -227,7 +230,7 @@ public class PoiManager {
     public void initDb() {
         if (!isDbInitialized()) {
             // No data, initializing from assets
-            savePoiTypesFromStream(null);
+            savePoiTypesByDefault();
             savePoisFromAssets();
         }
         Timber.d("Database initialized");
@@ -235,10 +238,20 @@ public class PoiManager {
 
     /**
      * Load poi types from assets and save them in the database.
-     * @param inputStreamReader, the inputstream to load or null for default
      */
-    public void savePoiTypesFromStream(@Nullable InputStreamReader inputStreamReader) {
-        List<PoiType> poiTypes = poiAssetLoader.loadPoiTypesFromStream(inputStreamReader);
+    public void savePoiTypesByDefault() {
+        savePoiTypes(poiAssetLoader.loadPoiTypesByDefault());
+    }
+
+    /**
+     * Load poi types from h2GeoDto and save them in the database.
+     * @param h2GeoDto
+     */
+    public void savePoiTypesFromH2Geo(H2GeoDto h2GeoDto) {
+        savePoiTypes(poiAssetLoader.loadPoiTypesFromH2GeoDto(h2GeoDto));
+    }
+
+    public void savePoiTypes(List<PoiType> poiTypes) {
         if (poiTypes != null) {
             Timber.d("Loaded %s poiTypes, trying to insert them", poiTypes.size());
             for (PoiType poiType : poiTypes) {
@@ -765,7 +778,7 @@ public class PoiManager {
      *
      * @return Whether the reset was successful.
      */
-    public Boolean resetTypes(@Nullable final InputStreamReader inputStreamReader) {
+    public Boolean resetTypesByDefault() {
         return databaseHelper.callInTransaction(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
@@ -776,7 +789,31 @@ public class PoiManager {
                 poiTypeDao.deleteAll();
                 poiTypeTagDao.deleteAll();
                 Timber.d("All Pois en PoiTypes deleted from database");
-                savePoiTypesFromStream(inputStreamReader);
+                savePoiTypesByDefault();
+                Timber.d("Finished reloading and saving PoiTypes from assets");
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Reset the PoiTypes of the database : delete all the Pois, PoiTags, PoiNodeRefs, PoiTypes and PoiTypeTags of the database
+     * then reload and save the PoiTypes from the assets.
+     *
+     * @return Whether the reset was successful.
+     */
+    public Boolean resetTypes(final H2GeoDto h2GeoDto) {
+        return databaseHelper.callInTransaction(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                Timber.d("Resetting the PoiTypes of the database");
+                poiDao.deleteAll();
+                poiNodeRefDao.deleteAll();
+                poiTagDao.deleteAll();
+                poiTypeDao.deleteAll();
+                poiTypeTagDao.deleteAll();
+                Timber.d("All Pois en PoiTypes deleted from database");
+                savePoiTypesFromH2Geo(h2GeoDto);
                 Timber.d("Finished reloading and saving PoiTypes from assets");
                 return true;
             }

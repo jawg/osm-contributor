@@ -144,7 +144,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
                         .setMessage(R.string.reset_dialog_message)
                         .setPositiveButton(R.string.reset_dialog_positive_button, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                bus.post(new ResetTypeDatabaseEvent(null));
+                                bus.post(new ResetTypeDatabaseEvent());
                                 dialog.dismiss();
                             }
                         })

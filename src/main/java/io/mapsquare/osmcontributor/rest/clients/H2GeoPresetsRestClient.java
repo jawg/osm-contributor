@@ -18,9 +18,8 @@
  */
 package io.mapsquare.osmcontributor.rest.clients;
 
+import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoDto;
 import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoPresetsDto;
-import retrofit.Callback;
-import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Path;
 
@@ -31,13 +30,14 @@ public interface H2GeoPresetsRestClient {
      *
      * @return A wrapper of H2Geo presets descriptor DTO.
      */
-    @GET("/presets.json") H2GeoPresetsDto loadProfiles();
+    @GET("/presets.json")
+    H2GeoPresetsDto loadProfiles();
 
     /**
      * Load a specified profile.
      *
      * @param filename Name of the profile file to load.
      */
-    @GET("/{profile}") void loadProfile(@Path("profile") String filename,
-        Callback<Response> responseCallback);
+    @GET("/{profile}")
+    H2GeoDto loadProfile(@Path("profile") String filename);
 }

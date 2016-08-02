@@ -21,6 +21,7 @@ package io.mapsquare.osmcontributor.rest.dtos.dma;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Map;
 
 public class H2GeoDto {
     @SerializedName("version")
@@ -33,10 +34,10 @@ public class H2GeoDto {
     private List<PoiTypeDto> data;
 
     @SerializedName("description")
-    private String description;
+    private Map<String, String> description;
 
     @SerializedName("name")
-    private String name;
+    private Map<String, String> name;
 
     @SerializedName("offlineArea")
     private List<List<Double>> offlineArea;
@@ -68,19 +69,19 @@ public class H2GeoDto {
         this.data = data;
     }
 
-    public String getDescription() {
+    public Map<String, String> getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(Map<String, String> description) {
         this.description = description;
     }
 
-    public String getName() {
+    public Map<String, String> getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(Map<String, String> name) {
         this.name = name;
     }
 
