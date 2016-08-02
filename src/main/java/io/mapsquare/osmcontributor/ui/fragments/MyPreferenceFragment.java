@@ -48,7 +48,7 @@ import io.mapsquare.osmcontributor.model.events.DatabaseResetFinishedEvent;
 import io.mapsquare.osmcontributor.model.events.ResetDatabaseEvent;
 import io.mapsquare.osmcontributor.model.events.ResetTypeDatabaseEvent;
 import io.mapsquare.osmcontributor.rest.events.GoogleAuthenticatedEvent;
-import io.mapsquare.osmcontributor.rest.managers.GoogleOAuthManager;
+import io.mapsquare.osmcontributor.rest.security.GoogleOAuthManager;
 import io.mapsquare.osmcontributor.ui.events.login.AttemptLoginEvent;
 import io.mapsquare.osmcontributor.ui.events.login.ErrorLoginEvent;
 import io.mapsquare.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;

@@ -18,14 +18,16 @@
  */
 package io.mapsquare.osmcontributor.rest.mappers;
 
+import javax.inject.Inject;
+
 import io.mapsquare.osmcontributor.model.entities.H2GeoPresets;
 import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoPresetsDto;
-import javax.inject.Inject;
 
 public class H2GeoPresetsMapper {
   H2GeoPresetsItemMapper h2GeoPresetsItemMapper;
 
-  @Inject public H2GeoPresetsMapper(H2GeoPresetsItemMapper h2GeoPresetsItemMapper) {
+  @Inject
+  public H2GeoPresetsMapper(H2GeoPresetsItemMapper h2GeoPresetsItemMapper) {
     this.h2GeoPresetsItemMapper = h2GeoPresetsItemMapper;
   }
 

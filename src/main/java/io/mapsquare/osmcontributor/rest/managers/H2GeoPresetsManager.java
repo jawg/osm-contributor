@@ -18,6 +18,16 @@
  */
 package io.mapsquare.osmcontributor.rest.managers;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import javax.inject.Inject;
+
 import io.mapsquare.osmcontributor.model.events.ResetTypeDatabaseEvent;
 import io.mapsquare.osmcontributor.rest.clients.H2GeoPresetsRestClient;
 import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoPresetsDto;
@@ -27,13 +37,6 @@ import io.mapsquare.osmcontributor.rest.events.error.PresetListDownloadErrorEven
 import io.mapsquare.osmcontributor.rest.mappers.H2GeoPresetsMapper;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetEvent;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetListEvent;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import javax.inject.Inject;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;

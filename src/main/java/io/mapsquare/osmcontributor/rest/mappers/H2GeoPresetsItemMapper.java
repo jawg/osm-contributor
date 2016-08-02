@@ -18,18 +18,21 @@
  */
 package io.mapsquare.osmcontributor.rest.mappers;
 
-import io.mapsquare.osmcontributor.model.entities.H2GeoPresetsItem;
-import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoPresetsItemDto;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.inject.Inject;
+
+import io.mapsquare.osmcontributor.model.entities.H2GeoPresetsItem;
+import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoPresetsItemDto;
 
 public class H2GeoPresetsItemMapper {
 
     String language = "";
 
-    @Inject public H2GeoPresetsItemMapper() {
+    @Inject
+    public H2GeoPresetsItemMapper() {
         language = Locale.getDefault().getLanguage();
         if (language.isEmpty()) {
             language = "en";
@@ -49,6 +52,7 @@ public class H2GeoPresetsItemMapper {
             h2GeoPresetsItem.setName(getName(h2GeoPresetsItemDto.getName()));
             h2GeoPresetsItem.setDescription(h2GeoPresetsItemDto.getDescription());
             h2GeoPresetsItem.setFile(h2GeoPresetsItemDto.getFile());
+            h2GeoPresetsItem.setImage(h2GeoPresetsItemDto.getImage());
             h2GeoPresetsItems.put(entry.getKey(), h2GeoPresetsItem);
         }
 

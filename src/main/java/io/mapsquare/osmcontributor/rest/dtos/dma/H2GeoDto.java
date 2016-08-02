@@ -23,30 +23,41 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class H2GeoDto {
+    @SerializedName("version")
+    private String version;
 
-    @SerializedName("h2GeoVersion")
-    private String h2GeoVersion;
-
-    @SerializedName("generationDate")
-    private String generationDate;
+    @SerializedName("lastUpdate")
+    private String lastUpdate;
 
     @SerializedName("data")
     private List<PoiTypeDto> data;
 
-    public String getH2GeoVersion() {
-        return h2GeoVersion;
+    @SerializedName("description")
+    private String description;
+
+    @SerializedName("name")
+    private String name;
+
+    @SerializedName("offlineArea")
+    private List<List<Double>> offlineArea;
+
+    @SerializedName("image")
+    private String image;
+
+    public String getVersion() {
+        return version;
     }
 
-    public void setH2GeoVersion(String h2GeoVersion) {
-        this.h2GeoVersion = h2GeoVersion;
+    public void setVersion(String version) {
+        this.version = version;
     }
 
-    public String getGenerationDate() {
-        return generationDate;
+    public String getLastUpdate() {
+        return lastUpdate;
     }
 
-    public void setGenerationDate(String generationDate) {
-        this.generationDate = generationDate;
+    public void setLastUpdate(String lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 
     public List<PoiTypeDto> getData() {
@@ -55,5 +66,37 @@ public class H2GeoDto {
 
     public void setData(List<PoiTypeDto> data) {
         this.data = data;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<List<Double>> getOfflineArea() {
+        return offlineArea;
+    }
+
+    public void setOfflineArea(List<List<Double>> offlineArea) {
+        this.offlineArea = offlineArea;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

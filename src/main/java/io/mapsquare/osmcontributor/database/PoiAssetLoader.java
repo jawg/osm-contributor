@@ -20,14 +20,13 @@ package io.mapsquare.osmcontributor.database;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
-import android.support.annotation.Nullable;
 import com.google.gson.Gson;
 
 import org.simpleframework.xml.core.Persister;
 
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -36,10 +35,10 @@ import javax.inject.Singleton;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiType;
-import io.mapsquare.osmcontributor.rest.mappers.PoiMapper;
-import io.mapsquare.osmcontributor.rest.mappers.PoiTypeMapper;
 import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoDto;
 import io.mapsquare.osmcontributor.rest.dtos.osm.OsmDto;
+import io.mapsquare.osmcontributor.rest.mappers.PoiMapper;
+import io.mapsquare.osmcontributor.rest.mappers.PoiTypeMapper;
 import io.mapsquare.osmcontributor.utils.CloseableUtils;
 import timber.log.Timber;
 
@@ -64,29 +63,51 @@ public class PoiAssetLoader {
     }
 
     /**
-     * Load the PoiTypes from the poitypes.json file located in the assets directory.
-     *@param inputStreamReader, on the json to load or nu for default.
+     * Load the PoiTypes from the h2geo.json file located in the assets directory.
      * @return The loaded PoiTypes.
      */
-    public List<PoiType> loadPoiTypesFromStream(@Nullable InputStreamReader inputStreamReader) {
-        Reader reader = inputStreamReader;
+    public List<PoiType> loadPoiTypesDefault() {
+        InputStreamReader reader = null;
         try {
-            if (inputStreamReader == null) {
-                reader = new InputStreamReader(application.getAssets().open("h2geo.json"));
-            }
-            H2GeoDto h2GeoDto = gson.fromJson(reader, H2GeoDto.class);
-            // Save the h2Geo version and generation date in the shared preferences.
-            sharedPreferences.edit()
-                    .putString(application.getString(R.string.shared_prefs_h2geo_version), h2GeoDto.getH2GeoVersion())
-                    .putString(application.getString(R.string.shared_prefs_h2geo_date), h2GeoDto.getGenerationDate())
-                    .apply();
-            return poiTypeMapper.convert(h2GeoDto.getData());
+            reader = new InputStreamReader(application.getAssets().open("h2geo.json"));
+            return loadPoiTypesFromStream(reader);
         } catch (Exception e) {
             Timber.e(e, "Error while loading POI Types from assets");
             throw new RuntimeException(e);
         } finally {
             CloseableUtils.closeQuietly(reader);
         }
+    }
+
+    /**
+     * Load the PoiTypes from the poitypes.json file located in the assets directory.
+     * @param inputStreamReader, on the json to load or nu for default.
+     * @return The loaded PoiTypes.
+     */
+    public List<PoiType> loadPoiTypesFromStream(InputStreamReader inputStreamReader) {
+        try {
+            // Save the h2Geo version and generation date in the shared preferences.
+            H2GeoDto h2GeoDto = gson.fromJson(inputStreamReader, H2GeoDto.class);
+            sharedPreferences.edit()
+                    .putString(application.getString(R.string.shared_prefs_h2geo_version), h2GeoDto.getVersion())
+                    .putString(application.getString(R.string.shared_prefs_h2geo_date), h2GeoDto.getLastUpdate())
+                    .apply();
+            return loadPoiTypesFromH2GeoDto(h2GeoDto);
+        } catch (Exception e) {
+            Timber.e(e, "Error while loading POI Types from assets");
+            throw new RuntimeException(e);
+        } finally {
+            CloseableUtils.closeQuietly(inputStreamReader);
+        }
+    }
+
+    /**
+     * Load the PoiTypes from the h2GeoDtoObject.
+     * @param h2GeoDto
+     * @return The loaded PoiTypes.
+     */
+    public List<PoiType> loadPoiTypesFromH2GeoDto(@NonNull H2GeoDto h2GeoDto) {
+        return poiTypeMapper.convert(h2GeoDto.getData());
     }
 
     /**

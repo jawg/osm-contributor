@@ -19,14 +19,14 @@
 package io.mapsquare.osmcontributor.ui.managers;
 
 import android.app.Application;
-
 import android.support.annotation.Nullable;
-import java.io.InputStreamReader;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.joda.time.DateTime;
 
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

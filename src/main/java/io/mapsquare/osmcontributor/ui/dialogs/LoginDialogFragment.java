@@ -43,7 +43,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.rest.managers.GoogleOAuthManager;
+import io.mapsquare.osmcontributor.rest.security.GoogleOAuthManager;
 import io.mapsquare.osmcontributor.ui.events.login.AttemptLoginEvent;
 import io.mapsquare.osmcontributor.ui.events.login.LoginInitializedEvent;
 import io.mapsquare.osmcontributor.utils.StringUtils;

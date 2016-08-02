@@ -48,7 +48,6 @@ import timber.log.Timber;
 
 
 public class MapboxListener {
-    private static final String TAG = "MapboxListener";
     private MapFragment mapFragment;
     private MapboxMap mapboxMap;
     private MapView mapView;

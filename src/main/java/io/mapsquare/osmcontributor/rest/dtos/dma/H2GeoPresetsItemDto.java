@@ -33,6 +33,9 @@ public class H2GeoPresetsItemDto {
     @SerializedName("file")
     private String file;
 
+    @SerializedName("image")
+    private String image;
+
     public Map<String, String> getName() {
         return name;
     }
@@ -55,5 +58,13 @@ public class H2GeoPresetsItemDto {
 
     public void setFile(String file) {
         this.file = file;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
