@@ -297,6 +297,9 @@ public class MapFragmentPresenter {
                 }
             } else {
                 if (markerType == LocationMarkerView.MarkerType.POI) {
+                    Poi poi = (Poi) mapElement;
+                    Poi oldPoi = (Poi) markerOptions.getMarker().getRelatedObject();
+                    oldPoi.setName(poi.getName());
                     if (mapFragment.getSelectedMarkerType().equals(LocationMarkerView.MarkerType.POI)
                             && (mapElement.getId().equals(mapFragment.getMarkerSelectedId())
                             || markerSelected != null
