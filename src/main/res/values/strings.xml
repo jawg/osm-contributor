@@ -48,6 +48,7 @@
     <string name="no_poi_name">This POI doesn\'t have a name</string>
     <string name="edit_position">Change position</string>
     <string name="edit_poi">Edit Poi</string>
+    <string name="duplicate_poi">Duplicate Poi</string>
     <string name="update_done">%1$s Poi(s) updated on OSM</string>
     <string name="delete_done">%1$s Poi(s) deleted on OSM</string>
     <string name="noderef_moved">%1$s point(s) updated on OSM, refresh the map in few minutes to see your changes</string>

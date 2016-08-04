@@ -44,6 +44,7 @@
     <string name="no_poi_name">Este PDI no tiene nombre</string>
     <string name="edit_position">Cambiar posición</string>
     <string name="edit_poi">Editar PDI</string>
+    <string name="duplicate_poi">Duplicar PDI</string>
     <string name="update_done">%1$s PDI actualizado(s) en OSM</string>
     <string name="delete_done">%1$s PDI borrado(s) en OSM</string>
     <string name="noderef_moved">%1$s punto(s) actualizado(s) en OSM, actualice el mapa en unos minutos para ver los cambios</string>

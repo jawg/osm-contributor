@@ -40,6 +40,7 @@
   <string name="no_poi_name">Este POI não tem nome</string>
   <string name="edit_position">Mudar posição</string>
   <string name="edit_poi">Editar POI</string>
+  <string name="duplicate_poi">Duplicar POI</string>
   <string name="update_done">%1$s Poi(s) atualizados no OSM</string>
   <string name="delete_done">%1$s Poi(s) deletados no OSM</string>
   <string name="noderef_moved">%1$s point(s) atualizados no OSM, atualize o mapa em alguns minutos para ver suas mudanças</string>

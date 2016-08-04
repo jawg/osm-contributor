@@ -37,6 +37,7 @@ import com.flickr4java.flickr.photos.Size;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
+import io.mapsquare.osmcontributor.ui.events.map.PleaseDuplicatePoiEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -194,6 +195,11 @@ public class PoiDetailFragment extends Fragment {
     @OnClick(R.id.edit_poi_detail_floating_button)
     public void editPoiOnClick() {
         eventBus.post(new PleaseOpenEditionEvent());
+    }
+
+    @OnClick(R.id.duplicate_poi_detail_floating_button)
+    public void duplicatePoiOnClick() {
+        eventBus.post(new PleaseDuplicatePoiEvent());
     }
 
     @OnClick(R.id.edit_poi_position_floating_button)

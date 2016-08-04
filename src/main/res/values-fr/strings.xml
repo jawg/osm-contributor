@@ -48,6 +48,7 @@
     <string name="no_poi_name">Ce poi n\'a pas de nom</string>
     <string name="edit_position">Changer la position</string>
     <string name="edit_poi">Editer le poi</string>
+    <string name="duplicate_poi">Dupliquer le POI</string>
     <string name="update_done">%1$s Poi(s) mis à jour sur OSM</string>
     <string name="delete_done">%1$s Poi(s) supprimé(s) sur OSM</string>
     <string name="noderef_moved">%1$s point(s) mis à jour sur OSM, rafraichissez votre carte dans quelques minutes pour voir vos modifications.</string>

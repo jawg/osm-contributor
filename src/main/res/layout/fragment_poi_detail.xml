@@ -119,6 +119,16 @@
             app:fab_label="@string/delete_poi" />
 
         <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/duplicate_poi_detail_floating_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/material_blue_500"
+            app:fab_colorPressed="@color/material_blue_grey_800"
+            android:src="@drawable/duplicate"
+            app:fab_size="mini"
+            app:fab_label="@string/duplicate_poi" />
+
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/edit_poi_detail_floating_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

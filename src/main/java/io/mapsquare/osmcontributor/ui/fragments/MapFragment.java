@@ -55,7 +55,10 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.github.clans.fab.FloatingActionButton;
@@ -72,25 +75,6 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.Note;
@@ -132,6 +116,7 @@ import io.mapsquare.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFrag
 import io.mapsquare.osmcontributor.ui.events.map.PleaseCreateNoTagPoiEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseDeletePoiFromMapEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseDisplayTutorialEvent;
+import io.mapsquare.osmcontributor.ui.events.map.PleaseDuplicatePoiEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseGiveMeMapCenterEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseInitializeArpiEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseInitializeNoteDrawerEvent;
@@ -163,6 +148,17 @@ import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 import io.mapsquare.osmcontributor.utils.ways.Geocoder;
 import io.mapsquare.osmcontributor.utils.ways.LevelBar;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.inject.Inject;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import timber.log.Timber;
 
 public class MapFragment extends Fragment {
@@ -1366,6 +1362,19 @@ public class MapFragment extends Fragment {
         markersPoi.remove(poi.getId());
         eventBus.post(new PleaseDeletePoiEvent(poi));
         switchMode(MapMode.DEFAULT);
+    }
+
+    /*-----------------------------------------------------------
+    * POI DUPLICATION
+    *---------------------------------------------------------*/
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPleaseDuplicatePoiFromMapEvent(PleaseDuplicatePoiEvent event) {
+        Poi poi = (Poi) markerSelected.getRelatedObject();
+        poiTypeSelected(poi.getType());
+        mapboxMap.setCameraPosition(
+            new CameraPosition.Builder().target(new LatLng(poi.getLatitude(), poi.getLongitude())).build());
+        switchMode(MapMode.POI_CREATION);
     }
 
     /*-----------------------------------------------------------
