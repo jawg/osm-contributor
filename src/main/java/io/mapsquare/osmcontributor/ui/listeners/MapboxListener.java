@@ -180,7 +180,6 @@ public class MapboxListener {
             if (isVectorial) {
                 mapFragment.setVectorial(false);
                 mapFragment.applyPoiFilter();
-                mapFragment.applyNoteFilter();
             }
         } else {
             LatLng center = mapboxMap.getCameraPosition().target;
@@ -191,7 +190,6 @@ public class MapboxListener {
             if (!isVectorial) {
                 mapFragment.setVectorial(true);
                 mapFragment.applyPoiFilter();
-                mapFragment.applyNoteFilter();
             }
         }
     }

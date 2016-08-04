@@ -416,6 +416,7 @@ public class MapFragment extends Fragment {
             presenter.setForceRefreshPoi();
             presenter.setForceRefreshNotes();
             presenter.loadPoisIfNeeded();
+            switchMode(MapMode.DEFAULT);
         }
     }
 
@@ -726,6 +727,8 @@ public class MapFragment extends Fragment {
 
         switch (mode) {
             case DETAIL_POI:
+                break;
+
             case DETAIL_NOTE:
                 break;
 
@@ -762,13 +765,16 @@ public class MapFragment extends Fragment {
                 clearAllNodeRef();
                 switchToolbarMode(mapMode);
                 displayHomeButton(true);
+                unselectMarker();
                 break;
         }
         //the marker is displayed at the end of the animation
         creationPin.setVisibility(properties.isShowCreationPin() ? View.VISIBLE : View.GONE);
         wayCreationPin.setVisibility(properties.isShowCreationPin() ? View.VISIBLE : View.GONE);
 
-        addPoiFloatingMenu.toggle(true);
+        if (addPoiFloatingMenu.isOpened()) {
+            addPoiFloatingMenu.toggle(true);
+        }
     }
 
     private void switchToolbarMode(MapMode mode) {
