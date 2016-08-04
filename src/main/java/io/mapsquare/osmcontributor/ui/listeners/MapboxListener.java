@@ -50,7 +50,6 @@ import timber.log.Timber;
 public class MapboxListener {
     private MapFragment mapFragment;
     private MapboxMap mapboxMap;
-    private MapView mapView;
     private CameraPosition position;
     private EventBus eventBus;
 

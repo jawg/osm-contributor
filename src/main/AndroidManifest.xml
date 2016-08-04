@@ -97,6 +97,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/path"/>
         </provider>
+        
+        <service android:name=".service.OfflineAreaDownloadService"/>
     </application>
 
 </manifest>

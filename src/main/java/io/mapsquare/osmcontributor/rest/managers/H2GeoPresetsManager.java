@@ -23,6 +23,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.mapsquare.osmcontributor.model.events.ResetTypeDatabaseEvent;
 import io.mapsquare.osmcontributor.rest.clients.H2GeoPresetsRestClient;
@@ -38,6 +39,7 @@ import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetListEve
 import retrofit.RetrofitError;
 import timber.log.Timber;
 
+@Singleton
 public class H2GeoPresetsManager {
 
   private final H2GeoPresetsRestClient presetsRestClient;

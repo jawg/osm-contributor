@@ -194,5 +194,7 @@
   <string name="login_verb">Entrar</string>
   <string name="login_later">Ligar mais tarde</string>
   <string name="empty_fields">Empty fields!</string>
+  <string name="download_offline_area_title">Download offline regions</string>
+  <string name="download_offline_area_more_later">Download later</string>
 
 </resources>

@@ -21,13 +21,13 @@ package io.mapsquare.osmcontributor.rest.events;
 import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoDto;
 
 public class PresetDownloadedEvent {
-    private final H2GeoDto preset;
+    private final H2GeoDto h2GeoDto;
 
-    public PresetDownloadedEvent(H2GeoDto preset) {
-        this.preset = preset;
+    public PresetDownloadedEvent(H2GeoDto h2GeoDto) {
+        this.h2GeoDto = h2GeoDto;
     }
 
-    public H2GeoDto getPreset() {
-        return preset;
+    public H2GeoDto getH2GeoDto() {
+        return h2GeoDto;
     }
 }

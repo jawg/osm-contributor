@@ -80,6 +80,8 @@
     <string name="search_poitype_hint">Search a Poi type</string>
     <string name="title_3d_view">3D view</string>
     <string name="arpi_not_supported">Your device do not support the 3D view</string>
+    <string name="map_style">asset://osmMapStyle.json</string>
+    <string name="map_style_url">https://api.myjson.com/bins/4j0pj</string>
 
 
     <!-- Strings related to login -->
@@ -280,4 +282,8 @@
     <string name="login_later">Log in later</string>
     <string name="google">Google</string>
     <string name="empty_fields">Empty fields!</string>
+    <string name="notification_download_title">Download Offline</string>
+    <string name="download_offline_area_title">Download offline regions</string>
+    <string name="download_offline_area_message">Ce preset contient des régions visualisables en mode hors-ligne. Cela requiert un téléchargement de ces régions au préalable.\nIl est conseillé d\'avoir une connexion Wifi pendant le téléchargement.\nVoulez-vous lancer le téléchargement?</string>
+    <string name="download_offline_area_more_later">Download later</string>
 </resources>

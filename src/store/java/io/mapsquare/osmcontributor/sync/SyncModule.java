@@ -50,8 +50,6 @@ import retrofit.client.OkClient;
 @Module
 @Singleton
 public class SyncModule {
-
-
     @Provides
     Backend getBackend(EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient, OsmRestClient osmRestClient, PoiMapper poiMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
         return new OsmBackend(bus, osmProxy, overpassRestClient, osmRestClient, poiMapper, poiManager, poiAssetLoader);

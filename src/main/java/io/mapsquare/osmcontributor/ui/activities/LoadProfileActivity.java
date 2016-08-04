@@ -18,21 +18,28 @@
  */
 package io.mapsquare.osmcontributor.ui.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.yarolegovich.lovelydialog.LovelyStandardDialog;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -50,6 +57,7 @@ import io.mapsquare.osmcontributor.rest.events.PresetListDownloadedEvent;
 import io.mapsquare.osmcontributor.rest.events.error.PresetDownloadErrorEvent;
 import io.mapsquare.osmcontributor.rest.events.error.PresetListDownloadErrorEvent;
 import io.mapsquare.osmcontributor.rest.mappers.H2GeoPresetsItemMapper;
+import io.mapsquare.osmcontributor.service.OfflineAreaDownloadService;
 import io.mapsquare.osmcontributor.ui.adapters.ProfileAdapter;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetEvent;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetListEvent;
@@ -76,6 +84,7 @@ public class LoadProfileActivity extends AppCompatActivity
     H2GeoPresetsItemMapper mapper;
 
     private ProfileAdapter profileAdapter;
+    private boolean databaseReseted, regionDownloadStart;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,13 +101,32 @@ public class LoadProfileActivity extends AppCompatActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        showLoadingSeekBar();
+        showProgressBar();
         profileAdapter = new ProfileAdapter(this, this);
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(profileAdapter);
         listView.setAdapter(profileAdapter);
 
         eventBus.register(this);
         startLoadingPresetList();
+    }
+
+    private void startOfflineDownloadService(List<List<Double>> offlineAreas) {
+        Intent intent = new Intent(this, OfflineAreaDownloadService.class);
+        int c = 0;
+        for (List<Double> d : offlineAreas) {
+            intent.putStringArrayListExtra(OfflineAreaDownloadService.LIST_PARAM + c, convertDoubleList(d));
+            c++;
+        }
+        intent.putExtra(OfflineAreaDownloadService.SIZE_PARAM, offlineAreas.size());
+        startService(intent);
+    }
+
+    private ArrayList<String> convertDoubleList(List<Double> ds) {
+        ArrayList<String> s = new ArrayList<>();
+        for (Double d : ds) {
+            s.add(d.toString());
+        }
+        return s;
     }
 
     @Override
@@ -128,12 +156,40 @@ public class LoadProfileActivity extends AppCompatActivity
          * eventBus.post(new PleaseDownloadPresetEvent("filename.json"));
          */
         profileAdapter.addAll(event.getPresets());
-        hideLoadingSeekBar();
+        hideProgressBar();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPresetDownloadedEvent(PresetDownloadedEvent event) {
-        // TODO cache/display preset data
+    public void onPresetDownloadedEvent(final PresetDownloadedEvent event) {
+        Log.i(TAG, "onPresetDownloadedEvent: " + event.getH2GeoDto().getOfflineArea());
+        if (!event.getH2GeoDto().getOfflineArea().isEmpty()) {
+            askUserForDownloading(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startOfflineDownloadService(event.getH2GeoDto().getOfflineArea());
+                    regionDownloadStart = true;
+                    checkFinishActivity();
+                }
+            });
+        }
+    }
+
+    private void askUserForDownloading(View.OnClickListener onClickListener) {
+        new LovelyStandardDialog(this)
+                .setTopColorRes(R.color.colorPrimary)
+                .setButtonsColorRes(R.color.colorPrimaryDark)
+                .setIcon(R.drawable.ic_file_download_white)
+                .setTitle(R.string.download_offline_area_title)
+                .setMessage(R.string.download_offline_area_message)
+                .setPositiveButton(R.string.ok, onClickListener)
+                .setNegativeButton(R.string.download_offline_area_more_later, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        regionDownloadStart = true;
+                        checkFinishActivity();
+                    }
+                })
+                .show();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -149,7 +205,16 @@ public class LoadProfileActivity extends AppCompatActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDatabaseResetFinishedEvent(DatabaseResetFinishedEvent event) {
         eventBus.post(new PleaseLoadPoiTypes());
-        finish();
+        databaseReseted = true;
+        checkFinishActivity();
+    }
+
+    private void checkFinishActivity() {
+        if (databaseReseted && regionDownloadStart) {
+            finish();
+            databaseReseted = false;
+            regionDownloadStart = false;
+        }
     }
 
     // *********************************
@@ -157,32 +222,33 @@ public class LoadProfileActivity extends AppCompatActivity
     // *********************************
 
     private void startLoadingPresetList() {
+        showProgressBar();
         eventBus.post(new PleaseDownloadPresetListEvent());
     }
 
     private void startLoadingPresetList(String filename) {
-        showLoadingSeekBar();
+        showProgressBar();
         eventBus.post(new PleaseDownloadPresetEvent(filename));
     }
 
     private void handleDownloadError() {
         Toast.makeText(this, R.string.profile_refresh_error, Toast.LENGTH_LONG).show();
-        hideLoadingSeekBar();
+        hideProgressBar();
     }
 
-    private void showLoadingSeekBar() {
+    private void showProgressBar() {
         listView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    private void hideLoadingSeekBar() {
+    private void hideProgressBar() {
         listView.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void profileClicked(H2GeoPresetsItem h2GeoPresetsItem) {
-        showLoadingSeekBar();
+        showProgressBar();
         if (h2GeoPresetsItem == null) {
             eventBus.post(new ResetTypeDatabaseEvent());
             SharedPreferences.Editor editor = sharedPreferences.edit();
