@@ -57,7 +57,6 @@ public class OfflineAreaDownloadService extends Service {
     private static final int MAX_ZOOM = 21;
     public static final String JSON_CHARSET = "UTF-8";
     public static final String JSON_FIELD_TAG = "FIELD_TAG";
-    private static final String JSON_FIELD_BOUNDS = "FIELD_BOUNDS";
 
     private OfflineManager offlineManager;
 
@@ -120,7 +119,7 @@ public class OfflineAreaDownloadService extends Service {
         offlineRegion.getStatus(new OfflineRegion.OfflineRegionStatusCallback() {
             @Override
             public void onStatus(OfflineRegionStatus status) {
-                if (!status.isComplete()) {
+                if (!status.isComplete() && status.getDownloadState() != OfflineRegion.STATE_ACTIVE) {
                     resumeDownloadOfflineRegion(offlineRegion, status);
                 }
             }
@@ -202,8 +201,8 @@ public class OfflineAreaDownloadService extends Service {
                     @Override
                     public void onCreate(OfflineRegion offlineRegion) {
                         // Monitor the download progress using setObserver
-                        offlineRegion.setObserver(getOfflineRegionObserver(area));
                         offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE);
+                        offlineRegion.setObserver(getOfflineRegionObserver(area));
                     }
 
                     @Override

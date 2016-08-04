@@ -171,6 +171,8 @@ public class LoadProfileActivity extends AppCompatActivity
                     checkFinishActivity();
                 }
             });
+        } else {
+            regionDownloadStart = true;
         }
     }
 
