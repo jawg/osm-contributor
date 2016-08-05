@@ -574,6 +574,9 @@ public class MapFragment extends Fragment {
 
         switch (mapMode) {
             case POI_CREATION:
+                if (getZoomLevel() < zoomVectorial) {
+                    changeMapZoomSmooth(15d);
+                }
                 createPoi();
                 break;
 
