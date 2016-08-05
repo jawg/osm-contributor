@@ -65,17 +65,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.flickr.event.AuthorizeGrantedEvent;
-import io.mapsquare.osmcontributor.flickr.event.FlickrUserConnectedEvent;
 import io.mapsquare.osmcontributor.flickr.event.PhotosFoundEvent;
-import io.mapsquare.osmcontributor.flickr.event.PleaseAuthorizeEvent;
-import io.mapsquare.osmcontributor.flickr.model.FlickrUser;
 import io.mapsquare.osmcontributor.flickr.oauth.FlickrOAuth;
 import io.mapsquare.osmcontributor.flickr.oauth.OAuthRequest;
 import io.mapsquare.osmcontributor.flickr.rest.FlickrPhotoClient;
 import io.mapsquare.osmcontributor.flickr.rest.FlickrUploadClient;
 import io.mapsquare.osmcontributor.flickr.rest.asynctask.GetFlickrPhotos;
-import io.mapsquare.osmcontributor.flickr.ui.FlickrConnectionDialog;
 import io.mapsquare.osmcontributor.flickr.util.FlickrPhotoUtils;
 import io.mapsquare.osmcontributor.flickr.util.FlickrUploadUtils;
 import io.mapsquare.osmcontributor.flickr.util.OAuthParams;
@@ -156,8 +151,6 @@ public class PhotoActivity extends AppCompatActivity {
 
     private double longitude;
 
-    private boolean hasPhotos;
-
     private int nbTry;
 
     @Override
@@ -183,14 +176,11 @@ public class PhotoActivity extends AppCompatActivity {
         }
 
         // Loading image.
-        if (!hasPhotos) {
-            addPhoto.setVisibility(View.VISIBLE);
-        }
+        addPhoto.setVisibility(View.VISIBLE);
 
         // Init parameters.
         latitude = getIntent().getDoubleExtra("latitude", 0);
         longitude = getIntent().getDoubleExtra("longitude", 0);
-        hasPhotos = getIntent().getBooleanExtra("hasPhotos", false);
         poiId = getIntent().getLongExtra("poiId", 0);
         imageAdapter = new ImageAdapter(this, poiId);
         gridPhotos.setAdapter(imageAdapter);
@@ -199,12 +189,6 @@ public class PhotoActivity extends AppCompatActivity {
         initScrollListener();
         initOnClickItemListener();
         initView();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        loadingImage.setVisibility(View.INVISIBLE);
     }
 
     /*=========================================*/
@@ -276,36 +260,13 @@ public class PhotoActivity extends AppCompatActivity {
         });
     }
 
-    private void showInfoMessage() {
-        new LovelyStandardDialog(this)
-                .setTopColorRes(R.color.colorPrimaryDark)
-                .setIcon(R.mipmap.icon)
-                .setTitle(R.string.flickr_title)
-                .setMessage(R.string.flickr_need)
-                .setPositiveButton(android.R.string.ok, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        flickrOAuth.flickrRequestToken();
-                    }
-                }).show();
-    }
-
     private void initView() {
         if (ImageAdapter.getPhotoUrlsCachedThumbs(poiId) == null || ImageAdapter.getPhotoUrlsCachedThumbs(poiId).isEmpty()) {
             gridPhotos.setVisibility(View.INVISIBLE);
             loadingImage.setVisibility(View.VISIBLE);
         }
-
-        if (hasPhotos) {
-            asyncGetPhotos = new GetFlickrPhotos(longitude, latitude, application.getFlickr(), NB_IMAGE_REQUESTED, NB_PAGE_REQUESTED);
-            asyncGetPhotos.execute();
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissionIfNeeded();
-            } else {
-                takePicture();
-            }
-        }
+        asyncGetPhotos = new GetFlickrPhotos(longitude, latitude, application.getFlickr(), NB_IMAGE_REQUESTED, NB_PAGE_REQUESTED);
+        asyncGetPhotos.execute();
     }
 
     /*=========================================*/
@@ -362,36 +323,6 @@ public class PhotoActivity extends AppCompatActivity {
         }
         loadingImage.setVisibility(View.INVISIBLE);
         gridPhotos.setVisibility(View.VISIBLE);
-    }
-
-    @Subscribe
-    public void onPleaseAuthorizeEvent(PleaseAuthorizeEvent pleaseAuthorizeEvent) {
-        FlickrConnectionDialog flickrConnectionDialog = new FlickrConnectionDialog();
-        Bundle bundle = new Bundle();
-        bundle.putString("code", pleaseAuthorizeEvent.getoAuthRequest().toUrl());
-        flickrConnectionDialog.setArguments(bundle);
-        flickrConnectionDialog.show(getFragmentManager(), "FlickrOauth");
-    }
-
-    @Subscribe
-    public void onAuthorizeGrantedEvent(AuthorizeGrantedEvent authorizeGrantedEvent) {
-        flickrOAuth.flickrAccessToken(authorizeGrantedEvent.getResponse().get(OAuthParams.OAUTH_TOKEN), authorizeGrantedEvent.getResponse().get(OAuthParams.OAUTH_VERIFIER));
-    }
-
-    @Subscribe
-    public void onFlickrUserConnected(FlickrUserConnectedEvent flickrUserConnectedEvent) {
-        FlickrUser flickrUser = new FlickrUser(flickrUserConnectedEvent.getUserInfos());
-        flickrOAuth.getOAuthRequest().setOAuthToken(flickrUser.getoAuthToken());
-        flickrOAuth.getOAuthRequest().setOAuthTokenSecret(flickrUser.getoAuthTokenSecret());
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(application.getString(R.string.shared_prefs_oauth_token_flickr), flickrUser.getoAuthToken());
-        editor.putString(application.getString(R.string.shared_prefs_oauth_token_secret_flickr), flickrUser.getoAuthTokenSecret());
-        editor.apply();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissionIfNeeded();
-        } else {
-            takePicture();
-        }
     }
 
     private void uploadPhoto() {
@@ -477,7 +408,7 @@ public class PhotoActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 photoFile.delete();
                 Toast.makeText(PhotoActivity.this, "Votre photo a été envoyée. Elle s'affichera dans quelques minutes", Toast.LENGTH_LONG).show();
-                if (!hasPhotos) {
+                if (ImageAdapter.getPhotoUrlsCachedThumbs(poiId) == null || ImageAdapter.getPhotoUrlsCachedThumbs(poiId).isEmpty()) {
                     finish();
                 }
             }

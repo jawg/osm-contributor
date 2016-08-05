@@ -77,6 +77,7 @@ public class GetFlickrPhotos extends AsyncTask<Void, Void, List<List<Size>>> {
         parameters.setLongitude(String.valueOf(longitude));
         parameters.setRadius(RADIUS);
         parameters.setTags(TAGS);
+        parameters.setSort(SearchParameters.INTERESTINGNESS_DESC);
         try {
             PhotoList<Photo> photos = flickr.getPhotosInterface().search(parameters, limitPerPage, nbPage);
             List<List<Size>> photosList = new ArrayList<>();

@@ -215,6 +215,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void addTag(String key, String value, boolean mandatory, List<String> values, int position, boolean updatable, TagItem.Type type) {
         // Parse value if needed
         String valueFormatted = ParserManager.getValue(value, type);
+        type = type == null ? TagItem.Type.TEXT : type;
 
         TagItem tagItem = new TagItem(key, value, mandatory, values, updatable ? type : TagItem.Type.CONSTANT, valueFormatted != null || type == TagItem.Type.NUMBER);
         // Add into the list
@@ -302,7 +303,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (expertMode) {
             for (String key : poiTags.keySet()) {
                 addTag(key, poiTags.get(key), false, removeDuplicate(tagValueSuggestionsMap.get(key),
-                        Collections.singletonList(poiTags.get(key))), this.getItemCount(), true, keyTagItem.get(key).getTagType());
+                        Collections.singletonList(poiTags.get(key))), this.getItemCount(), true, TagItem.Type.TEXT);
             }
         }
     }

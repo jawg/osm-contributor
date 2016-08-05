@@ -47,20 +47,15 @@
         android:background="@android:color/white"
         android:clickable="true">
 
-        <com.facebook.drawee.view.SimpleDraweeView
+        <ImageView
             android:id="@+id/thumbnail"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
             android:layout_marginBottom="5dp"
-            android:layout_alignParentBottom="true"
-            app:actualImageScaleType="fitCenter"
-            app:placeholderImage="@drawable/ic_picture"
-            app:placeholderImageScaleType="fitCenter"
-            app:progressBarImage="@drawable/progress"
-            app:progressBarImageScaleType="centerInside"
-            app:progressBarAutoRotateInterval="1000" />
+            android:src="@drawable/ic_add_photo"
+            android:layout_alignParentBottom="true" />
 
         <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
             android:id="@+id/poi_name"
@@ -69,8 +64,8 @@
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/thumbnail"
             android:layout_toEndOf="@+id/thumbnail"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
             android:layout_marginTop="16dp"
             android:textSize="20sp"
             app:typeface="RobotoCondensed-Regular.ttf" />
@@ -80,8 +75,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/poi_name"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
             android:layout_toRightOf="@+id/thumbnail"
             android:layout_toEndOf="@+id/thumbnail"
             android:textSize="16sp"

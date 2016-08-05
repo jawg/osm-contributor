@@ -20,7 +20,6 @@ ext {
     simplexmlRetrofitVersion = '1.1'
     simplexmlVersion = '2.7.1'
     floatingactionbuttonVersion = '1.3.0'
-    dbinspectorVersion = '3.1.0'
     showcaseviewVersion = '5.0.0'
     licensesdialogVersion = '1.7.0'
     arpiglVersion = '0.3.3'
@@ -163,7 +162,6 @@ dependencies {
     compile "org.greenrobot:eventbus:$eventbusVersion"
     compile "com.j256.ormlite:ormlite-android:$ormliteVersion"
     compile "joda-time:joda-time:$jodatimeVersion"
-    debugCompile "im.dino:dbinspector:$dbinspectorVersion@aar"
     if (project.hasProperty('foss')) {
         compile project(":fosstweaks")
     } else {
@@ -186,6 +184,7 @@ dependencies {
     compile "com.github.amlcurran.showcaseview:library:$showcaseviewVersion"
     compile "com.yarolegovich:lovely-dialog:$lovelyDialog"
     compile 'com.github.clans:fab:1.6.4'
+    compile 'com.facebook.stetho:stetho:1.3.1'
 
     // https://mvnrepository.com/artifact/com.flickr4java/flickr4java
     compile group: 'com.flickr4java', name: 'flickr4java', version: '2.16'

@@ -30,6 +30,7 @@ import com.facebook.common.internal.Supplier;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.cache.MemoryCacheParams;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.stetho.Stetho;
 import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.REST;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -73,6 +74,8 @@ public class OsmTemplateApplication extends Application {
             Fabric.with(this, new Crashlytics());
             Timber.plant(new CrashlyticsTree());
         }
+
+        Stetho.initializeWithDefaults(this);
 
         osmTemplateComponent = DaggerOsmTemplateComponent.builder()
                 .osmTemplateModule(new OsmTemplateModule(this)).build();
