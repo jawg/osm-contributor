@@ -187,7 +187,7 @@ public class SyncManager {
         List<Poi> pois = backend.getPoisInBox(box);
         if (pois.size() > 0) {
             Timber.d("Updating %d nodes", pois.size());
-            poiManager.mergeFromOsmPois(pois);
+            poiManager.mergeFromOsmPois(pois, box);
         } else {
             Timber.d("No new node found in the area");
         }

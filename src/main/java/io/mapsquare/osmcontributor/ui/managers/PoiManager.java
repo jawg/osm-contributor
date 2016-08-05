@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
@@ -563,7 +564,7 @@ public class PoiManager {
      *
      * @param remotePois The POIs to merge.
      */
-    public void mergeFromOsmPois(List<Poi> remotePois) {
+    public void mergeFromOsmPois(List<Poi> remotePois, Box box) {
         List<Poi> toMergePois = new ArrayList<>();
 
         Map<String, Poi> remotePoisMap = new HashMap<>();
@@ -573,10 +574,10 @@ public class PoiManager {
         }
 
         // List matching Pois
-        List<Poi> localPois = poiDao.queryForBackendIds(remotePoisMap.keySet());
+        List<Poi> localPois = poiDao.queryForAllInRect(box);
 
 
-        Map<String, Poi> localPoisMap = new HashMap<>();
+        Map<String, Poi> localPoisMap = new ConcurrentHashMap<>();
         // Map matching local Pois
         for (Poi localPoi : localPois) {
             localPoisMap.put(localPoi.getBackendId(), localPoi);
@@ -584,7 +585,7 @@ public class PoiManager {
 
         // Browse remote pois
         for (Poi remotePoi : remotePois) {
-            Poi localPoi = localPoisMap.get(remotePoi.getBackendId());
+            Poi localPoi = localPoisMap.remove(remotePoi.getBackendId());
             Long localVersion = -1L;
             // If localPoi is versioned
             if (localPoi != null && localPoi.getVersion() != null) {
@@ -601,6 +602,7 @@ public class PoiManager {
             }
         }
 
+        poiDao.delete(localPoisMap.values());
         // savePois of either new or existing Pois
         savePois(toMergePois);
     }

@@ -104,7 +104,7 @@ public class OSMSyncWayManager implements SyncWayManager {
                 if (wayDtoList != null && wayDtoList.size() > 0) {
                     Timber.d(" %d ways have been downloaded", wayDtoList.size());
                     List<Poi> poisFromOSM = poiMapper.convertDtosToPois(osmDto.getWayDtoList(), false);
-                    poiManager.mergeFromOsmPois(poisFromOSM);
+                    poiManager.mergeFromOsmPois(poisFromOSM, box);
                     poiManager.deleteAllWaysExcept(poisFromOSM);
                     bus.post(new PleaseLoadEditWaysEvent(true));
                 } else {
