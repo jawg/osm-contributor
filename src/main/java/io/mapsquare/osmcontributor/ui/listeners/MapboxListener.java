@@ -160,6 +160,7 @@ public class MapboxListener {
         if (mapFragment.getMapMode().equals(MapMode.NODE_REF_POSITION_EDITION)) {
             mapFragment.onCameraChangeUpdatePolyline();
         }
+        mapFragment.getPresenter().loadPoisIfNeeded();
     }
 
 

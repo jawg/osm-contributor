@@ -234,7 +234,11 @@ public class MapFragmentPresenter {
             forceRefreshNotes = false;
             return true;
         }
-        return previousZoom != null && previousZoom < BuildConfig.ZOOM_MARKER_MIN;
+        if (previousZoom != null && previousZoom < BuildConfig.ZOOM_MARKER_MIN) {
+            return true;
+        }
+        return triggerReloadPoiLatLngBounds == null
+                || !triggerReloadPoiLatLngBounds.union(viewLatLngBounds).equals(triggerReloadPoiLatLngBounds);
     }
 
     private LatLngBounds enlarge(LatLngBounds viewLatLngBounds, double factor) {
