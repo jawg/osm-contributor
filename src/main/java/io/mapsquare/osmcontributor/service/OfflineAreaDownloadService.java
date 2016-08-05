@@ -151,7 +151,7 @@ public class OfflineAreaDownloadService extends Service {
         if (latLngBoundsStrings.size() == 4) {
             return new LatLngBounds.Builder()
                     .include(new LatLng(Double.parseDouble(latLngBoundsStrings.get(0)), Double.parseDouble(latLngBoundsStrings.get(1))))
-                    .include(new LatLng(Double.parseDouble(latLngBoundsStrings.get(1)), Double.parseDouble(latLngBoundsStrings.get(2))))
+                    .include(new LatLng(Double.parseDouble(latLngBoundsStrings.get(2)), Double.parseDouble(latLngBoundsStrings.get(3))))
                     .build();
         }
         return null;
@@ -250,7 +250,7 @@ public class OfflineAreaDownloadService extends Service {
         };
     }
 
-    private void checkNextDownload() {
+    private synchronized void checkNextDownload() {
         if (!waitingAreaDownloads.isEmpty()) {
             downloadWaitingDownloadArea(waitingAreaDownloads.get(0));
             waitingAreaDownloads.remove(0);
