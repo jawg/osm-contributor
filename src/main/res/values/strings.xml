@@ -121,7 +121,7 @@
     <string name="shared_prefs_consumer_secret" translatable="false">SHARED_PREFS_CONSUMER_SECRET</string>
     <string name="shared_prefs_server_key" translatable="false">SHARED_PREFS_SERVER_KEY</string>
     <string name="shared_prefs_google_connection_key" translatable="false">SHARED_PREFS_GOOLE_CONNECTION</string>
-    <string name="shared_prefs_google_connection" translatable="false">Login with Google</string>
+    <string name="shared_prefs_google_connection">Login with Google</string>
     <string name="shared_prefs_reset" translatable="false">SHARED_PREFS_RESET</string>
     <string name="shared_prefs_reset_type" translatable="false">SHARED_PREFS_RESET_TYPE</string>
     <string name="shared_prefs_expert_mode" translatable="false">SHARED_PREFS_EXPERT</string>

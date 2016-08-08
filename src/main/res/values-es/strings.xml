@@ -103,6 +103,7 @@
     <!--Shared preferences-->
     <string name="shared_prefs_login_title">Conexión</string>
     <string name="shared_prefs_server">Servidor OSM</string>
+    <string name="shared_prefs_google_connection">Conexión con Google</string>
     <!--Tuto-->
     <string name="tuto_title_press_create">Creación de PDI</string>
     <string name="tuto_title_confirm">Validar los cambios</string>

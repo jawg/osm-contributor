@@ -90,6 +90,7 @@
   <string name="reset_failure">Houve um erro durante o reset do Banco de Dados</string>
   <!--Shared preferences-->
   <string name="shared_prefs_login_title">Conexão</string>
+  <string name="shared_prefs_google_connection">Conexão com Google</string>
   <string name="shared_prefs_server">Servidor OSM</string>
   <!--Tuto-->
   <string name="tuto_title_press_create">Criação de POI</string>
