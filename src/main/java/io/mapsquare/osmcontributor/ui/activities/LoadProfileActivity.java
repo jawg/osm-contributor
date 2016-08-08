@@ -151,10 +151,6 @@ public class LoadProfileActivity extends AppCompatActivity
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPresetListDownloadedEvent(PresetListDownloadedEvent event) {
-        // TODO refresh preset list
-        /* TODO In order to refresh a particular preset, call the following:
-         * eventBus.post(new PleaseDownloadPresetEvent("filename.json"));
-         */
         profileAdapter.addAll(event.getPresets());
         hideProgressBar();
     }
@@ -173,6 +169,7 @@ public class LoadProfileActivity extends AppCompatActivity
             });
         } else {
             regionDownloadStart = true;
+            checkFinishActivity();
         }
     }
 
@@ -254,13 +251,14 @@ public class LoadProfileActivity extends AppCompatActivity
         if (h2GeoPresetsItem == null) {
             eventBus.post(new ResetTypeDatabaseEvent());
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(getString(R.string.shared_prefs_preset_default), false);
+            editor.putBoolean(getString(R.string.shared_prefs_preset_default), true);
             editor.putString(getString(R.string.shared_prefs_preset_selected), mapper.getCurrentLanguage(H2GeoDto.getDefaultPreset(this).getName()));
             editor.apply();
             profileAdapter.notifyDataSetChanged();
+            regionDownloadStart = true;
         } else {
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(getString(R.string.shared_prefs_preset_default), true);
+            editor.putBoolean(getString(R.string.shared_prefs_preset_default), false);
             editor.putString(getString(R.string.shared_prefs_preset_selected), h2GeoPresetsItem.getName());
             editor.apply();
             profileAdapter.notifyDataSetChanged();
