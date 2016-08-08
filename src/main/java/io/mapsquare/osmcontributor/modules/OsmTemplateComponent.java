@@ -37,6 +37,9 @@ import io.mapsquare.osmcontributor.rest.CommonSyncModule;
 import io.mapsquare.osmcontributor.rest.security.GoogleOAuthManager;
 import io.mapsquare.osmcontributor.rest.managers.H2GeoPresetsManager;
 import io.mapsquare.osmcontributor.rest.managers.SyncManager;
+import io.mapsquare.osmcontributor.service.CancelButtonReceiver;
+import io.mapsquare.osmcontributor.service.OfflineAreaDownloadService;
+import io.mapsquare.osmcontributor.service.OfflineAreaModule;
 import io.mapsquare.osmcontributor.sync.SyncModule;
 import io.mapsquare.osmcontributor.ui.activities.EditPoiActivity;
 import io.mapsquare.osmcontributor.ui.activities.LoadProfileActivity;
@@ -86,7 +89,8 @@ import io.mapsquare.osmcontributor.utils.ways.Geocoder;
         PresetsModule.class,
         CommonSyncModule.class,
         LoginModule.class,
-        TypeModule.class
+        TypeModule.class,
+        OfflineAreaModule.class
 })
 public interface OsmTemplateComponent {
     // INJECTING
@@ -150,6 +154,10 @@ public interface OsmTemplateComponent {
     void inject(LoginDialogFragment loginDialogFragment);
 
     void inject(ProfileAdapter profileAdapter);
+
+    void inject(OfflineAreaDownloadService offlineAreaDownloadService);
+
+    void inject(CancelButtonReceiver cancelButtonReceiver);
 
     // PROVIDING
 

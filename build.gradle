@@ -14,7 +14,7 @@ ext {
     timberVersion = '2.7.1'
     ormliteVersion = '4.48'
     jodatimeVersion = '2.9.4'
-    mapboxVersion = '4.1.0-beta.3'
+    mapboxVersion = '4.1.1'
     retrofitVersion = '1.9.0'
     okhttpVersion = '2.3.0'
     simplexmlRetrofitVersion = '1.1'

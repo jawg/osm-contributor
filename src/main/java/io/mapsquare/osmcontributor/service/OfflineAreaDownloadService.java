@@ -18,12 +18,10 @@
  */
 package io.mapsquare.osmcontributor.service;
 
-import android.app.Activity;
+import android.app.IntentService;
 import android.app.NotificationManager;
-import android.app.Service;
+import android.app.PendingIntent;
 import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -35,6 +33,9 @@ import com.mapbox.mapboxsdk.offline.OfflineRegionError;
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus;
 import com.mapbox.mapboxsdk.offline.OfflineTilePyramidRegionDefinition;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -42,43 +43,60 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
+import io.mapsquare.osmcontributor.service.event.CancelOfflineAreaEvent;
+import io.mapsquare.osmcontributor.service.event.DeleteOfflineAreaEvent;
 
 /**
  * @author Tommy Buonomo on 03/08/16.
  */
-public class OfflineAreaDownloadService extends Service {
+public class OfflineAreaDownloadService extends IntentService {
+    private static final String TAG = "MapOfflineManager";
     public static final String LIST_PARAM = "LIST";
     public static final String SIZE_PARAM = "SIZE_PARAM";
 
-    private static final String TAG = "MapOfflineManager";
     private static final int MIN_ZOOM = 17;
-
     private static final int MAX_ZOOM = 21;
+
     public static final String JSON_CHARSET = "UTF-8";
     public static final String JSON_FIELD_TAG = "FIELD_TAG";
+    private static final String CANCEL_DOWNLOAD = "CANCEL_DOWNLOAD";
 
-    private OfflineManager offlineManager;
+    private List<OfflineRegion> waitingOfflineRegions;
 
-    private NotificationManager notificationManager;
+    private OfflineRegion currentDownloadRegion;
 
-    private List<WaitingAreaDownload> waitingAreaDownloads;
-    private WaitingAreaDownload currentDownloadArea;
+    private boolean deliverStatusUpdate;
+
+    @Inject
+    OfflineManager offlineManager;
+
+    @Inject
+    EventBus eventBus;
+    @Inject
+    NotificationManager notificationManager;
+
+    public OfflineAreaDownloadService() {
+        super(OfflineAreaDownloadService.class.getSimpleName());
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
+        eventBus.register(this);
         offlineManager = OfflineManager.getInstance(this);
-        notificationManager = (NotificationManager) getSystemService(Activity.NOTIFICATION_SERVICE);
-        waitingAreaDownloads = new ArrayList<>();
+        waitingOfflineRegions = new ArrayList<>();
     }
 
     @Override
-    public int onStartCommand(final Intent intent, int flags, int startId) {
+    protected void onHandleIntent(final Intent intent) {
         offlineManager.listOfflineRegions(new OfflineManager.ListOfflineRegionsCallback() {
             @Override
             public void onList(OfflineRegion[] offlineRegions) {
-                Log.i(TAG, "onList: " + Arrays.toString(offlineRegions));
                 startDownloadIfNeeded(intent, Arrays.asList(offlineRegions));
             }
 
@@ -87,8 +105,6 @@ public class OfflineAreaDownloadService extends Service {
                 Log.e(TAG, error);
             }
         });
-
-        return START_NOT_STICKY;
     }
 
     private void startDownloadIfNeeded(Intent intent, final List<OfflineRegion> presentOfflineRegions) {
@@ -102,13 +118,13 @@ public class OfflineAreaDownloadService extends Service {
             for (int i = 0; i < size; i++) {
                 ArrayList<String> areasString = intent.getStringArrayListExtra(LIST_PARAM + i);
                 LatLngBounds bounds = convertToLatLngBounds(areasString);
-                OfflineRegion presentOfflineRegion = containsBoundsInOfflineRegion(presentOfflineRegions, bounds);
+                OfflineRegion presentOfflineRegion = containsInOfflineRegion(presentOfflineRegions, bounds);
                 if (presentOfflineRegion == null) {
                     // The region has never been downloaded
                     c++;
                     downloadOfflineRegion(bounds, "Region " + (presentOfflineRegions.size() + c));
                 } else {
-                    //The region is already downloaded, we check is it is completed
+                    //The region is already downloaded, we check if it was completed
                     checkIfRegionDownloadIsCompleted(presentOfflineRegion);
                 }
             }
@@ -120,7 +136,7 @@ public class OfflineAreaDownloadService extends Service {
             @Override
             public void onStatus(OfflineRegionStatus status) {
                 if (!status.isComplete() && status.getDownloadState() != OfflineRegion.STATE_ACTIVE) {
-                    resumeDownloadOfflineRegion(offlineRegion, status);
+                    resumeDownloadOfflineRegion(offlineRegion);
                 }
             }
 
@@ -129,32 +145,6 @@ public class OfflineAreaDownloadService extends Service {
                 Log.e(TAG, error);
             }
         });
-    }
-
-    /**
-     * Check if a region is present in the list with the bounds parameter.
-     * @param regions
-     * @param bounds
-     * @return the OfflineRegion if it's present or null.
-     */
-    private OfflineRegion containsBoundsInOfflineRegion(List<OfflineRegion> regions, LatLngBounds bounds) {
-        for (OfflineRegion offlineRegion : regions) {
-            if (((OfflineTilePyramidRegionDefinition) offlineRegion.getDefinition()).getBounds().equals(bounds)) {
-                return offlineRegion;
-            }
-        }
-        return null;
-    }
-
-
-    private LatLngBounds convertToLatLngBounds(List<String> latLngBoundsStrings) {
-        if (latLngBoundsStrings.size() == 4) {
-            return new LatLngBounds.Builder()
-                    .include(new LatLng(Double.parseDouble(latLngBoundsStrings.get(0)), Double.parseDouble(latLngBoundsStrings.get(1))))
-                    .include(new LatLng(Double.parseDouble(latLngBoundsStrings.get(2)), Double.parseDouble(latLngBoundsStrings.get(3))))
-                    .build();
-        }
-        return null;
     }
 
     public void downloadOfflineRegion(LatLngBounds latLngBounds, final String mapTag) {
@@ -167,32 +157,18 @@ public class OfflineAreaDownloadService extends Service {
 
         byte[] metadata = encodeMetadata(mapTag);
 
+        // Build the notification
         final NotificationCompat.Builder builder = buildNotification(mapTag);
         WaitingAreaDownload area = new WaitingAreaDownload(mapTag, builder, metadata, definition);
 
         downloadWaitingDownloadArea(area);
     }
 
-    private void resumeDownloadOfflineRegion(OfflineRegion offlineRegion, OfflineRegionStatus status) {
-        Log.i(TAG, "resumeDownloadOfflineRegion: " + offlineRegion);
-        String mapTag = decodeMetadata(offlineRegion.getMetadata());
-        WaitingAreaDownload areaDownload = new WaitingAreaDownload(
-                mapTag,
-                buildNotification(mapTag),
-                offlineRegion.getMetadata(),
-                (OfflineTilePyramidRegionDefinition) offlineRegion.getDefinition());
-
-        offlineRegion.setObserver(getOfflineRegionObserver(areaDownload));
-        offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE);
-    }
-
+    /**
+     * Download in background the area if there is no other download in the same time.
+     * @param area
+     */
     private void downloadWaitingDownloadArea(final WaitingAreaDownload area) {
-        // An area is already downloading, we put the area in waiting
-        if (currentDownloadArea != null) {
-            waitingAreaDownloads.add(area);
-            return;
-        }
-        currentDownloadArea = area;
         // Create the region asynchronously
         offlineManager.createOfflineRegion(
                 area.getDefinition(),
@@ -201,8 +177,8 @@ public class OfflineAreaDownloadService extends Service {
                     @Override
                     public void onCreate(OfflineRegion offlineRegion) {
                         // Monitor the download progress using setObserver
-                        offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE);
                         offlineRegion.setObserver(getOfflineRegionObserver(area));
+                        startDownloadOfflineRegion(offlineRegion);
                     }
 
                     @Override
@@ -212,25 +188,70 @@ public class OfflineAreaDownloadService extends Service {
                 });
     }
 
+    private void resumeDownloadOfflineRegion(OfflineRegion offlineRegion) {
+        Log.i(TAG, "resumeDownloadOfflineRegion: " + offlineRegion);
+        String mapTag = decodeMetadata(offlineRegion.getMetadata());
+        WaitingAreaDownload areaDownload = new WaitingAreaDownload(
+                mapTag,
+                buildNotification(mapTag),
+                offlineRegion.getMetadata(),
+                (OfflineTilePyramidRegionDefinition) offlineRegion.getDefinition());
+
+        offlineRegion.setObserver(getOfflineRegionObserver(areaDownload));
+        startDownloadOfflineRegion(offlineRegion);
+    }
+
+    private void startDownloadOfflineRegion(OfflineRegion offlineRegion) {
+        // An area is already downloading, we put the area in waiting
+        if (currentDownloadRegion != null) {
+            waitingOfflineRegions.add(offlineRegion);
+        } else {
+            currentDownloadRegion = offlineRegion;
+            offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE);
+            deliverStatusUpdate = true;
+        }
+    }
+
+    private synchronized void checkNextDownload() {
+        if (!waitingOfflineRegions.isEmpty()) {
+            startDownloadOfflineRegion(waitingOfflineRegions.get(0));
+            waitingOfflineRegions.remove(0);
+        }
+    }
+
+    private void cancelDownloadOfflineRegion() {
+        if (currentDownloadRegion != null) {
+            currentDownloadRegion.setDownloadState(OfflineRegion.STATE_INACTIVE);
+            deliverStatusUpdate = false;
+            currentDownloadRegion = null;
+        }
+    }
+
     private OfflineRegion.OfflineRegionObserver getOfflineRegionObserver(final WaitingAreaDownload area) {
         final NotificationCompat.Builder builder = area.getBuilder();
         return new OfflineRegion.OfflineRegionObserver() {
+            int percentage;
             @Override
             public void onStatusChanged(OfflineRegionStatus status) {
-                // Calculate the download percentage and update the progress bar
-                int percentage = (int) Math.round(status.getRequiredResourceCount() >= 0 ?
-                        (100.0 * status.getCompletedResourceCount() / status.getRequiredResourceCount()) :
-                        0.0);
-                builder.setContentText(percentage + "%");
-                builder.setProgress(100, percentage, false);
-                notificationManager.notify(area.getMapTag().hashCode(), builder.build());
+                if (deliverStatusUpdate) {
+                    // Calculate the download percentage and update the progress bar
+                    int newPercent = (int) Math.round(status.getRequiredResourceCount() >= 0 ?
+                            (100.0 * status.getCompletedResourceCount() / status.getRequiredResourceCount()) :
+                            0.0);
+                    if (newPercent != percentage) {
+                        percentage = newPercent;
+                        builder.setContentText(percentage + "%");
+                        builder.setProgress(100, percentage, false);
+                        notificationManager.notify(area.getMapTag().hashCode(), builder.build());
+                    }
+                }
                 if (status.isComplete()) {
                     // Download complete
                     // When the loop is finished, updates the notification
                     builder.setContentText("Region downloaded successfully")
                             .setProgress(0, 0, false);
                     notificationManager.notify(area.getMapTag().hashCode(), builder.build());
-                    currentDownloadArea = null;
+                    currentDownloadRegion = null;
                     checkNextDownload();
                 }
             }
@@ -250,11 +271,65 @@ public class OfflineAreaDownloadService extends Service {
         };
     }
 
-    private synchronized void checkNextDownload() {
-        if (!waitingAreaDownloads.isEmpty()) {
-            downloadWaitingDownloadArea(waitingAreaDownloads.get(0));
-            waitingAreaDownloads.remove(0);
+    /**
+     * Build the download notification to display
+     *
+     * @param mapTag
+     * @return
+     */
+    public NotificationCompat.Builder buildNotification(String mapTag) {
+        Intent cancelButtonIntent = new Intent(getApplicationContext(), CancelButtonReceiver.class);
+        cancelButtonIntent.putExtra(CancelButtonReceiver.MAP_TAG_PARAM, mapTag);
+        cancelButtonIntent.setAction(CANCEL_DOWNLOAD + mapTag.hashCode());
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, cancelButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_file_download_white)
+                .setContentTitle(this.getString(R.string.notification_download_title) + " " + mapTag)
+                .addAction(new NotificationCompat.Action(R.drawable.ic_clear_white, getString(R.string.cancel), pendingIntent))
+                .setDeleteIntent(pendingIntent);
+        return builder;
+    }
+
+    private void deleteOfflineRegion(OfflineRegion offlineRegion) {
+        offlineRegion.delete(new OfflineRegion.OfflineRegionDeleteCallback() {
+            @Override
+            public void onDelete() {
+                Log.d(TAG, "deleteOfflineRegion: Region successfully deleted!");
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.e(TAG, "Delete offline region error: " + error);
+            }
+        });
+    }
+
+    /**
+     * Check if a region is present in the list with the bounds parameter.
+     * @param regions
+     * @param bounds
+     * @return the OfflineRegion if it's present or null.
+     */
+    private OfflineRegion containsInOfflineRegion(List<OfflineRegion> regions, LatLngBounds bounds) {
+        for (OfflineRegion offlineRegion : regions) {
+            if (((OfflineTilePyramidRegionDefinition) offlineRegion.getDefinition()).getBounds().equals(bounds)) {
+                return offlineRegion;
+            }
         }
+        return null;
+    }
+
+
+    private LatLngBounds convertToLatLngBounds(List<String> latLngBoundsStrings) {
+        if (latLngBoundsStrings.size() == 4) {
+            return new LatLngBounds.Builder()
+                    .include(new LatLng(Double.parseDouble(latLngBoundsStrings.get(0)), Double.parseDouble(latLngBoundsStrings.get(1))))
+                    .include(new LatLng(Double.parseDouble(latLngBoundsStrings.get(2)), Double.parseDouble(latLngBoundsStrings.get(3))))
+                    .build();
+        }
+        return null;
     }
 
     /**
@@ -294,22 +369,29 @@ public class OfflineAreaDownloadService extends Service {
         }
     }
 
-    /**
-     * Build the download notification to display
-     *
-     * @param mapTag
-     * @return
-     */
-    public NotificationCompat.Builder buildNotification(String mapTag) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_file_download_white)
-                .setContentTitle(this.getString(R.string.notification_download_title) + " " + mapTag);
-        return builder;
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDeleteOfflineAreaEvent(final DeleteOfflineAreaEvent event) {
+        offlineManager.listOfflineRegions(new OfflineManager.ListOfflineRegionsCallback() {
+            @Override
+            public void onList(OfflineRegion[] offlineRegions) {
+                for (OfflineRegion region : offlineRegions) {
+                    if (decodeMetadata(region.getMetadata()).equals(event.getMapTag())) {
+                        deleteOfflineRegion(region);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.e(TAG, "onDeleteOfflineAreaEvent error: " + error);
+            }
+        });
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCancelOfflineAreaEvent(final CancelOfflineAreaEvent event) {
+        if (currentDownloadRegion != null && decodeMetadata(currentDownloadRegion.getMetadata()).equals(event.getMapTag())) {
+            cancelDownloadOfflineRegion();
+        }
     }
 }
