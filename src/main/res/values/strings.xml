@@ -287,4 +287,5 @@
     <string name="download_offline_area_message">Ce preset contient des régions visualisables en mode hors-ligne.\nCela requiert un téléchargement de ces régions au préalable.
         Il est conseillé d\'avoir une connexion Wifi pendant le téléchargement.\n\nVoulez-vous lancer le téléchargement?</string>
     <string name="download_offline_area_more_later">Download later</string>
+    <string name="offline_regions">Offline Regions</string>
 </resources>

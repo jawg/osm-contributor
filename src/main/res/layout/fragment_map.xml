@@ -98,7 +98,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:background="@drawable/rounded_top_right_corner"
         android:paddingLeft="3dp"
         android:paddingRight="3dp"
         android:textSize="13sp"

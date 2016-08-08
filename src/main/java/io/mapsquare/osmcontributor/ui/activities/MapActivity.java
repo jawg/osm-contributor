@@ -497,6 +497,9 @@ public class MapActivity extends AppCompatActivity {
                 drawerLayout.closeDrawer(navigationView);
                 menuItem.setTitle(isSatelliteMode ? R.string.switch_style_default : R.string.switch_style_satellite);
                 break;
+            case R.id.offline_regions:
+                startOfflineRegionsActivity();
+                break;
             case R.id.preferences_menu:
                 startPreferencesActivity();
                 break;
@@ -534,6 +537,12 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private void startProfileLoadingActivity() {
+        drawerLayout.closeDrawer(navigationView);
+        Intent intent = new Intent(this, LoadProfileActivity.class);
+        startActivity(intent);
+    }
+
+    private void startOfflineRegionsActivity() {
         drawerLayout.closeDrawer(navigationView);
         Intent intent = new Intent(this, LoadProfileActivity.class);
         startActivity(intent);
