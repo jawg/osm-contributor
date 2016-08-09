@@ -20,6 +20,7 @@ package io.mapsquare.osmcontributor.ui.activities;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -61,15 +62,16 @@ import io.mapsquare.osmcontributor.rest.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.rest.events.error.SyncUploadNoteRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.ui.adapters.PoisAdapter;
-import io.mapsquare.osmcontributor.utils.upload.PoiUpdateWrapper;
+import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
+import io.mapsquare.osmcontributor.ui.managers.tutorial.SyncTutoManager;
 import io.mapsquare.osmcontributor.utils.helper.SwipeItemTouchHelperCallback;
+import io.mapsquare.osmcontributor.utils.upload.PoiUpdateWrapper;
 
 public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnItemRemovedListener {
 
-    private List<PoiUpdateWrapper> poisWrapper = new ArrayList<>();
-    private PoisAdapter adapter;
-    private ProgressDialog ringProgressDialog;
-
+    /*=========================================*/
+    /*---------------INJECTIONS----------------*/
+    /*=========================================*/
     @BindView(R.id.comment_edit_text)
     EditText editTextComment;
 
@@ -88,8 +90,22 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
     @Inject
     EventBus eventBus;
 
+    /*=========================================*/
+    /*---------------ATTRIBUTES----------------*/
+    /*=========================================*/
+    private List<PoiUpdateWrapper> poisWrapper = new ArrayList<>();
+
+    private PoisAdapter adapter;
+
+    private ProgressDialog ringProgressDialog;
+
     private boolean isCanceled;
 
+    private SyncTutoManager syncTutoManager;
+
+    /*=========================================*/
+    /*----------------OVERRIDE-----------------*/
+    /*=========================================*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,9 +125,18 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         poisListView.setAdapter(adapter);
         poisListView.setLayoutManager(new LinearLayoutManager(this));
 
+        syncTutoManager = new SyncTutoManager(this, MapFragment.forceDisplaySyncTuto);
+
         ItemTouchHelper.Callback callback = new SwipeItemTouchHelperCallback(adapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(poisListView);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                syncTutoManager.launchTuto(poisListView.getChildAt(0).findViewById(R.id.revert), findViewById(R.id.comment_edit_text), findViewById(R.id.action_confirm));
+            }
+        }, 500);
     }
 
     @Override
@@ -168,6 +193,37 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onItemRemoved(final PoiUpdateWrapper removedItem, final int position) {
+        final Snackbar snackbar = Snackbar.make(coordinatorLayout, getString(R.string.revert_snack_bar), Snackbar.LENGTH_SHORT);
+        snackbar.setAction(getString(R.string.undo_snack_bar), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isCanceled = true;
+                snackbar.dismiss();
+                adapter.insert(position, removedItem);
+                poisListView.smoothScrollToPosition(position);
+            }
+        });
+        snackbar.setCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar snackbar, int action) {
+                super.onDismissed(snackbar, action);
+                if (!isCanceled && (action == DISMISS_EVENT_TIMEOUT || action == DISMISS_EVENT_CONSECUTIVE || action == DISMISS_EVENT_SWIPE || action == DISMISS_EVENT_MANUAL)) {
+                    if (removedItem.getIsPoi()) {
+                        eventBus.post(new PleaseRevertPoiEvent(removedItem.getId()));
+                    } else {
+                        eventBus.post(new PleaseRevertPoiNodeRefEvent(removedItem.getId()));
+                    }
+                }
+            }
+        });
+        snackbar.show();
+    }
+
+    /*=========================================*/
+    /*-----------------EVENTS------------------*/
+    /*=========================================*/
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPoisToUpdateLoadedEvent(PoisToUpdateLoadedEvent event) {
         poisWrapper.clear();
@@ -182,10 +238,6 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
             noValues.setVisibility(View.GONE);
         }
     }
-
-    /*-----------------------------------------------------------
-    * SYNC EVENT
-    *---------------------------------------------------------*/
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSyncFinishUploadPoiEvent(SyncFinishUploadPoiEvent event) {
@@ -244,46 +296,13 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         resultReceived();
     }
 
+    /*=========================================*/
+    /*--------------PRIVATE CODE---------------*/
+    /*=========================================*/
     private void resultReceived() {
         ringProgressDialog.cancel();
         //get all pois not updated
         eventBus.post(new PleaseLoadPoisToUpdateEvent());
         editTextComment.setText("");
-    }
-
-    /*-----------------------------------------------------------
-    * Revert
-    *---------------------------------------------------------*/
-
-    @Override
-    public void onItemRemoved(PoiUpdateWrapper poiUpdateWrapper, int position) {
-        remove(poiUpdateWrapper, position);
-    }
-
-    private void remove(final PoiUpdateWrapper removedItem, final int position) {
-        final Snackbar snackbar = Snackbar.make(coordinatorLayout, getString(R.string.revert_snack_bar), Snackbar.LENGTH_SHORT);
-        snackbar.setAction(getString(R.string.undo_snack_bar), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isCanceled = true;
-                snackbar.dismiss();
-                adapter.insert(position, removedItem);
-                poisListView.smoothScrollToPosition(position);
-            }
-        });
-        snackbar.setCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar snackbar, int action) {
-                super.onDismissed(snackbar, action);
-                if (!isCanceled && (action == DISMISS_EVENT_TIMEOUT || action == DISMISS_EVENT_CONSECUTIVE || action == DISMISS_EVENT_SWIPE || action == DISMISS_EVENT_MANUAL)) {
-                    if (removedItem.getIsPoi()) {
-                        eventBus.post(new PleaseRevertPoiEvent(removedItem.getId()));
-                    } else {
-                        eventBus.post(new PleaseRevertPoiNodeRefEvent(removedItem.getId()));
-                    }
-                }
-            }
-        });
-        snackbar.show();
     }
 }

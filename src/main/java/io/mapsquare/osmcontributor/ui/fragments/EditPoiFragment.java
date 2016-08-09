@@ -38,11 +38,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -75,41 +72,22 @@ import io.mapsquare.osmcontributor.ui.dialogs.AddTagDialogFragment;
 import io.mapsquare.osmcontributor.ui.events.edition.NewPoiTagAddedEvent;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyPoiChanges;
 import io.mapsquare.osmcontributor.ui.events.edition.PoiChangesApplyEvent;
+import io.mapsquare.osmcontributor.ui.managers.tutorial.AddPoiTutoManager;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 
 
 public class EditPoiFragment extends Fragment {
-    private static final String TAG = "EditPoiFragment";
 
-    private TagsAdapter tagsAdapter;
+    /*=========================================*/
+    /*----------------CONSTANTS----------------*/
+    /*=========================================*/
     public static final String CHANGES_KEY = "CHANGES_KEY";
 
-    private List<TagItem> tagItemList;
-    private boolean creation = false;
-    private Poi poi;
-    private boolean menuReady = false;
-    private boolean viewReady = false;
+    private static final String TAG = "EditPoiFragment";
 
-    // ANALYTICS ATTRIBUTES
-    private Tracker tracker;
-
-    private Unbinder unbinder;
-
-    private enum Category {
-        Creation("Creation POI"),
-        Edition("Edition POI");
-
-        private final String value;
-
-        Category(String value) {
-            this.value = value;
-        }
-
-        String getValue() {
-            return value;
-        }
-    }
-
+    /*=========================================*/
+    /*---------------INJECTIONS----------------*/
+    /*=========================================*/
     @Inject
     EventBus eventBus;
 
@@ -125,6 +103,39 @@ public class EditPoiFragment extends Fragment {
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
+    /*=========================================*/
+    /*---------------ATTRIBUTES----------------*/
+    /*=========================================*/
+    private enum Category {
+        Creation("Creation POI"),
+        Edition("Edition POI");
+
+        private final String value;
+
+        Category(String value) {
+            this.value = value;
+        }
+
+        String getValue() {
+            return value;
+        }
+    }
+
+    private TagsAdapter tagsAdapter;
+
+    private List<TagItem> tagItemList;
+
+    private boolean creation = false;
+
+    private Poi poi;
+
+    private Tracker tracker;
+
+    private Unbinder unbinder;
+
+    /*=========================================*/
+    /*----------------OVERRIDE-----------------*/
+    /*=========================================*/
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,9 +145,7 @@ public class EditPoiFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 
         View rootView = inflater.inflate(R.layout.fragment_edit_poi, container, false);
@@ -176,25 +185,18 @@ public class EditPoiFragment extends Fragment {
         return rootView;
     }
 
-    @OnClick(R.id.fab_add)
-    public void addTag() {
-        AddTagDialogFragment.display(((AppCompatActivity) getActivity()).getSupportFragmentManager());
-    }
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (menuReady) {
-            Handler myHandler = new Handler();
-            myHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    displayTutorial();
-                }
-            }, 400);
-        } else {
-            viewReady = true;
-        }
+        Handler myHandler = new Handler();
+        myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Display tutorial
+                AddPoiTutoManager addPoiTutoManager = new AddPoiTutoManager(getActivity(), MapFragment.forceDisplayAddTuto);
+                addPoiTutoManager.addInfoTuto(getActivity().findViewById(R.id.action_confirm_edit));
+            }
+        }, 500);
     }
 
 
@@ -227,17 +229,6 @@ public class EditPoiFragment extends Fragment {
         if (!configManager.hasPoiModification()) {
             confirmMenuItem.setVisible(false);
         }
-        if (viewReady) {
-            Handler myHandler = new Handler();
-            myHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    displayTutorial();
-                }
-            }, 400);
-        } else {
-            menuReady = true;
-        }
     }
 
     @Override
@@ -245,14 +236,11 @@ public class EditPoiFragment extends Fragment {
         int id = item.getItemId();
 
         if (tagsAdapter == null) {
-            finishTuto();
             getActivity().finish();
             return true;
         }
 
         if (id == R.id.action_confirm_edit) {
-            finishTuto();
-
             // If we are in expert mode, directly create or update the Poi
             if (sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false)) {
                 if (creation) {
@@ -353,6 +341,17 @@ public class EditPoiFragment extends Fragment {
         savedState.putParcelableArrayList(CHANGES_KEY, new ArrayList<>(tagsAdapter.getTagItemList()));
     }
 
+    /*=========================================*/
+    /*------------------CLICK------------------*/
+    /*=========================================*/
+    @OnClick(R.id.fab_add)
+    public void addTag() {
+        AddTagDialogFragment.display(((AppCompatActivity) getActivity()).getSupportFragmentManager());
+    }
+
+    /*=========================================*/
+    /*------------------EVENTS-----------------*/
+    /*=========================================*/
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPoiForEditionLoadedEvent(PoiForEditionLoadedEvent event) {
         poi = event.getPoi();
@@ -394,78 +393,5 @@ public class EditPoiFragment extends Fragment {
 
         getActivity().finish();
     }
-
-
-
-    /*-----------------------------------------------------------
-    * TUTORIAL
-    *---------------------------------------------------------*/
-
-    public static final String TUTORIAL_EDIT_TAG_FINISH = "TUTORIAL_EDIT_TAG_FINISH";
-    private ShowcaseView showcaseView;
-    private int showcaseCounter = 0;
-    private boolean isTuto = false;
-
-    private void displayTutorial() {
-        isTuto = !sharedPreferences.getBoolean(TUTORIAL_EDIT_TAG_FINISH, false);
-
-        if (!configManager.hasPoiModification()) {
-            isTuto = false;
-            sharedPreferences.edit().putBoolean(TUTORIAL_EDIT_TAG_FINISH, true).apply();
-        }
-
-
-        if (isTuto) {
-
-            RelativeLayout.LayoutParams params =
-                    new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                            RelativeLayout.LayoutParams.WRAP_CONTENT);
-            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            params.setMargins(0, 0, 60, 200);
-
-            showcaseView = new ShowcaseView.Builder(getActivity(), true)
-                    .setStyle(R.style.CustomShowcaseTheme)
-                    .setContentTitle(getString(R.string.tuto_title_confirm))
-                    .setContentText(getString(R.string.tuto_text_confirm_creation))
-                    .setTarget(new ViewTarget(R.id.action_confirm_edit, getActivity()))
-                    .setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                nextTutoStep();
-                                            }
-                                        }
-                    )
-                    .build();
-
-            showcaseView.setButtonPosition(params);
-        }
-    }
-
-    private void nextTutoStep() {
-        switch (showcaseCounter) {
-            case 0:
-                showcaseView.setShowcaseX(0);
-                showcaseView.setShowcaseY(40);
-                showcaseView.setContentText(getString(R.string.tuto_text_cancel_creation));
-                showcaseView.setContentTitle(getString(R.string.tuto_title_cancel));
-                break;
-
-            case 1:
-                finishTuto();
-                break;
-        }
-
-        showcaseCounter++;
-    }
-
-    private void finishTuto() {
-        if (showcaseView != null) {
-            isTuto = false;
-            showcaseView.hide();
-            sharedPreferences.edit().putBoolean(TUTORIAL_EDIT_TAG_FINISH, true).apply();
-        }
-    }
 }
-
 

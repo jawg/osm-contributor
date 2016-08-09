@@ -601,4 +601,8 @@ public class MapActivity extends AppCompatActivity {
             }
         }
     }
+
+    public NavigationView getNavigationView() {
+        return navigationView;
+    }
 }

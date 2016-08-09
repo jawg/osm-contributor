@@ -218,7 +218,7 @@ public class MapboxListener {
      */
     public void onLocationMarkerClick(LocationMarkerView locationMarkerView) {
         MapMode mapMode = mapFragment.getMapMode();
-        if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION && !mapFragment.isTuto()) {
+        if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION) {
             mapFragment.unselectMarker();
             mapFragment.setMarkerSelected(locationMarkerView);
             switch (locationMarkerView.getType()) {
@@ -241,7 +241,7 @@ public class MapboxListener {
      */
     public void onWayMarkerClick(WayMarker wayMarker) {
         MapMode mapMode = mapFragment.getMapMode();
-        if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION && !mapFragment.isTuto()) {
+        if (mapMode != MapMode.POI_POSITION_EDITION && mapMode != MapMode.POI_CREATION) {
             mapFragment.unselectWayMarker();
             mapFragment.setWayMarkerSelected(wayMarker);
             mapFragment.selectWayMarker();

@@ -105,17 +105,17 @@
     <string name="shared_prefs_server">Servidor OSM</string>
     <string name="shared_prefs_google_connection">Conexión con Google</string>
     <!--Tuto-->
-    <string name="tuto_title_press_create">Creación de PDI</string>
-    <string name="tuto_title_confirm">Validar los cambios</string>
-    <string name="tuto_title_cancel">Cancelar los cambios</string>
     <string name="tuto_text_press_create">Haga clic aquí para añadir un nuevo punto</string>
     <string name="tuto_text_choose_type">Elija el tipo de PDI que quiere añadir</string>
-    <string name="tuto_text_poi_or_note">Elija para añadir un PDI o un informe de problema</string>
-    <string name="tuto_text_swipe_for_position">Deslice el mapa para establecer la posición de su nuevo punto</string>
     <string name="tuto_text_confirm_position_creation">Haga clic para confirmar la posición, cualquier retorno descartará su creación.</string>
-    <string name="tuto_text_cancel_creation">Este botón o el de volver descartarán los cambios</string>
     <string name="tuto_text_confirm_creation">Haga clic para finalizar la creación o edición.</string>
     <string name="replay_tuto">Repetir tutorial</string>
+    <string name="replay_tuto_info">Se reproducirán los tutoriales</string>
+    <string name="tuto_text_synchronized">Los iconos grises no están sincronizados</string>
+    <string name="tuto_text_clic_to_synchronized">Puede sincronizar los cambios en cualquier momento desde este menú</string>
+    <string name="tuto_text_cancel_sync">Es posible cancelar uno o más de los cambios aquí</string>
+    <string name="tuto_text_comment">Antes de guardar, adjuntar un comentario a los cambios</string>
+    <string name="tuto_text_confirm_sync">Puede validar y sincronizar los cambios</string>
     <!--note-->
     <string name="Note">Informe</string>
     <string name="comment_text_hint">Introduzca un comentario</string>

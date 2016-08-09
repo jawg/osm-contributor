@@ -1,11 +1,7 @@
 ext {
     appVersion = "2.3.0-SNAPSHOT"
-
-    crashlyticsVersion = '2.5.5'
-
     androidSupportVersion = '23.4.0'
     playServicesVersion = '7.8.0'
-
     daggerVersion = '2.0'
     leakCanaryVersion = '1.3.1'
     butterknifeVersion = '8.0.1'
@@ -21,11 +17,13 @@ ext {
     simplexmlRetrofitVersion = '1.1'
     simplexmlVersion = '2.7.1'
     floatingactionbuttonVersion = '1.3.0'
-    showcaseviewVersion = '5.0.0'
     licensesdialogVersion = '1.7.0'
     arpiglVersion = '0.3.3'
-    lovelyDialog = '1.0.4'
+    lovelyDialogVersion = '1.0.4'
     playServicesVersion = '9.2.0'
+    multidexSupportVersion = '1.0.1'
+    crashlitycsVersion = '2.5.5@aar'
+    materialIntroViewVersion = '1.5.2'
 }
 
 buildscript {
@@ -40,7 +38,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:2.1.2'
 
         // add -Pfoss=true to gradlew args to build a version with no Crashlytics/Google analytics
-        if (!project.hasProperty('foss')) {
+        if(!project.hasProperty('foss')) {
             classpath "io.fabric.tools:gradle:1.+"
         }
         classpath "com.neenbedankt.gradle.plugins:android-apt:1.8"
@@ -65,6 +63,7 @@ repositories {
     jcenter()
     maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url 'http://maven.fabric.io/public' }
+    maven { url "https://jitpack.io" }
     flatDir {
         dirs 'lib'
     }
@@ -73,7 +72,7 @@ repositories {
 
 
 apply plugin: 'com.android.application'
-if (!project.hasProperty('foss')) {
+if(!project.hasProperty('foss')) {
     apply plugin: 'io.fabric'
 }
 apply plugin: 'com.neenbedankt.android-apt'
@@ -149,25 +148,28 @@ configurations {
 }
 
 dependencies {
-    compile 'com.android.support:multidex:1.0.0'
+    // Android
+    compile "com.android.support:multidex:$multidexSupportVersion"
     compile "com.android.support:appcompat-v7:$androidSupportVersion"
+
     // Dependency injection
     compile "com.google.dagger:dagger:$daggerVersion"
     apt "com.google.dagger:dagger-compiler:$daggerVersion"
-    // required for part of the generated code
+    // Required for part of the generated code
     provided "org.glassfish:javax.annotation:$javaxAnnotationVersion"
-    // core
+
+    // Core
     compile "com.jakewharton:butterknife:$butterknifeVersion"
     apt "com.jakewharton:butterknife-compiler:$butterknifeVersion"
-
     compile "com.jakewharton.timber:timber:$timberVersion"
     compile "org.greenrobot:eventbus:$eventbusVersion"
     compile "com.j256.ormlite:ormlite-android:$ormliteVersion"
     compile "joda-time:joda-time:$jodatimeVersion"
+
     if (project.hasProperty('foss')) {
         compile project(":fosstweaks")
     } else {
-        compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+        compile("com.crashlytics.sdk.android:crashlytics:$crashlitycsVersion") {
             transitive = true;
         }
         compile "com.google.android.gms:play-services-analytics:$playServicesVersion"
@@ -183,15 +185,14 @@ dependencies {
     compile "com.android.support:cardview-v7:$androidSupportVersion"
     compile "com.android.support:recyclerview-v7:$androidSupportVersion"
     compile "com.android.support:design:$androidSupportVersion"
-    compile "com.github.amlcurran.showcaseview:library:$showcaseviewVersion"
-    compile "com.yarolegovich:lovely-dialog:$lovelyDialog"
+    compile "com.github.iammert:MaterialIntroView:$materialIntroViewVersion"
+    compile "com.yarolegovich:lovely-dialog:$lovelyDialogVersion"
     compile 'com.github.clans:fab:1.6.4'
-    compile 'com.facebook.stetho:stetho:1.3.1'
+    compile 'com.facebook.fresco:fresco:0.12.0'
 
-    // https://mvnrepository.com/artifact/com.flickr4java/flickr4java
+    // Flickr Helper
     compile group: 'com.flickr4java', name: 'flickr4java', version: '2.16'
     compile 'com.github.scribejava:scribejava-apis:2.8.1'
-    compile 'com.facebook.fresco:fresco:0.12.0'
     compile 'info.guardianproject.netcipher:netcipher:1.2'
 
     compile("com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion@aar") {
@@ -201,8 +202,10 @@ dependencies {
         transitive = true
     }
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"
-    compile(name: "arpigl-release-$arpiglVersion", ext: "aar")
-    // tests
+    compile(name:"arpigl-release-$arpiglVersion", ext:"aar")
+
+    // Tests
+    compile 'com.facebook.stetho:stetho:1.3.1'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.easytesting:fest-assert-core:2.0M10'
@@ -212,7 +215,6 @@ dependencies {
     }
     testCompile 'org.xerial:sqlite-jdbc:3.8.10.1'
     testCompile 'commons-io:commons-io:1.3.2'
-    //
 }
 
 // Specify the OSM API url to use when building by adding -PosmUrl=myUrl

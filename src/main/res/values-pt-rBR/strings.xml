@@ -93,17 +93,17 @@
   <string name="shared_prefs_google_connection">Conexão com Google</string>
   <string name="shared_prefs_server">Servidor OSM</string>
   <!--Tuto-->
-  <string name="tuto_title_press_create">Criação de POI</string>
-  <string name="tuto_title_confirm">Verifique suas mudanças</string>
-  <string name="tuto_title_cancel">Cancele suas mudanças</string>
   <string name="tuto_text_press_create">Clique aqui para adicionar um novo ponto</string>
   <string name="tuto_text_choose_type">Escolha o tipo de POI que você quer adicionar</string>
-  <string name="tuto_text_poi_or_note">Escolha entre adicionar um POI ou uma nota</string>
-  <string name="tuto_text_swipe_for_position">Arraste o mapa para escolher a posição de seu novo ponto</string>
   <string name="tuto_text_confirm_position_creation">Clique para confirmar a posição. Qualquer outro botão irá descartar sua criação.</string>
-  <string name="tuto_text_cancel_creation">Este botão ou o botão de retornar irão descartar suas mudanças.</string>
   <string name="tuto_text_confirm_creation">Clique para finalizar sua criação ou edição.</string>
   <string name="replay_tuto">Rever tutorial</string>
+  <string name="replay_tuto_info">Os tutoriais será repetido</string>
+  <string name="tuto_text_synchronized">Os ícones cinza não estão sincronizados</string>
+  <string name="tuto_text_clic_to_synchronized">Você pode sincronizar as alterações por este menu</string>
+  <string name="tuto_text_cancel_sync">Você pode cancelar uma ou mais alterações aqui</string>
+  <string name="tuto_text_comment">Antes de salvar , adicionar um comentário</string>
+  <string name="tuto_text_confirm_sync">Salve as alterações aqui</string>
   <!--note-->
   <string name="Note">Nota</string>
   <string name="comment_text_hint">Coloque um comentário</string>
@@ -116,7 +116,7 @@
   <string name="comment_text_cant_be_null">O texto de comentário não pode ficar vazio</string>
   <string name="comment_synchronizing">Por favor aguarde enquanto a sincronização termina.</string>
   <string name="save_note">Salvar</string>
-  <string name="synchronizing">Sincronizando...</string>
+  <string name="synchronizing">Sincronizando…</string>
   <string name="note_already_closed">Nota já foi fechada</string>
   <string name="title_activity_note">Nota</string>
   <string name="note">Nota</string>

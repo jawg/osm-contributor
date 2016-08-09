@@ -35,7 +35,8 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/icon"
         android:label="@string/name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:label">
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/gms_version"

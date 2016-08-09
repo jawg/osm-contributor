@@ -145,17 +145,17 @@
     <string name="login_title">Connection</string>
 
     <!-- Tuto -->
-    <string name="tuto_title_press_create">Poi creation</string>
-    <string name="tuto_title_confirm">Validate your changes</string>
-    <string name="tuto_title_cancel">Cancel your changes</string>
     <string name="tuto_text_press_create">Click here to add a new point</string>
     <string name="tuto_text_choose_type">Choose the type of Poi you want to add</string>
-    <string name="tuto_text_poi_or_note">Choose to add a poi or a note</string>
-    <string name="tuto_text_swipe_for_position">Swipe the map to set the position of your new point</string>
     <string name="tuto_text_confirm_position_creation">Click to confirm the position, any return will discard your creation.</string>
-    <string name="tuto_text_cancel_creation">This button or the back one will discard your changes.</string>
     <string name="tuto_text_confirm_creation">Click to finalize your creation or edition.</string>
     <string name="replay_tuto">Replay tutorial</string>
+    <string name="replay_tuto_info">Tutorials will be replayed</string>
+    <string name="tuto_text_synchronized">Gray icons are not synchronized</string>
+    <string name="tuto_text_clic_to_synchronized">You can sync your changes at any time from this menu</string>
+    <string name="tuto_text_cancel_sync">You can cancel one or more of your changes here</string>
+    <string name="tuto_text_comment">Before saving, comment your changes</string>
+    <string name="tuto_text_confirm_sync">You can validate and synchronize your changes</string>
 
     <!-- note -->
     <string name="Note">Note</string>

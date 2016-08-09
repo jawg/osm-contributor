@@ -55,12 +55,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
+
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.analytics.HitBuilders;
@@ -75,6 +70,25 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.Note;
@@ -134,6 +148,8 @@ import io.mapsquare.osmcontributor.ui.events.note.ApplyNewCommentFailedEvent;
 import io.mapsquare.osmcontributor.ui.listeners.MapboxListener;
 import io.mapsquare.osmcontributor.ui.listeners.OsmAnimatorUpdateListener;
 import io.mapsquare.osmcontributor.ui.listeners.OsmCreationAnimatorUpdateListener;
+import io.mapsquare.osmcontributor.ui.managers.tutorial.AddPoiTutoManager;
+import io.mapsquare.osmcontributor.ui.managers.tutorial.TutorialManager;
 import io.mapsquare.osmcontributor.ui.presenters.MapFragmentPresenter;
 import io.mapsquare.osmcontributor.ui.utils.BitmapHandler;
 import io.mapsquare.osmcontributor.ui.utils.MapMode;
@@ -148,17 +164,6 @@ import io.mapsquare.osmcontributor.utils.FlavorUtils;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 import io.mapsquare.osmcontributor.utils.ways.Geocoder;
 import io.mapsquare.osmcontributor.utils.ways.LevelBar;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.inject.Inject;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import timber.log.Timber;
 
 public class MapFragment extends Fragment {
@@ -203,14 +208,18 @@ public class MapFragment extends Fragment {
 
     private Location lastLocation;
 
+    private OsmTemplateApplication application;
+
+    private TutorialManager tutorialManager;
+
     @Inject
     BitmapHandler bitmapHandler;
 
-    @BindView(R.id.mapview)
-    MapView mapView;
-
     @Inject
     EventBus eventBus;
+
+    @BindView(R.id.mapview)
+    MapView mapView;
 
     @BindView(R.id.poi_detail_wrapper)
     RelativeLayout poiDetailWrapper;
@@ -238,9 +247,10 @@ public class MapFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
+        application = ((OsmTemplateApplication) getActivity().getApplication());
+        application.getOsmTemplateComponent().inject(this);
 
-        tracker = ((OsmTemplateApplication) this.getActivity().getApplication()).getTracker(OsmTemplateApplication.TrackerName.APP_TRACKER);
+        tracker = application.getTracker(OsmTemplateApplication.TrackerName.APP_TRACKER);
         tracker.setScreenName("MapView");
         tracker.send(new HitBuilders.ScreenViewBuilder().build());
 
@@ -248,6 +258,8 @@ public class MapFragment extends Fragment {
 
         presenter = new MapFragmentPresenter(this);
         mapboxListener = new MapboxListener(this, eventBus);
+
+        tutorialManager = new TutorialManager(getActivity());
     }
 
     @Override
@@ -413,10 +425,11 @@ public class MapFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (mapboxMap != null) {
+            switchMode(MapMode.DEFAULT);
             presenter.setForceRefreshPoi();
             presenter.setForceRefreshNotes();
             presenter.loadPoisIfNeeded();
-            switchMode(MapMode.DEFAULT);
+            nextTuto(2);
         }
     }
 
@@ -650,41 +663,39 @@ public class MapFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onOnBackPressedMapEvent(OnBackPressedMapEvent event) {
         Timber.d("Received event OnBackPressedMap");
-        if (isTuto) {
-            closeTuto();
-        } else {
-            switch (mapMode) {
-                case POI_POSITION_EDITION:
-                    mapboxMap.updateMarker(markerSelected);
-                    switchMode(MapMode.DEFAULT);
-                    break;
-                case NODE_REF_POSITION_EDITION:
-                    switchMode(MapMode.WAY_EDITION);
-                    removePolyline(editionPolyline);
-                    break;
+        forceDisplayAddTuto = false;
+        switch (mapMode) {
+            case POI_POSITION_EDITION:
+                mapboxMap.updateMarker(markerSelected);
+                switchMode(MapMode.DEFAULT);
+                break;
+            case NODE_REF_POSITION_EDITION:
+                switchMode(MapMode.WAY_EDITION);
+                removePolyline(editionPolyline);
+                break;
 
-                case WAY_EDITION:
-                    switchMode(MapMode.DEFAULT);
-                    break;
-                case DETAIL_POI:
-                case DETAIL_NOTE:
-                case POI_CREATION:
-                case NOTE_CREATION:
-                case TYPE_PICKER:
-                    switchMode(MapMode.DEFAULT);
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(mapView.getWindowToken(), 0);
-                    break;
+            case WAY_EDITION:
+                switchMode(MapMode.DEFAULT);
+                break;
+            case DETAIL_POI:
+            case DETAIL_NOTE:
+            case POI_CREATION:
+            case NOTE_CREATION:
+            case TYPE_PICKER:
+                switchMode(MapMode.DEFAULT);
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mapView.getWindowToken(), 0);
+                break;
 
-                case ARPIGL:
-                    switchMode(MapMode.DEFAULT);
-                    eventBus.post(new PleaseToggleArpiEvent());
-                    break;
-                default:
-                    getActivity().finish();
-                    break;
-            }
+            case ARPIGL:
+                switchMode(MapMode.DEFAULT);
+                eventBus.post(new PleaseToggleArpiEvent());
+                break;
+            default:
+                getActivity().finish();
+                break;
         }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -855,6 +866,7 @@ public class MapFragment extends Fragment {
             if (bitmap != null) {
                 markerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmap));
             }
+            markerSelectedId = -1L;
             markerSelected = null;
         }
     }
@@ -1164,9 +1176,6 @@ public class MapFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewPoiTypeSelected(NewPoiTypeSelected event) {
         Timber.d("Received event NewPoiTypeSelected");
-        if (isTuto) {
-            nextTutoStep();
-        }
         poiTypeSelected(event.getPoiType());
         switchMode(MapMode.POI_CREATION);
     }
@@ -1220,11 +1229,9 @@ public class MapFragment extends Fragment {
         addPoiFloatingMenu.setOnMenuButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isTuto) {
-                    nextTutoStep();
-                }
                 easterEgg();
                 addPoiFloatingMenu.toggle(true);
+                nextTuto(0);
             }
         });
     }
@@ -1248,10 +1255,6 @@ public class MapFragment extends Fragment {
                 public void onClick(View view) {
                     switchMode(MapMode.NOTE_CREATION);
                     addPoiFloatingMenu.close(true);
-                    if (isTuto) {
-                        nextTutoStep();
-                        nextTutoStep();
-                    }
                 }
             });
             addPoiFloatingMenu.addMenuButton(floatingActionButton);
@@ -1273,9 +1276,6 @@ public class MapFragment extends Fragment {
                             switchMode(MapMode.POI_CREATION);
                             poiTypeSelected(poiType);
                             addPoiFloatingMenu.close(true);
-                            if (isTuto) {
-                                nextTutoStep();
-                            }
                         } else {
                             Toast.makeText(getActivity(), getResources().getString(R.string.point_modification_forbidden), Toast.LENGTH_SHORT).show();
                         }
@@ -1296,9 +1296,6 @@ public class MapFragment extends Fragment {
                 public void onClick(View view) {
                     if (configManager.hasPoiAddition()) {
                         switchMode(MapMode.TYPE_PICKER);
-                        if (isTuto) {
-                            nextTutoStep();
-                        }
                     } else {
                         Toast.makeText(getActivity(), getResources().getString(R.string.point_modification_forbidden), Toast.LENGTH_SHORT).show();
                     }
@@ -1306,9 +1303,6 @@ public class MapFragment extends Fragment {
             });
             addPoiFloatingMenu.addMenuButton(floatingActionButton);
         }
-
-        // the floating btn and tthe poitypes are loaded we can now start the tuto
-        displayTutorial(false);
     }
 
     public void loadPoiTypeSpinner() {
@@ -1801,6 +1795,7 @@ public class MapFragment extends Fragment {
     public void onLastUsePoiTypeLoaded(LastUsePoiTypeLoaded event) {
         poiTypePickerAdapter.addAllLastUse(event.getAutocompleteLastUsePoiTypeValues());
         poiTypeListView.setSelectionAfterHeaderView();
+        nextTuto(1);
     }
 
     /*-----------------------------------------------------------
@@ -1888,124 +1883,46 @@ public class MapFragment extends Fragment {
     /*-----------------------------------------------------------
     * TUTORIAL
     *---------------------------------------------------------*/
-    public static final String TUTORIAL_CREATION_FINISH = "TUTORIAL_CREATION_FINISH";
-    private ShowcaseView showcaseView;
-    private int showcaseCounter = 0;
-    private boolean isTuto = false;
+    public static boolean forceDisplayAddTuto;
+
+    public static boolean forceDisplaySyncTuto;
+
+    private AddPoiTutoManager addPoiTutoManager;
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPleaseDisplayTutorialEvent(PleaseDisplayTutorialEvent event) {
+        forceDisplayAddTuto = true;
+        forceDisplaySyncTuto = true;
         switchMode(MapMode.DEFAULT);
-        displayTutorial(true);
+        Toast.makeText(getActivity(), getString(R.string.replay_tuto_info), Toast.LENGTH_LONG).show();
     }
 
-    protected void displayTutorial(boolean forceDisplay) {
-        showcaseCounter = 0;
-
-        if (presenter.getNumberOfPoiTypes() < 1) {
-            return;
+    private void nextTuto(int step) {
+        if (addPoiTutoManager == null) {
+            addPoiTutoManager = new AddPoiTutoManager(getActivity(), forceDisplayAddTuto);
         }
 
-        if (!configManager.hasPoiAddition()) {
-            sharedPreferences.edit().putBoolean(TUTORIAL_CREATION_FINISH, true).apply();
-            return;
-        }
+        addPoiTutoManager.setForceDisplay(forceDisplayAddTuto);
 
-        boolean showTuto = forceDisplay || !sharedPreferences.getBoolean(TUTORIAL_CREATION_FINISH, false);
-
-        if (showTuto && !isTuto) {
-            isTuto = true;
-            //position OK button on the left
-            RelativeLayout.LayoutParams params =
-                    new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                            RelativeLayout.LayoutParams.WRAP_CONTENT);
-            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            params.setMargins(60, 0, 0, 200);
-
-            showcaseView = new ShowcaseView.Builder(getActivity(), true)
-                    .setStyle(R.style.CustomShowcaseTheme)
-                    .setContentTitle(getString(R.string.tuto_title_press_create))
-                    .setContentText(getString(R.string.tuto_text_press_create))
-                    .setTarget(new ViewTarget(addPoiFloatingMenu.getMenuIconView()))
-                    .setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                switch (showcaseCounter) {
-                                                    case 0:
-                                                        addPoiFloatingMenu.open(true);
-                                                        nextTutoStep();
-                                                        break;
-
-                                                    case 1:
-                                                        addPoiFloatingMenu.getChildAt(1).performClick();
-                                                        break;
-
-                                                    case 2:
-                                                        //chose the first type
-                                                        poiTypeSelected(presenter.getPoiTypes().iterator().next());
-                                                        switchMode(MapMode.POI_CREATION);
-                                                        nextTutoStep();
-                                                        break;
-
-                                                    case 3:
-                                                        nextTutoStep();
-                                                        break;
-
-                                                    case 4:
-                                                        nextTutoStep();
-                                                        switchMode(MapMode.DEFAULT);
-                                                        break;
-                                                }
-                                            }
-                                        }
-                    )
-                    .build();
-
-            showcaseView.setButtonPosition(params);
-        }
-    }
-
-    private void nextTutoStep() {
-        switch (showcaseCounter) {
+        switch (step) {
+            // Display when the user clicks on the "+" button.
             case 0:
-                if (presenter.getNumberOfPoiTypes() <= maxPoiType) {
-                    showcaseView.setContentText(getString(R.string.tuto_text_choose_type));
-                    showcaseCounter++;
-                } else {
-                    //compact view
-                    showcaseView.setContentText(getString(R.string.tuto_text_poi_or_note));
-                }
-                showcaseView.setTarget(new ViewTarget(addPoiFloatingMenu.getChildAt(0)));
+                addPoiTutoManager.addPoiBtnTuto(addPoiFloatingMenu);
                 break;
 
+            // Display when the user clicks on "Add Poi" button.
             case 1:
-                showcaseView.setContentText(getString(R.string.tuto_text_choose_type));
-                showcaseView.setTarget(new ViewTarget(addPoiFloatingMenu.getChildAt(0)));
+                addPoiTutoManager.choosePoiTypeTuto(poiTypeListView);
                 break;
 
+            // Display when a use add a poi on the map.
             case 2:
-                showcaseView.setContentText(getString(R.string.tuto_text_swipe_for_position));
-                showcaseView.setTarget(new ViewTarget(mapView));
-                break;
-
-            case 3:
-                showcaseView.setContentText(getString(R.string.tuto_text_confirm_position_creation));
-                showcaseView.setTarget(new ViewTarget(R.id.action_confirm_position, getActivity()));
-                break;
-
-            case 4:
-                closeTuto();
+                if (configManager.hasPoiAddition()) {
+                    addPoiTutoManager.synchronizedModificationsTuto(mapView);
+                }
+                forceDisplayAddTuto = false;
                 break;
         }
-
-        showcaseCounter++;
-    }
-
-    private void closeTuto() {
-        showcaseView.hide();
-        isTuto = false;
-        sharedPreferences.edit().putBoolean(TUTORIAL_CREATION_FINISH, true).apply();
     }
 
     public FloatingActionMenu getAddPoiFloatingMenu() {
@@ -2018,10 +1935,6 @@ public class MapFragment extends Fragment {
 
     public int getZoomVectorial() {
         return zoomVectorial;
-    }
-
-    public boolean isTuto() {
-        return isTuto;
     }
 
     public MapMode getMapMode() {

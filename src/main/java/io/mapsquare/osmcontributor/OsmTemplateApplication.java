@@ -52,23 +52,30 @@ import timber.log.Timber;
 
 public class OsmTemplateApplication extends Application {
 
+    /*=========================================*/
+    /*---------------CONSTANTS-----------------*/
+    /*=========================================*/
     private static final String ANALYTICS_PROPERTY_ID = "UA-63422911-1";
 
     public enum TrackerName {
         APP_TRACKER, // Tracker used only in this app.
     }
 
-    HashMap<TrackerName, Tracker> trackers = new HashMap<>();
+    /*=========================================*/
+    /*--------------ATTRIBUTES-----------------*/
+    /*=========================================*/
+    private HashMap<TrackerName, Tracker> trackers = new HashMap<>();
 
-    OsmTemplateComponent osmTemplateComponent;
+    private OsmTemplateComponent osmTemplateComponent;
 
     private Flickr flickr;
 
+    /*=========================================*/
+    /*---------------OVERRIDE------------------*/
+    /*=========================================*/
     @Override
     public void onCreate() {
         super.onCreate();
-        //LeakCanary.install(this);
-
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         } else {
@@ -76,20 +83,23 @@ public class OsmTemplateApplication extends Application {
             Timber.plant(new CrashlyticsTree());
         }
 
+        // Init Stetho for debug purpose (database)
         Stetho.initializeWithDefaults(this);
 
-        osmTemplateComponent = DaggerOsmTemplateComponent.builder()
-                .osmTemplateModule(new OsmTemplateModule(this)).build();
+        // Init Dagger
+        osmTemplateComponent = DaggerOsmTemplateComponent.builder().osmTemplateModule(new OsmTemplateModule(this)).build();
         osmTemplateComponent.inject(this);
 
+        // Init Flickr object
         StoreConfigManager configManager = new StoreConfigManager();
-
         flickr = new Flickr(configManager.getFlickrApiKey(), configManager.getFlickrApiKeySecret(), new REST());
+
+        // Cache Disk for Fresco
         DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(this)
                 .setBaseDirectoryPath(new File(Environment.getExternalStorageDirectory().getAbsoluteFile(), getPackageName()))
                 .setBaseDirectoryName("images")
                 .build();
-
+        // Cache Memory for Fresco
         ImagePipelineConfig imagePipelineConfig = ImagePipelineConfig.newBuilder(this)
                 .setBitmapMemoryCacheParamsSupplier(new Supplier<MemoryCacheParams>() {
                     @Override
@@ -99,10 +109,12 @@ public class OsmTemplateApplication extends Application {
                 })
                 .setMainDiskCacheConfig(diskCacheConfig)
                 .build();
+
+        // Init Fresco
         Fresco.initialize(this, imagePipelineConfig);
 
+        // Init event bus
         EventBus bus = osmTemplateComponent.getEventBus();
-
         bus.register(getOsmTemplateComponent().getLoginManager());
         bus.register(getOsmTemplateComponent().getEditPoiManager());
         bus.register(getOsmTemplateComponent().getPoiManager());
@@ -117,6 +129,20 @@ public class OsmTemplateApplication extends Application {
         MapboxAccountManager.start(this, BuildConfig.MAPBOX_TOKEN);
     }
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        MultiDex.install(this);
+    }
+
+    /*=========================================*/
+    /*----------------GETTER-------------------*/
+    /*=========================================*/
+
+    /**
+     * Use for Dagger Injection.
+     * @return an object to inject a class
+     */
     public OsmTemplateComponent getOsmTemplateComponent() {
         return osmTemplateComponent;
     }
@@ -135,12 +161,10 @@ public class OsmTemplateApplication extends Application {
         return trackers.get(trackerId);
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(newBase);
-        MultiDex.install(this);
-    }
-
+    /**
+     * Get Flickr Helper for API request.
+     * @return flickr object with API key set
+     */
     public Flickr getFlickr() {
         return flickr;
     }

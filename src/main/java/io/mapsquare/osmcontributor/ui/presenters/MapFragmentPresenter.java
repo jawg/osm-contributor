@@ -305,13 +305,14 @@ public class MapFragmentPresenter {
                     Poi oldPoi = (Poi) markerOptions.getMarker().getRelatedObject();
                     oldPoi.setName(poi.getName());
                     oldPoi.setUpdated(poi.getUpdated());
-                    setIcon(markerOptions, oldPoi, false);
+                    selected = false;
                     if (mapFragment.getSelectedMarkerType().equals(LocationMarkerView.MarkerType.POI)
                             && (mapElement.getId().equals(mapFragment.getMarkerSelectedId())
                             || markerSelected != null
                             && mapElement.getId().equals(((Poi) markerSelected.getRelatedObject()).getId()))) {
                         selected = true;
                     }
+                    setIcon(markerOptions, oldPoi, selected);
                 } else {
                     if (mapFragment.getSelectedMarkerType().equals(LocationMarkerView.MarkerType.NOTE)
                             && markerSelected != null
