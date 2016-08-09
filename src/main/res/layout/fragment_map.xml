@@ -28,7 +28,6 @@
         android:id="@+id/mapview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        app:access_token="@string/mapbox_api_key"
         app:attribution_enabled="false"
         app:logo_enabled="false"
         app:rotate_enabled="true"
@@ -167,7 +166,7 @@
         android:paddingRight="20dp"
         android:rotation="270"
         android:splitTrack="false"
-        android:visibility="invisible" />
+        android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/note_detail_wrapper"

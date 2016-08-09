@@ -114,7 +114,7 @@ public class OsmTemplateApplication extends Application {
         bus.register(getOsmTemplateComponent().getArpiInitializer());
         bus.register(getOsmTemplateComponent().getEditVectorialWayManager());
 
-        MapboxAccountManager.start(this, getString(R.string.mapbox_api_key));
+        MapboxAccountManager.start(this, BuildConfig.MAPBOX_TOKEN);
     }
 
     public OsmTemplateComponent getOsmTemplateComponent() {

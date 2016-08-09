@@ -15,6 +15,7 @@ ext {
     ormliteVersion = '4.48'
     jodatimeVersion = '2.9.4'
     mapboxVersion = '4.1.1'
+    mapboxServicesVersion = '1.2.1'
     retrofitVersion = '1.9.0'
     okhttpVersion = '2.3.0'
     simplexmlRetrofitVersion = '1.1'
@@ -39,7 +40,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:2.1.2'
 
         // add -Pfoss=true to gradlew args to build a version with no Crashlytics/Google analytics
-        if(!project.hasProperty('foss')) {
+        if (!project.hasProperty('foss')) {
             classpath "io.fabric.tools:gradle:1.+"
         }
         classpath "com.neenbedankt.gradle.plugins:android-apt:1.8"
@@ -72,7 +73,7 @@ repositories {
 
 
 apply plugin: 'com.android.application'
-if(!project.hasProperty('foss')) {
+if (!project.hasProperty('foss')) {
     apply plugin: 'io.fabric'
 }
 apply plugin: 'com.neenbedankt.android-apt'
@@ -130,6 +131,7 @@ android {
             buildConfigField "String", "FLICKR_API_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_secret") + '"'
             buildConfigField "String", "FLICKR_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token") + '"'
             buildConfigField "String", "FLICKR_TOKEN_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token_secret") + '"'
+            buildConfigField "String", "MAPBOX_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("mapbox_token") + '"'
         }
         template {
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.template"'
@@ -192,9 +194,14 @@ dependencies {
     compile 'com.facebook.fresco:fresco:0.12.0'
     compile 'info.guardianproject.netcipher:netcipher:1.2'
 
-    compile("com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion@aar") { transitive = true }
+    compile("com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion@aar") {
+        transitive = true
+    }
+    compile("com.mapbox.mapboxsdk:mapbox-android-services:$mapboxServicesVersion@aar") {
+        transitive = true
+    }
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"
-    compile(name:"arpigl-release-$arpiglVersion", ext:"aar")
+    compile(name: "arpigl-release-$arpiglVersion", ext: "aar")
     // tests
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
