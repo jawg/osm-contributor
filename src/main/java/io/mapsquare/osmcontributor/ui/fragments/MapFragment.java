@@ -1626,7 +1626,7 @@ public class MapFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSyncUploadNoteRetrofitErrorEvent(SyncUploadNoteRetrofitErrorEvent event) {
-        Toast.makeText(getActivity(), R.string.couldnt_upload_retrofit, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.couldnt_upload_retrofit), Toast.LENGTH_SHORT).show();
         removeNoteMarkerInError(event.getNoteIdInError());
     }
 
