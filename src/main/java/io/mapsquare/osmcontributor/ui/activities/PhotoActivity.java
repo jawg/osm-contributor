@@ -40,6 +40,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -127,6 +128,9 @@ public class PhotoActivity extends AppCompatActivity {
 
     @BindView(R.id.zoom_photo)
     SimpleDraweeView zoomPhoto;
+
+    @BindView(R.id.no_photos)
+    TextView noPhotos;
 
     /*=========================================*/
     /*------------ATTRIBUTES-------------------*/
@@ -316,10 +320,13 @@ public class PhotoActivity extends AppCompatActivity {
     public void onPhotosFoundEvent(PhotosFoundEvent photosFoundEvent) {
         List<List<Size>> photos = photosFoundEvent.getPhotos();
         if (photos != null && !photos.isEmpty()) {
+            noPhotos.setVisibility(View.INVISIBLE);
             for (List<Size> size : photos) {
                 imageAdapter.addPhoto(size.get(Size.SQUARE).getSource(), poiId, Size.SQUARE);
                 imageAdapter.addPhoto(size.get(Size.ORIGINAL).getSource(), poiId, Size.ORIGINAL);
             }
+        } else {
+            noPhotos.setVisibility(View.VISIBLE);
         }
         loadingImage.setVisibility(View.INVISIBLE);
         gridPhotos.setVisibility(View.VISIBLE);

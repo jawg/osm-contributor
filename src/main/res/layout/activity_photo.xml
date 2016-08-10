@@ -72,4 +72,14 @@
         android:indeterminate="true"
         android:indeterminateDrawable="@drawable/progress"/>
 
+    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+        android:id="@+id/no_photos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_centerInParent="true"
+        android:textSize="20sp"
+        app:typeface="RobotoCondensed-Regular.ttf"
+        android:text="@string/no_photos"/>
+
 </RelativeLayout>

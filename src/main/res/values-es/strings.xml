@@ -211,7 +211,7 @@ Sin estos permisos, la aplicación no puede funcionar correctamente.</string>
     <string name="flickr_title">Una cuenta Flickr es necesaria</string>
     <string name="flickr_need">Necesita una cuenta Yahoo (Flickr) para enviar una foto</string>
 
-    <string name="upload_message">Envío de la imagen...</string>
+    <string name="upload_message">Envío de la imagen…</string>
     <string name="login_using">Inicie la sesión utilizando</string>
     <string name="login_verb">Iniciar</string>
     <string name="login_later">Conectar más tarde</string>
@@ -219,5 +219,6 @@ Sin estos permisos, la aplicación no puede funcionar correctamente.</string>
     <string name="download_offline_area_title">Download offline regions</string>
     <string name="download_offline_area_more_later">Download later</string>
     <string name="offline_regions">Regiones fuera de línea</string>
+    <string name="no_photos">Este PDI no tiene fotos</string>
 
 </resources>

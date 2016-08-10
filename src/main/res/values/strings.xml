@@ -272,8 +272,6 @@
     <string name="malformated_tag">The value of this tag doesn\'t respect OSM conventions</string>
     <string name="malformated_value">Current value : </string>
 
-    <string name="mapbox_api_key" translatable="false">pk.eyJ1IjoiYmVyaHVnIiwiYSI6ImNpb2VmdjRraDAwMmZ2Z2x4bDJ5bmJlY3YifQ.CGm3KMpBeX5fSD-kzZUS8Q</string>
-
     <string name="flickr_title">Flickr account needed</string>
     <string name="flickr_need">You need a Yahoo account (Flickr) to post a photo</string>
     <string name="upload_message">Upload in progress</string>
@@ -288,4 +286,5 @@
         Il est conseillé d\'avoir une connexion Wifi pendant le téléchargement.\n\nVoulez-vous lancer le téléchargement?</string>
     <string name="download_offline_area_more_later">Download later</string>
     <string name="offline_regions">Offline Regions</string>
+    <string name="no_photos">This POI has no photos</string>
 </resources>
