@@ -197,6 +197,9 @@
   <string name="download_offline_area_title">Download offline regions</string>
   <string name="download_offline_area_more_later">Download later</string>
   <string name="offline_regions">Regiões off-line</string>
+  <string name="offline_regions_empty_list">There is no offline regions downloaded, click on the plus button to add one.</string>
+  <string name="delete">Deletar</string>
+  <string name="rename">Rebatizar</string>
   <string name="no_photos">Este POI não tem fotos</string>
 
 </resources>

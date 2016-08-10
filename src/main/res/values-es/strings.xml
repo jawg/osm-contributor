@@ -221,4 +221,7 @@ Sin estos permisos, la aplicación no puede funcionar correctamente.</string>
     <string name="offline_regions">Regiones fuera de línea</string>
     <string name="no_photos">Este PDI no tiene fotos</string>
 
+    <string name="offline_regions_empty_list">There is no offline regions downloaded, click on the plus button to add one.</string>
+    <string name="delete">Borrar</string>
+    <string name="rename">Rebautizar</string>
 </resources>

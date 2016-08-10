@@ -26,19 +26,6 @@
     android:layout_height="wrap_content"
     tools:activity=".ui.fragments.PoiDetailFragment">
 
-    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
-        android:id="@+id/osm_copyright"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/banner"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:background="@drawable/rounded_top_right_corner"
-        android:paddingLeft="3dp"
-        android:paddingRight="3dp"
-        android:textSize="13sp"
-        app:typeface="Roboto-Light.ttf" />
-
     <RelativeLayout
         android:id="@+id/banner"
         android:layout_width="match_parent"

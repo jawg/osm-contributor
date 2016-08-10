@@ -407,8 +407,13 @@ public class MapActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPleaseToggleDrawer(PleaseToggleDrawer event) {
-        Timber.d("Opening Drawer");
-        drawerLayout.openDrawer(navigationView);
+        if (drawerLayout.isDrawerOpen(navigationView)) {
+            Timber.d("Closing Drawer");
+            drawerLayout.closeDrawer(navigationView);
+        } else {
+            Timber.d("Opening Drawer");
+            drawerLayout.openDrawer(navigationView);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -544,7 +549,7 @@ public class MapActivity extends AppCompatActivity {
 
     private void startOfflineRegionsActivity() {
         drawerLayout.closeDrawer(navigationView);
-        Intent intent = new Intent(this, LoadProfileActivity.class);
+        Intent intent = new Intent(this, OfflineRegionsActivity.class);
         startActivity(intent);
     }
 

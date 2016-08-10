@@ -30,6 +30,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -146,6 +147,7 @@ import io.mapsquare.osmcontributor.ui.events.map.PleaseToggleDrawerLock;
 import io.mapsquare.osmcontributor.ui.events.map.PoiNoTypeCreated;
 import io.mapsquare.osmcontributor.ui.events.note.ApplyNewCommentFailedEvent;
 import io.mapsquare.osmcontributor.ui.listeners.MapboxListener;
+import io.mapsquare.osmcontributor.ui.listeners.OnZoomAnimationFinishedListener;
 import io.mapsquare.osmcontributor.ui.listeners.OsmAnimatorUpdateListener;
 import io.mapsquare.osmcontributor.ui.listeners.OsmCreationAnimatorUpdateListener;
 import io.mapsquare.osmcontributor.ui.managers.tutorial.AddPoiTutoManager;
@@ -364,7 +366,6 @@ public class MapFragment extends Fragment {
     private void instantiateMapView(final Bundle savedInstanceState) {
         if (mapView != null) {
             mapView.onCreate(savedInstanceState);
-            mapView.setStyleUrl(getString(R.string.map_style));
             mapView.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(MapboxMap mapboxMap) {
@@ -424,6 +425,7 @@ public class MapFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        mapView.onResume();
         if (mapboxMap != null) {
             switchMode(MapMode.DEFAULT);
             presenter.setForceRefreshPoi();
@@ -442,6 +444,8 @@ public class MapFragment extends Fragment {
 
     @Override
     public void onPause() {
+        super.onPause();
+        mapView.onPause();
         if (mapboxMap != null) {
             mapboxMap.setMyLocationEnabled(false);
         }
@@ -450,12 +454,12 @@ public class MapFragment extends Fragment {
             valueAnimator.removeAllListeners();
             valueAnimator.removeAllUpdateListeners();
         }
-        super.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mapView.onDestroy();
         // Clear bitmapHandler even if activity leaks.
         bitmapHandler = null;
     }
@@ -470,6 +474,7 @@ public class MapFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
         outState.putParcelable(LOCATION, mapboxMap.getCameraPosition().target);
         outState.putFloat(ZOOM_LEVEL, getZoomLevel());
         outState.putInt(CREATION_MODE, mapMode.ordinal());
@@ -508,6 +513,12 @@ public class MapFragment extends Fragment {
         }
 
         outState.putLongArray(HIDDEN_POI_TYPE, hidden);
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
     }
 
     /*-----------------------------------------------------------
@@ -721,7 +732,6 @@ public class MapFragment extends Fragment {
         }
     }
 
-
     public void switchMode(MapMode mode) {
         mapMode = mode;
         Bitmap bitmap;
@@ -822,10 +832,18 @@ public class MapFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPleaseSwitchWayEditionModeEvent(PleaseSwitchWayEditionModeEvent event) {
         if (getZoomLevel() < zoomVectorial) {
-            changeMapZoomSmooth(zoomVectorial);
+            changeMapZoomSmooth(zoomVectorial, new OnZoomAnimationFinishedListener() {
+                @Override
+                public void onZoomAnimationFinished() {
+                    switchMode(MapMode.WAY_EDITION);
+                    downloadAreaForEdition();
+                }
+            });
+            eventBus.post(new PleaseToggleDrawer());
+        } else {
+            switchMode(MapMode.WAY_EDITION);
+            downloadAreaForEdition();
         }
-        switchMode(MapMode.WAY_EDITION);
-        downloadAreaForEdition();
     }
 
     /**
@@ -1507,6 +1525,21 @@ public class MapFragment extends Fragment {
                 return new CameraPosition.Builder().target(mapboxMap.getCameraPosition().target).zoom(zoom).build();
             }
         }, 700);
+    }
+
+    public void changeMapZoomSmooth(final double zoom, final OnZoomAnimationFinishedListener onZoomAnimationFinishedListener) {
+        mapboxMap.easeCamera(new CameraUpdate() {
+            @Override
+            public CameraPosition getCameraPosition(@NonNull MapboxMap mapboxMap) {
+                return new CameraPosition.Builder().target(mapboxMap.getCameraPosition().target).zoom(zoom).build();
+            }
+        }, 700);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                onZoomAnimationFinishedListener.onZoomAnimationFinished();
+            }
+        }, 750);
     }
 
     public void changeMapPositionSmooth(final LatLng newPosition) {

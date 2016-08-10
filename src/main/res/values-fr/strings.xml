@@ -247,4 +247,7 @@
     <string name="download_offline_area_more_later">Download later</string>
     <string name="offline_regions">Régions hors connexion</string>
     <string name="no_photos">Aucune photo n\'est associée à ce point</string>
+    <string name="offline_regions_empty_list">There is no offline regions downloaded, click on the plus button to add one.</string>
+    <string name="delete">Supprimer</string>
+    <string name="rename">Renommer</string>
 </resources>

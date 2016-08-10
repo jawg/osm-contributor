@@ -46,6 +46,7 @@ import io.mapsquare.osmcontributor.ui.activities.LoadProfileActivity;
 import io.mapsquare.osmcontributor.ui.activities.MapActivity;
 import io.mapsquare.osmcontributor.ui.activities.MyPreferencesActivity;
 import io.mapsquare.osmcontributor.ui.activities.NoteActivity;
+import io.mapsquare.osmcontributor.ui.activities.OfflineRegionsActivity;
 import io.mapsquare.osmcontributor.ui.activities.PhotoActivity;
 import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.activities.SplashScreenActivity;
@@ -158,6 +159,8 @@ public interface OsmTemplateComponent {
     void inject(OfflineAreaDownloadService offlineAreaDownloadService);
 
     void inject(CancelButtonReceiver cancelButtonReceiver);
+
+    void inject(OfflineRegionsActivity offlineRegionsActivity);
 
     // PROVIDING
 

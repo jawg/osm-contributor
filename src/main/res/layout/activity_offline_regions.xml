@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 
     Copyright (C) 2016 eBusiness Information
 
@@ -19,10 +18,107 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
+    <include layout="@layout/toolbar_layout"/>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar">
 
-</LinearLayout>
+        <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+            android:id="@+id/offline_regions_empty_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:text="@string/offline_regions_empty_list"
+            android:visibility="gone"
+            app:typeface="Roboto-Light.ttf" />
+
+        <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/mapview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:style_url="@string/map_style"
+            app:attribution_enabled="false"
+            app:logo_enabled="false"
+            app:rotate_enabled="true"
+            app:zoom_enabled="true"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/offline_region_mask_overlay"/>
+        
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/offline_regions_padding_top">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/offline_regions_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:background="@android:color/transparent"/>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="24dp"
+            android:layout_gravity="bottom|right">
+
+            <com.github.clans.fab.FloatingActionMenu
+                android:id="@+id/floating_action_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:menu_icon="@drawable/pencil"
+                app:menu_labels_position="left"
+                app:menu_labels_style="@style/menu_labels_style"
+                app:menu_colorNormal="@color/material_amber_900"
+                app:menu_colorPressed="@color/material_amber_800"
+                app:menu_colorRipple="@color/material_amber_800">
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/rename_region_floating_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_colorNormal="@color/material_amber_900"
+                    app:fab_colorPressed="@color/material_amber_800"
+                    android:src="@drawable/ic_rename"
+                    app:fab_size="mini"
+                    app:fab_label="@string/rename" />
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/delete_region_floating_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_colorNormal="@color/material_amber_900"
+                    app:fab_colorPressed="@color/material_amber_800"
+                    android:src="@drawable/delete"
+                    app:fab_size="mini"
+                    app:fab_label="@string/delete" />
+
+            </com.github.clans.fab.FloatingActionMenu>
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/add_offline_region"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:src="@drawable/add_white"
+                app:fab_colorNormal="@color/colorPrimaryDark"
+                app:fab_colorPressed="@color/colorPrimary"
+                app:fab_label="@string/edit_poi" />
+        </LinearLayout>
+    </FrameLayout>
+</RelativeLayout>

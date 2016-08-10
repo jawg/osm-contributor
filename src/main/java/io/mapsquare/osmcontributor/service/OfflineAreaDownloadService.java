@@ -249,7 +249,9 @@ public class OfflineAreaDownloadService extends IntentService {
                     // Download complete
                     // When the loop is finished, updates the notification
                     builder.setContentText("Region downloaded successfully")
-                            .setProgress(0, 0, false);
+                            .setProgress(0, 0, false)
+                            .mActions
+                            .clear();
                     notificationManager.notify(area.getMapTag().hashCode(), builder.build());
                     currentDownloadRegion = null;
                     checkNextDownload();
@@ -337,7 +339,7 @@ public class OfflineAreaDownloadService extends IntentService {
      * @param mapTag
      * @return the byte array of the metadata
      */
-    private byte[] encodeMetadata(String mapTag) {
+    public static byte[] encodeMetadata(String mapTag) {
         // Set the metadata
         byte[] metadata;
         try {
@@ -357,7 +359,7 @@ public class OfflineAreaDownloadService extends IntentService {
      * @param metadata
      * @return mapTag field
      */
-    private String decodeMetadata(byte[] metadata) {
+    public static String decodeMetadata(byte[] metadata) {
         String jsonString = new String(metadata);
         try {
             JSONObject json = new JSONObject(jsonString);

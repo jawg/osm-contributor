@@ -89,6 +89,10 @@
         <activity android:name=".ui.activities.PhotoActivity"
             android:screenOrientation="portrait"/>
 
+        <activity android:name=".ui.activities.OfflineRegionsActivity"
+            android:label="@string/offline_regions"
+            android:screenOrientation="portrait"/>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="io.mapsquare.osmcontributor.fileprovider"

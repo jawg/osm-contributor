@@ -19,24 +19,22 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<resources>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:right="-100dp" android:left="-100dp" android:bottom="-100dp">
+        <shape>
+            <stroke
+                android:color="#96303030"
+                android:width="116dp" />
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
 
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-
-    <dimen name="dialog_horizontal_margin">8dp</dimen>
-    <dimen name="dialog_vertical_margin">8dp</dimen>
-
-    <dimen name="level_text_size">12dp</dimen>
-
-    <!-- List -->
-    <dimen name="list_item_height">72dp</dimen>
-
-    <!-- Floating action button -->
-    <dimen name="fab_margin">12dp</dimen>
-    <dimen name="progress_bar_size">100dp</dimen>
-    <dimen name="progress_bar_radius">10dp</dimen>
-    <dimen name="offline_regions_padding_top">116dp</dimen>
-
-</resources>
+    <item android:right="16dp" android:left="16dp" android:bottom="16dp" android:top="116dp">
+        <shape>
+            <stroke
+                android:color="@color/colorPrimary"
+                android:width="2dp" />
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+</layer-list>

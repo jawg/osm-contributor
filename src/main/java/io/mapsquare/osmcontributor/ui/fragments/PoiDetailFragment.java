@@ -24,7 +24,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +34,6 @@ import android.widget.Toast;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
-import io.mapsquare.osmcontributor.ui.events.map.PleaseDuplicatePoiEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -56,6 +54,7 @@ import io.mapsquare.osmcontributor.ui.activities.PhotoActivity;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseChangePoiPosition;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseDeletePoiFromMapEvent;
+import io.mapsquare.osmcontributor.ui.events.map.PleaseDuplicatePoiEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseOpenEditionEvent;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 
@@ -85,9 +84,6 @@ public class PoiDetailFragment extends Fragment {
     @BindView(R.id.poi_type_name)
     TextView editTextPoiTypeName;
 
-    @BindView(R.id.osm_copyright)
-    TextView osmCopyrightTextView;
-
     @BindView(R.id.floating_action_menu)
     FloatingActionMenu floatingActionMenu;
 
@@ -115,7 +111,6 @@ public class PoiDetailFragment extends Fragment {
 
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
         ButterKnife.bind(this, rootView);
-        osmCopyrightTextView.setText(Html.fromHtml(getString(R.string.osm_copyright)));
 
         if (!configManager.hasPoiModification()) {
             floatingButtonEditPoi.setImageResource(R.drawable.eye);
