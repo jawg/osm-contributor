@@ -110,6 +110,7 @@ public class AddPoiTutoManager extends TutorialManager {
      * @param targetView mapview with markers
      */
     public void synchronizedModificationsTuto(final View targetView) {
+        defaultConfiguration.setFocusType(Focus.MINIMUM);
         showView("addPoi_step5", targetView, activity.getString(R.string.tuto_text_synchronized), new MaterialIntroListener() {
             @Override
             public void onUserClicked(String s) {
