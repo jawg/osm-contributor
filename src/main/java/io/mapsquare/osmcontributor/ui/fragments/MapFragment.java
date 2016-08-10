@@ -429,7 +429,14 @@ public class MapFragment extends Fragment {
             presenter.setForceRefreshPoi();
             presenter.setForceRefreshNotes();
             presenter.loadPoisIfNeeded();
-            nextTuto(2);
+
+            if (forceDisplayAddTuto && !forceDisplaySyncTuto || !forceDisplayAddTuto && !forceDisplaySyncTuto) {
+                nextTuto(2);
+            }
+
+            if (forceDisplayAddTuto && forceDisplaySyncTuto) {
+                forceDisplaySyncTuto = false;
+            }
         }
     }
 
@@ -663,7 +670,6 @@ public class MapFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onOnBackPressedMapEvent(OnBackPressedMapEvent event) {
         Timber.d("Received event OnBackPressedMap");
-        forceDisplayAddTuto = false;
         switch (mapMode) {
             case POI_POSITION_EDITION:
                 mapboxMap.updateMarker(markerSelected);
