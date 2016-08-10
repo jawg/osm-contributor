@@ -236,7 +236,7 @@ public class MapActivity extends AppCompatActivity {
         super.onResume();
         eventBus.register(this);
 
-        if (sharedPreferences.getBoolean(getString(R.string.shared_prefs_preset_default), false)) {
+        if (!sharedPreferences.getBoolean(getString(R.string.shared_prefs_preset_default), false)) {
             navigationView.getMenu().findItem(R.id.edit_way).setVisible(false);
             navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(false);
             eventBus.post(new PleaseLoadPoiTypes());
