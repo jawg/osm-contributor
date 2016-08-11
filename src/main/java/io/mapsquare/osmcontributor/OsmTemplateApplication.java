@@ -36,6 +36,7 @@ import com.flickr4java.flickr.REST;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.squareup.leakcanary.LeakCanary;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -127,6 +128,7 @@ public class OsmTemplateApplication extends Application {
         bus.register(getOsmTemplateComponent().getEditVectorialWayManager());
 
         MapboxAccountManager.start(this, BuildConfig.MAPBOX_TOKEN);
+        LeakCanary.install(this);
     }
 
     @Override

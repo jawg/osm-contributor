@@ -28,6 +28,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.mapsquare.osmcontributor.offline.OfflineRegionManager;
 
 /**
  * @author Tommy Buonomo on 08/08/16.
@@ -35,7 +36,7 @@ import dagger.Provides;
 
 @Module
 @Singleton
-public class OfflineAreaModule {
+public class OfflineRegionModule {
 
     @Provides
     public NotificationManager providesNotificationManager(Application application) {
@@ -45,5 +46,10 @@ public class OfflineAreaModule {
     @Provides
     public OfflineManager provideOfflineManager(Application application) {
         return OfflineManager.getInstance(application);
+    }
+
+    @Provides
+    public OfflineRegionManager provideOfflineRegionManager(OfflineManager offlineManager) {
+        return new OfflineRegionManager(offlineManager);
     }
 }

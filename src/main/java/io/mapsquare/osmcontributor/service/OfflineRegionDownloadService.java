@@ -27,7 +27,6 @@ import android.util.Log;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
-import com.mapbox.mapboxsdk.offline.OfflineManager;
 import com.mapbox.mapboxsdk.offline.OfflineRegion;
 import com.mapbox.mapboxsdk.offline.OfflineRegionError;
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus;
@@ -36,51 +35,52 @@ import com.mapbox.mapboxsdk.offline.OfflineTilePyramidRegionDefinition;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.service.event.CancelOfflineAreaEvent;
-import io.mapsquare.osmcontributor.service.event.DeleteOfflineAreaEvent;
+import io.mapsquare.osmcontributor.offline.OfflineRegionManager;
+import io.mapsquare.osmcontributor.offline.events.CancelOfflineRegionDownloadEvent;
+import io.mapsquare.osmcontributor.offline.events.OfflineRegionCreatedEvent;
 
 /**
  * @author Tommy Buonomo on 03/08/16.
  */
-public class OfflineAreaDownloadService extends IntentService {
+public class OfflineRegionDownloadService extends IntentService {
     private static final String TAG = "MapOfflineManager";
     public static final String LIST_PARAM = "LIST";
     public static final String SIZE_PARAM = "SIZE_PARAM";
-
-    private static final int MIN_ZOOM = 17;
-    private static final int MAX_ZOOM = 21;
-
-    public static final String JSON_CHARSET = "UTF-8";
-    public static final String JSON_FIELD_TAG = "FIELD_TAG";
+    public static final String REGION_NAME_PARAM = "REGION_NAME";
     private static final String CANCEL_DOWNLOAD = "CANCEL_DOWNLOAD";
+
+    public static final int MIN_ZOOM = 13;
+    private static final int MAX_ZOOM = 20;
 
     private List<OfflineRegion> waitingOfflineRegions;
 
     private OfflineRegion currentDownloadRegion;
 
     private boolean deliverStatusUpdate;
+    private Intent intent;
+    private Map<String, NotificationCompat.Builder> notifications;
 
     @Inject
-    OfflineManager offlineManager;
+    OfflineRegionManager offlineRegionManager;
 
     @Inject
     EventBus eventBus;
+
     @Inject
     NotificationManager notificationManager;
 
-    public OfflineAreaDownloadService() {
-        super(OfflineAreaDownloadService.class.getSimpleName());
+    public OfflineRegionDownloadService() {
+        super(OfflineRegionDownloadService.class.getSimpleName());
     }
 
     @Override
@@ -88,21 +88,17 @@ public class OfflineAreaDownloadService extends IntentService {
         super.onCreate();
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
         eventBus.register(this);
-        offlineManager = OfflineManager.getInstance(this);
         waitingOfflineRegions = new ArrayList<>();
+        notifications = new HashMap<>();
     }
 
     @Override
     protected void onHandleIntent(final Intent intent) {
-        offlineManager.listOfflineRegions(new OfflineManager.ListOfflineRegionsCallback() {
+        this.intent = intent;
+        offlineRegionManager.listOfflineRegions(new OfflineRegionManager.OnOfflineRegionsListedListener() {
             @Override
-            public void onList(OfflineRegion[] offlineRegions) {
-                startDownloadIfNeeded(intent, Arrays.asList(offlineRegions));
-            }
-
-            @Override
-            public void onError(String error) {
-                Log.e(TAG, error);
+            public void onOfflineRegionsListed(List<OfflineRegion> offlineRegions) {
+                startDownloadIfNeeded(intent, offlineRegions);
             }
         });
     }
@@ -121,8 +117,11 @@ public class OfflineAreaDownloadService extends IntentService {
                 OfflineRegion presentOfflineRegion = containsInOfflineRegion(presentOfflineRegions, bounds);
                 if (presentOfflineRegion == null) {
                     // The region has never been downloaded
+                    String regionName = intent.getStringExtra(REGION_NAME_PARAM);
+                    regionName = regionName == null ? "Region " + (presentOfflineRegions.size() + c)
+                            : regionName;
                     c++;
-                    downloadOfflineRegion(bounds, "Region " + (presentOfflineRegions.size() + c));
+                    downloadOfflineRegion(bounds, regionName);
                 } else {
                     //The region is already downloaded, we check if it was completed
                     checkIfRegionDownloadIsCompleted(presentOfflineRegion);
@@ -147,57 +146,32 @@ public class OfflineAreaDownloadService extends IntentService {
         });
     }
 
-    public void downloadOfflineRegion(LatLngBounds latLngBounds, final String mapTag) {
-        OfflineTilePyramidRegionDefinition definition = new OfflineTilePyramidRegionDefinition(
+    public void downloadOfflineRegion(LatLngBounds latLngBounds, final String regionName) {
+        final OfflineTilePyramidRegionDefinition definition = new OfflineTilePyramidRegionDefinition(
                 getString(R.string.map_style_url),
                 latLngBounds,
                 MIN_ZOOM,
                 MAX_ZOOM,
                 this.getResources().getDisplayMetrics().density);
 
-        byte[] metadata = encodeMetadata(mapTag);
-
         // Build the notification
-        final NotificationCompat.Builder builder = buildNotification(mapTag);
-        WaitingAreaDownload area = new WaitingAreaDownload(mapTag, builder, metadata, definition);
-
-        downloadWaitingDownloadArea(area);
-    }
-
-    /**
-     * Download in background the area if there is no other download in the same time.
-     * @param area
-     */
-    private void downloadWaitingDownloadArea(final WaitingAreaDownload area) {
-        // Create the region asynchronously
-        offlineManager.createOfflineRegion(
-                area.getDefinition(),
-                area.getMetadata(),
-                new OfflineManager.CreateOfflineRegionCallback() {
-                    @Override
-                    public void onCreate(OfflineRegion offlineRegion) {
-                        // Monitor the download progress using setObserver
-                        offlineRegion.setObserver(getOfflineRegionObserver(area));
-                        startDownloadOfflineRegion(offlineRegion);
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        Log.e(TAG, "Error: " + error);
-                    }
-                });
+        buildNotification(regionName);
+        offlineRegionManager.createOfflineRegion(definition, regionName, new OfflineRegionManager.OnOfflineRegionCreatedListener() {
+            @Override
+            public void onOfflineRegionCreated(OfflineRegion offlineRegion, String regionName) {
+                // Monitor the download progress using setObserver
+                offlineRegion.setObserver(getOfflineRegionObserver(regionName));
+                startDownloadOfflineRegion(offlineRegion);
+                eventBus.post(new OfflineRegionCreatedEvent(offlineRegion, regionName, definition));
+            }
+        });
     }
 
     private void resumeDownloadOfflineRegion(OfflineRegion offlineRegion) {
-        Log.i(TAG, "resumeDownloadOfflineRegion: " + offlineRegion);
-        String mapTag = decodeMetadata(offlineRegion.getMetadata());
-        WaitingAreaDownload areaDownload = new WaitingAreaDownload(
-                mapTag,
-                buildNotification(mapTag),
-                offlineRegion.getMetadata(),
-                (OfflineTilePyramidRegionDefinition) offlineRegion.getDefinition());
-
-        offlineRegion.setObserver(getOfflineRegionObserver(areaDownload));
+        Log.d(TAG, "resumeDownloadOfflineRegion: " + offlineRegion);
+        String regionName = OfflineRegionManager.decodeRegionName(offlineRegion.getMetadata());
+        buildNotification(regionName);
+        offlineRegion.setObserver(getOfflineRegionObserver(regionName));
         startDownloadOfflineRegion(offlineRegion);
     }
 
@@ -227,10 +201,11 @@ public class OfflineAreaDownloadService extends IntentService {
         }
     }
 
-    private OfflineRegion.OfflineRegionObserver getOfflineRegionObserver(final WaitingAreaDownload area) {
-        final NotificationCompat.Builder builder = area.getBuilder();
+    private OfflineRegion.OfflineRegionObserver getOfflineRegionObserver(final String regionName) {
+        final NotificationCompat.Builder builder = notifications.get(regionName);
         return new OfflineRegion.OfflineRegionObserver() {
             int percentage;
+
             @Override
             public void onStatusChanged(OfflineRegionStatus status) {
                 if (deliverStatusUpdate) {
@@ -242,7 +217,7 @@ public class OfflineAreaDownloadService extends IntentService {
                         percentage = newPercent;
                         builder.setContentText(percentage + "%");
                         builder.setProgress(100, percentage, false);
-                        notificationManager.notify(area.getMapTag().hashCode(), builder.build());
+                        notificationManager.notify(regionName.hashCode(), builder.build());
                     }
                 }
                 if (status.isComplete()) {
@@ -252,7 +227,7 @@ public class OfflineAreaDownloadService extends IntentService {
                             .setProgress(0, 0, false)
                             .mActions
                             .clear();
-                    notificationManager.notify(area.getMapTag().hashCode(), builder.build());
+                    notificationManager.notify(regionName.hashCode(), builder.build());
                     currentDownloadRegion = null;
                     checkNextDownload();
                 }
@@ -276,36 +251,22 @@ public class OfflineAreaDownloadService extends IntentService {
     /**
      * Build the download notification to display
      *
-     * @param mapTag
+     * @param regionName
      * @return
      */
-    public NotificationCompat.Builder buildNotification(String mapTag) {
+    public void buildNotification(String regionName) {
         Intent cancelButtonIntent = new Intent(getApplicationContext(), CancelButtonReceiver.class);
-        cancelButtonIntent.putExtra(CancelButtonReceiver.MAP_TAG_PARAM, mapTag);
-        cancelButtonIntent.setAction(CANCEL_DOWNLOAD + mapTag.hashCode());
+        cancelButtonIntent.putExtra(CancelButtonReceiver.MAP_TAG_PARAM, regionName);
+        cancelButtonIntent.setAction(CANCEL_DOWNLOAD + regionName.hashCode());
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, cancelButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_file_download_white)
-                .setContentTitle(this.getString(R.string.notification_download_title) + " " + mapTag)
+                .setContentTitle(this.getString(R.string.notification_download_title) + " " + regionName)
                 .addAction(new NotificationCompat.Action(R.drawable.ic_clear_white, getString(R.string.cancel), pendingIntent))
                 .setDeleteIntent(pendingIntent);
-        return builder;
-    }
-
-    private void deleteOfflineRegion(OfflineRegion offlineRegion) {
-        offlineRegion.delete(new OfflineRegion.OfflineRegionDeleteCallback() {
-            @Override
-            public void onDelete() {
-                Log.d(TAG, "deleteOfflineRegion: Region successfully deleted!");
-            }
-
-            @Override
-            public void onError(String error) {
-                Log.e(TAG, "Delete offline region error: " + error);
-            }
-        });
+        notifications.put(regionName, builder);
     }
 
     /**
@@ -334,66 +295,18 @@ public class OfflineAreaDownloadService extends IntentService {
         return null;
     }
 
-    /**
-     * Build the metadata array byte
-     * @param mapTag
-     * @return the byte array of the metadata
-     */
-    public static byte[] encodeMetadata(String mapTag) {
-        // Set the metadata
-        byte[] metadata;
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put(JSON_FIELD_TAG, mapTag);
-            String json = jsonObject.toString();
-            metadata = json.getBytes(JSON_CHARSET);
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to encode metadata: " + e.getMessage());
-            metadata = null;
-        }
-        return metadata;
-    }
-
-    /**
-     * Decode the metadata and return the map tag field
-     * @param metadata
-     * @return mapTag field
-     */
-    public static String decodeMetadata(byte[] metadata) {
-        String jsonString = new String(metadata);
-        try {
-            JSONObject json = new JSONObject(jsonString);
-            return json.getString(JSON_FIELD_TAG);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDeleteOfflineAreaEvent(final DeleteOfflineAreaEvent event) {
-        offlineManager.listOfflineRegions(new OfflineManager.ListOfflineRegionsCallback() {
-            @Override
-            public void onList(OfflineRegion[] offlineRegions) {
-                for (OfflineRegion region : offlineRegions) {
-                    if (decodeMetadata(region.getMetadata()).equals(event.getMapTag())) {
-                        deleteOfflineRegion(region);
-                    }
-                }
-            }
-
-            @Override
-            public void onError(String error) {
-                Log.e(TAG, "onDeleteOfflineAreaEvent error: " + error);
-            }
-        });
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onCancelOfflineAreaEvent(final CancelOfflineAreaEvent event) {
-        if (currentDownloadRegion != null && decodeMetadata(currentDownloadRegion.getMetadata()).equals(event.getMapTag())) {
+    @SuppressWarnings("unused")
+    public void onCancelOfflineRegionEvent(final CancelOfflineRegionDownloadEvent event) {
+        if (currentDownloadRegion != null && OfflineRegionManager
+                .decodeRegionName(currentDownloadRegion.getMetadata())
+                .equals(event.getRegionName())) {
             cancelDownloadOfflineRegion();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

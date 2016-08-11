@@ -16,39 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.service;
+package io.mapsquare.osmcontributor.offline.events;
 
-import android.support.v4.app.NotificationCompat;
-
+import com.mapbox.mapboxsdk.offline.OfflineRegion;
 import com.mapbox.mapboxsdk.offline.OfflineTilePyramidRegionDefinition;
 
 /**
- * This class represent an area to download later
- * @author Tommy Buonomo on 03/08/16.
+ * @author Tommy Buonomo on 11/08/16.
  */
-class WaitingAreaDownload {
-    private String mapTag;
-    private NotificationCompat.Builder builder;
-    private byte[] metadata;
-    private OfflineTilePyramidRegionDefinition definition;
+public class OfflineRegionCreatedEvent {
+    private final OfflineRegion offlineRegion;
+    private final OfflineTilePyramidRegionDefinition definition;
+    private final String regionName;
 
-    public WaitingAreaDownload(String mapTag, NotificationCompat.Builder builder, byte[] metadata, OfflineTilePyramidRegionDefinition definition) {
-        this.mapTag = mapTag;
-        this.builder = builder;
-        this.metadata = metadata;
+    public OfflineRegionCreatedEvent(OfflineRegion offlineRegion, String regionName, OfflineTilePyramidRegionDefinition definition) {
+        this.offlineRegion = offlineRegion;
+        this.regionName = regionName;
         this.definition = definition;
     }
 
-    public String getMapTag() {
-        return mapTag;
+    public OfflineRegion getOfflineRegion() {
+        return offlineRegion;
     }
 
-    public NotificationCompat.Builder getBuilder() {
-        return builder;
-    }
-
-    public byte[] getMetadata() {
-        return metadata;
+    public String getRegionName() {
+        return regionName;
     }
 
     public OfflineTilePyramidRegionDefinition getDefinition() {

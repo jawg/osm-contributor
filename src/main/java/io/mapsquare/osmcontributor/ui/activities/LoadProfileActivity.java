@@ -57,7 +57,7 @@ import io.mapsquare.osmcontributor.rest.events.PresetListDownloadedEvent;
 import io.mapsquare.osmcontributor.rest.events.error.PresetDownloadErrorEvent;
 import io.mapsquare.osmcontributor.rest.events.error.PresetListDownloadErrorEvent;
 import io.mapsquare.osmcontributor.rest.mappers.H2GeoPresetsItemMapper;
-import io.mapsquare.osmcontributor.service.OfflineAreaDownloadService;
+import io.mapsquare.osmcontributor.service.OfflineRegionDownloadService;
 import io.mapsquare.osmcontributor.ui.adapters.ProfileAdapter;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetEvent;
 import io.mapsquare.osmcontributor.ui.events.presets.PleaseDownloadPresetListEvent;
@@ -111,13 +111,13 @@ public class LoadProfileActivity extends AppCompatActivity
     }
 
     private void startOfflineDownloadService(List<List<Double>> offlineAreas) {
-        Intent intent = new Intent(this, OfflineAreaDownloadService.class);
+        Intent intent = new Intent(this, OfflineRegionDownloadService.class);
         int c = 0;
         for (List<Double> d : offlineAreas) {
-            intent.putStringArrayListExtra(OfflineAreaDownloadService.LIST_PARAM + c, convertDoubleList(d));
+            intent.putStringArrayListExtra(OfflineRegionDownloadService.LIST_PARAM + c, convertDoubleList(d));
             c++;
         }
-        intent.putExtra(OfflineAreaDownloadService.SIZE_PARAM, offlineAreas.size());
+        intent.putExtra(OfflineRegionDownloadService.SIZE_PARAM, offlineAreas.size());
         startService(intent);
     }
 

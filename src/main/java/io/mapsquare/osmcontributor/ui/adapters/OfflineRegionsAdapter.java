@@ -18,15 +18,18 @@
  */
 package io.mapsquare.osmcontributor.ui.adapters;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.mapbox.mapboxsdk.offline.OfflineRegion;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -35,20 +38,17 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.R;
-import io.mapsquare.osmcontributor.service.OfflineAreaDownloadService;
+import io.mapsquare.osmcontributor.offline.OfflineRegionManager;
 
 /**
  * @author Tommy Buonomo on 11/07/16.
  */
 public class OfflineRegionsAdapter extends RecyclerView.Adapter<OfflineRegionsAdapter.OfflineRegionHolder> {
-    private final List<OfflineRegion> offlineRegions;
+    private final List<OfflineRegionItem> offlineRegions;
     private EventBus eventBus;
-    private CardView cardViewSelected;
     private Context context;
-    private int selectedPosition = -1;
-    private int previousSelectedPosition = -1;
 
-    public OfflineRegionsAdapter(List<OfflineRegion> offlineRegions) {
+    public OfflineRegionsAdapter(List<OfflineRegionItem> offlineRegions) {
         this.offlineRegions = offlineRegions;
         eventBus = EventBus.getDefault();
     }
@@ -61,17 +61,32 @@ public class OfflineRegionsAdapter extends RecyclerView.Adapter<OfflineRegionsAd
     }
 
     @Override
-    public void onBindViewHolder(final OfflineRegionHolder holder, int position) {
-        OfflineRegion region = offlineRegions.get(position);
-        String mapTag = OfflineAreaDownloadService.decodeMetadata(region.getMetadata());
-        holder.offlineRegionTextView.setText(mapTag);
+    public void onBindViewHolder(final OfflineRegionHolder holder, final int position) {
+        OfflineRegionItem region = offlineRegions.get(position);
 
-        if (position == selectedPosition) {
-            holder.cardView.setCardElevation(context.getResources().getDimension(R.dimen.cardview_default_elevation) * 4);
-            holder.cardView.animate().scaleX(1.1f).scaleY(1.1f).start();
-        } else if (position == previousSelectedPosition) {
-            holder.cardView.setCardElevation(context.getResources().getDimension(R.dimen.cardview_default_elevation));
-            holder.cardView.animate().scaleX(1.0f).scaleY(1.0f).start();
+        String regionName = OfflineRegionManager.decodeRegionName(region.getOfflineRegion().getMetadata());
+        holder.offlineRegionTextView.setText(regionName);
+
+        if (region.isSelected()) {
+            Animator animX = ObjectAnimator.ofFloat(holder.cardView, View.SCALE_X, 1.15f);
+            Animator animY = ObjectAnimator.ofFloat(holder.cardView, View.SCALE_Y, 1.15f);
+            AnimatorSet animSet = new AnimatorSet();
+            animSet.playTogether(animX, animY);
+            animSet.start();
+        } else {
+            Animator animX = ObjectAnimator.ofFloat(holder.cardView, View.SCALE_X, 1.0f);
+            Animator animY = ObjectAnimator.ofFloat(holder.cardView, View.SCALE_Y, 1.0f);
+            AnimatorSet animSet = new AnimatorSet();
+            animSet.playTogether(animX, animY);
+            animSet.start();
+        }
+
+        if (region.getStatus().isComplete()) {
+            holder.cardView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+            holder.offlineRegionTextView.setTextColor(Color.WHITE);
+        } else {
+            holder.cardView.setBackgroundColor(ContextCompat.getColor(context, R.color.active_text));
+            holder.offlineRegionTextView.setTextColor(Color.WHITE);
         }
     }
 
@@ -80,27 +95,26 @@ public class OfflineRegionsAdapter extends RecyclerView.Adapter<OfflineRegionsAd
         return offlineRegions.size();
     }
 
-    public List<OfflineRegion> getOfflineRegions() {
+    public List<OfflineRegionItem> getOfflineRegionItems() {
         return offlineRegions;
     }
 
-    public OfflineRegion getOfflineRegion(int position) {
+    public OfflineRegionItem getOfflineRegion(int position) {
         return offlineRegions.get(position);
     }
 
-    public void addOfflineRegion(OfflineRegion region) {
+    public void addOfflineRegion(OfflineRegionItem region) {
         if (region != null && offlineRegions != null) {
             offlineRegions.add(region);
             notifyDataSetChanged();
         }
     }
 
-    public void setSelectedPosition(int position) {
-        if (selectedPosition != -1) {
-            previousSelectedPosition = selectedPosition;
+    public void removeOfflineRegion(OfflineRegionItem offlineRegion) {
+        if (offlineRegion != null && offlineRegions != null) {
+            offlineRegions.remove(offlineRegion);
+            notifyDataSetChanged();
         }
-        selectedPosition = position;
-        notifyDataSetChanged();
     }
 
     public static class OfflineRegionHolder extends RecyclerView.ViewHolder {

@@ -201,5 +201,9 @@
   <string name="delete">Deletar</string>
   <string name="rename">Rebatizar</string>
   <string name="no_photos">Este POI não tem fotos</string>
+  <string name="offline_regions_deleted">Região excluído com sucesso</string>
+  <string name="enter_region_name">Introduzir nome da região</string>
+  <string name="region_name_error">Máximo 15 caracteres</string>
+  <string name="region_to_large">Região muito grande, aumentar mais.</string>
 
 </resources>

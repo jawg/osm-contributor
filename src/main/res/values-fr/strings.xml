@@ -250,4 +250,9 @@
     <string name="offline_regions_empty_list">There is no offline regions downloaded, click on the plus button to add one.</string>
     <string name="delete">Supprimer</string>
     <string name="rename">Renommer</string>
+    <string name="download">Télécharger</string>
+    <string name="offline_regions_deleted">Région supprimée</string>
+    <string name="enter_region_name">Entrez un nom</string>
+    <string name="region_name_error">15 caractères maximum</string>
+    <string name="region_to_large">Region trop grande, zommez d\'avantage.</string>
 </resources>

@@ -20,6 +20,7 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/offline_regions_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -31,16 +32,6 @@
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar">
 
-        <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
-            android:id="@+id/offline_regions_empty_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="16dp"
-            android:text="@string/offline_regions_empty_list"
-            android:visibility="gone"
-            app:typeface="Roboto-Light.ttf" />
-
         <com.mapbox.mapboxsdk.maps.MapView
             android:id="@+id/mapview"
             android:layout_width="match_parent"
@@ -49,7 +40,8 @@
             app:attribution_enabled="false"
             app:logo_enabled="false"
             app:rotate_enabled="true"
-            app:zoom_enabled="true"/>
+            app:zoom_enabled="true"
+            app:compass_enabled="false"/>
 
         <View
             android:layout_width="match_parent"
@@ -66,8 +58,18 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="horizontal"
-                android:padding="8dp"
                 android:background="@android:color/transparent"/>
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+                android:id="@+id/offline_regions_empty_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:text="@string/offline_regions_empty_list"
+                android:visibility="visible"
+                app:typeface="Roboto-Light.ttf"
+                android:textColor="@android:color/white"/>
         </FrameLayout>
 
         <LinearLayout
@@ -78,7 +80,7 @@
             android:layout_gravity="bottom|right">
 
             <com.github.clans.fab.FloatingActionMenu
-                android:id="@+id/floating_action_menu"
+                android:id="@+id/edit_region_floating_action_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:menu_icon="@drawable/pencil"
@@ -87,6 +89,16 @@
                 app:menu_colorNormal="@color/material_amber_900"
                 app:menu_colorPressed="@color/material_amber_800"
                 app:menu_colorRipple="@color/material_amber_800">
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/delete_region_floating_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_colorNormal="@color/material_amber_900"
+                    app:fab_colorPressed="@color/material_amber_800"
+                    android:src="@drawable/delete"
+                    app:fab_size="mini"
+                    app:fab_label="@string/delete" />
 
                 <com.github.clans.fab.FloatingActionButton
                     android:id="@+id/rename_region_floating_button"
@@ -99,26 +111,36 @@
                     app:fab_label="@string/rename" />
 
                 <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/delete_region_floating_button"
+                    android:id="@+id/download_region_floating_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:fab_colorNormal="@color/material_amber_900"
-                    app:fab_colorPressed="@color/material_amber_800"
-                    android:src="@drawable/delete"
+                    android:layout_gravity="bottom|right"
+                    android:src="@drawable/ic_file_download_white"
                     app:fab_size="mini"
-                    app:fab_label="@string/delete" />
+                    app:fab_colorNormal="@color/material_green_700"
+                    app:fab_colorPressed="@color/material_green_500"
+                    app:fab_label="@string/download"/>
 
             </com.github.clans.fab.FloatingActionMenu>
 
             <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/add_offline_region"
+                android:id="@+id/add_offline_region_floating_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:src="@drawable/add_white"
                 app:fab_colorNormal="@color/colorPrimaryDark"
-                app:fab_colorPressed="@color/colorPrimary"
-                app:fab_label="@string/edit_poi" />
+                app:fab_colorPressed="@color/colorPrimary"/>
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/download_new_region_floating_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:src="@drawable/ic_file_download_white"
+                app:fab_colorNormal="@color/material_green_700"
+                app:fab_colorPressed="@color/material_green_500"
+                app:fab_label="@string/download"/>
         </LinearLayout>
     </FrameLayout>
 </RelativeLayout>

@@ -16,20 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.service.event;
+package io.mapsquare.osmcontributor.offline.events;
 
 /**
  * @author Tommy Buonomo on 08/08/16.
  */
-public class DeleteOfflineAreaEvent {
-
+public class CancelOfflineRegionDownloadEvent {
     private final String mapTag;
 
-    public DeleteOfflineAreaEvent(String mapTag) {
+    public CancelOfflineRegionDownloadEvent(String mapTag) {
         this.mapTag = mapTag;
     }
 
-    public String getMapTag() {
+    public String getRegionName() {
         return mapTag;
     }
 }

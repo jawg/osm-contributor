@@ -30,7 +30,7 @@ import org.greenrobot.eventbus.EventBus;
 import javax.inject.Inject;
 
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
-import io.mapsquare.osmcontributor.service.event.CancelOfflineAreaEvent;
+import io.mapsquare.osmcontributor.offline.events.CancelOfflineRegionDownloadEvent;
 
 /**
  * @author Tommy Buonomo on 08/08/16.
@@ -50,8 +50,8 @@ public class CancelButtonReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         ((OsmTemplateApplication) context.getApplicationContext()).getOsmTemplateComponent().inject(this);
-        String mapTag = intent.getStringExtra(MAP_TAG_PARAM);
-        eventBus.post(new CancelOfflineAreaEvent(mapTag));
-        notificationManager.cancel(mapTag.hashCode());
+        String regionName = intent.getStringExtra(MAP_TAG_PARAM);
+        eventBus.post(new CancelOfflineRegionDownloadEvent(regionName));
+        notificationManager.cancel(regionName.hashCode());
     }
 }
