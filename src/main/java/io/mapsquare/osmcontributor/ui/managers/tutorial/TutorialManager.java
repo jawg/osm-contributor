@@ -32,6 +32,15 @@ import co.mobiwise.materialintro.view.MaterialIntroView;
 public class TutorialManager {
 
     /*=========================================*/
+    /*-----------STATIC VARIABLES--------------*/
+    /*=========================================*/
+    public static boolean forceDisplayAddTuto;
+
+    public static boolean forceDisplaySyncTuto;
+
+    public static boolean forceDisplayOfflineTuto;
+
+    /*=========================================*/
     /*--------------ATTRIBUTES-----------------*/
     /*=========================================*/
     /**
@@ -90,10 +99,6 @@ public class TutorialManager {
     /*=========================================*/
     /*--------------GETTER/SETTER--------------*/
     /*=========================================*/
-    public boolean isForceDisplay() {
-        return forceDisplay;
-    }
-
     public void setForceDisplay(boolean forceDisplay) {
         this.forceDisplay = forceDisplay;
     }

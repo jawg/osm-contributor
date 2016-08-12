@@ -73,6 +73,7 @@ import io.mapsquare.osmcontributor.ui.events.edition.NewPoiTagAddedEvent;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyPoiChanges;
 import io.mapsquare.osmcontributor.ui.events.edition.PoiChangesApplyEvent;
 import io.mapsquare.osmcontributor.ui.managers.tutorial.AddPoiTutoManager;
+import io.mapsquare.osmcontributor.ui.managers.tutorial.TutorialManager;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 
 
@@ -193,7 +194,7 @@ public class EditPoiFragment extends Fragment {
             @Override
             public void run() {
                 // Display tutorial
-                AddPoiTutoManager addPoiTutoManager = new AddPoiTutoManager(getActivity(), MapFragment.forceDisplayAddTuto);
+                AddPoiTutoManager addPoiTutoManager = new AddPoiTutoManager(getActivity(), TutorialManager.forceDisplayAddTuto);
                 addPoiTutoManager.addInfoTuto(getActivity().findViewById(R.id.action_confirm_edit));
             }
         }, 500);

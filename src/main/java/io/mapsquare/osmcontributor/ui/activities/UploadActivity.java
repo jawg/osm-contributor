@@ -62,8 +62,8 @@ import io.mapsquare.osmcontributor.rest.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.rest.events.error.SyncUploadNoteRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.ui.adapters.PoisAdapter;
-import io.mapsquare.osmcontributor.ui.fragments.MapFragment;
 import io.mapsquare.osmcontributor.ui.managers.tutorial.SyncTutoManager;
+import io.mapsquare.osmcontributor.ui.managers.tutorial.TutorialManager;
 import io.mapsquare.osmcontributor.utils.helper.SwipeItemTouchHelperCallback;
 import io.mapsquare.osmcontributor.utils.upload.PoiUpdateWrapper;
 
@@ -125,7 +125,7 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         poisListView.setAdapter(adapter);
         poisListView.setLayoutManager(new LinearLayoutManager(this));
 
-        syncTutoManager = new SyncTutoManager(this, MapFragment.forceDisplaySyncTuto);
+        syncTutoManager = new SyncTutoManager(this, TutorialManager.forceDisplaySyncTuto);
 
         ItemTouchHelper.Callback callback = new SwipeItemTouchHelperCallback(adapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);

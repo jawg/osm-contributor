@@ -228,4 +228,8 @@ Sin estos permisos, la aplicación no puede funcionar correctamente.</string>
     <string name="enter_region_name">Introduce el nombre de la región</string>
     <string name="region_name_error">15 caracteres como máximo</string>
     <string name="region_to_large">Región demasiado grande, ampliar más.</string>
+    <string name="offline_step3">Haga clic aquí para descargar la zona</string>
+    <string name="offline_step2">Zoom para seleccionar una zona</string>
+    <string name="offline_step1">Haga clic para seleccionar una región</string>
+    <string name="offline_step4">Sus áreas aparecerán aquí</string>
 </resources>

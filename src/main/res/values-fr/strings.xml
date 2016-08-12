@@ -255,4 +255,8 @@
     <string name="enter_region_name">Entrez un nom</string>
     <string name="region_name_error">15 caractères maximum</string>
     <string name="region_to_large">Region trop grande, zommez d\'avantage.</string>
+    <string name="offline_step3">Cliquez ici pour télécharger la zone</string>
+    <string name="offline_step2">Zoomez pour sélectionner une zone</string>
+    <string name="offline_step1">Cliquez ici pour sélectionner une région</string>
+    <string name="offline_step4">Vos zones s\'affichent ici</string>
 </resources>

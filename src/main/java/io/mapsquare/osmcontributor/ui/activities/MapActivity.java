@@ -517,6 +517,7 @@ public class MapActivity extends AppCompatActivity {
     private void onOptionsSyncClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.save_changes:
+                drawerLayout.closeDrawer(navigationView);
                 Intent intent = new Intent(this, UploadActivity.class);
                 startActivity(intent);
                 break;

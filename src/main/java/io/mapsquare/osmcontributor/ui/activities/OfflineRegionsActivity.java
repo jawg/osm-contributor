@@ -64,6 +64,8 @@ import io.mapsquare.osmcontributor.service.OfflineRegionDownloadService;
 import io.mapsquare.osmcontributor.ui.adapters.OfflineRegionItem;
 import io.mapsquare.osmcontributor.ui.adapters.OfflineRegionsAdapter;
 import io.mapsquare.osmcontributor.ui.listeners.RecyclerItemClickListener;
+import io.mapsquare.osmcontributor.ui.managers.tutorial.OfflineTutoManager;
+import io.mapsquare.osmcontributor.ui.managers.tutorial.TutorialManager;
 
 /**
  * @author Tommy Buonomo on 08/08/16.
@@ -150,6 +152,8 @@ public class OfflineRegionsActivity extends AppCompatActivity {
     private OfflineRegionsAdapter adapter;
     private Mode currentMode;
 
+    private OfflineTutoManager offlineTutoManager;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,12 +161,16 @@ public class OfflineRegionsActivity extends AppCompatActivity {
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
         ButterKnife.bind(this);
 
+        offlineTutoManager = new OfflineTutoManager(this, TutorialManager.forceDisplayOfflineTuto);
+
         switchMode(Mode.NO_REGIONS);
 
         initToolbar();
         initMapView(savedInstanceState);
         initRecyclerView();
         initOfflineRegions();
+
+        offlineTutoManager.startTuto();
         initFloatingActionButtons();
     }
 

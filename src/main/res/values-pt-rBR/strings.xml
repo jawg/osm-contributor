@@ -205,5 +205,9 @@
   <string name="enter_region_name">Introduzir nome da região</string>
   <string name="region_name_error">Máximo 15 caracteres</string>
   <string name="region_to_large">Região muito grande, aumentar mais.</string>
+  <string name="offline_step3">Clique aqui para baixar a zona</string>
+  <string name="offline_step2">Zoom para selecionar um fuso</string>
+  <string name="offline_step1">Clique para selecionar uma região</string>
+  <string name="offline_step4">Suas áreas aparecerão aqui</string>
 
 </resources>

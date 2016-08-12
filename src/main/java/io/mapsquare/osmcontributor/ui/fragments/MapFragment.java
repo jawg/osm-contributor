@@ -169,9 +169,7 @@ import io.mapsquare.osmcontributor.utils.ways.LevelBar;
 import timber.log.Timber;
 
 public class MapFragment extends Fragment {
-    private static final String TAG = "MapFragment";
 
-    public static final String MAP_FRAGMENT_TAG = "MAP_FRAGMENT_TAG";
     private static final String LOCATION = "location";
     private static final String ZOOM_LEVEL = "zoom level";
     private static final String LEVEL = "level";
@@ -210,10 +208,6 @@ public class MapFragment extends Fragment {
 
     private Location lastLocation;
 
-    private OsmTemplateApplication application;
-
-    private TutorialManager tutorialManager;
-
     @Inject
     BitmapHandler bitmapHandler;
 
@@ -241,15 +235,13 @@ public class MapFragment extends Fragment {
     @Inject
     ConfigManager configManager;
 
-    //olduv
-    //For testing purpose
     @BindView(R.id.zoom_level)
     TextView zoomLevelText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        application = ((OsmTemplateApplication) getActivity().getApplication());
+        OsmTemplateApplication application = ((OsmTemplateApplication) getActivity().getApplication());
         application.getOsmTemplateComponent().inject(this);
 
         tracker = application.getTracker(OsmTemplateApplication.TrackerName.APP_TRACKER);
@@ -260,8 +252,6 @@ public class MapFragment extends Fragment {
 
         presenter = new MapFragmentPresenter(this);
         mapboxListener = new MapboxListener(this, eventBus);
-
-        tutorialManager = new TutorialManager(getActivity());
     }
 
     @Override
@@ -431,14 +421,7 @@ public class MapFragment extends Fragment {
             presenter.setForceRefreshPoi();
             presenter.setForceRefreshNotes();
             presenter.loadPoisIfNeeded();
-
-            if (forceDisplayAddTuto && !forceDisplaySyncTuto || !forceDisplayAddTuto && !forceDisplaySyncTuto) {
-                nextTuto(2);
-            }
-
-            if (forceDisplayAddTuto && forceDisplaySyncTuto) {
-                forceDisplaySyncTuto = false;
-            }
+            nextTuto(2);
         }
     }
 
@@ -681,7 +664,7 @@ public class MapFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onOnBackPressedMapEvent(OnBackPressedMapEvent event) {
         Timber.d("Received event OnBackPressedMap");
-        forceDisplayAddTuto = false;
+        TutorialManager.forceDisplayAddTuto = false;
         switch (mapMode) {
             case POI_POSITION_EDITION:
                 mapboxMap.updateMarker(markerSelected);
@@ -787,6 +770,9 @@ public class MapFragment extends Fragment {
                 break;
 
             case WAY_EDITION:
+                if (getZoomLevel() < zoomVectorial) {
+                    changeMapZoomSmooth(configManager.getZoomVectorial());
+                }
                 loadAreaForEdition();
                 break;
 
@@ -902,26 +888,6 @@ public class MapFragment extends Fragment {
         }
     }
 
-    public boolean hasMarkers() {
-        return !markersPoi.isEmpty();
-    }
-
-    public void removeAllMarkers() {
-        for (LocationMarkerViewOptions markerOptions : markersNotes.values()) {
-            removeMarkerView(markerOptions);
-        }
-        for (WayMarkerOptions markerOptions : markersNodeRef.values()) {
-            removeWayMarker(markerOptions);
-        }
-        for (PolylineOptions polylineOptions : polylinesWays.values()) {
-            removePolyline(polylineOptions);
-        }
-        markersNotes.clear();
-        markersNodeRef.clear();
-        polylinesWays.clear();
-        removeAllPoiMarkers();
-    }
-
     public void removeAllNotes() {
         for (LocationMarkerViewOptions<Note> markerNote : markersNotes.values()) {
             removeMarkerView(markerNote);
@@ -952,10 +918,6 @@ public class MapFragment extends Fragment {
             removeMarkerView(markersNotes.get(id));
         }
         markersNotes.keySet().removeAll(idsToRemove);
-    }
-
-    public Map<Long, LocationMarkerViewOptions<Poi>> getMarkersPoi() {
-        return markersPoi;
     }
 
     private void removeMarkerView(LocationMarkerViewOptions marker) {
@@ -992,10 +954,6 @@ public class MapFragment extends Fragment {
         addPoiMarkerDependingOnFilters(marker);
     }
 
-    public void invalidateMap() {
-        mapView.invalidate();
-    }
-
     public void addNote(LocationMarkerViewOptions<Note> marker) {
         markersNotes.put(marker.getMarker().getRelatedObject().getId(), marker);
         // add the note to the map
@@ -1025,8 +983,6 @@ public class MapFragment extends Fragment {
     private int zoomVectorial;
     private Map<Long, PolylineOptions> polylinesWays = new HashMap<>();
     private PolylineOptions editionPolyline;
-    private int currentPoiIndexInRelatedPolyline;
-
 
     @OnClick(R.id.edit_way_point_position)
     public void editNodeRefPosition() {
@@ -1487,10 +1443,6 @@ public class MapFragment extends Fragment {
         switchMode(event.getMapMode());
     }
 
-    public LatLng getMyLocation() {
-        return mapboxMap.getCameraPosition().target;
-    }
-
     public void setZoomLevelText(String zoom) {
         zoomLevelText.setText(zoom);
     }
@@ -1504,10 +1456,6 @@ public class MapFragment extends Fragment {
             default:
                 return null;
         }
-    }
-
-    public WayMarkerOptions getWayMarkerOptions(Long id) {
-        return markersNodeRef.get(id);
     }
 
     public LatLngBounds getViewLatLngBounds() {
@@ -1923,26 +1871,23 @@ public class MapFragment extends Fragment {
     /*-----------------------------------------------------------
     * TUTORIAL
     *---------------------------------------------------------*/
-    public static boolean forceDisplayAddTuto;
-
-    public static boolean forceDisplaySyncTuto;
-
     private AddPoiTutoManager addPoiTutoManager;
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPleaseDisplayTutorialEvent(PleaseDisplayTutorialEvent event) {
-        forceDisplayAddTuto = true;
-        forceDisplaySyncTuto = true;
+        TutorialManager.forceDisplayAddTuto = true;
+        TutorialManager.forceDisplaySyncTuto = true;
+        TutorialManager.forceDisplayOfflineTuto = true;
         switchMode(MapMode.DEFAULT);
         Toast.makeText(getActivity(), getString(R.string.replay_tuto_info), Toast.LENGTH_LONG).show();
     }
 
     private void nextTuto(int step) {
         if (addPoiTutoManager == null) {
-            addPoiTutoManager = new AddPoiTutoManager(getActivity(), forceDisplayAddTuto);
+            addPoiTutoManager = new AddPoiTutoManager(getActivity(), TutorialManager.forceDisplayAddTuto);
         }
 
-        addPoiTutoManager.setForceDisplay(forceDisplayAddTuto);
+        addPoiTutoManager.setForceDisplay(TutorialManager.forceDisplayAddTuto);
 
         switch (step) {
             // Display when the user clicks on the "+" button.
@@ -1957,10 +1902,8 @@ public class MapFragment extends Fragment {
 
             // Display when a use add a poi on the map.
             case 2:
-                if (configManager.hasPoiAddition()) {
-                    addPoiTutoManager.synchronizedModificationsTuto(mapView);
-                }
-                forceDisplayAddTuto = false;
+                addPoiTutoManager.synchronizedModificationsTuto(mapView);
+                TutorialManager.forceDisplayAddTuto = false;
                 break;
         }
     }

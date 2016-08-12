@@ -295,4 +295,8 @@
     <string name="enter_region_name">Enter region name</string>
     <string name="region_name_error">15 characters maximum</string>
     <string name="region_to_large">Region too large, please zoom more.</string>
+    <string name="offline_step3">Click here to download the zone</string>
+    <string name="offline_step2">Zoom to select a zone</string>
+    <string name="offline_step1">Click to select a region</string>
+    <string name="offline_step4">Your areas will appear here</string>
 </resources>
