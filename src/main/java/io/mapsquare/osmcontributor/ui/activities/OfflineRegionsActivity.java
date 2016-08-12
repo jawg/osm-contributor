@@ -182,6 +182,7 @@ public class OfflineRegionsActivity extends AppCompatActivity {
                 OfflineRegionsActivity.this.mapboxMap = mapboxMap;
                 mapboxMap.getUiSettings().setCompassEnabled(false);
                 mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
+                mapboxMap.getUiSettings().setTiltGesturesEnabled(false);
                 enableMapGestures(false);
             }
         });
