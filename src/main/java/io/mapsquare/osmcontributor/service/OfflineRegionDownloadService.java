@@ -162,7 +162,7 @@ public class OfflineRegionDownloadService extends IntentService {
                 // Monitor the download progress using setObserver
                 offlineRegion.setObserver(getOfflineRegionObserver(regionName));
                 startDownloadOfflineRegion(offlineRegion);
-                eventBus.post(new OfflineRegionCreatedEvent(offlineRegion, regionName, definition));
+                eventBus.post(new OfflineRegionCreatedEvent());
             }
         });
     }

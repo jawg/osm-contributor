@@ -86,7 +86,7 @@ public class OfflineRegionsAdapter extends RecyclerView.Adapter<OfflineRegionsAd
             holder.offlineRegionTextView.setTextColor(Color.WHITE);
         } else {
             holder.cardView.setBackgroundColor(ContextCompat.getColor(context, R.color.active_text));
-            holder.offlineRegionTextView.setTextColor(Color.WHITE);
+            holder.offlineRegionTextView.setTextColor(ContextCompat.getColor(context, R.color.disable_text));
         }
     }
 

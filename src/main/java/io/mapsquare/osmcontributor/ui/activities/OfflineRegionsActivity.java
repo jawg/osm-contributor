@@ -414,17 +414,7 @@ public class OfflineRegionsActivity extends AppCompatActivity {
     @SuppressWarnings("unused")
     public void onOfflineRegionCreatedEvent(final OfflineRegionCreatedEvent event) {
         if (adapter != null) {
-            event.getOfflineRegion().getStatus(new OfflineRegion.OfflineRegionStatusCallback() {
-                @Override
-                public void onStatus(OfflineRegionStatus status) {
-                    refreshOfflineRegions();
-                }
-
-                @Override
-                public void onError(String error) {
-                    Log.e(TAG, "onError: " + error);
-                }
-            });
+            refreshOfflineRegions();
         }
     }
 

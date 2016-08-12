@@ -18,32 +18,8 @@
  */
 package io.mapsquare.osmcontributor.offline.events;
 
-import com.mapbox.mapboxsdk.offline.OfflineRegion;
-import com.mapbox.mapboxsdk.offline.OfflineTilePyramidRegionDefinition;
-
 /**
  * @author Tommy Buonomo on 11/08/16.
  */
 public class OfflineRegionCreatedEvent {
-    private final OfflineRegion offlineRegion;
-    private final OfflineTilePyramidRegionDefinition definition;
-    private final String regionName;
-
-    public OfflineRegionCreatedEvent(OfflineRegion offlineRegion, String regionName, OfflineTilePyramidRegionDefinition definition) {
-        this.offlineRegion = offlineRegion;
-        this.regionName = regionName;
-        this.definition = definition;
-    }
-
-    public OfflineRegion getOfflineRegion() {
-        return offlineRegion;
-    }
-
-    public String getRegionName() {
-        return regionName;
-    }
-
-    public OfflineTilePyramidRegionDefinition getDefinition() {
-        return definition;
-    }
 }
