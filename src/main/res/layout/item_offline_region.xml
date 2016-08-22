@@ -25,7 +25,7 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:cardElevation="@dimen/fab_elevation_lollipop"
+    app:cardElevation="2dp"
     app:cardBackgroundColor="@color/colorPrimaryDark"
     app:cardCornerRadius="5dp"
     android:clickable="true"

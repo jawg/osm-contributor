@@ -19,7 +19,7 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Localisation floating button-->
     <color name="floating_ab_normal">#fff5f5f5</color>
@@ -49,5 +49,6 @@
 
     <!--Layout-->
     <color name="divider">#BDBDBD</color>
-
+    <color name="material_blue_500">#2196F3</color>
+    <color name="material_blue_grey_800" tools:override="true">#37474F</color>
 </resources>
