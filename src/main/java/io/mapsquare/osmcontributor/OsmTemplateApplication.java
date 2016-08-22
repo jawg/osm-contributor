@@ -80,9 +80,9 @@ public class OsmTemplateApplication extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         } else {
-            Fabric.with(this, new Crashlytics());
             Timber.plant(new CrashlyticsTree());
         }
+        Fabric.with(this, new Crashlytics());
 
         // Init Stetho for debug purpose (database)
         Stetho.initializeWithDefaults(this);

@@ -442,7 +442,9 @@ public class MapFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mapView.onDestroy();
+        if (mapView != null) {
+            mapView.onDestroy();
+        }
         // Clear bitmapHandler even if activity leaks.
         bitmapHandler = null;
     }

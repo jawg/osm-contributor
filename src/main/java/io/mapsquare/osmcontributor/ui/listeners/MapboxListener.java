@@ -44,7 +44,6 @@ import io.mapsquare.osmcontributor.ui.utils.MapMode;
 import io.mapsquare.osmcontributor.ui.utils.ZoomAnimationGestureDetector;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.WayMarker;
-import timber.log.Timber;
 
 
 public class MapboxListener {
@@ -171,8 +170,6 @@ public class MapboxListener {
         // For testing purpose
         mapFragment.setZoomLevelText(df.format(zoom));
         boolean isVectorial = mapFragment.isVectorial();
-
-        Timber.v("new zoom : %s", zoom);
 
         if (zoom < mapFragment.getZoomVectorial()) {
             mapFragment.getLevelBar().setVisibility(View.INVISIBLE);
