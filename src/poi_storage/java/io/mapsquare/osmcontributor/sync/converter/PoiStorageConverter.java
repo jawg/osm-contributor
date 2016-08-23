@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.mapsquare.osmcontributor.sync.converter;
+package io.mapsquare.osmcontributor.rest.mappers;
 
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -25,11 +25,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.mapsquare.osmcontributor.core.database.dao.PoiTypeDao;
-import io.mapsquare.osmcontributor.core.model.Poi;
-import io.mapsquare.osmcontributor.core.model.PoiTag;
-import io.mapsquare.osmcontributor.core.model.PoiType;
-import io.mapsquare.osmcontributor.core.model.PoiTypeTag;
+import io.mapsquare.osmcontributor.database.dao.PoiTypeDao;
+import io.mapsquare.osmcontributor.model.entities.Poi;
+import io.mapsquare.osmcontributor.model.entities.PoiTag;
+import io.mapsquare.osmcontributor.model.entities.PoiType;
+import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
 import io.mapsquare.osmcontributor.sync.dto.poistorage.LatLng;
 import io.mapsquare.osmcontributor.sync.dto.poistorage.PoiDto;
 import io.mapsquare.osmcontributor.sync.dto.poistorage.TypeDto;

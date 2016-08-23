@@ -35,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <io.mapsquare.osmcontributor.type.DelayedAutoCompleteTextView
+        <io.mapsquare.osmcontributor.ui.utils.views.DelayedAutoCompleteTextView
             android:id="@+id/poi_type_model"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

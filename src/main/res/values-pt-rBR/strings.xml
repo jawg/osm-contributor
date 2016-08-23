@@ -40,6 +40,7 @@
   <string name="no_poi_name">Este POI não tem nome</string>
   <string name="edit_position">Mudar posição</string>
   <string name="edit_poi">Editar POI</string>
+  <string name="duplicate_poi">Duplicar POI</string>
   <string name="update_done">%1$s Poi(s) atualizados no OSM</string>
   <string name="delete_done">%1$s Poi(s) deletados no OSM</string>
   <string name="noderef_moved">%1$s point(s) atualizados no OSM, atualize o mapa em alguns minutos para ver suas mudanças</string>
@@ -62,10 +63,11 @@
   <string name="delete_poi_negative_btn">Cancelar</string>
   <string name="point_modification_forbidden">Esta versão não permite modificação de pontos</string>
   <string name="licenses_title">Licenças</string>
-  <string name="osm_copyright">© colaboradores do OpenStreetMap</string>
+  <string name="osm_copyright"><![CDATA[<font color=\"#000\">© colaboradores do </font><font color=\"#1565C0\">OpenStreetMap </font>]]></string>
   <string name="zoom_to_edit">Esta área é muito grande para fazer download, por favor aumente o zoom.</string>
   <string name="download_in_progress">Download em progresso de todos os POIs e notas da zona mostrada</string>
-  <string name="switch_style">Vista de satélite</string>
+  <string name="switch_style_satellite">Vista de satélite</string>
+  <string name="switch_style_default">Vista por defecto</string>
   <string name="zoom_more">Você precisa aumentar o zoom para fazer o download de POIs</string>
   <string name="search_poitype_hint">Buscar um tipo de POI</string>
   <!--Strings related to login-->
@@ -77,6 +79,7 @@
   <string name="summary_login">Por favor, coloque seu login</string>
   <string name="summary_password">Por favor, coloque sua senha</string>
   <string name="error_login">Não foi possível conectar com esse login e senha. Você tem certeza de que tem direitos de edição?</string>
+  <string name="error_first_login">Não foi possível conectar com esse login e senha.</string>
   <string name="valid_login">Conexão efetuada com sucesso.</string>
   <string name="reset_title">Resetar o Banco de Dados.</string>
   <string name="reset_summary">Remover todos os POIs do Banco de Dados</string>
@@ -87,19 +90,20 @@
   <string name="reset_failure">Houve um erro durante o reset do Banco de Dados</string>
   <!--Shared preferences-->
   <string name="shared_prefs_login_title">Conexão</string>
+  <string name="shared_prefs_google_connection">Conexão com Google</string>
   <string name="shared_prefs_server">Servidor OSM</string>
   <!--Tuto-->
-  <string name="tuto_title_press_create">Criação de POI</string>
-  <string name="tuto_title_confirm">Verifique suas mudanças</string>
-  <string name="tuto_title_cancel">Cancele suas mudanças</string>
   <string name="tuto_text_press_create">Clique aqui para adicionar um novo ponto</string>
   <string name="tuto_text_choose_type">Escolha o tipo de POI que você quer adicionar</string>
-  <string name="tuto_text_poi_or_note">Escolha entre adicionar um POI ou uma nota</string>
-  <string name="tuto_text_swipe_for_position">Arraste o mapa para escolher a posição de seu novo ponto</string>
   <string name="tuto_text_confirm_position_creation">Clique para confirmar a posição. Qualquer outro botão irá descartar sua criação.</string>
-  <string name="tuto_text_cancel_creation">Este botão ou o botão de retornar irão descartar suas mudanças.</string>
   <string name="tuto_text_confirm_creation">Clique para finalizar sua criação ou edição.</string>
   <string name="replay_tuto">Rever tutorial</string>
+  <string name="replay_tuto_info">Os tutoriais será repetido</string>
+  <string name="tuto_text_synchronized">Os ícones cinza não estão sincronizados</string>
+  <string name="tuto_text_clic_to_synchronized">Você pode sincronizar as alterações por este menu</string>
+  <string name="tuto_text_cancel_sync">Você pode cancelar uma ou mais alterações aqui</string>
+  <string name="tuto_text_comment">Antes de salvar , adicionar um comentário</string>
+  <string name="tuto_text_confirm_sync">Salve as alterações aqui</string>
   <!--note-->
   <string name="Note">Nota</string>
   <string name="comment_text_hint">Coloque um comentário</string>
@@ -112,7 +116,7 @@
   <string name="comment_text_cant_be_null">O texto de comentário não pode ficar vazio</string>
   <string name="comment_synchronizing">Por favor aguarde enquanto a sincronização termina.</string>
   <string name="save_note">Salvar</string>
-  <string name="synchronizing">Sincronizando...</string>
+  <string name="synchronizing">Sincronizando…</string>
   <string name="note_already_closed">Nota já foi fechada</string>
   <string name="title_activity_note">Nota</string>
   <string name="note">Nota</string>
@@ -159,6 +163,17 @@
   <string name="poi_tag_key_hint">chave</string>
   <string name="poi_tag_value_hint">valor</string>
   <string name="poi_tag_mandatory">Obrigatório</string>
+  <string name="poi_tag_days">Dias</string>
+  <string name="poi_tag_months">Mês</string>
+  <string name="poi_tag_hours">Horários</string>
+  <string name="hours">Horas</string>
+  <string name="day_monday_letter">S</string>
+  <string name="day_tuesday_letter">T</string>
+  <string name="day_wednesday_letter">Q</string>
+  <string name="day_thursday_letter">Q</string>
+  <string name="day_friday_letter">S</string>
+  <string name="day_saturday_letter">S</string>
+  <string name="day_sunday_letter">D</string>
   <!--Snackbar-->
   <string name="item_removed">\"%1$s\" foi removido</string>
   <string name="undo">Desfazer</string>
@@ -169,4 +184,30 @@
   <string name="revert_snack_bar">Reverter mudanças</string>
   <string name="undo_snack_bar">Desfazer</string>
   <string name="node_ref_title">Ponto</string>
+  <string name="malformated_tag">O valor da tag não respeita os convenções de OSM</string>
+  <string name="malformated_value">Valor actual : </string>
+
+  <string name="flickr_title">Flickr consideram precisado</string>
+  <string name="flickr_need">You need a Yahoo account (Flickr) to post a photo</string>
+  <string name="upload_message">Envio da imagem…</string>
+  <string name="login_using">Faça o login usando</string>
+  <string name="login_verb">Entrar</string>
+  <string name="login_later">Ligar mais tarde</string>
+  <string name="empty_fields">Empty fields!</string>
+  <string name="download_offline_area_title">Download offline regions</string>
+  <string name="download_offline_area_more_later">Download later</string>
+  <string name="offline_regions">Regiões off-line</string>
+  <string name="offline_regions_empty_list">There is no offline regions downloaded, click on the plus button to add one.</string>
+  <string name="delete">Deletar</string>
+  <string name="rename">Rebatizar</string>
+  <string name="no_photos">Este POI não tem fotos</string>
+  <string name="offline_regions_deleted">Região excluído com sucesso</string>
+  <string name="enter_region_name">Introduzir nome da região</string>
+  <string name="region_name_error">Máximo 15 caracteres</string>
+  <string name="region_to_large">Região muito grande, aumentar mais.</string>
+  <string name="offline_step3">Clique aqui para baixar a zona</string>
+  <string name="offline_step2">Zoom para selecionar um fuso</string>
+  <string name="offline_step1">Clique para selecionar uma região</string>
+  <string name="offline_step4">Suas áreas aparecerão aqui</string>
+
 </resources>

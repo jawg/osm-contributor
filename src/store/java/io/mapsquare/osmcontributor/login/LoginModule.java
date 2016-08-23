@@ -23,7 +23,10 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import org.greenrobot.eventbus.EventBus;
-import io.mapsquare.osmcontributor.sync.rest.OsmRestClient;
+
+import io.mapsquare.osmcontributor.database.preferences.LoginPreferences;
+import io.mapsquare.osmcontributor.rest.clients.OsmRestClient;
+import io.mapsquare.osmcontributor.ui.managers.LoginManager;
 
 @Module
 @Singleton

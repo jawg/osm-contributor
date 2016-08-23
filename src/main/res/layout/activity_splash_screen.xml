@@ -19,15 +19,15 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="16dp"
-    tools:context="io.mapsquare.osmcontributor.login.SplashScreenActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:activity=".ui.activities.SplashScreenActivity"
+    android:background="@color/colorPrimaryDark">
 
-    <TextView
+    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:id="@+id/splash_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -35,16 +35,18 @@
         android:layout_marginTop="20dp"
         android:shadowRadius="2"
         android:text="@string/name"
-        android:textColor="@color/colorPrimary"
-        android:textSize="40sp"/>
+        android:textColor="@android:color/white"
+        android:textSize="40sp"
+        app:typeface="Roboto-Light.ttf"/>
 
-    <TextView
+    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:id="@+id/mapsquare"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/splash_title"
         android:layout_centerHorizontal="true"
-        android:textSize="24sp"/>
+        android:textSize="24sp"
+        app:typeface="Roboto-Light.ttf"/>
 
     <ImageView
         android:id="@+id/splash_image"
@@ -56,7 +58,7 @@
         android:src="@drawable/splash"/>
 
 
-    <TextView
+    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:id="@+id/sync"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -66,9 +68,9 @@
         android:gravity="center"
         android:shadowRadius="2"
         android:text="@string/splash_screen_message"
-        android:textColor="@color/theme_grey"
-        android:textSize="18sp"/>
-
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:typeface="RobotoCondensed-Regular.ttf"/>
 
     <ProgressBar
         android:id="@+id/ProgressBar01"

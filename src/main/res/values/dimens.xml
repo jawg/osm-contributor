@@ -35,5 +35,8 @@
 
     <!-- Floating action button -->
     <dimen name="fab_margin">12dp</dimen>
+    <dimen name="progress_bar_size">100dp</dimen>
+    <dimen name="progress_bar_radius">10dp</dimen>
+    <dimen name="offline_regions_padding_top">116dp</dimen>
 
 </resources>

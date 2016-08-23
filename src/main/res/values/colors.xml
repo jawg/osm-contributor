@@ -19,7 +19,7 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Localisation floating button-->
     <color name="floating_ab_normal">#fff5f5f5</color>
@@ -29,13 +29,18 @@
     <!--text-->
     <color name="active_text">#424242</color>
     <color name="disable_text">#9E9E9E</color>
+    <color name="hint_color">#7c7c7c</color>
 
     <color name="theme_grey">#ff999999</color>
     <color name="material_amber_800">#ffff8f00</color>
     <color name="material_amber_900">#ffff6f00</color>
+    <color name="error_color">#F44336</color>
 
     <color name="material_green_500">#4CAF50</color>
     <color name="material_green_700">#388E3C</color>
+
+    <color name="material_red_500">#F44336</color>
+    <color name="material_red_600">#E53935</color>
 
     <!-- Drag/Swipe list -->
     <color name="list_divider">#e5e5e5</color>
@@ -44,5 +49,6 @@
 
     <!--Layout-->
     <color name="divider">#BDBDBD</color>
-
+    <color name="material_blue_500">#2196F3</color>
+    <color name="material_blue_grey_800" tools:override="true">#37474F</color>
 </resources>

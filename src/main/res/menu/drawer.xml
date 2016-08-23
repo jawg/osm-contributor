@@ -52,7 +52,15 @@
 
         <item
             android:id="@+id/switch_style"
-            android:title="@string/switch_style"/>
+            android:title="@string/switch_style_satellite"/>
+
+        <item
+            android:id="@+id/profile_load"
+            android:title="@string/profile_load"/>
+
+        <item
+            android:id="@+id/offline_regions"
+            android:title="@string/offline_regions"/>
 
         <item
             android:id="@+id/replay_tuto_menu"

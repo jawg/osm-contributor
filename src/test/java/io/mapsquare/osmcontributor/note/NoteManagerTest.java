@@ -32,11 +32,12 @@ import org.robolectric.RobolectricTestRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.mapsquare.osmcontributor.DaggerOsmTemplateComponent;
-import io.mapsquare.osmcontributor.OsmTemplateComponent;
-import io.mapsquare.osmcontributor.OsmTemplateModule;
-import io.mapsquare.osmcontributor.core.model.Comment;
-import io.mapsquare.osmcontributor.core.model.Note;
+import io.mapsquare.osmcontributor.modules.DaggerOsmTemplateComponent;
+import io.mapsquare.osmcontributor.modules.OsmTemplateComponent;
+import io.mapsquare.osmcontributor.modules.OsmTemplateModule;
+import io.mapsquare.osmcontributor.model.entities.Comment;
+import io.mapsquare.osmcontributor.model.entities.Note;
+import io.mapsquare.osmcontributor.ui.managers.NoteManager;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 

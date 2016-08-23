@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2016 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:minWidth="1000dp">
+
+    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/login_title"
+        android:textSize="25sp"
+        android:textColor="@android:color/black"
+        app:typeface="RobotoCondensed-Regular.ttf"
+        android:layout_marginBottom="16dp"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/TextInputLayout">
+
+        <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
+            android:id="@+id/dialog_connection_login_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/prompt_login"
+            android:inputType="textNoSuggestions"
+            android:textSize="15sp"
+            app:typeface="Roboto-Light.ttf" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/TextInputLayout">
+
+        <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
+            android:id="@+id/dialog_connection_password_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/prompt_password"
+            android:inputType="textPassword"
+            android:textSize="15sp"
+            app:typeface="Roboto-Light.ttf" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/dialog_connection_login_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/colorPrimaryDark"
+        android:text="@string/login_verb"
+        android:textColor="@android:color/white"
+        android:layout_margin="16dp"/>
+
+    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:typeface="Roboto-Light.ttf"
+        android:text="@string/login_using"
+        android:gravity="center"
+        android:layout_margin="16dp"/>
+
+    <Button
+        android:id="@+id/dialog_connection_google_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_google"
+        android:text="@string/google"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center"
+        android:textAllCaps="false"/>
+
+    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+        android:id="@+id/dialog_connection_login_later"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
+        android:layout_gravity="right"
+        app:typeface="Roboto-Light.ttf"
+        android:text="@string/login_later"/>
+</LinearLayout>

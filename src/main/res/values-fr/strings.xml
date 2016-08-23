@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 
     Copyright (C) 2016 eBusiness Information
 
@@ -48,6 +47,7 @@
     <string name="no_poi_name">Ce poi n\'a pas de nom</string>
     <string name="edit_position">Changer la position</string>
     <string name="edit_poi">Editer le poi</string>
+    <string name="duplicate_poi">Dupliquer le POI</string>
     <string name="update_done">%1$s Poi(s) mis à jour sur OSM</string>
     <string name="delete_done">%1$s Poi(s) supprimé(s) sur OSM</string>
     <string name="noderef_moved">%1$s point(s) mis à jour sur OSM, rafraichissez votre carte dans quelques minutes pour voir vos modifications.</string>
@@ -70,10 +70,11 @@
     <string name="delete_poi_negative_btn">Annuler</string>
     <string name="point_modification_forbidden">Cette version ne permet pas la modification de points</string>
     <string name="licenses_title">Licences</string>
-    <string name="osm_copyright">© OpenStreetMap contributors</string>
+    <string name="osm_copyright"><![CDATA[<font color=\"#000\">© </font><font color=\"#1565C0\">OpenStreetMap </font><font color=\"#000\">contributors</font>]]></string>
     <string name="zoom_to_edit">Cette zone est trop grande. Veuillez zoomer plus.</string>
     <string name="download_in_progress">Tous les pois et notes de la zone affichée sont en cours de rechargement</string>
-    <string name="switch_style">Vue satellite</string>
+    <string name="switch_style_satellite">Vue Satellite</string>
+    <string name="switch_style_default">Vue par défaut</string>
     <string name="zoom_more">Vous devez zoomer plus pour pouvoir télécharger les données</string>
     <string name="search_poitype_hint">Chercher un type de Poi</string>
     <string name="title_3d_view">Vue 3D</string>
@@ -89,6 +90,7 @@
     <string name="summary_login">Veuillez saisir votre identifiant OSM</string>
     <string name="summary_password">Veuillez saisir votre mot de passe</string>
     <string name="error_login">Impossible de se connecter avec ces identifiants. Etes-vous sûr d\'avoir les droits d\'édition?</string>
+    <string name="error_first_login">Impossible de se connecter avec ces identifiants.</string>
     <string name="valid_login">Connexion réussie</string>
     <string name="expert_mode_summary">Vous permet de gérer les types de pois</string>
     <string name="expert_mode_title">Mode expert</string>
@@ -107,19 +109,20 @@
     <!-- Shared preferences -->
     <string name="shared_prefs_login_title">Connexion</string>
     <string name="shared_prefs_server">Serveur OSM</string>
+    <string name="shared_prefs_google_connection">Se connecter avec Google</string>
 
     <!-- Tuto -->
-    <string name="tuto_title_press_create">Création de poi</string>
-    <string name="tuto_title_confirm">Validez vos modifications</string>
-    <string name="tuto_title_cancel">Annulez vos modifications</string>
     <string name="tuto_text_press_create">Cliquez ici pour ajouter un nouveau point</string>
     <string name="tuto_text_choose_type">Choisissez le type du Poi que vous souhaitez ajouter</string>
-    <string name="tuto_text_poi_or_note">Voulez vous ajouter une note ou un poi ?</string>
-    <string name="tuto_text_swipe_for_position">Faites bouger la carte afin de positionner votre poi.</string>
-    <string name="tuto_text_confirm_position_creation">Cliquez pour confirmer la position, tout retour annulera votre création.</string>
-    <string name="tuto_text_cancel_creation">Ce Bouton ou le bouton de retour annuleront vos modifications.</string>
-    <string name="tuto_text_confirm_creation">Cliquez pour finaliser la création ou l\'édition.</string>
-    <string name="replay_tuto">Rejouer le tutoriel</string>
+    <string name="tuto_text_confirm_position_creation">Une fois votre point placé, cliquez ici pour confirmer la position, tout retour annulera votre création.</string>
+    <string name="tuto_text_confirm_creation">Ce bouton vous permettra de sauvegarder vos changements lorsque vous avez terminé.</string>
+    <string name="tuto_text_synchronized">Les icônes en grises ne sont pas synchronisées !</string>
+    <string name="tuto_text_clic_to_synchronized">Vous pouvez synchroniser vos modifications à tout moment via ce menu</string>
+    <string name="tuto_text_cancel_sync">Vous pouvez annuler une ou plusieurs de vos modifications en cliquant ici</string>
+    <string name="tuto_text_comment">Avant de sauvegarder, associez un commentaire à vos changements</string>
+    <string name="tuto_text_confirm_sync">Vous pouvez valider et synchroniser vos changements.</string>
+    <string name="replay_tuto">Rejouer les tutoriels</string>
+    <string name="replay_tuto_info">Les tutoriels seront rejoués</string>
 
     <!-- note -->
     <string name="Note">Note</string>
@@ -151,6 +154,10 @@
     <string name="filter_note_closed">Fermée</string>
     <string name="filter_pois">POIs</string>
     <string name="filter_poi_all">Tous</string>
+
+    <!-- Profile -->
+    <string name="profile_load">Charger un profil</string>
+    <string name="profile_refresh_error">Une erreur est survenue lors du rafraîchissement des profils!</string>
 
     <!-- Saving -->
     <string name="save_now">Sauvegarder&#8230;</string>
@@ -187,6 +194,17 @@
     <string name="poi_tag_key_hint">clé</string>
     <string name="poi_tag_value_hint">valeur</string>
     <string name="poi_tag_mandatory">Obligatoire</string>
+    <string name="poi_tag_days">Jours</string>
+    <string name="poi_tag_months">Mois</string>
+    <string name="poi_tag_hours">Horaires</string>
+    <string name="hours">Heures</string>
+    <string name="day_monday_letter">L</string>
+    <string name="day_tuesday_letter">M</string>
+    <string name="day_wednesday_letter">M</string>
+    <string name="day_thursday_letter">J</string>
+    <string name="day_friday_letter">V</string>
+    <string name="day_saturday_letter">S</string>
+    <string name="day_sunday_letter">D</string>
 
     <!-- Snackbar -->
     <string name="item_removed">\"%1$s\" a été supprimé</string>
@@ -203,4 +221,42 @@
     <!-- Easter Egg -->
     <string name="easter_egg_activation">La 3D activé tu as!</string>
 
+    <!-- Android 6.0 dialog messages -->
+    <string name="permissions_title">Permissions nécessaires</string>
+    <string name="login_title">Connexion</string>
+    <string name="permissions_information">L\'accès à la localisation et en écriture au téléphone
+        sont nécessaires pour gérer la carte et la base de données.
+        Nous ne récupérons aucunes données personnelles sur votre téléphone. En refusant ces
+        deux permissions, l\'application ne peut fonctionner correctement.
+    </string>
+
+    <string name="malformated_tag">La valeur du tag ne respecte pas les conventions d\'OSM</string>
+    <string name="malformated_value">Valeur actuelle : </string>
+
+    <string name="flickr_title">Compte Flickr nécessaire</string>
+    <string name="flickr_need">Vous avez besoin d\'un compte Yahoo (Flickr) pour poster une photo</string>
+
+    <string name="upload_message">Envoi de l\'image en cours</string>
+    <string name="login_using">Se connecter via</string>
+    <string name="login_verb">Se connecter</string>
+    <string name="login_later">Se connecter plus tard</string>
+    <string name="empty_fields">Champs vides!</string>
+    <string name="download_offline_area_title">Download offline regions</string>
+    <string name="download_offline_area_message">Ce preset contient des régions visualisables en mode hors-ligne.\nCela requiert un téléchargement de ces régions au préalable.
+        Il est conseillé d\'avoir une connexion Wifi pendant le téléchargement.\n\nVoulez-vous lancer le téléchargement?</string>
+    <string name="download_offline_area_more_later">Download later</string>
+    <string name="offline_regions">Régions hors connexion</string>
+    <string name="no_photos">Aucune photo n\'est associée à ce point</string>
+    <string name="offline_regions_empty_list">There is no offline regions downloaded, click on the plus button to add one.</string>
+    <string name="delete">Supprimer</string>
+    <string name="rename">Renommer</string>
+    <string name="download">Télécharger</string>
+    <string name="offline_regions_deleted">Région supprimée</string>
+    <string name="enter_region_name">Entrez un nom</string>
+    <string name="region_name_error">15 caractères maximum</string>
+    <string name="region_to_large">Region trop grande, zommez d\'avantage.</string>
+    <string name="offline_step3">Cliquez ici pour télécharger la zone</string>
+    <string name="offline_step2">Zoomez pour sélectionner une zone</string>
+    <string name="offline_step1">Cliquez ici pour sélectionner une région</string>
+    <string name="offline_step4">Vos zones s\'affichent ici</string>
 </resources>

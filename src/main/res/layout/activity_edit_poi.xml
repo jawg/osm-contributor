@@ -33,7 +33,7 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="io.mapsquare.osmcontributor.edition.EditPoiActivity">
+        tools:activity=".ui.activities.EditPoiActivity">
     </RelativeLayout>
 </LinearLayout>
 

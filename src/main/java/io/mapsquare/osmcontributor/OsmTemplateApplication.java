@@ -20,61 +20,128 @@ package io.mapsquare.osmcontributor;
 
 
 import android.app.Application;
+import android.content.Context;
+import android.os.Environment;
+import android.support.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
+import com.facebook.cache.disk.DiskCacheConfig;
+import com.facebook.common.internal.Supplier;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.cache.MemoryCacheParams;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.stetho.Stetho;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.REST;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.squareup.leakcanary.LeakCanary;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.io.File;
 import java.util.HashMap;
 
-import org.greenrobot.eventbus.EventBus;
 import io.fabric.sdk.android.Fabric;
-import io.mapsquare.osmcontributor.crashlytics.CrashContextWrapper;
-import io.mapsquare.osmcontributor.crashlytics.CrashlyticsTree;
+import io.mapsquare.osmcontributor.modules.DaggerOsmTemplateComponent;
+import io.mapsquare.osmcontributor.modules.OsmTemplateComponent;
+import io.mapsquare.osmcontributor.modules.OsmTemplateModule;
+import io.mapsquare.osmcontributor.utils.core.StoreConfigManager;
 import timber.log.Timber;
 
 public class OsmTemplateApplication extends Application {
+
+    /*=========================================*/
+    /*---------------CONSTANTS-----------------*/
+    /*=========================================*/
     private static final String ANALYTICS_PROPERTY_ID = "UA-63422911-1";
 
     public enum TrackerName {
         APP_TRACKER, // Tracker used only in this app.
     }
 
-    HashMap<TrackerName, Tracker> trackers = new HashMap<>();
+    /*=========================================*/
+    /*--------------ATTRIBUTES-----------------*/
+    /*=========================================*/
+    private HashMap<TrackerName, Tracker> trackers = new HashMap<>();
 
-    OsmTemplateComponent osmTemplateComponent;
+    private OsmTemplateComponent osmTemplateComponent;
 
+    private Flickr flickr;
+
+    /*=========================================*/
+    /*---------------OVERRIDE------------------*/
+    /*=========================================*/
     @Override
     public void onCreate() {
         super.onCreate();
-
-        LeakCanary.install(this);
-
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
-        } else {
-            Fabric.with(new CrashContextWrapper(this, getPackageName()), new Crashlytics());
-            Timber.plant(new CrashlyticsTree());
         }
+        Fabric.with(this, new Crashlytics());
 
-        osmTemplateComponent = DaggerOsmTemplateComponent.builder()
-                .osmTemplateModule(new OsmTemplateModule(this)).build();
+        // Init Stetho for debug purpose (database)
+        Stetho.initializeWithDefaults(this);
+
+        // Init Dagger
+        osmTemplateComponent = DaggerOsmTemplateComponent.builder().osmTemplateModule(new OsmTemplateModule(this)).build();
         osmTemplateComponent.inject(this);
 
-        EventBus bus = osmTemplateComponent.getEventBus();
+        // Init Flickr object
+        StoreConfigManager configManager = new StoreConfigManager();
+        flickr = new Flickr(configManager.getFlickrApiKey(), configManager.getFlickrApiKeySecret(), new REST());
 
+        // Cache Disk for Fresco
+        DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(this)
+                .setBaseDirectoryPath(new File(Environment.getExternalStorageDirectory().getAbsoluteFile(), getPackageName()))
+                .setBaseDirectoryName("images")
+                .build();
+        // Cache Memory for Fresco
+        ImagePipelineConfig imagePipelineConfig = ImagePipelineConfig.newBuilder(this)
+                .setBitmapMemoryCacheParamsSupplier(new Supplier<MemoryCacheParams>() {
+                    @Override
+                    public MemoryCacheParams get() {
+                        return new MemoryCacheParams(10485760, 100, 100, 100, 100);
+                    }
+                })
+                .setMainDiskCacheConfig(diskCacheConfig)
+                .build();
+
+        // Init Fresco
+        Fresco.initialize(this, imagePipelineConfig);
+
+        // Init event bus
+        EventBus bus = osmTemplateComponent.getEventBus();
         bus.register(getOsmTemplateComponent().getLoginManager());
         bus.register(getOsmTemplateComponent().getEditPoiManager());
         bus.register(getOsmTemplateComponent().getPoiManager());
         bus.register(getOsmTemplateComponent().getNoteManager());
         bus.register(getOsmTemplateComponent().getSyncManager());
         bus.register(getOsmTemplateComponent().getTypeManager());
+        bus.register(getOsmTemplateComponent().getPresetsManager());
         bus.register(getOsmTemplateComponent().getGeocoder());
-        bus.register(getOsmTemplateComponent().getEditVectorialWayManager());
         bus.register(getOsmTemplateComponent().getArpiInitializer());
+        bus.register(getOsmTemplateComponent().getEditVectorialWayManager());
+
+        MapboxAccountManager.start(this, BuildConfig.MAPBOX_TOKEN);
+        LeakCanary.install(this);
     }
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        MultiDex.install(this);
+    }
+
+    /*=========================================*/
+    /*----------------GETTER-------------------*/
+    /*=========================================*/
+
+    /**
+     * Use for Dagger Injection.
+     * @return an object to inject a class
+     */
     public OsmTemplateComponent getOsmTemplateComponent() {
         return osmTemplateComponent;
     }
@@ -91,5 +158,13 @@ public class OsmTemplateApplication extends Application {
             trackers.put(trackerId, t);
         }
         return trackers.get(trackerId);
+    }
+
+    /**
+     * Get Flickr Helper for API request.
+     * @return flickr object with API key set
+     */
+    public Flickr getFlickr() {
+        return flickr;
     }
 }

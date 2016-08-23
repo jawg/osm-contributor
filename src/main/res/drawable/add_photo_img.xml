@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2016 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="70dp"
+    android:height="70dp"
+    android:viewportWidth="400"
+    android:viewportHeight="400">
+
+    <path
+        android:fillColor="#1565c0"
+        android:pathData="M149.995,0.001C67.156,0.001,0,67.16,0,149.999s67.156,149.997,149.995,149.997s150.003-67.161,150.003-149.997
+C299.997,67.157,232.834,0.001,149.995,0.001z
+M70.75,226.844c-3.981,0-7.205-3.221-7.205-7.202V80.353
+c0-3.979,3.224-7.202,7.205-7.202h158.497c3.981,0,7.205,3.224,7.205,7.202v77.081h-10.795h-6.147V89.834H80.323v93.027h7.949
+l32.119-50.087l21.465,33.468l10.66,16.62h9.241l-15.281-23.827l9.959-15.53l25.241,39.355h10.177v8.375v16.412v10.374h10.374
+h13.053v8.824H70.75z
+M207.264,121.042c0,8.232-6.676,14.908-14.908,14.908s-14.908-6.676-14.908-14.908
+s6.676-14.908,14.908-14.908S207.264,112.813,207.264,121.042z
+M242.067,207.646v23.423H225.66v-4.225v-19.198h-23.428v-16.412
+h23.428v-23.423h10.795h5.613v23.423h23.425v16.412H242.067z" />
+</vector>

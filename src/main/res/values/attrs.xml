@@ -22,4 +22,12 @@
 <resources>
     <declare-styleable name="LevelBar">
     </declare-styleable>
+
+    <declare-styleable name="TypeFaceView">
+        <attr name="typeface" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="TextViewCheck">
+        <attr name="checked" format="boolean"/>
+    </declare-styleable>
 </resources>

@@ -28,7 +28,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:theme="@style/AppTheme.Transparent"
-    tools:context=".map.MapActivity">
+    tools:activity=".ui.activities.MapActivity">
 
 
     <RelativeLayout
@@ -40,7 +40,7 @@
 
         <fragment
             android:id="@+id/map_fragment"
-            android:name="io.mapsquare.osmcontributor.map.MapFragment"
+            android:name="io.mapsquare.osmcontributor.ui.fragments.MapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/toolbar"/>
@@ -73,7 +73,7 @@
 
 
     <!-- The filter drawer -->
-    <android.support.design.widget.NavigationView2
+    <android.support.design.widget.NavigationView
         android:id="@+id/filter"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

@@ -25,9 +25,6 @@
         android:id="@+id/drawer_filter_notes_menu"
         android:title="@string/filter_notes">
         <menu>
-            <group
-                android:id="@+id/drawer_filter_notes_group"
-                android:checkableBehavior="all">
                 <item
                     android:id="@+id/display_open_notes_item"
                     android:icon="@drawable/open_book"
@@ -36,19 +33,14 @@
                     android:id="@+id/display_closed_notes_item"
                     android:icon="@drawable/closed_book"
                     android:title="@string/filter_note_closed"/>
-            </group>
         </menu>
     </item>
 
     <item android:title="@string/filter_pois">
         <menu>
-            <group
-                android:id="@+id/drawer_filter_pois_group"
-                android:checkableBehavior="all">
                 <item
                     android:id="@+id/select_all_item"
                     android:title="@string/filter_poi_all"/>
-            </group>
         </menu>
     </item>
 

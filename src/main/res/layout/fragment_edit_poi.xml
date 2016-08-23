@@ -25,7 +25,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.mapsquare.osmcontributor.edition.EditPoiFragment">
+    tools:activity=".ui.fragments.EditPoiFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -38,7 +38,7 @@
             android:paddingBottom="100dp"
             android:clipToPadding="false"/>
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
             android:layout_margin="@dimen/fab_margin"
             application:fab_colorNormal="@color/material_blue_500"
             application:fab_colorPressed="@color/material_blue_grey_800"
-            application:fab_icon="@drawable/plus"
+            android:src="@drawable/plus"
             android:visibility="gone"/>
     </RelativeLayout>
 </FrameLayout>

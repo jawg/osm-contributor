@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+
+    Copyright (C) 2016 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="1000dp"
+    android:minWidth="1000dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/dialog_edit_day_buttons_layout"
+        android:layout_alignParentTop="true"
+        android:minHeight="1000dp"
+        android:minWidth="1000dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="8dp">
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
+                android:id="@+id/dialog_edit_day_monday_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/checkbox_day"
+                android:gravity="center"
+                android:text="@string/day_monday_letter"
+                android:textSize="20sp"
+                app:typeface="Roboto-Light.ttf" />
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
+                android:id="@+id/dialog_edit_day_tuesday_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/checkbox_day"
+                android:gravity="center"
+                android:text="@string/day_tuesday_letter"
+                android:textSize="20sp"
+                app:typeface="Roboto-Light.ttf" />
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
+                android:id="@+id/dialog_edit_day_wednesday_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/checkbox_day"
+                android:gravity="center"
+                android:text="@string/day_wednesday_letter"
+                android:textSize="20sp"
+                app:typeface="Roboto-Light.ttf" />
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
+                android:id="@+id/dialog_edit_day_thursday_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/checkbox_day"
+                android:gravity="center"
+                android:text="@string/day_thursday_letter"
+                android:textSize="20sp"
+                app:typeface="Roboto-Light.ttf" />
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
+                android:id="@+id/dialog_edit_day_friday_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/checkbox_day"
+                android:gravity="center"
+                android:text="@string/day_friday_letter"
+                android:textSize="20sp"
+                app:typeface="Roboto-Light.ttf" />
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
+                android:id="@+id/dialog_edit_day_saturday_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/checkbox_day"
+                android:gravity="center"
+                android:text="@string/day_saturday_letter"
+                android:textSize="20sp"
+                app:typeface="Roboto-Light.ttf" />
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheckSquare
+                android:id="@+id/dialog_edit_day_sunday_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/checkbox_day"
+                android:gravity="center"
+                android:text="@string/day_sunday_letter"
+                android:textSize="20sp"
+                app:typeface="Roboto-Light.ttf" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/from_to_layout"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/dialog_edit_day_left_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimary" />
+
+                <View
+                    android:id="@+id/dialog_edit_day_right_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@id/from_to_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+                    android:id="@+id/dialog_edit_day_from_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="FROM"
+                    android:textSize="17sp"
+                    app:typeface="Roboto-Light.ttf" />
+
+                <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+                    android:id="@+id/dialog_edit_day_to_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="TO"
+                    android:textSize="17sp"
+                    app:typeface="Roboto-Light.ttf" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/dialog_edit_day_buttons_layout"
+                android:layout_below="@id/from_to_layout">
+
+                <TimePicker
+                    android:id="@+id/dialog_edit_day_from_time_picker"
+                    style="@style/TimePickerDialogStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TimePicker
+                    android:id="@+id/dialog_edit_day_to_time_picker"
+                    style="@style/TimePickerDialogStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@id/dialog_edit_day_buttons_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="16dp"
+                android:paddingEnd="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingStart="16dp">
+
+                <Button
+                    android:id="@+id/dialog_edit_day_ok_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:text="@string/ok"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
+
+                <Button
+                    android:id="@+id/dialog_edit_day_cancel_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:text="@string/cancel"
+                    android:textColor="@color/disable_text"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
+            </RelativeLayout>
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

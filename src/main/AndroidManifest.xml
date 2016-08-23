@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-
+<?xml version="1.0" encoding="utf-8"?><!--
     Copyright (C) 2015 eBusiness Information
 
     This file is part of OSM Contributor.
@@ -17,20 +15,19 @@
 
     You should have received a copy of the GNU General Public License
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
-
 -->
-<manifest
-    package="io.mapsquare.osmcontributor"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="io.mapsquare.osmcontributor">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CONNECTIVITY_CHANGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CONNECTIVITY_CHANGE" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:name=".OsmTemplateApplication"
@@ -38,52 +35,81 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/icon"
         android:label="@string/name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:label">
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/gms_version"
-            tools:replace="android:value"/>
+            tools:replace="android:value" />
         <meta-data
             android:name="com.crashlytics.ApiKey"
-            android:value="fa5f6bab15b8638cbf45357060825fcdcb6e0050"/>
+            android:value="fa5f6bab15b8638cbf45357060825fcdcb6e0050" />
 
         <activity
-            android:name=".login.SplashScreenActivity"
+            android:name=".ui.activities.SplashScreenActivity"
             android:label="@string/name"
-            android:noHistory="true"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".map.MapActivity"
+            android:name=".ui.activities.MapActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/name"/>
+            android:label="@string/name" />
         <activity
-            android:name=".edition.EditPoiActivity"
-            android:label="@string/title_activity_edit_poi"/>
+            android:name=".ui.activities.EditPoiActivity"
+            android:label="@string/title_activity_edit_poi" />
         <activity
-            android:name=".edition.PickValueActivity"
-            android:label="@string/title_activity_pick_value"/>
+            android:name=".ui.activities.PickValueActivity"
+            android:label="@string/title_activity_pick_value" />
         <activity
-            android:name=".preferences.MyPreferencesActivity"
-            android:label="@string/title_activity_my_preferences"/>
+            android:name=".ui.activities.LoadProfileActivity"
+            android:label="@string/profile_load" />
         <activity
-            android:name=".type.TypeListActivity"
-            android:label="@string/manage_poi_types"/>
+            android:name=".ui.activities.MyPreferencesActivity"
+            android:label="@string/title_activity_my_preferences" />
         <activity
-            android:name=".note.NoteActivity"
-            android:label="@string/title_activity_note"/>
+            android:name=".ui.activities.TypeListActivity"
+            android:label="@string/manage_poi_types" />
         <activity
-            android:name=".upload.UploadActivity"
-            android:label="@string/title_activity_upload"/>
+            android:name=".ui.activities.NoteActivity"
+            android:label="@string/title_activity_note" />
         <activity
-            android:name=".about.AboutActivity"
-            android:label="@string/title_activity_about"/>
+            android:name=".ui.activities.UploadActivity"
+            android:label="@string/title_activity_upload" />
+        <activity
+            android:name=".ui.activities.AboutActivity"
+            android:label="@string/title_activity_about" />
 
+        <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService" />
+
+        <activity android:name=".ui.activities.PhotoActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".ui.activities.OfflineRegionsActivity"
+            android:label="@string/offline_regions"
+            android:screenOrientation="portrait"/>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="io.mapsquare.osmcontributor.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/path"/>
+        </provider>
+        
+        <service android:name=".service.OfflineRegionDownloadService"
+            android:exported="false"/>
+
+        <receiver android:name=".service.CancelButtonReceiver"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="6bc19e588429bdccdb609ff2647637bbe28bd75a" />
     </application>
 
 </manifest>

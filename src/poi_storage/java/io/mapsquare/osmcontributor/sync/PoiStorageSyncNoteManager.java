@@ -20,8 +20,8 @@ package io.mapsquare.osmcontributor.sync;
 
 import java.util.List;
 
-import io.mapsquare.osmcontributor.core.model.Comment;
-import io.mapsquare.osmcontributor.core.model.Note;
+import io.mapsquare.osmcontributor.model.entities.Comment;
+import io.mapsquare.osmcontributor.model.entities.Note;
 import io.mapsquare.osmcontributor.utils.Box;
 
 /**

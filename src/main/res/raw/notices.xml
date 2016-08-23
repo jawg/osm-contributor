@@ -52,14 +52,8 @@
     </notice>
     <notice>
         <name>FloatingActionButton</name>
-        <url>https://github.com/makovkastar/FloatingActionButton</url>
-        <copyright>Copyright 2014 Oleksandr Melnykov</copyright>
-        <license>MIT License</license>
-    </notice>
-    <notice>
-        <name>FloatingActionButton</name>
-        <url>https://github.com/futuresimple/android-floating-action-button</url>
-        <copyright>Copyright 2014 Jerzy Chalupski</copyright>
+        <url>https://github.com/Clans/FloatingActionButton</url>
+        <copyright>Copyright 2015 Dmytro Tarianyk</copyright>
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
@@ -75,8 +69,8 @@
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
-        <name>Mapbox</name>
-        <url>https://www.mapbox.com/mapbox-android-sdk/</url>
+        <name>Mapbox GL</name>
+        <url>https://www.mapbox.com/android-sdk/</url>
         <copyright/>
         <license>Apache Software License 2.0</license>
     </notice>
@@ -109,5 +103,59 @@
         <url>https://github.com/JakeWharton/timber</url>
         <copyright>Copyright 2013 Jake Wharton</copyright>
         <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Leak Canary</name>
+        <url>https://github.com/square/leakcanary</url>
+        <copyright>Copyright 2015 Square, Inc.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Lovely Dialog</name>
+        <url>https://github.com/yarolegovich/LovelyDialog</url>
+        <copyright>Copyright 2016 Yaroslav Shevchuk</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Material Intro View</name>
+        <url>https://github.com/iammert/MaterialIntroView</url>
+        <copyright>Copyright 2015 Mert Şimşek.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Stetho</name>
+        <url>http://facebook.github.io/stetho/</url>
+        <copyright>Copyright (c) 2015, Facebook, Inc.</copyright>
+        <license>BSD 2-Clause License</license>
+    </notice>
+    <notice>
+        <name>Fresco</name>
+        <url>http://frescolib.org/</url>
+        <copyright>Copyright (c) 2015-present, Facebook, Inc.</copyright>
+        <license>BSD 2-Clause License</license>
+    </notice>
+    <notice>
+        <name>ScribeJava</name>
+        <url>https://github.com/scribejava/scribejava</url>
+        <copyright>Copyright (c) 2010 Pablo Fernandez</copyright>
+        <license>MIT License</license>
+    </notice>
+    <notice>
+        <name>Flickr4Java</name>
+        <url>https://github.com/callmeal/Flickr4Java</url>
+        <copyright>Copyright (C) 2005 Aetrion LLC.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>SQLite JDBC Driver</name>
+        <url>https://bitbucket.org/xerial/sqlite-jdbc</url>
+        <copyright>Copyright (c) 2006, David Crawshaw</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Robolectric</name>
+        <url>http://robolectric.org/</url>
+        <copyright>Copyright (c) 2010 Xtreme Labs</copyright>
+        <license>MIT License</license>
     </notice>
 </notices>

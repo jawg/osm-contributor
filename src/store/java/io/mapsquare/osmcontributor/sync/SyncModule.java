@@ -20,25 +20,29 @@ package io.mapsquare.osmcontributor.sync;
 
 import com.squareup.okhttp.OkHttpClient;
 
+import org.greenrobot.eventbus.EventBus;
 import org.simpleframework.xml.core.Persister;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import org.greenrobot.eventbus.EventBus;
-import io.mapsquare.osmcontributor.core.ConfigManager;
-import io.mapsquare.osmcontributor.core.PoiManager;
-import io.mapsquare.osmcontributor.core.database.dao.PoiNodeRefDao;
-import io.mapsquare.osmcontributor.sync.assets.PoiAssetLoader;
-import io.mapsquare.osmcontributor.sync.converter.NoteConverter;
-import io.mapsquare.osmcontributor.sync.converter.PoiConverter;
-import io.mapsquare.osmcontributor.sync.rest.AuthenticationRequestInterceptor;
-import io.mapsquare.osmcontributor.sync.rest.InterceptorChain;
-import io.mapsquare.osmcontributor.sync.rest.OsmRestClient;
-import io.mapsquare.osmcontributor.sync.rest.OverpassRestClient;
-import io.mapsquare.osmcontributor.sync.rest.XMLConverter;
-import retrofit.RequestInterceptor;
+import io.mapsquare.osmcontributor.database.PoiAssetLoader;
+import io.mapsquare.osmcontributor.database.dao.PoiNodeRefDao;
+import io.mapsquare.osmcontributor.rest.Backend;
+import io.mapsquare.osmcontributor.rest.OSMProxy;
+import io.mapsquare.osmcontributor.rest.OsmBackend;
+import io.mapsquare.osmcontributor.rest.clients.OsmRestClient;
+import io.mapsquare.osmcontributor.rest.clients.OverpassRestClient;
+import io.mapsquare.osmcontributor.rest.managers.OSMSyncNoteManager;
+import io.mapsquare.osmcontributor.rest.managers.OSMSyncWayManager;
+import io.mapsquare.osmcontributor.rest.managers.SyncNoteManager;
+import io.mapsquare.osmcontributor.rest.managers.SyncWayManager;
+import io.mapsquare.osmcontributor.rest.mappers.NoteMapper;
+import io.mapsquare.osmcontributor.rest.mappers.PoiMapper;
+import io.mapsquare.osmcontributor.rest.utils.XMLMapper;
+import io.mapsquare.osmcontributor.ui.managers.PoiManager;
+import io.mapsquare.osmcontributor.utils.ConfigManager;
 import retrofit.RestAdapter;
 import retrofit.android.AndroidLog;
 import retrofit.client.OkClient;
@@ -46,39 +50,30 @@ import retrofit.client.OkClient;
 @Module
 @Singleton
 public class SyncModule {
-
-
     @Provides
-    Backend getBackend(EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient, OsmRestClient osmRestClient, PoiConverter poiConverter, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
-        return new OsmBackend(bus, osmProxy, overpassRestClient, osmRestClient, poiConverter, poiManager, poiAssetLoader);
+    Backend getBackend(EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient, OsmRestClient osmRestClient, PoiMapper poiMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
+        return new OsmBackend(bus, osmProxy, overpassRestClient, osmRestClient, poiMapper, poiManager, poiAssetLoader);
     }
 
     @Provides
-    RestAdapter getRestAdapter(Persister persister, AuthenticationRequestInterceptor authenticationRequestInterceptor, OkHttpClient okHttpClient, ConfigManager configManager) {
+    RestAdapter getRestAdapter(Persister persister, OkHttpClient okHttpClient, ConfigManager configManager) {
         return new RestAdapter.Builder()
                 .setEndpoint(configManager.getBasePoiApiUrl())
                 .setConverter(getXMLConverterWithDateTime(persister))
                 .setClient(new OkClient(okHttpClient))
-                .setLogLevel(RestAdapter.LogLevel.FULL).setLog(new AndroidLog("-------------------->"))
-                .setRequestInterceptor(
-                        new InterceptorChain(authenticationRequestInterceptor,
-                                new RequestInterceptor() {
-                                    @Override
-                                    public void intercept(RequestFacade request) {
-                                        request.addHeader("Accept", "text/xml");
-                                    }
-                                }))
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLog(new AndroidLog("-------------------->"))
                 .build();
     }
 
     @Provides
-    SyncWayManager getSyncWayManager(OSMProxy osmProxy, OverpassRestClient overpassRestClient, PoiConverter poiConverter, PoiManager poiManager, EventBus bus, PoiNodeRefDao poiNodeRefDao, OsmRestClient osmRestClient) {
-        return new OSMSyncWayManager(osmProxy, overpassRestClient, poiConverter, poiManager, bus, poiNodeRefDao, osmRestClient);
+    SyncWayManager getSyncWayManager(OSMProxy osmProxy, OverpassRestClient overpassRestClient, PoiMapper poiMapper, PoiManager poiManager, EventBus bus, PoiNodeRefDao poiNodeRefDao, OsmRestClient osmRestClient) {
+        return new OSMSyncWayManager(osmProxy, overpassRestClient, poiMapper, poiManager, bus, poiNodeRefDao, osmRestClient);
     }
 
     @Provides
-    SyncNoteManager getSyncNoteManager(OSMProxy osmProxy, OsmRestClient osmRestClient, EventBus bus, NoteConverter noteConverter) {
-        return new OSMSyncNoteManager(osmProxy, osmRestClient, bus, noteConverter);
+    SyncNoteManager getSyncNoteManager(OSMProxy osmProxy, OsmRestClient osmRestClient, EventBus bus, NoteMapper noteMapper) {
+        return new OSMSyncNoteManager(osmProxy, osmRestClient, bus, noteMapper);
     }
 
     @Provides
@@ -96,7 +91,7 @@ public class SyncModule {
                 .create(OverpassRestClient.class);
     }
 
-    private XMLConverter getXMLConverterWithDateTime(Persister persister) {
-        return new XMLConverter(persister);
+    private XMLMapper getXMLConverterWithDateTime(Persister persister) {
+        return new XMLMapper(persister);
     }
 }

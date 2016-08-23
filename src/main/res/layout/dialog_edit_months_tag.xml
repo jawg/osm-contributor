@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2016 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:minWidth="10000dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/poi_tag_months"
+        android:textSize="24sp"
+        android:textColor="@color/colorPrimary"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/dialog_edit_month_buttons_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_jan_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Jan"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_feb_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Feb"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_mar_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mar"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_apr_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Apr"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_may_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="May"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_jun_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Jun"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_jul_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Jul"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_aug_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Aug"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_sep_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sep"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_oct_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Oct"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_nov_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Nov"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+
+            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+                android:id="@+id/dialog_edit_month_dec_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dec"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/checkbox_day"
+                app:typeface="Roboto-Light.ttf"
+                android:textSize="18sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@id/dialog_edit_day_buttons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingStart="16dp">
+
+        <Button
+            android:id="@+id/dialog_edit_month_ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom"
+            android:text="@string/ok"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
+
+        <Button
+            android:id="@+id/dialog_edit_month_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:text="@string/cancel"
+            android:textColor="@color/disable_text"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
+    </FrameLayout>
+
+</LinearLayout>

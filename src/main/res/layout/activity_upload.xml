@@ -25,13 +25,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.mapsquare.osmcontributor.upload.UploadActivity">
+    tools:activity=".ui.activities.UploadActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        >
+        android:focusable="true"
+        android:focusableInTouchMode="true" >
 
         <include layout="@layout/toolbar_layout"/>
 
@@ -39,7 +40,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="io.mapsquare.osmcontributor.edition.PickValueActivity">
+            tools:activity=".ui.activities.PickValueActivity">
 
             <TextView
                 android:id="@+id/title"

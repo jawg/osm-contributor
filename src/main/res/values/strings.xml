@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 
     Copyright (C) 2016 eBusiness Information
 
@@ -49,6 +48,7 @@
     <string name="no_poi_name">This POI doesn\'t have a name</string>
     <string name="edit_position">Change position</string>
     <string name="edit_poi">Edit Poi</string>
+    <string name="duplicate_poi">Duplicate Poi</string>
     <string name="update_done">%1$s Poi(s) updated on OSM</string>
     <string name="delete_done">%1$s Poi(s) deleted on OSM</string>
     <string name="noderef_moved">%1$s point(s) updated on OSM, refresh the map in few minutes to see your changes</string>
@@ -71,29 +71,33 @@
     <string name="delete_poi_negative_btn">Cancel</string>
     <string name="point_modification_forbidden">This version doesn\'t allowed points modification</string>
     <string name="licenses_title">Licenses</string>
-    <string name="osm_copyright">© OpenStreetMap contributors</string>
+    <string name="osm_copyright"><![CDATA[<font color=\"#000\">© </font><font color=\"#1565C0\">OpenStreetMap </font><font color=\"#000\">contributors</font>]]></string>
     <string name="zoom_to_edit">This area is too large to load, please zoom more.</string>
     <string name="download_in_progress">Download in progress of all pois and notes of the displayed zone</string>
-    <string name="switch_style">Satellite view</string>
+    <string name="switch_style_satellite">Satellite view</string>
+    <string name="switch_style_default">Default view</string>
     <string name="zoom_more">You need to zoom more in order to download Pois</string>
     <string name="search_poitype_hint">Search a Poi type</string>
     <string name="title_3d_view">3D view</string>
     <string name="arpi_not_supported">Your device do not support the 3D view</string>
+    <string name="map_style">asset://osmMapStyle.json</string>
+    <string name="map_style_url">https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json</string>
 
 
     <!-- Strings related to login -->
     <string name="prompt_login">Login</string>
     <string name="prompt_password">Password</string>
     <string name="splash_screen_message">Initialization in progress&#8230;</string>
-    <string name="splash_screen_edited_by" translatable="false"><![CDATA[Edited by <font color=\"#1565C0\">eBusiness Information</font>]]></string>
-    <string name="splash_screen_powered_by" translatable="false"><![CDATA[Powered by <font color=\"#1565C0\">DesignMyApp</font>]]></string>
-    <string name="mapsquare" translatable="false"><![CDATA[By jawg<font color=\"#2099fd\">maps</font>]]></string>
+    <string name="splash_screen_edited_by" translatable="false"><![CDATA[<font color=\"#ffffff\">Edited by </font><font color=\"#2196f3\">eBusiness Information</font>]]></string>
+    <string name="splash_screen_powered_by" translatable="false"><![CDATA[<font color=\"#ffffff\">Powered by </font><font color=\"#2196f3\">DesignMyApp</font>]]></string>
+    <string name="mapsquare" translatable="false"><![CDATA[By jawg<font color=\"#2196f3\">maps</font>]]></string>
 
     <!-- Preferences -->
     <string name="title_activity_my_preferences">Parameters</string>
     <string name="summary_login">Please provide a login</string>
     <string name="summary_password">Please provide a password</string>
     <string name="error_login">Couldn’t connect with these credentials. Are you sure you have editing rights?</string>
+    <string name="error_first_login">Couldn’t connect with these credentials.</string>
     <string name="valid_login">Successfully connected</string>
     <string name="reset_title">Reset the database</string>
     <string name="reset_summary">Remove all the Pois from the database</string>
@@ -112,7 +116,14 @@
     <!-- Shared preferences -->
     <string name="shared_prefs_login" translatable="false">SHARED_PREFS_LOGIN</string>
     <string name="shared_prefs_password" translatable="false">SHARED_PREFS_PASSWORD</string>
+    <string name="shared_prefs_first_connection" translatable="false">SHARED_PREFS_FIRST_CONNECTION</string>
+    <string name="shared_prefs_token" translatable="false">SHARED_PREFS_TOKEN</string>
+    <string name="shared_prefs_token_secret" translatable="false">SHARED_PREFS_TOKEN_SECRET</string>
+    <string name="shared_prefs_consumer" translatable="false">SHARED_PREFS_CONSUMER</string>
+    <string name="shared_prefs_consumer_secret" translatable="false">SHARED_PREFS_CONSUMER_SECRET</string>
     <string name="shared_prefs_server_key" translatable="false">SHARED_PREFS_SERVER_KEY</string>
+    <string name="shared_prefs_google_connection_key" translatable="false">SHARED_PREFS_GOOLE_CONNECTION</string>
+    <string name="shared_prefs_google_connection">Login with Google</string>
     <string name="shared_prefs_reset" translatable="false">SHARED_PREFS_RESET</string>
     <string name="shared_prefs_reset_type" translatable="false">SHARED_PREFS_RESET_TYPE</string>
     <string name="shared_prefs_expert_mode" translatable="false">SHARED_PREFS_EXPERT</string>
@@ -120,21 +131,31 @@
     <string name="shared_prefs_h2geo_date" translatable="false">SHARED_PREFS_H2GEO_DATE</string>
     <string name="easter_egg" translatable="false">EASTER_EGG</string>
     <string name="shared_prefs_h2geo_title" translatable="false">H2Geo</string>
-    <string name="shared_prefs_login_title">Connection</string>
-    <string name="shared_prefs_server">OSM Server</string>
+    <string name="shared_prefs_login_title" translatable="false">Connection</string>
+    <string name="shared_prefs_server" translatable="false">OSM Server</string>
+    <string name="shared_prefs_oauth_token_flickr" translatable="false">oauthTokenFlickr</string>
+    <string name="shared_prefs_oauth_token_secret_flickr" translatable="false">oauthTokenSecretFlickr</string>
+    <string name="shared_prefs_preset_default" translatable="false">presetDefault</string>
+    <string name="shared_prefs_preset_selected" translatable="false">presetSelected</string>
+
+    <!--Login-->
+    <string name="login_google_error">Vous ne pouvez pas vous connecter avec votre compte Google.\n
+        Cependant, vous pouvez vous connecter avec en utilisant votre nom d’utilisateur et votre mot de passe.\n\n
+        Si vous souhaitez vous connecter avec votre compte Google, associez le compte avec votre ID dans vos préférences utilisateur.</string>
+    <string name="login_title">Connection</string>
 
     <!-- Tuto -->
-    <string name="tuto_title_press_create">Poi creation</string>
-    <string name="tuto_title_confirm">Validate your changes</string>
-    <string name="tuto_title_cancel">Cancel your changes</string>
     <string name="tuto_text_press_create">Click here to add a new point</string>
     <string name="tuto_text_choose_type">Choose the type of Poi you want to add</string>
-    <string name="tuto_text_poi_or_note">Choose to add a poi or a note</string>
-    <string name="tuto_text_swipe_for_position">Swipe the map to set the position of your new point</string>
     <string name="tuto_text_confirm_position_creation">Click to confirm the position, any return will discard your creation.</string>
-    <string name="tuto_text_cancel_creation">This button or the back one will discard your changes.</string>
     <string name="tuto_text_confirm_creation">Click to finalize your creation or edition.</string>
     <string name="replay_tuto">Replay tutorial</string>
+    <string name="replay_tuto_info">Tutorials will be replayed</string>
+    <string name="tuto_text_synchronized">Gray icons are not synchronized</string>
+    <string name="tuto_text_clic_to_synchronized">You can sync your changes at any time from this menu</string>
+    <string name="tuto_text_cancel_sync">You can cancel one or more of your changes here</string>
+    <string name="tuto_text_comment">Before saving, comment your changes</string>
+    <string name="tuto_text_confirm_sync">You can validate and synchronize your changes</string>
 
     <!-- note -->
     <string name="Note">Note</string>
@@ -167,6 +188,10 @@
     <string name="filter_pois">POIs</string>
     <string name="filter_poi_all">All</string>
 
+    <!-- Profile -->
+    <string name="profile_load">Load profile</string>
+    <string name="profile_refresh_error">An error occurred while refreshing profiles!</string>
+
     <!-- Saving -->
     <string name="save_now">Save&#8230;</string>
     <string name="title_activity_upload">Save modifications</string>
@@ -187,7 +212,7 @@
     <string name="about_title">About</string>
     <string name="template_name" translatable="false">OSM Contributor</string>
     <string name="contribute_to" translatable="false"><![CDATA[All data contributed to <font color=\"#1565C0\">OpenStreetMap</font>]]></string>
-    <string name="mapsquare_url" translatable="false">http://jawg.io</string>
+    <string name="jawg_url" translatable="false">http://jawg.io</string>
     <string name="osm_dma_url" translatable="false">https://osm.designmyapp.mobi/</string>
     <string name="osm_url" translatable="false">https://wiki.openstreetmap.org/wiki/Main_Page</string>
     <string name="ebiz_url" translatable="false">http://www.ebusinessinformation.fr/</string>
@@ -210,6 +235,17 @@
     <string name="poi_tag_key_hint">key</string>
     <string name="poi_tag_value_hint">value</string>
     <string name="poi_tag_mandatory">Mandatory</string>
+    <string name="poi_tag_days">Days</string>
+    <string name="poi_tag_months">Months</string>
+    <string name="poi_tag_hours">Opening time</string>
+    <string name="hours">Hours</string>
+    <string name="day_monday_letter">M</string>
+    <string name="day_tuesday_letter">T</string>
+    <string name="day_wednesday_letter">W</string>
+    <string name="day_thursday_letter">T</string>
+    <string name="day_friday_letter">F</string>
+    <string name="day_saturday_letter">S</string>
+    <string name="day_sunday_letter">S</string>
 
     <!-- Snackbar -->
     <string name="item_removed">\"%1$s\" was removed</string>
@@ -226,4 +262,41 @@
     <!-- Easter Egg -->
     <string name="easter_egg_activation">Activated the 3D is!</string>
 
+    <!-- Android 6.0 dialog messages -->
+    <string name="permissions_title">Permissions required</string>
+    <string name="permissions_information">Location permission and write access permission are
+        required to handle the map and the database. We do not collect personal informations.
+        Without this permissions, the application can\'t work correctly.
+    </string>
+
+    <string name="malformated_tag">The value of this tag doesn\'t respect OSM conventions</string>
+    <string name="malformated_value">Current value : </string>
+
+    <string name="flickr_title">Flickr account needed</string>
+    <string name="flickr_need">You need a Yahoo account (Flickr) to post a photo</string>
+    <string name="upload_message">Upload in progress</string>
+    <string name="login_using">Log in using</string>
+    <string name="login_verb">Login</string>
+    <string name="login_later">Log in later</string>
+    <string name="google">Google</string>
+    <string name="empty_fields">Empty fields!</string>
+    <string name="notification_download_title">Download </string>
+    <string name="download_offline_area_title">Download offline regions</string>
+    <string name="download_offline_area_message">Ce preset contient des régions visualisables en mode hors-ligne.\nCela requiert un téléchargement de ces régions au préalable.
+        Il est conseillé d\'avoir une connexion Wifi pendant le téléchargement.\n\nVoulez-vous lancer le téléchargement?</string>
+    <string name="download_offline_area_more_later">Download later</string>
+    <string name="offline_regions">Offline Regions</string>
+    <string name="no_photos">This POI has no photos</string>
+    <string name="offline_regions_empty_list">There is no offline regions downloaded, click on the plus button to add one.</string>
+    <string name="delete">Delete</string>
+    <string name="rename">Rename</string>
+    <string name="download">Download</string>
+    <string name="offline_regions_deleted">Region successfully deleted</string>
+    <string name="enter_region_name">Enter region name</string>
+    <string name="region_name_error">15 characters maximum</string>
+    <string name="region_to_large">Region too large, please zoom more.</string>
+    <string name="offline_step3">Click here to download the zone</string>
+    <string name="offline_step2">Zoom to select a zone</string>
+    <string name="offline_step1">Click to select a region</string>
+    <string name="offline_step4">Your areas will appear here</string>
 </resources>

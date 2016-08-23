@@ -5,9 +5,7 @@
 
 ### About the App
 The Openstreetmap Contributor app allows anyone to contribute to OSM. It enables those-who-know to
-easily manage a group of newbies as the contribution process is intuitive and easy.  
-The App comes in three flavours: store (for the Android Store version), poi-storage (for MapSquare
-POI Databases), and template (for the osm.mapsquare.io tool for Mapping parties).  
+easily manage a group of newbies as the contribution process is intuitive and easy.
 Bring your MapParties to a whole new level!
 
 ### How it works
@@ -28,18 +26,12 @@ approach:
 @Community: We are grateful for any feedback you might have on either the frontend or the mobile
 apps. Go crazy and let us know!
 
-http://osm.mapsquare.io
+http://osm.jawg.io
 
 ### How to compile the application
-This application has three flavours: store, template and poi_storage.  
-Every flavours use Google Analytics and Crashlytics. If you don't want them, add the following property
-when using gradle assemble task:  
-```
--Pfoss=true
-```  
 
 The flavour you will most probably want to build yourself is the store flavour which is the one on the Google Playstore.  
-To build this flavour:  
+To build the project:
  1. Create a conf.properties file at the project's root  
  2. Generate a [Bing Maps API key](https://www.bingmapsportal.com)  
  3. Put the generated key in conf.properties:
@@ -87,12 +79,12 @@ This app is actively developed by:
  + [tonymanou](https://github.com/tonymanou)
  + [loicortola](https://github.com/loicortola)
  + [tommybuonomo](https://github.com/tommybuonomo)
- + [Hugoo13](https://github.com/Hugoo13)
+ + [hugoo13](https://github.com/hugoo13)
 
 ### Translations
 
 This app is being translated by the community via the awesome tool Transifex.
-Want to help? [Add your language here](https://www.transifex.com/mapsquare/osm-contributor), and let us know on Twitter.
+Want to help? [Add your language here](https://www.transifex.com/jawg/osm-contributor), and let us know on Twitter.
  + English: Development team
  + French: Development team
  + Spanish: [Nacho](https://twitter.com/ignaciolep) (@ignaciolep)
