@@ -1,4 +1,4 @@
-# OSM Contributor Beta-testing program
+# OSM Contributor Beta-testing program instructions
 If you are not yet a part of the beta program, send us a request on twitter: [@jawgio](https://twitter.com/jawgio)
 
 ## Feedback/Questions/Reports Workflow
