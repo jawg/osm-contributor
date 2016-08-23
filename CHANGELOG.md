@@ -1,4 +1,15 @@
 ## Changelog
+[3.0.0-beta.1]
+
+ - OAuth support / Sign-in with Google
+ - Vector tiles & switched to Mapbox-gl
+ - OpenStreetMap Data Type parser (detect what kind of data is present: boolean, date, opening hours...)
+ - Data type Widgets
+ - OpenSource Preset Marketplace h2geo-presets
+ - User eXperience improvements
+ - Offline mode
+ - POI Duplicator
+
 [2.2.0]
 
  - Added an expert mode allowing the user to manage it's Poi Types and edit the pois without restraints

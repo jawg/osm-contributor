@@ -28,8 +28,8 @@ import android.text.Html;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.psdev.licensesdialog.LicensesDialog;
 import io.mapsquare.osmcontributor.BuildConfig;
@@ -85,7 +85,7 @@ public class AboutActivity extends AppCompatActivity {
 
     @OnClick(R.id.mapsquare)
     public void mapsquareClick() {
-        openUrlInBrowser(getString(R.string.mapsquare_url));
+        openUrlInBrowser(getString(R.string.jawg_url));
     }
 
     @OnClick(R.id.splash_image)
@@ -110,7 +110,10 @@ public class AboutActivity extends AppCompatActivity {
 
     @OnClick(R.id.licenses_button)
     public void displayLicenses() {
-        new LicensesDialog.Builder(this).setNotices(R.raw.notices).build().show();
+        new LicensesDialog.Builder(this)
+                .setNotices(R.raw.notices)
+                .build()
+                .show();
     }
 
     private void openUrlInBrowser(String url) {

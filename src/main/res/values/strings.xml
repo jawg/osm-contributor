@@ -212,7 +212,7 @@
     <string name="about_title">About</string>
     <string name="template_name" translatable="false">OSM Contributor</string>
     <string name="contribute_to" translatable="false"><![CDATA[All data contributed to <font color=\"#1565C0\">OpenStreetMap</font>]]></string>
-    <string name="mapsquare_url" translatable="false">http://jawg.io</string>
+    <string name="jawg_url" translatable="false">http://jawg.io</string>
     <string name="osm_dma_url" translatable="false">https://osm.designmyapp.mobi/</string>
     <string name="osm_url" translatable="false">https://wiki.openstreetmap.org/wiki/Main_Page</string>
     <string name="ebiz_url" translatable="false">http://www.ebusinessinformation.fr/</string>
