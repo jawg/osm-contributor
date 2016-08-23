@@ -33,7 +33,7 @@ All issues should be using one or several of the following tags:
 * Offline mode
 * POI Duplicator
 
-## Beta Testers
+## Attribution: Beta Testers
 To thank you, we would like to make a list of all volunteers who helped making the app or test it. Please send us a pull request with your name so we can add it to the final release
 
 * Tommy Buonomo
