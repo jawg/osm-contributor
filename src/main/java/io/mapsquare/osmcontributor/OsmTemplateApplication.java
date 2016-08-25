@@ -21,7 +21,9 @@ package io.mapsquare.osmcontributor;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
@@ -123,6 +125,12 @@ public class OsmTemplateApplication extends Application {
         bus.register(getOsmTemplateComponent().getGeocoder());
         bus.register(getOsmTemplateComponent().getArpiInitializer());
         bus.register(getOsmTemplateComponent().getEditVectorialWayManager());
+
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.shared_prefs_preset_default), false)) {
+            editor.putBoolean(getString(R.string.shared_prefs_preset_default), true);
+        }
+        editor.apply();
 
         MapboxAccountManager.start(this, BuildConfig.MAPBOX_TOKEN);
         LeakCanary.install(this);

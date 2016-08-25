@@ -144,7 +144,14 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * @return the position of the inserted element
      */
     public int addLast(String key, String value, List<String> possibleValues, List<String> autocompleteValues, boolean updatable) {
-        addTag(key, value, false, removeDuplicate(possibleValues, autocompleteValues), tagItemList.size(), updatable, keyTagItem.get(key).getTagType());
+        TagItem tagItem = new TagItem(key, value, false, possibleValues, TagItem.Type.TEXT, true);
+        // Add into the list
+        tagItemList.add(tagItem);
+        keyTagItem.put(key, tagItem);
+
+        // Notify changes
+        notifyItemInserted(tagItemList.size() - 1);
+        change = true;
         return tagItemList.size() - 1;
     }
 
