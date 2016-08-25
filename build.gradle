@@ -1,5 +1,5 @@
 ext {
-    appVersion = "3.0.0-beta.1"
+    appVersion = "3.0.0-beta.2"
     androidSupportVersion = '24.2.0'
     playServicesVersion = '7.8.0'
     daggerVersion = '2.0'
