@@ -1,6 +1,6 @@
 ext {
-    appVersion = "3.0.0-beta.2"
-    androidSupportVersion = '24.2.0'
+    appVersion = "3.0.0-beta.3-snapshot"
+    androidSupportVersion = '23.4.0'
     playServicesVersion = '7.8.0'
     daggerVersion = '2.0'
     leakCanaryVersion = '1.4-beta2'
@@ -86,7 +86,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'checkstyle'
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 23
     buildToolsVersion "22.0.1"
 
     useLibrary 'org.apache.http.legacy'
@@ -99,13 +99,13 @@ android {
         applicationId "io.mapsquare.osmcontributor"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 15
+        versionCode 17
         versionName appVersion
         multiDexEnabled true
         ndk {
             abiFilters "armeabi-v7a"
         }
-
+        vectorDrawables.useSupportLibrary = true
     }
 
     lintOptions {

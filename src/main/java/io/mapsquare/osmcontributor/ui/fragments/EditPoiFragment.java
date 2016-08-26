@@ -151,6 +151,9 @@ public class EditPoiFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_edit_poi, container, false);
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
+        if (!eventBus.isRegistered(this)) {
+            eventBus.register(this);
+        }
 
         unbinder = ButterKnife.bind(this, rootView);
 
