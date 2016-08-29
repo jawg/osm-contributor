@@ -143,8 +143,8 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * Add an element at the end of the List.
      * @return the position of the inserted element
      */
-    public int addLast(String key, String value, List<String> possibleValues, List<String> autocompleteValues, boolean updatable) {
-        TagItem tagItem = new TagItem(key, value, false, possibleValues, TagItem.Type.TEXT, true);
+    public int addLast(String key, String value, List<String> possibleValues) {
+        TagItem tagItem = new TagItem(key, value, false, possibleValues, key.contains("hours") ? TagItem.Type.OPENING_HOURS : TagItem.Type.TEXT, true);
         // Add into the list
         tagItemList.add(tagItem);
         keyTagItem.put(key, tagItem);
