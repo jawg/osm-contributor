@@ -28,7 +28,6 @@
         android:id="@+id/mapview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        app:style_url="@string/map_style"
         app:attribution_enabled="false"
         app:logo_enabled="false"
         app:rotate_enabled="true"

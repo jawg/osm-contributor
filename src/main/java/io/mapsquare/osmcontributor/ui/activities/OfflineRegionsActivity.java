@@ -56,6 +56,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.offline.OfflineRegionManager;
@@ -184,6 +185,7 @@ public class OfflineRegionsActivity extends AppCompatActivity {
 
     private void initMapView(Bundle savedInstanceState) {
         mapView.onCreate(savedInstanceState);
+        mapView.setStyleUrl(BuildConfig.MAP_STYLE);
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {

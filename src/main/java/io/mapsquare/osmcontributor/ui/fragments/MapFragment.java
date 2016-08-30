@@ -90,6 +90,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.Note;
@@ -356,6 +357,7 @@ public class MapFragment extends Fragment {
     private void instantiateMapView(final Bundle savedInstanceState) {
         if (mapView != null) {
             mapView.onCreate(savedInstanceState);
+            mapView.setStyleUrl(BuildConfig.MAP_STYLE);
             mapView.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(MapboxMap mapboxMap) {
