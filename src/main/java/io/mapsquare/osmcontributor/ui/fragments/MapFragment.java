@@ -331,9 +331,11 @@ public class MapFragment extends Fragment {
         getUserLocation();
         CameraPosition.Builder cameraBuilder = new CameraPosition.Builder();
         if (savedInstanceState == null) {
-            cameraBuilder.target((FlavorUtils.isStore() && lastLocation != null) ?
-                    new LatLng(lastLocation) : configManager.getDefaultCenter())
-                    .zoom(configManager.getDefaultZoom());
+            double lat = sharedPreferences.getFloat("latitude", 0);
+            double lon = sharedPreferences.getFloat("longitude", 0);
+            if (lat != 0 && lon != 0) {
+                cameraBuilder.target(new LatLng(lat, lon)).zoom(11);
+            }
         } else {
             cameraBuilder.target((LatLng) savedInstanceState.getParcelable(LOCATION))
                     .zoom(savedInstanceState.getFloat(ZOOM_LEVEL));
@@ -424,6 +426,15 @@ public class MapFragment extends Fragment {
             presenter.setForceRefreshNotes();
             presenter.loadPoisIfNeeded();
             nextTuto(2);
+            double lat = sharedPreferences.getFloat("latitude", 0);
+            double lon = sharedPreferences.getFloat("longitude", 0);
+            if (lat != 0 && lon != 0) {
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(lat, lon))
+                        .zoom(configManager.getDefaultZoom())
+                        .build();
+                mapboxMap.setCameraPosition(cameraPosition);
+            }
         }
     }
 
@@ -432,6 +443,9 @@ public class MapFragment extends Fragment {
         super.onPause();
         mapView.onPause();
         if (mapboxMap != null) {
+            LatLng location = mapboxMap.getCameraPosition().target;
+            sharedPreferences.edit().putFloat("latitude", (float) location.getLatitude()).apply();
+            sharedPreferences.edit().putFloat("longitude", (float) location.getLongitude()).apply();
             mapboxMap.setMyLocationEnabled(false);
         }
         if (valueAnimator != null) {
