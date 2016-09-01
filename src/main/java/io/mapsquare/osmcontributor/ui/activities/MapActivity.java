@@ -136,6 +136,8 @@ public class MapActivity extends AppCompatActivity {
 
     private boolean isSatelliteMode;
 
+    private boolean isMapnikMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -498,9 +500,17 @@ public class MapActivity extends AppCompatActivity {
                 break;
             case R.id.switch_style:
                 isSatelliteMode = !isSatelliteMode;
-                eventBus.post(new PleaseSwitchMapStyleEvent(isSatelliteMode));
+                isMapnikMode = false;
+                eventBus.post(new PleaseSwitchMapStyleEvent(isSatelliteMode, false));
                 drawerLayout.closeDrawer(navigationView);
                 menuItem.setTitle(isSatelliteMode ? R.string.switch_style_default : R.string.switch_style_satellite);
+                break;
+            case R.id.switch_mapnik:
+                isMapnikMode = !isMapnikMode;
+                isSatelliteMode = false;
+                eventBus.post(new PleaseSwitchMapStyleEvent(false, isMapnikMode));
+                drawerLayout.closeDrawer(navigationView);
+                menuItem.setTitle(isMapnikMode ? R.string.switch_style_default : R.string.switch_style_mapnik);
                 break;
             case R.id.offline_regions:
                 startOfflineRegionsActivity();

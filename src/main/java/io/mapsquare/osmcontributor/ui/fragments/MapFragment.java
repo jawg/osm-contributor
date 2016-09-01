@@ -713,6 +713,8 @@ public class MapFragment extends Fragment {
         if (mapboxMap != null) {
             if (event.isSatelliteMode()) {
                 mapboxMap.setStyleUrl("mapbox://styles/mapbox/satellite-streets-v9");
+            } else if (event.isMapnikMode()) {
+                mapboxMap.setStyleUrl("asset://mapnik.json");
             } else {
                 mapboxMap.setStyleUrl("asset://osmMapStyle.json");
             }

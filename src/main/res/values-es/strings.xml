@@ -71,6 +71,7 @@
     <string name="zoom_to_edit">Esta área es demasiado grande para cargar, acerquese más.</string>
     <string name="download_in_progress">Descarga en curso de todos los PDIs e informes de problemas de la zona que se muestra</string>
     <string name="switch_style_satellite">Vista de satélite</string>
+    <string name="switch_style_mapnik">Vista Mapnik</string>
     <string name="switch_style_default">Vista por defecto</string>
     <string name="zoom_more">Es necesario acercarse más para descargar PDIs</string>
     <string name="search_poitype_hint">Buscar un tipo de PDI</string>

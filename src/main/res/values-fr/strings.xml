@@ -74,6 +74,7 @@
     <string name="zoom_to_edit">Cette zone est trop grande. Veuillez zoomer plus.</string>
     <string name="download_in_progress">Tous les pois et notes de la zone affichée sont en cours de rechargement</string>
     <string name="switch_style_satellite">Vue Satellite</string>
+    <string name="switch_style_mapnik">Vue Mapnik</string>
     <string name="switch_style_default">Vue par défaut</string>
     <string name="zoom_more">Vous devez zoomer plus pour pouvoir télécharger les données</string>
     <string name="search_poitype_hint">Chercher un type de Poi</string>
