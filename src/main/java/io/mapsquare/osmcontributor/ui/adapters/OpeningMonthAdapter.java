@@ -49,6 +49,7 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
     private OpeningTime openingTime;
     private Activity activity;
     private EventBus eventBus;
+    private String time;
 
     @Inject
     OpeningMonthValueParser openingMonthValueParser;
@@ -105,6 +106,8 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
             }
         });
 
+        holder.getTextViewMonthValue().setText(time);
+
         holder.getOpeningHoursLayout().removeAllViews();
 
         new OpeningHoursLinearLayoutAdapter(openingTime,
@@ -146,5 +149,9 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
         public LinearLayout getOpeningHoursLayout() {
             return openingHoursLayout;
         }
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }
