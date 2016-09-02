@@ -18,60 +18,81 @@
  */
 package io.mapsquare.osmcontributor.rest.dtos.dma;
 
-import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PoiTypeDto {
     @SerializedName("name")
     private String name;
 
+    @SerializedName("url")
+    private String url;
+
+    @SerializedName("icon")
+    private String icon;
+
     @SerializedName("label")
-    private JsonElement labels;
+    private Map<String, String> label = new HashMap<>();
 
     @SerializedName("description")
-    private JsonElement description;
+    private Map<String, String> description = new HashMap<>();
+
+    @SerializedName("keywords")
+    private Map<String, List<String>> keywords = new HashMap<>();
 
     @SerializedName("tags")
-    private List<PoiTypeTagDto> tags;
-
-    @SerializedName("usageCount")
-    private int usageCount;
-
-    @SerializedName("keyWords")
-    private JsonElement keyWords;
-
-    public JsonElement getLabels() {
-        return labels;
-    }
-
-    public void setLabels(JsonElement labels) {
-        this.labels = labels;
-    }
+    private List<PoiTypeTagDto> tags = new ArrayList<>();
 
     public String getName() {
         return name;
-    }
-
-    public int getUsageCount() {
-        return usageCount;
-    }
-
-    public void setUsageCount(int usageCount) {
-        this.usageCount = usageCount;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public JsonElement getDescription() {
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public Map<String, String> getLabel() {
+        return label;
+    }
+
+    public void setLabel(Map<String, String> label) {
+        this.label = label;
+    }
+
+    public Map<String, String> getDescription() {
         return description;
     }
 
-    public void setDescription(JsonElement description) {
+    public void setDescription(Map<String, String> description) {
         this.description = description;
+    }
+
+    public Map<String, List<String>> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(Map<String, List<String>> keywords) {
+        this.keywords = keywords;
     }
 
     public List<PoiTypeTagDto> getTags() {
@@ -80,13 +101,5 @@ public class PoiTypeDto {
 
     public void setTags(List<PoiTypeTagDto> tags) {
         this.tags = tags;
-    }
-
-    public JsonElement getKeyWords() {
-        return keyWords;
-    }
-
-    public void setKeyWords(JsonElement keyWords) {
-        this.keyWords = keyWords;
     }
 }

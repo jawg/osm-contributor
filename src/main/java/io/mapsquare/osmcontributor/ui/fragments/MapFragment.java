@@ -373,6 +373,10 @@ public class MapFragment extends Fragment {
     private void getUserLocation() {
         mapboxMap.setMyLocationEnabled(true);
         lastLocation = mapboxMap.getMyLocation();
+        if (lastLocation != null) {
+            mapboxMap.setCameraPosition(new CameraPosition.Builder().target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).build());
+        }
+        mapboxMap.setCameraPosition(new CameraPosition.Builder().target(configManager.getDefaultCenter()).build());
     }
 
     private void measureMaxPoiType() {
@@ -434,6 +438,8 @@ public class MapFragment extends Fragment {
                         .zoom(configManager.getDefaultZoom())
                         .build();
                 mapboxMap.setCameraPosition(cameraPosition);
+            } else {
+                getUserLocation();
             }
         }
     }

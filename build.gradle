@@ -99,7 +99,7 @@ android {
         applicationId "io.mapsquare.osmcontributor"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 17
+        versionCode 18
         versionName appVersion
         multiDexEnabled true
         ndk {
