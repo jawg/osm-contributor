@@ -378,7 +378,7 @@ public class EditPoiFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewPoiTagAddedEvent(NewPoiTagAddedEvent event) {
-        recyclerView.smoothScrollToPosition(tagsAdapter.addLast(event.getTagKey(), event.getTagValue(), Collections.<String>emptyList(), Collections.<String>emptyList(), true));
+        recyclerView.smoothScrollToPosition(tagsAdapter.addLast(event.getTagKey(), event.getTagValue(), Collections.<String>emptyList()));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

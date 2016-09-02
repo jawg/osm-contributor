@@ -90,6 +90,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.Note;
@@ -330,9 +331,11 @@ public class MapFragment extends Fragment {
         getUserLocation();
         CameraPosition.Builder cameraBuilder = new CameraPosition.Builder();
         if (savedInstanceState == null) {
-            cameraBuilder.target((FlavorUtils.isStore() && lastLocation != null) ?
-                    new LatLng(lastLocation) : configManager.getDefaultCenter())
-                    .zoom(configManager.getDefaultZoom());
+            double lat = sharedPreferences.getFloat("latitude", 0);
+            double lon = sharedPreferences.getFloat("longitude", 0);
+            if (lat != 0 && lon != 0) {
+                cameraBuilder.target(new LatLng(lat, lon)).zoom(11);
+            }
         } else {
             cameraBuilder.target((LatLng) savedInstanceState.getParcelable(LOCATION))
                     .zoom(savedInstanceState.getFloat(ZOOM_LEVEL));
@@ -356,6 +359,7 @@ public class MapFragment extends Fragment {
     private void instantiateMapView(final Bundle savedInstanceState) {
         if (mapView != null) {
             mapView.onCreate(savedInstanceState);
+            mapView.setStyleUrl(BuildConfig.MAP_STYLE);
             mapView.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(MapboxMap mapboxMap) {
@@ -369,6 +373,11 @@ public class MapFragment extends Fragment {
     private void getUserLocation() {
         mapboxMap.setMyLocationEnabled(true);
         lastLocation = mapboxMap.getMyLocation();
+        if (lastLocation != null) {
+            mapboxMap.setCameraPosition(new CameraPosition.Builder().target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).zoom(configManager.getDefaultZoom()).build());
+        } else {
+            mapboxMap.setCameraPosition(new CameraPosition.Builder().target(configManager.getDefaultCenter()).zoom(configManager.getDefaultZoom()).build());
+        }
     }
 
     private void measureMaxPoiType() {
@@ -422,6 +431,17 @@ public class MapFragment extends Fragment {
             presenter.setForceRefreshNotes();
             presenter.loadPoisIfNeeded();
             nextTuto(2);
+            double lat = sharedPreferences.getFloat("latitude", 0);
+            double lon = sharedPreferences.getFloat("longitude", 0);
+            if (lat != 0 && lon != 0) {
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(lat, lon))
+                        .zoom(configManager.getDefaultZoom())
+                        .build();
+                mapboxMap.setCameraPosition(cameraPosition);
+            } else {
+                getUserLocation();
+            }
         }
     }
 
@@ -430,6 +450,9 @@ public class MapFragment extends Fragment {
         super.onPause();
         mapView.onPause();
         if (mapboxMap != null) {
+            LatLng location = mapboxMap.getCameraPosition().target;
+            sharedPreferences.edit().putFloat("latitude", (float) location.getLatitude()).apply();
+            sharedPreferences.edit().putFloat("longitude", (float) location.getLongitude()).apply();
             mapboxMap.setMyLocationEnabled(false);
         }
         if (valueAnimator != null) {
@@ -711,6 +734,8 @@ public class MapFragment extends Fragment {
         if (mapboxMap != null) {
             if (event.isSatelliteMode()) {
                 mapboxMap.setStyleUrl("mapbox://styles/mapbox/satellite-streets-v9");
+            } else if (event.isMapnikMode()) {
+                mapboxMap.setStyleUrl("asset://mapnik.json");
             } else {
                 mapboxMap.setStyleUrl("asset://osmMapStyle.json");
             }

@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
+import io.mapsquare.osmcontributor.model.entities.Group;
 import io.mapsquare.osmcontributor.utils.CloseableUtils;
 import timber.log.Timber;
 
@@ -40,8 +41,8 @@ public class H2GeoDto {
     @SerializedName("lastUpdate")
     private String lastUpdate;
 
-    @SerializedName("data")
-    private List<PoiTypeDto> data;
+    @SerializedName("groups")
+    private List<Group<PoiTypeDto>> groups;
 
     @SerializedName("description")
     private Map<String, String> description;
@@ -54,6 +55,12 @@ public class H2GeoDto {
 
     @SerializedName("image")
     private String image;
+
+    @SerializedName("author")
+    private String author;
+
+    @SerializedName("link")
+    private String link;
 
     public String getVersion() {
         return version;
@@ -71,12 +78,12 @@ public class H2GeoDto {
         this.lastUpdate = lastUpdate;
     }
 
-    public List<PoiTypeDto> getData() {
-        return data;
+    public List<Group<PoiTypeDto>> getGroups() {
+        return groups;
     }
 
-    public void setData(List<PoiTypeDto> data) {
-        this.data = data;
+    public void setGroups(List<Group<PoiTypeDto>> groups) {
+        this.groups = groups;
     }
 
     public Map<String, String> getDescription() {
@@ -111,6 +118,22 @@ public class H2GeoDto {
         this.image = image;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
     public static H2GeoDto getDefaultPreset(Context context) {
         if (h2GeoDto == null) {
             InputStreamReader reader = null;
@@ -119,6 +142,7 @@ public class H2GeoDto {
                 return new Gson().fromJson(reader, H2GeoDto.class);
             } catch (Exception e) {
                 Timber.e(e, "Error while loading POI Types from assets");
+                e.printStackTrace();
                 throw new RuntimeException(e);
             } finally {
                 CloseableUtils.closeQuietly(reader);

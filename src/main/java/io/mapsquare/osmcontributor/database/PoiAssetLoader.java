@@ -27,15 +27,18 @@ import com.google.gson.Gson;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.mapsquare.osmcontributor.R;
+import io.mapsquare.osmcontributor.model.entities.Group;
 import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiType;
 import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoDto;
+import io.mapsquare.osmcontributor.rest.dtos.dma.PoiTypeDto;
 import io.mapsquare.osmcontributor.rest.dtos.osm.OsmDto;
 import io.mapsquare.osmcontributor.rest.mappers.PoiMapper;
 import io.mapsquare.osmcontributor.rest.mappers.PoiTypeMapper;
@@ -107,7 +110,11 @@ public class PoiAssetLoader {
      * @return The loaded PoiTypes.
      */
     public List<PoiType> loadPoiTypesFromH2GeoDto(@NonNull H2GeoDto h2GeoDto) {
-        return poiTypeMapper.convert(h2GeoDto.getData());
+        List<PoiType> types = new ArrayList<>();
+        for (Group<PoiTypeDto> group : h2GeoDto.getGroups()) {
+            types.addAll(poiTypeMapper.convert(group.getItems()));
+        }
+        return types;
     }
 
     /**

@@ -19,8 +19,9 @@
 package io.mapsquare.osmcontributor.rest.dtos.dma;
 
 
-import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 
@@ -32,17 +33,21 @@ public class PoiTypeTagDto {
     @SerializedName("value")
     private String value;
 
-    @SerializedName("mandatory")
-    private boolean mandatory;
-
-    @SerializedName("implied")
-    private boolean implied;
-
-    @SerializedName("values")
-    private JsonElement possibleValues;
-
     @SerializedName("type")
     private TagItem.Type type;
+
+    @SerializedName("required")
+    private boolean required;
+
+    @SerializedName("editable")
+    private Boolean editable;
+
+    @SerializedName("show")
+    private Boolean show;
+
+    @SerializedName("values")
+    private List<String> values;
+
 
     public String getKey() {
         return key;
@@ -60,35 +65,43 @@ public class PoiTypeTagDto {
         this.value = value;
     }
 
-    public boolean isMandatory() {
-        return mandatory;
-    }
-
-    public void setMandatory(boolean mandatory) {
-        this.mandatory = mandatory;
-    }
-
-    public boolean isImplied() {
-        return implied;
-    }
-
-    public void setImplied(boolean implied) {
-        this.implied = implied;
-    }
-
-    public JsonElement getPossibleValues() {
-        return possibleValues;
-    }
-
-    public void setPossibleValues(JsonElement possibleValues) {
-        this.possibleValues = possibleValues;
-    }
-
     public TagItem.Type getType() {
         return type;
     }
 
-    public void setType(TagItem.Type type) {
-        this.type = type;
+    public void setType(String type) {
+        this.type = TagItem.Type.valueOf(type);
+    }
+
+    public Boolean getRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
+    }
+
+    public Boolean getEditable() {
+        return editable;
+    }
+
+    public void setEditable(Boolean editable) {
+        this.editable = editable;
+    }
+
+    public Boolean getShow() {
+        return show;
+    }
+
+    public void setShow(Boolean show) {
+        this.show = show;
+    }
+
+    public List<String> getValues() {
+        return values;
+    }
+
+    public void setValues(List<String> values) {
+        this.values = values;
     }
 }

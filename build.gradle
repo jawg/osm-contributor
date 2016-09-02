@@ -1,5 +1,5 @@
 ext {
-    appVersion = "3.0.0-beta.3"
+    appVersion = "3.0.0-beta.4"
     androidSupportVersion = '23.4.0'
     playServicesVersion = '7.8.0'
     daggerVersion = '2.0'
@@ -99,7 +99,7 @@ android {
         applicationId "io.mapsquare.osmcontributor"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 17
+        versionCode 18
         versionName appVersion
         multiDexEnabled true
         ndk {
@@ -131,6 +131,8 @@ android {
             buildConfigField "double", "CENTER_LAT", "48.858370"
             buildConfigField "double", "CENTER_LNG", "2.294481"
             buildConfigField "String", "MAP_URL", '"http://tile.openstreetmap.org/{z}/{x}/{y}.png"'
+            buildConfigField "String", "MAP_STYLE_URL", '"https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json"'
+            buildConfigField "String", "MAP_STYLE", '"asset://osmMapStyle.json"'
             buildConfigField "String", "BASE_OSM_URL", osmUrl()
             buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass-api.de/api/interpreter"'
             buildConfigField "String", "FLICKR_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_key") + '"'

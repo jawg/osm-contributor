@@ -71,17 +71,16 @@
     <string name="delete_poi_negative_btn">Cancel</string>
     <string name="point_modification_forbidden">This version doesn\'t allowed points modification</string>
     <string name="licenses_title">Licenses</string>
-    <string name="osm_copyright"><![CDATA[<font color=\"#000\">© </font><font color=\"#1565C0\">OpenStreetMap </font><font color=\"#000\">contributors</font>]]></string>
+    <string name="osm_copyright" translatable="false"><![CDATA[<font color=\"#000\">© </font><font color=\"#1565C0\">OpenStreetMap </font><font color=\"#000\">contributors</font>]]></string>
     <string name="zoom_to_edit">This area is too large to load, please zoom more.</string>
     <string name="download_in_progress">Download in progress of all pois and notes of the displayed zone</string>
     <string name="switch_style_satellite">Satellite view</string>
+    <string name="switch_style_mapnik">Mapnik view</string>
     <string name="switch_style_default">Default view</string>
     <string name="zoom_more">You need to zoom more in order to download Pois</string>
     <string name="search_poitype_hint">Search a Poi type</string>
     <string name="title_3d_view">3D view</string>
     <string name="arpi_not_supported">Your device do not support the 3D view</string>
-    <string name="map_style">asset://osmMapStyle.json</string>
-    <string name="map_style_url">https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json</string>
 
 
     <!-- Strings related to login -->

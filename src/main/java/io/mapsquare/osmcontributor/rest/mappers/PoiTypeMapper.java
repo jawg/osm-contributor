@@ -18,15 +18,10 @@
  */
 package io.mapsquare.osmcontributor.rest.mappers;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
 
 import org.joda.time.DateTime;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,12 +53,11 @@ public class PoiTypeMapper {
 
     private PoiType convert(PoiTypeDto dto) {
         PoiType type = new PoiType();
-        type.setName(getTranslationFormJson(dto.getLabels(), getName(dto.getName())));
+        type.setName(getTranslationFormJson(dto.getLabel(), getName(dto.getName())));
         type.setTechnicalName(dto.getName());
         type.setDescription(getTranslationFormJson(dto.getDescription(), ""));
-        type.setKeyWords(getKeywordsFormJson(dto.getKeyWords()));
+        type.setKeyWords(getKeywordsFormJson(dto.getKeywords()));
         type.setIcon(getName(dto.getName()));
-        type.setUsageCount(dto.getUsageCount());
         // When creating a new PoiType from file, put the same date of last use to all new PoiTypes : 1970-01-01T00:00:00Z
         type.setLastUse(dateTime);
 
@@ -73,18 +67,16 @@ public class PoiTypeMapper {
             type.setTags(tags);
             for (PoiTypeTagDto tagDto : dto.getTags()) {
                 // If the tag is implied, do not keep it
-                if (!tagDto.isImplied()) {
-                    PoiTypeTag poiTypeTag = new PoiTypeTag();
-                    poiTypeTag.setPoiType(type);
-                    poiTypeTag.setKey(tagDto.getKey());
-                    poiTypeTag.setValue(tagDto.getValue());
-                    poiTypeTag.setMandatory(tagDto.isMandatory());
-                    poiTypeTag.setOrdinal(ordinal++);
-                    poiTypeTag.setPossibleValues(getPossibleValues(tagDto.getPossibleValues()));
-                    poiTypeTag.setTagType(tagDto.getType());
-                    tags.add(poiTypeTag);
-                    Log.i(TAG, "convert: " + poiTypeTag);
-                }
+                PoiTypeTag poiTypeTag = new PoiTypeTag();
+                poiTypeTag.setPoiType(type);
+                poiTypeTag.setKey(tagDto.getKey());
+                poiTypeTag.setValue(tagDto.getValue());
+                poiTypeTag.setMandatory(tagDto.getRequired());
+                poiTypeTag.setOrdinal(ordinal++);
+                poiTypeTag.setPossibleValues(getPossibleValues(tagDto.getValues()));
+                poiTypeTag.setTagType(tagDto.getType());
+                tags.add(poiTypeTag);
+
             }
         }
         return type;
@@ -122,23 +114,18 @@ public class PoiTypeMapper {
      * Get the value of the JsonElement in the language of the system. If the language is not found, search for English.
      * If the language is still not found, put the default name.
      *
-     * @param jsonElement The json element containing a value in many languages.
+     * @param translation The json element containing a value in many languages.
      * @param defaultName The default value if no translation was found for the system language or in English.
      * @return The value of the element for the system language or in English.
      */
-    private String getTranslationFormJson(JsonElement jsonElement, String defaultName) {
-        if (jsonElement != null) {
-            Type mapType = (new TypeToken<Map<String, String>>() {
-            }).getType();
-            Map<String, String> map = gson.fromJson(jsonElement, mapType);
-
+    private String getTranslationFormJson(Map<String, String> translation, String defaultName) {
+        if (translation != null) {
             // if there is a translation for the user language
-            if (map.containsKey(language)) {
-                return map.get(language);
+            if (translation.containsKey(language)) {
+                return translation.get(language);
             }
-            // else we look for the english translation
-            if (map.containsKey("en")) {
-                return map.get("en");
+            if (translation.containsKey("default")) {
+                return translation.get("default");
             }
         }
 
@@ -149,18 +136,14 @@ public class PoiTypeMapper {
     /**
      * Get the keywords from a JsonElement in the language of the system.
      *
-     * @param jsonElement The json element containing the keywords in many languages.
+     * @param keywords The json element containing the keywords in many languages.
      * @return The list of keywords.
      */
-    private String getKeywordsFormJson(JsonElement jsonElement) {
+    private String getKeywordsFormJson(Map<String, List<String>> keywords) {
         StringBuilder stringBuilder = new StringBuilder();
-        Type mapType = (new TypeToken<Map<String, List<String>>>() {
-        }).getType();
-        Map<String, List<String>> map = gson.fromJson(jsonElement, mapType);
-
         // if there is a translation for the user language
-        if (map != null && map.containsKey(language)) {
-            List<String> strList = map.get(language);
+        if (keywords != null && keywords.containsKey(language)) {
+            List<String> strList = keywords.get(language);
             for (String keyword : strList) {
                 stringBuilder.append(keyword);
                 stringBuilder.append(" ");
@@ -173,15 +156,13 @@ public class PoiTypeMapper {
     /**
      * Get the possible values from a JsonElement as a String with each values separated by a Group Separator character (ASCII character 29).
      *
-     * @param jsonElement The jsonElement containing the possible values.
+     * @param values The jsonElement containing the possible values.
      * @return The possible values.
      */
-    private String getPossibleValues(JsonElement jsonElement) {
+    private String getPossibleValues(List<String> values) {
         StringBuilder possibleValues = new StringBuilder();
 
-        if (jsonElement != null) {
-            List<String> values = gson.fromJson(jsonElement, (new TypeToken<List<String>>() {
-            }).getType());
+        if (values != null) {
             Iterator<String> it = values.iterator();
             if (it.hasNext()) {
                 possibleValues.append(it.next());

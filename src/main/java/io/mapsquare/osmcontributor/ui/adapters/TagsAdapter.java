@@ -143,8 +143,8 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * Add an element at the end of the List.
      * @return the position of the inserted element
      */
-    public int addLast(String key, String value, List<String> possibleValues, List<String> autocompleteValues, boolean updatable) {
-        TagItem tagItem = new TagItem(key, value, false, possibleValues, TagItem.Type.TEXT, true);
+    public int addLast(String key, String value, List<String> possibleValues) {
+        TagItem tagItem = new TagItem(key, value, false, possibleValues, key.contains("hours") ? TagItem.Type.OPENING_HOURS : TagItem.Type.TEXT, true);
         // Add into the list
         tagItemList.add(tagItem);
         keyTagItem.put(key, tagItem);
@@ -295,18 +295,19 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 String key = poiTypeTag.getKey();
                 // Display tags as mandatory if they are mandatory and we are not in expert mode
                 if (poiTypeTag.getMandatory() && !expertMode) {
-                    addTag(key, poiTags.remove(key), true, values, nbMandatory + nbImposed, true, poiTypeTag.getTagType());
+                    addTag(key, poiTags.get(key), true, values, nbMandatory + nbImposed, true, poiTypeTag.getTagType());
                     nbMandatory++;
                 } else {
-                    addTag(key, poiTags.remove(key), false, values, this.getItemCount(), true, poiTypeTag.getTagType());
+                    addTag(key, poiTags.get(key), false, values, this.getItemCount(), true, poiTypeTag.getTagType());
                 }
             } else if (expertMode) {
                 // Display the tags of the poi that are not in the PoiType
                 String key = poiTypeTag.getKey();
-                addTag(key, poiTags.remove(key), true, values, nbImposed, false, poiTypeTag.getTagType());
+                addTag(key, poiTags.get(key), true, values, nbImposed, false, poiTypeTag.getTagType());
                 nbImposed++;
             }
         }
+
         if (expertMode) {
             for (String key : poiTags.keySet()) {
                 addTag(key, poiTags.get(key), false, removeDuplicate(tagValueSuggestionsMap.get(key),
@@ -382,6 +383,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
         } else {
+            holder.getTextViewValue().setOnFocusChangeListener(null);
             holder.getTextViewValue().addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -432,6 +434,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         final OpeningMonthAdapter adapter = new OpeningMonthAdapter(openingTime, activity);
+        adapter.setTime(tagItem.getValue());
         holder.getOpeningTimeRecyclerView().setAdapter(adapter);
         holder.getOpeningTimeRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
         holder.getOpeningTimeRecyclerView().setHasFixedSize(false);
@@ -439,6 +442,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         itemAnimator.setAddDuration(300);
         holder.getOpeningTimeRecyclerView().setItemAnimator(itemAnimator);
         holder.getOpeningTimeRecyclerView().addItemDecoration(new DividerItemDecoration(activity));
+
 
         final OpeningTime finalOpeningTime = openingTime;
         holder.getAddButton().setOnClickListener(new View.OnClickListener() {

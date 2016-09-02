@@ -43,6 +43,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.offline.OfflineRegionManager;
@@ -148,7 +149,7 @@ public class OfflineRegionDownloadService extends IntentService {
 
     public void downloadOfflineRegion(LatLngBounds latLngBounds, final String regionName) {
         final OfflineTilePyramidRegionDefinition definition = new OfflineTilePyramidRegionDefinition(
-                getString(R.string.map_style_url),
+                BuildConfig.MAP_STYLE_URL,
                 latLngBounds,
                 MIN_ZOOM,
                 MAX_ZOOM,
