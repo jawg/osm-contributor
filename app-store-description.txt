@@ -1,0 +1,24 @@
+OSM Contributor is the latest mobile OpenStreetMap editor.
+
+NEW: in the new 3.0 Release:
+- Vector tiles and offline regions available for download
+- Better awesome UX (duplicate point, widgets for opening hours)
+- OpenSource preset Marketplace (similar to JOSM Presets)
+- Better expert mode
+
+Ever wanted to put your place on the map?
+OpenStreetMap is the best OpenSource geo database in the world. 
+
+The app allows each contributor to add/edit the OpenStreetMap database.
+It also allows beginners to participate in an easy way, thanks to its user-friendly material interface.
+Our job is to reduce the entry cost of OpenStreetMap and make it simpler!
+
+Features:
+- Add/Edit Nodes
+- Add/Edit Ways
+- Add/Edit Notes
+- Manage data-types
+- Display vector overlays on top of the map
+- Offline Mode
+
+Code is OpenSource and available on Github.
