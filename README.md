@@ -90,5 +90,6 @@ Want to help? [Add your language here](https://www.transifex.com/jawg/osm-contri
  + Spanish: [Nacho](https://twitter.com/ignaciolep) (@ignaciolep)
  + Spanish: [Marco Antonio](https://twitter.com/51114u9) (@51114u9)
  + Portuguese (BR): [Tiago Fassoni](https://github.com/tiagofassoni)
+ + Russian: [Nikolay Parukhin]()
 
 We welcome any contributors with issues / pull requests.
