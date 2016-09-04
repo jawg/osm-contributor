@@ -138,9 +138,9 @@
     <string name="shared_prefs_preset_selected" translatable="false">presetSelected</string>
 
     <!--Login-->
-    <string name="login_google_error">Vous ne pouvez pas vous connecter avec votre compte Google.\n
-        Cependant, vous pouvez vous connecter avec en utilisant votre nom d’utilisateur et votre mot de passe.\n\n
-        Si vous souhaitez vous connecter avec votre compte Google, associez le compte avec votre ID dans vos préférences utilisateur.</string>
+    <string name="login_google_error">This Google account cannot be used for login.\n
+        You can try logging in with your OpenStreetMap username and password.\n\n
+        If you would like to use your google account to Login, please add it as a new account in your Android user preferences.</string>
     <string name="login_title">Connection</string>
 
     <!-- Tuto -->
@@ -281,8 +281,7 @@
     <string name="empty_fields">Empty fields!</string>
     <string name="notification_download_title">Download </string>
     <string name="download_offline_area_title">Download offline regions</string>
-    <string name="download_offline_area_message">Ce preset contient des régions visualisables en mode hors-ligne.\nCela requiert un téléchargement de ces régions au préalable.
-        Il est conseillé d\'avoir une connexion Wifi pendant le téléchargement.\n\nVoulez-vous lancer le téléchargement?</string>
+    <string name="download_offline_area_message">This preset contains offline-regions.\nThose regions need to be loaded first which could result in large data consumption. A Wifi connection is highly advised.\n\nWould you like to initiate the loading?</string>
     <string name="download_offline_area_more_later">Download later</string>
     <string name="offline_regions">Offline Regions</string>
     <string name="no_photos">This POI has no photos</string>
