@@ -25,7 +25,7 @@
     <string name="location_not_found">Couldn\'t find your location</string>
 
     <!-- EDITION -->
-    <string name="addValueDialogTitle">Change value for : \"%1$s\"</string>
+    <string name="addValueDialogTitle">Change value for: \"%1$s\"</string>
     <string name="addValueDialogAdd">Change</string>
     <string name="addValueDialogCancel">Cancel</string>
     <string name="title_activity_pick_value" translatable="false">PickValueActivity</string>
@@ -49,10 +49,22 @@
     <string name="edit_position">Change position</string>
     <string name="edit_poi">Edit Poi</string>
     <string name="duplicate_poi">Duplicate Poi</string>
-    <string name="update_done">%1$s Poi(s) updated on OSM</string>
-    <string name="delete_done">%1$s Poi(s) deleted on OSM</string>
-    <string name="noderef_moved">%1$s point(s) updated on OSM, refresh the map in few minutes to see your changes</string>
-    <string name="add_done">%1$s Poi(s) added on OSM</string>
+    <plurals name="update_done">
+        <item quantity="one">%1$s points updated on OSM.</item>
+        <item quantity="other">%1$s points updated on OSM.</item>
+    </plurals>
+    <plurals name="delete_done">
+        <item quantity="one">%1$s points deleted on OSM.</item>
+        <item quantity="other">%1$s points deleted on OSM.</item>
+    </plurals>
+    <plurals name="noderef_moved">
+        <item quantity="one">1 point updated on OSM, refresh the map in a few minutes to see your changes.</item>
+        <item quantity="other">%1$s points updated on OSM, refresh the map in a few minutes to see your changes.</item>
+    </plurals>
+    <plurals name="add_done">
+        <item quantity="one">%1$s Poi added on OSM.</item>
+        <item quantity="other">%1$s Pois added on OSM.</item>
+    </plurals>
     <string name="couldnt_connect_retrofit">Couldn\’t add/update. Check your login/password in your preferences.</string>
     <string name="couldnt_create_node">There was an error during creation, your changes have been reverted.</string>
     <string name="couldnt_update_node">There was an error during the update, your changes have been reverted.</string>
@@ -198,7 +210,7 @@
     <string name="saving">Saving&#8230;</string>
 
     <!--Update-->
-    <string name="update_title">Add a comment to your changes :</string>
+    <string name="update_title">Add a comment to your changes:</string>
     <string name="need_a_comment">The comment can\'t be empty</string>
     <string name="nothing_to_update">You don\'t have anything to update</string>
     <string name="nothing_selected">You didn\'t select any changes</string>
@@ -224,7 +236,10 @@
     <!-- POI types/tags -->
     <string name="manage_poi_types">Manage Poi types</string>
     <string name="manage_poi_tags">Manage Poi tags</string>
-    <string name="tag_number">%1$s tags</string>
+    <plurals name="tag_number">
+        <item quantity="one">1 tag</item>
+        <item quantity="other">%1$s tags</item>
+    </plurals>
     <string name="new_poi_type">New type</string>
     <string name="edit_poi_name">Edit type name</string>
     <string name="new_poi_tag">New tag</string>
@@ -251,7 +266,7 @@
     <string name="undo">Undo</string>
 
     <!-- Upload -->
-    <string name="position">Position :</string>
+    <string name="position">Position:</string>
     <string name="changed">Changed</string>
     <string name="revert">Revert</string>
     <string name="revert_snack_bar">Revert changes</string>
@@ -269,7 +284,7 @@
     </string>
 
     <string name="malformated_tag">The value of this tag doesn\'t respect OSM conventions</string>
-    <string name="malformated_value">Current value : </string>
+    <string name="malformated_value">Current value: </string>
 
     <string name="flickr_title">Flickr account needed</string>
     <string name="flickr_need">You need a Yahoo account (Flickr) to post a photo</string>
