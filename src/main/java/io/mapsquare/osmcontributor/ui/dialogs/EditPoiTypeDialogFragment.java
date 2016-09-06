@@ -136,7 +136,7 @@ public class EditPoiTypeDialogFragment extends BaseOkCancelDialogFragment {
     public void onPoiTypeSuggestedDownloadedEvent(PoiTypeSuggestedDownloadedEvent event) {
         poiType = event.getPoiType();
         detailsText.setVisibility(View.VISIBLE);
-        detailsText.setText(getContext().getString(R.string.tag_number, poiType.getTags().size()));
+        detailsText.setText(getContext().getResources().getQuantityString(R.plurals.tag_number, poiType.getTags().size()));
     }
 
     public static void display(FragmentManager manager) {

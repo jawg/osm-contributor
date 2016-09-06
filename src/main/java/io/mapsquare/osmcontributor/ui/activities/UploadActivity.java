@@ -244,17 +244,17 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         String result;
 
         if (event.getSuccessfullyAddedPoisCount() > 0) {
-            result = String.format(getString(R.string.add_done), event.getSuccessfullyAddedPoisCount());
+            result = getResources().getQuantityString(R.plurals.add_done, event.getSuccessfullyAddedPoisCount());
             Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
             resultReceived();
         }
         if (event.getSuccessfullyUpdatedPoisCount() > 0) {
-            result = String.format(getString(R.string.update_done), event.getSuccessfullyUpdatedPoisCount());
+            result = getResources().getQuantityString(R.plurals.update_done, event.getSuccessfullyUpdatedPoisCount());
             Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
             resultReceived();
         }
         if (event.getSuccessfullyDeletedPoisCount() > 0) {
-            result = String.format(getString(R.string.delete_done), event.getSuccessfullyDeletedPoisCount());
+            result = getResources().getQuantityString(R.plurals.delete_done, event.getSuccessfullyDeletedPoisCount());
             Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
             resultReceived();
         }

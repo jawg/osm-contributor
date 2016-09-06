@@ -1573,15 +1573,15 @@ public class MapFragment extends Fragment {
         boolean forceRefresh = false;
 
         if (event.getSuccessfullyAddedPoisCount() > 0) {
-            Toast.makeText(getActivity(), String.format(getResources().getString(R.string.add_done), event.getSuccessfullyAddedPoisCount()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getResources().getQuantityString(R.plurals.add_done, event.getSuccessfullyAddedPoisCount()), Toast.LENGTH_SHORT).show();
             forceRefresh = true;
         }
         if (event.getSuccessfullyUpdatedPoisCount() > 0) {
-            Toast.makeText(getActivity(), String.format(getResources().getString(mapMode == MapMode.WAY_EDITION ? R.string.noderef_moved : R.string.update_done), event.getSuccessfullyUpdatedPoisCount()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getResources().getQuantityString(mapMode == MapMode.WAY_EDITION ? R.plurals.noderef_moved : R.plurals.update_done, event.getSuccessfullyUpdatedPoisCount()), Toast.LENGTH_SHORT).show();
             forceRefresh = true;
         }
         if (event.getSuccessfullyDeletedPoisCount() > 0) {
-            Toast.makeText(getActivity(), String.format(getResources().getString(R.string.delete_done), event.getSuccessfullyDeletedPoisCount()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getResources().getQuantityString(R.plurals.delete_done, event.getSuccessfullyDeletedPoisCount()), Toast.LENGTH_SHORT).show();
             forceRefresh = true;
         }
 
