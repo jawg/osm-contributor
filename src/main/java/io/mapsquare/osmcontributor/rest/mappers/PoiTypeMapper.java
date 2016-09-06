@@ -73,7 +73,13 @@ public class PoiTypeMapper {
                 poiTypeTag.setValue(tagDto.getValue());
                 poiTypeTag.setMandatory(tagDto.getRequired());
                 poiTypeTag.setOrdinal(ordinal++);
-                poiTypeTag.setPossibleValues(getPossibleValues(tagDto.getValues()));
+                if (tagDto.getValues() != null && !tagDto.getValues().isEmpty()) {
+                    List<String> possibleValues = new ArrayList<>();
+                    for (Map<String, String> value : tagDto.getValues()) {
+                        possibleValues.add(getTranslationFormJson(value, ""));
+                    }
+                    poiTypeTag.setPossibleValues(getPossibleValues(possibleValues));
+                }
                 poiTypeTag.setTagType(tagDto.getType());
                 tags.add(poiTypeTag);
 

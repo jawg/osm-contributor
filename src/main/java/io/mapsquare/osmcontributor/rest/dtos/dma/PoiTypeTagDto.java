@@ -22,6 +22,7 @@ package io.mapsquare.osmcontributor.rest.dtos.dma;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Map;
 
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 
@@ -46,7 +47,7 @@ public class PoiTypeTagDto {
     private Boolean show;
 
     @SerializedName("values")
-    private List<String> values;
+    private List<Map<String, String>> values;
 
 
     public String getKey() {
@@ -97,11 +98,11 @@ public class PoiTypeTagDto {
         this.show = show;
     }
 
-    public List<String> getValues() {
+    public List<Map<String, String>> getValues() {
         return values;
     }
 
-    public void setValues(List<String> values) {
+    public void setValues(List<Map<String, String>> values) {
         this.values = values;
     }
 }
