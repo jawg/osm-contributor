@@ -47,7 +47,7 @@ public class PoiTypeTagDto {
     private Boolean show;
 
     @SerializedName("values")
-    private List<Map<String, String>> values;
+    private List<Map<String, Map<String, String>>> values;
 
 
     public String getKey() {
@@ -98,11 +98,11 @@ public class PoiTypeTagDto {
         this.show = show;
     }
 
-    public List<Map<String, String>> getValues() {
+    public List<Map<String, Map<String, String>>> getValues() {
         return values;
     }
 
-    public void setValues(List<Map<String, String>> values) {
+    public void setValues(List<Map<String, Map<String, String>>> values) {
         this.values = values;
     }
 }

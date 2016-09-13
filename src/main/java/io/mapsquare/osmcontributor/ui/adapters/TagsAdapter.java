@@ -39,7 +39,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +52,7 @@ import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
 import io.mapsquare.osmcontributor.model.utils.OpeningMonth;
 import io.mapsquare.osmcontributor.model.utils.OpeningTime;
+import io.mapsquare.osmcontributor.rest.mappers.PoiTypeMapper;
 import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
@@ -119,7 +119,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case SINGLE_CHOICE:
                 View booleanChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_radio, parent, false);
                 return new TagRadioChoiceHolder(booleanChoiceLayout);
-
             default:
                 View autoCompleteLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_multi_choice, parent, false);
                 return new TagItemAutoCompleteViewHolder(autoCompleteLayout);
@@ -139,6 +138,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /*=========================================*/
     /*------------CODE-------------------------*/
     /*=========================================*/
+
     /**
      * Add an element at the end of the List.
      * @return the position of the inserted element
@@ -199,6 +199,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /*=========================================*/
     /*------------PRIVATE CODE-----------------*/
     /*=========================================*/
+
     /**
      * Edit tag value
      * @param tagItem tag item to edit
@@ -280,7 +281,15 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (possibleValuesAsString == null || possibleValuesAsString.isEmpty()) {
             return null;
         }
-        return Arrays.asList(possibleValuesAsString.split(String.valueOf((char) 29)));
+        // Split into an array of value:label
+        String[] valuesAndLabels = possibleValuesAsString.split(PoiTypeMapper.ITEM_SEPARATOR);
+        List<String> values = new ArrayList<>(valuesAndLabels.length);
+        // FIXME will have to change possible values into a map
+        for (String valueAndLabel : valuesAndLabels) {
+            String[] split = valueAndLabel.split(PoiTypeMapper.VALUE_SEPARATOR);
+            values.add(split[0]);
+        }
+        return values;
     }
 
     private void loadTags(Map<String, String> poiTags, Map<String, List<String>> tagValueSuggestionsMap) {
@@ -395,6 +404,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         eventBus.post(new PleaseApplyTagChange(holder.getTextViewKey().getText().toString(), holder.getTextViewValue().getText().toString()));
                     }
                 }
+
                 @Override
                 public void afterTextChanged(Editable s) {
                 }
@@ -523,6 +533,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /*=========================================*/
     /*------------GETTER/SETTER----------------*/
     /*=========================================*/
+
     /**
      * Add an element at the end of the List
      *

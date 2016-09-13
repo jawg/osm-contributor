@@ -36,6 +36,9 @@ import io.mapsquare.osmcontributor.rest.dtos.dma.PoiTypeDto;
 import io.mapsquare.osmcontributor.rest.dtos.dma.PoiTypeTagDto;
 
 public class PoiTypeMapper {
+
+    public static final String ITEM_SEPARATOR = String.valueOf((char) 29);
+    public static final String VALUE_SEPARATOR = ";;";
     private static final String TAG = "PoiTypeMapper";
     private String language;
     private DateTime dateTime;
@@ -75,8 +78,10 @@ public class PoiTypeMapper {
                 poiTypeTag.setOrdinal(ordinal++);
                 if (tagDto.getValues() != null && !tagDto.getValues().isEmpty()) {
                     List<String> possibleValues = new ArrayList<>();
-                    for (Map<String, String> value : tagDto.getValues()) {
-                        possibleValues.add(getTranslationFormJson(value, ""));
+                    for (Map<String, Map<String, String>> valuesMap : tagDto.getValues()) {
+                        for (Map.Entry<String, Map<String, String>> value : valuesMap.entrySet()) {
+                            possibleValues.add(value.getKey() + VALUE_SEPARATOR + getTranslationFormJson(value.getValue(), ""));
+                        }
                     }
                     poiTypeTag.setPossibleValues(getPossibleValues(possibleValues));
                 }
@@ -173,7 +178,7 @@ public class PoiTypeMapper {
             if (it.hasNext()) {
                 possibleValues.append(it.next());
                 while (it.hasNext()) {
-                    possibleValues.append((char) 29).append(it.next());
+                    possibleValues.append(ITEM_SEPARATOR).append(it.next());
                 }
             }
         }

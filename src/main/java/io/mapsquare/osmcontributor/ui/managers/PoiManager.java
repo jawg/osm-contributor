@@ -26,7 +26,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,6 +69,7 @@ import io.mapsquare.osmcontributor.model.events.ResetDatabaseEvent;
 import io.mapsquare.osmcontributor.model.events.ResetTypeDatabaseEvent;
 import io.mapsquare.osmcontributor.model.events.RevertFinishedEvent;
 import io.mapsquare.osmcontributor.rest.dtos.dma.H2GeoDto;
+import io.mapsquare.osmcontributor.rest.mappers.PoiTypeMapper;
 import io.mapsquare.osmcontributor.ui.events.map.ChangesInDB;
 import io.mapsquare.osmcontributor.ui.events.map.LastUsePoiTypeLoaded;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseLoadLastUsedPoiType;
@@ -662,7 +662,13 @@ public class PoiManager {
                 res.put(poiTypeTag.getKey(), suggestionsForTagValue(poiTypeTag.getKey(), poiTypeTag.getPoiType().getId()));
             } else {
                 // Split the possible values string to a list
-                res.put(poiTypeTag.getKey(), Arrays.asList(poiTypeTag.getPossibleValues().split(Character.toString((char) 29))));
+                String[] split = poiTypeTag.getPossibleValues().split(PoiTypeMapper.ITEM_SEPARATOR);
+                List<String> values = new ArrayList<>(split.length);
+                for (String e : values) {
+                    // FIXME add possible values as map
+                    values.add(e.split(PoiTypeMapper.VALUE_SEPARATOR)[0]);
+                }
+                res.put(poiTypeTag.getKey(), values);
             }
         }
         return res;
