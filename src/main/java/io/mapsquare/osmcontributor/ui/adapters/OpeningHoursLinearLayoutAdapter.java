@@ -89,9 +89,6 @@ public class OpeningHoursLinearLayoutAdapter {
         final EditText textViewDaysValue = (EditText) openingHoursItem.findViewById(R.id.opening_hours_days_value);
         final EditText textViewHoursValue = (EditText) openingHoursItem.findViewById(R.id.opening_hours_hours_value);
 
-        textViewDaysValue.setText("");
-        textViewHoursValue.setText("");
-
         // When the days input text is clicked, we start the dialog to pick
         // the opening days and hours
         View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -129,11 +126,24 @@ public class OpeningHoursLinearLayoutAdapter {
         String[] openingHoursPart = openingHoursValueParser.toValue(Collections.singletonList(openingHours)).split(" ");
 
         if (openingHoursPart.length > 1) {
-            textViewDaysValue.setText(openingHoursPart[0]);
-            textViewHoursValue.setText(openingHoursPart[1]);
+            String[] days = openingHoursPart[0].split("-");
+            if (days.length == 7) {
+                textViewDaysValue.setText("7/7");
+            } else {
+                textViewDaysValue.setText(openingHoursPart[0]);
+            }
+
+            String[] hours = openingHoursPart[1].split("-");
+            if (hours[0].equals(hours[1])) {
+                textViewHoursValue.setText("24/24");
+            } else {
+                textViewHoursValue.setText(openingHoursPart[1]);
+            }
         } else {
-            textViewDaysValue.setText("");
-            textViewHoursValue.setText("");
+            if (openingHoursPart[0].equals("24/7")) {
+                textViewDaysValue.setText("7/7");
+                textViewHoursValue.setText("24/24");
+            }
         }
 
         // When the days input text is clicked, we start the dialog to pick
@@ -152,6 +162,9 @@ public class OpeningHoursLinearLayoutAdapter {
                         if (openingHoursPart.length > 1) {
                             textViewDaysValue.setText(openingHoursPart[0]);
                             textViewHoursValue.setText(openingHoursPart[1]);
+                        } else if (openingHoursPart[0].equals("24/7")) {
+                            textViewDaysValue.setText("7/7");
+                            textViewHoursValue.setText("24/24");
                         }
                     }
                 });

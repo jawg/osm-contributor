@@ -92,8 +92,7 @@ public class OpeningHoursValueParser implements ValueParser<List<OpeningHours>> 
                     daysBuilder.append(fromDay);
                     if (toDay != null) {
                         // This is a period
-                        daysBuilder.append(RANGE_SEP)
-                                .append(toDay);
+                        daysBuilder.append(RANGE_SEP).append(toDay);
                     }
                 }
             }
@@ -154,7 +153,10 @@ public class OpeningHoursValueParser implements ValueParser<List<OpeningHours>> 
         String daysPart = null;
         String hoursPart = null;
 
-        if (openingHoursValues.length == 2) {
+        if (value.equals("24/7")) {
+            daysPart = "Mo-Su";
+            hoursPart = "24:00-24:00";
+        } else if (openingHoursValues.length == 2) {
             daysPart = openingHoursValues[0];
             hoursPart = openingHoursValues[1];
         } else if (openingHoursValues.length == 1) {
@@ -179,9 +181,13 @@ public class OpeningHoursValueParser implements ValueParser<List<OpeningHours>> 
         if (hoursPart != null) {
             String[] hourPeriod = hoursPart.split(RANGE_SEP);
             LocalTime from = TIME_FORMATTER.parseLocalTime(hourPeriod[0]);
-            LocalTime to = TIME_FORMATTER.parseLocalTime(hourPeriod[1]);
+            if (hourPeriod.length > 1) {
+                LocalTime to = TIME_FORMATTER.parseLocalTime(hourPeriod[1]);
+                openingHours.setToTime(to);
+            } else {
+                openingHours.setToTime(from.plusMinutes(5));
+            }
             openingHours.setFromTime(from);
-            openingHours.setToTime(to);
         }
         return openingHours;
     }

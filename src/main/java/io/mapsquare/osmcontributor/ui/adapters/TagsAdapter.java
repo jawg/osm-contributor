@@ -26,7 +26,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -180,6 +179,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onPleaseApplyOpeningTimeChange(PleaseApplyOpeningTimeChange event) {
         eventBus.removeStickyEvent(event);
         TagItem tagItem = keyTagItem.get("opening_hours");
+        tagItem = tagItemList.get(tagItemList.indexOf(tagItem));
         if (tagItem != null) {
             editTag(tagItem, openingTimeValueParser.toValue(event.getOpeningTime()));
         }
@@ -191,7 +191,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TagItem tagItem = keyTagItem.get(ParserManager.deparseTagName(event.getKey()));
         if (tagItem != null) {
             editTag(tagItem, event.getValue());
-            Log.i("osmcontributorlog", "onPleaseApplyTagChangeView: ");
             notifyItemChanged(tagItemList.indexOf(tagItem));
         }
     }
@@ -208,7 +207,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void editTag(TagItem tagItem, String newValue) {
         tagItem.setValue(newValue);
         change = true;
-        Log.i(TAG, "editTag: " + tagItem.getValue());
     }
 
     /**
@@ -224,10 +222,14 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // Parse value if needed
         String valueFormatted = ParserManager.getValue(value, type);
         type = type == null ? TagItem.Type.TEXT : type;
+        type = key.equals("collection_times") ? TagItem.Type.OPENING_HOURS : type;
+        type = key.equals("opening_hours") ? TagItem.Type.OPENING_HOURS : type;
 
         TagItem tagItem = new TagItem(key, value, mandatory, values, updatable ? type : TagItem.Type.CONSTANT, valueFormatted != null || type == TagItem.Type.NUMBER);
         // Add into the list
-        tagItemList.add(position, tagItem);
+        if (!tagItemList.contains(tagItem)) {
+            tagItemList.add(position, tagItem);
+        }
         keyTagItem.put(key, tagItem);
 
         // Notify changes
@@ -438,7 +440,14 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final TagItem tagItem = tagItemList.get(position);
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
 
-        OpeningTime openingTime = openingTimeValueParser.fromValue(tagItem.getValue());
+        OpeningTime openingTime = null;
+        try {
+             openingTime = openingTimeValueParser.fromValue(tagItem.getValue());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            tagItem.setConform(false);
+        }
+
         if (openingTime == null) {
             openingTime = new OpeningTime();
         }
@@ -452,7 +461,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         itemAnimator.setAddDuration(300);
         holder.getOpeningTimeRecyclerView().setItemAnimator(itemAnimator);
         holder.getOpeningTimeRecyclerView().addItemDecoration(new DividerItemDecoration(activity));
-
 
         final OpeningTime finalOpeningTime = openingTime;
         holder.getAddButton().setOnClickListener(new View.OnClickListener() {

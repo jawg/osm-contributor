@@ -26,7 +26,6 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:rotation="45"
-        android:background="@drawable/delete_button"
+        android:src="@drawable/delete_time"
         android:layout_margin="5dp"/>
 </LinearLayout>

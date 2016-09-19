@@ -436,7 +436,7 @@ public class MapFragment extends Fragment {
             if (lat != 0 && lon != 0) {
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(new LatLng(lat, lon))
-                        .zoom(configManager.getDefaultZoom())
+                        .zoom(mapboxMap.getCameraPosition().zoom)
                         .build();
                 mapboxMap.setCameraPosition(cameraPosition);
             } else {

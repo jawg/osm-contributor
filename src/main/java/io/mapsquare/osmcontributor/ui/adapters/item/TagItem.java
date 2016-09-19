@@ -110,6 +110,10 @@ public class TagItem implements Parcelable {
         return isConform;
     }
 
+    public void setConform(boolean conform) {
+        isConform = conform;
+    }
+
     @Override
     public int describeContents() {
         return 0;
