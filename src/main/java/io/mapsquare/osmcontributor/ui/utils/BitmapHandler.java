@@ -145,6 +145,7 @@ public class BitmapHandler {
         icons.put("doctors", R.drawable.doctors);
         icons.put("drinking_water", R.drawable.drinking_water);
         icons.put("embassy", R.drawable.embassy);
+        icons.put("entrance", R.drawable.entrance);
         icons.put("fast_food", R.drawable.fast_food);
         icons.put("fire_station", R.drawable.fire_station);
         icons.put("fuel", R.drawable.fuel);

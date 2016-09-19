@@ -111,7 +111,11 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    protected void onDestroy() {
+        bus.unregister(this);
+        super.onDestroy();
+    }
 
     /*=========================================*/
     /*------------PRIVATE CODE-----------------*/

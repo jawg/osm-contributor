@@ -39,6 +39,6 @@
 
     <string name="mapUrl" translatable="false">http://tile.openstreetmap.org/{z}/{x}/{y}.png</string>
     <string name="baseOsmApiUrl" translatable="false">http://api06.dev.openstreetmap.org/api/0.6</string>
-    <string name="baseOverpassUrl" translatable="false">http://overpass-api.de/api/interpreter</string>
+    <string name="baseOverpassUrl" translatable="false">http://api.openstreetmap.fr/oapi/interpreter</string>
 
 </resources>

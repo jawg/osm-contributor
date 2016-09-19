@@ -158,7 +158,7 @@ public class LoadProfileActivity extends AppCompatActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPresetDownloadedEvent(final PresetDownloadedEvent event) {
         Log.i(TAG, "onPresetDownloadedEvent: " + event.getH2GeoDto().getOfflineArea());
-        if (!event.getH2GeoDto().getOfflineArea().isEmpty()) {
+        if (event.getH2GeoDto().getOfflineArea() != null && !event.getH2GeoDto().getOfflineArea().isEmpty()) {
             askUserForDownloading(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
