@@ -19,8 +19,8 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<View xmlns:android="http://schemas.android.com/apk/res/android"
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tag_item_opening_time_add_button"
     android:layout_width="22dp"
     android:layout_height="22dp"
-    android:background="@drawable/add_button"/>
+    android:src="@drawable/add_time"/>

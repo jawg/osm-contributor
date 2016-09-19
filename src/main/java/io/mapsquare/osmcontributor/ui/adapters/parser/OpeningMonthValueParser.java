@@ -39,6 +39,7 @@ public class OpeningMonthValueParser implements ValueParser<OpeningMonth> {
     public static final String PATTERN = PATTERN_MONTH + "(-" + PATTERN_MONTH + ")?" + "(,\\s?" + PATTERN_MONTH +
             "(-" + PATTERN_MONTH + ")?)*?";
 
+
     @Inject
     OpeningHoursValueParser openingHoursValueParser;
 
@@ -105,6 +106,11 @@ public class OpeningMonthValueParser implements ValueParser<OpeningMonth> {
                 } else {
                     openingMonth.setMonthActivated(OpeningMonth.Month.fromData(period).ordinal(), true);
                 }
+            }
+        } else {
+            List<OpeningHours> openingHours = openingHoursValueParser.fromValue(value);
+            if (openingHours != null) {
+                openingMonth.addOpeningHours(openingHours);
             }
         }
 

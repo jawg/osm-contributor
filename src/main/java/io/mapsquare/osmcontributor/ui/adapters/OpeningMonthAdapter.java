@@ -74,8 +74,11 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
     public void onBindViewHolder(final OpeningTimeHolder holder, int position) {
         final OpeningMonth openingMonth = openingTime.getOpeningMonths().get(position);
 
-        holder.getTextViewMonthValue().setText(openingMonthValueParser.toValue(openingMonth)
-                .split(OpeningMonthValueParser.MONTH_SEP)[0]);
+        String[] split = openingMonthValueParser.toValue(openingMonth).split(OpeningMonthValueParser.MONTH_SEP);
+        if (split.length > 1) {
+            holder.getTextViewMonthValue().setText(openingMonthValueParser.toValue(openingMonth)
+                    .split(OpeningMonthValueParser.MONTH_SEP)[0]);
+        }
 
         // When the months input text is clicked, we start the dialog to pick
         // the opening months
@@ -88,8 +91,11 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
                     @Override
                     public void onOpeningMonthChanged(OpeningMonth o) {
                         openingMonth.setMonths(o.getMonths());
-                        holder.getTextViewMonthValue().setText(openingMonthValueParser.toValue(openingMonth)
-                                .split(OpeningMonthValueParser.MONTH_SEP)[0]);
+                        String[] split = openingMonthValueParser.toValue(openingMonth).split(OpeningMonthValueParser.MONTH_SEP);
+                        if (split.length > 1) {
+                            holder.getTextViewMonthValue().setText(openingMonthValueParser.toValue(openingMonth)
+                                    .split(OpeningMonthValueParser.MONTH_SEP)[0]);
+                        }
                         eventBus.post(new PleaseApplyOpeningTimeChange(openingTime));
                     }
                 });
@@ -106,7 +112,6 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
             }
         });
 
-        holder.getTextViewMonthValue().setText(time);
 
         holder.getOpeningHoursLayout().removeAllViews();
 
