@@ -227,7 +227,9 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         TagItem tagItem = new TagItem(key, value, mandatory, values, updatable ? type : TagItem.Type.CONSTANT, valueFormatted != null || type == TagItem.Type.NUMBER);
         // Add into the list
-        tagItemList.add(position, tagItem);
+        if (!tagItemList.contains(tagItem)) {
+            tagItemList.add(position, tagItem);
+        }
         keyTagItem.put(key, tagItem);
 
         // Notify changes
