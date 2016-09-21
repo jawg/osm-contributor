@@ -115,6 +115,10 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_time, parent, false);
                 return new TagItemOpeningTimeViewHolder(poiTagOpeningHoursLayout);
 
+            case TIME:
+                View poiTime = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_time, parent, false);
+                return new TagItemOpeningTimeViewHolder(poiTime);
+
             case SINGLE_CHOICE:
                 View booleanChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_radio, parent, false);
                 return new TagRadioChoiceHolder(booleanChoiceLayout);
@@ -222,7 +226,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // Parse value if needed
         String valueFormatted = ParserManager.getValue(value, type);
         type = type == null ? TagItem.Type.TEXT : type;
-        type = key.equals("collection_times") ? TagItem.Type.OPENING_HOURS : type;
+        type = key.equals("collection_times") ? TagItem.Type.TIME : type;
         type = key.equals("opening_hours") ? TagItem.Type.OPENING_HOURS : type;
 
         TagItem tagItem = new TagItem(key, value, mandatory, values, updatable ? type : TagItem.Type.CONSTANT, valueFormatted != null || type == TagItem.Type.NUMBER);
@@ -342,6 +346,10 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 onBindViewHolder((TagItemOpeningTimeViewHolder) holder, position);
                 return;
 
+            case TIME:
+                onBindViewHolder((TagItemOpeningTimeViewHolder) holder, position);
+                return;
+
             case SINGLE_CHOICE:
                 onBindViewHolder((TagRadioChoiceHolder) holder, position);
                 break;
@@ -454,6 +462,9 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         final OpeningMonthAdapter adapter = new OpeningMonthAdapter(openingTime, activity);
         adapter.setTime(tagItem.getValue());
+        if (tagItem.getTagType() == TagItem.Type.TIME) {
+            adapter.hideMonth(true);
+        }
         holder.getOpeningTimeRecyclerView().setAdapter(adapter);
         holder.getOpeningTimeRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
         holder.getOpeningTimeRecyclerView().setHasFixedSize(false);

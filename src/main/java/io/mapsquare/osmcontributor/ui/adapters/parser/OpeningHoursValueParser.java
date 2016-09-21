@@ -137,14 +137,14 @@ public class OpeningHoursValueParser implements ValueParser<List<OpeningHours>> 
 
         for (String o : openingHours) {
             if (!o.trim().isEmpty()) {
-                openingHoursList.add(fromSingleValue(o));
+                fromSingleValue(o, openingHoursList);
             }
         }
 
         return openingHoursList;
     }
 
-    public OpeningHours fromSingleValue(String value) {
+    public void fromSingleValue(String value, List<OpeningHours> openingHoursList) {
         // TODO: 19/07/16 We,Fr-Sa 10:45-19:15, Tu,Sa-Su 05:30-17:30, We 08:00-18:00
         OpeningHours openingHours = new OpeningHours();
         openingHours.setAllDaysActivated(false);
@@ -179,17 +179,26 @@ public class OpeningHoursValueParser implements ValueParser<List<OpeningHours>> 
         }
 
         if (hoursPart != null) {
-            String[] hourPeriod = hoursPart.split(RANGE_SEP);
-            LocalTime from = TIME_FORMATTER.parseLocalTime(hourPeriod[0]);
-            if (hourPeriod.length > 1) {
-                LocalTime to = TIME_FORMATTER.parseLocalTime(hourPeriod[1]);
-                openingHours.setToTime(to);
+            String[] hours = hoursPart.split(",");
+            if (hours.length > 1) {
+                for (String hour : hours) {
+                    value = daysPart + " " + hour;
+                    fromSingleValue(value, openingHoursList);
+                }
             } else {
-                openingHours.setToTime(from.plusMinutes(5));
+                String[] hourPeriod = hoursPart.split(RANGE_SEP);
+                LocalTime from = TIME_FORMATTER.parseLocalTime(hourPeriod[0]);
+                if (hourPeriod.length > 1) {
+                    LocalTime to = TIME_FORMATTER.parseLocalTime(hourPeriod[1]);
+                    openingHours.setToTime(to);
+                } else {
+                    openingHours.setToTime(from.plusMinutes(5));
+                }
+                openingHours.setFromTime(from);
+                openingHoursList.add(openingHours);
             }
-            openingHours.setFromTime(from);
         }
-        return openingHours;
+        //return openingHours;
     }
 
     @Override

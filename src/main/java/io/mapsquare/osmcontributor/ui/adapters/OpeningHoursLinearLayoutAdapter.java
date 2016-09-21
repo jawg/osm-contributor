@@ -54,6 +54,7 @@ public class OpeningHoursLinearLayoutAdapter {
     private OpeningTime openingTime;
     private CopyOnWriteArrayList<OpeningHours> openingHoursList;
     private LinearLayout linearLayout;
+    private boolean hasToHide;
 
     @Inject
     OpeningHoursValueParser openingHoursValueParser;
@@ -64,12 +65,13 @@ public class OpeningHoursLinearLayoutAdapter {
     public OpeningHoursLinearLayoutAdapter(OpeningTime openingTime,
                                            List<OpeningHours> openingHoursList,
                                            LinearLayout openingHoursLayout,
-                                           Activity activity) {
+                                           Activity activity, boolean hasToHide) {
         this.openingTime = openingTime;
         this.activity = activity;
         this.openingHoursList = new CopyOnWriteArrayList<>();
         this.openingHoursList.addAll(openingHoursList);
         this.linearLayout = openingHoursLayout;
+        this.hasToHide = hasToHide;
         eventBus = EventBus.getDefault();
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
         initEditOpeningHours(openingHoursList);
@@ -136,6 +138,8 @@ public class OpeningHoursLinearLayoutAdapter {
             String[] hours = openingHoursPart[1].split("-");
             if (hours[0].equals(hours[1])) {
                 textViewHoursValue.setText("24/24");
+            } else if (hasToHide) {
+                textViewHoursValue.setText(openingHoursPart[1].substring(0, 5));
             } else {
                 textViewHoursValue.setText(openingHoursPart[1]);
             }
@@ -161,7 +165,11 @@ public class OpeningHoursLinearLayoutAdapter {
                         String[] openingHoursPart = openingHoursValueParser.toValue(Collections.singletonList(openingHours)).split(" ");
                         if (openingHoursPart.length > 1) {
                             textViewDaysValue.setText(openingHoursPart[0]);
-                            textViewHoursValue.setText(openingHoursPart[1]);
+                            if (hasToHide) {
+                                textViewHoursValue.setText(openingHoursPart[1].substring(0, 5));
+                            } else {
+                                textViewHoursValue.setText(openingHoursPart[1]);
+                            }
                         } else if (openingHoursPart[0].equals("24/7")) {
                             textViewDaysValue.setText("7/7");
                             textViewHoursValue.setText("24/24");

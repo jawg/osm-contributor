@@ -40,7 +40,8 @@ public class TagItem implements Parcelable {
         SINGLE_CHOICE,    // Use when tag value can be choose in a short list (< 7)
         CONSTANT,           // Use when tag value can't be modified (ex: type amenity)
         NUMBER,                 // Use when tag value is a number (ex: height, floors)
-        TEXT                    // Use by default
+        TEXT,                    // Use by default
+        TIME
     }
 
     public TagItem(String key, String value, boolean mandatory, List<String> values, Type separator, boolean isConform) {

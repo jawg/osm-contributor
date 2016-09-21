@@ -19,6 +19,7 @@
 package io.mapsquare.osmcontributor.ui.adapters;
 
 import android.app.Activity;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +51,7 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
     private Activity activity;
     private EventBus eventBus;
     private String time;
+    private boolean hasToHide;
 
     @Inject
     OpeningMonthValueParser openingMonthValueParser;
@@ -73,6 +75,10 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
     @Override
     public void onBindViewHolder(final OpeningTimeHolder holder, int position) {
         final OpeningMonth openingMonth = openingTime.getOpeningMonths().get(position);
+
+        if (hasToHide) {
+            holder.getTextInputLayout().setVisibility(View.INVISIBLE);
+        }
 
         String[] split = openingMonthValueParser.toValue(openingMonth).split(OpeningMonthValueParser.MONTH_SEP);
         if (split.length > 1) {
@@ -118,7 +124,7 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
         new OpeningHoursLinearLayoutAdapter(openingTime,
                 openingMonth.getOpeningHours(),
                 holder.getOpeningHoursLayout(),
-                activity);
+                activity, hasToHide);
     }
 
     @Override
@@ -138,6 +144,9 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
         @BindView(R.id.item_opening_time_delete_button)
         View deleteButton;
 
+        @BindView(R.id.poi_month)
+        TextInputLayout textInputLayout;
+
         public OpeningTimeHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -154,6 +163,14 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
         public LinearLayout getOpeningHoursLayout() {
             return openingHoursLayout;
         }
+
+        public TextInputLayout getTextInputLayout() {
+            return textInputLayout;
+        }
+    }
+
+    public void hideMonth(boolean hasToHide) {
+        this.hasToHide = hasToHide;
     }
 
     public void setTime(String time) {
