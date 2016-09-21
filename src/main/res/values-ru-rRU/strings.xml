@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2016 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<resources>
+    <string name="title_activity_edit_poi">Редактирование POI</string>
+    <string name="location_not_found">Не удаётся определить местоположение</string>
+    <!--EDITION-->
+    <string name="addValueDialogTitle">Изменить значение для: \"%1$s\"</string>
+    <string name="addValueDialogAdd">Изменить</string>
+    <string name="addValueDialogCancel">Отмена</string>
+    <string name="uncompleted_fields">Есть незаполненные поля</string>
+    <string name="not_any_changes">Нет ни каких изменений</string>
+    <string name="quit_edition_title">Выйти из редактирования</string>
+    <string name="quit_edition_message">Вы действительно хотите отменить изменения?</string>
+    <string name="quit_edition_positive_btn">Да</string>
+    <string name="quit_edition_negative_btn">Отмена</string>
+    <string name="no_values_yet">Ещё нет значение</string>
+    <string name="creation_title">Создание</string>
+    <string name="edition_title">Редактирование</string>
+    <string name="required">Необходимое</string>
+    <string name="optional">Дополнительное</string>
+    <string name="add_tag">Добавить тег</string>
+    <string name="tag_key">Ключ</string>
+    <string name="tag_value">Значение</string>
+    <!--Map-->
+    <string name="no_poi_name">У этой POI нет названия</string>
+    <string name="edit_position">Изменить положение</string>
+    <string name="edit_poi">Изменить POI</string>
+    <string name="duplicate_poi">Дублировать POI</string>
+    <plurals name="update_done">
+        <item quantity="one">%1$s POI обновлена в OSM</item>
+        <item quantity="few">%1$s POI обновлено в OSM</item>
+        <item quantity="many">%1$s POI обновлено в OSM</item>
+        <item quantity="other">%1$s POI обновлено в OSM</item>
+    </plurals>
+    <plurals name="delete_done">
+        <item quantity="one">%1$s POI удалена в OSM</item>
+        <item quantity="few">%1$s POI удалено в OSM</item>
+        <item quantity="many">%1$s POI удалено в OSM</item>
+        <item quantity="other">%1$s POI удалено в OSM</item>
+    </plurals>
+    <plurals name="noderef_moved">
+        <item quantity="one">1 точка обновлена в OSM, обновите карту в течение нескольких минут, чтобы увидеть изменения</item>
+        <item quantity="few">%1$s точки обновлены в OSM, обновите карту в течение нескольких минут, чтобы увидеть изменения</item>
+        <item quantity="many">%1$s точкек обновлено в OSM, обновите карту в течение нескольких минут, чтобы увидеть изменения</item>
+        <item quantity="other">%1$s точкек обновлено в OSM, обновите карту в течение нескольких минут, чтобы увидеть изменения</item>
+    </plurals>
+    <plurals name="add_done">
+        <item quantity="one">%1$s POI добавлена в OSM</item>
+        <item quantity="few">%1$s POI добавлены в OSM</item>
+        <item quantity="many">%1$s POI обновлены в OSM</item>
+        <item quantity="other">%1$s POI добавлены в OSM</item>
+    </plurals>
+    <string name="couldnt_connect_retrofit">Не удалось добавить/обновить. Проверьте свой логин/пароль в настройках.</string>
+    <string name="couldnt_create_node">Произошла ошибка во время создания, изменения были отменены.</string>
+    <string name="couldnt_update_node">Произошла ошибка во время обновления, изменения были отменены.</string>
+    <string name="couldnt_download_retrofit">Не удалось скачать POI. Проверьте подключение.</string>
+    <string name="couldnt_upload_retrofit">Не удалось передать POI. Проверьте подключение.</string>
+    <string name="edit_poi_position">Изменить положение POI</string>
+    <string name="edit_way_title">Изменить линию</string>
+    <string name="edit_noderef_position_title">Изменить положение</string>
+    <string name="poi_creation">Создание POI</string>
+    <string name="note_creation">Создание заметки</string>
+    <string name="delete_poi">Удалить POI</string>
+    <string name="add_poi">Добавить POI</string>
+    <string name="delete_poi_title">Удалить POI</string>
+    <string name="delete_poi_confirm_message">Вы действительно хотите удалить эту POI?</string>
+    <string name="delete_poi_positive_btn">Удалить</string>
+    <string name="delete_poi_negative_btn">Отмена</string>
+    <string name="point_modification_forbidden">Эта версия не позволяет изменять точки</string>
+    <string name="licenses_title">Лицензии</string>
+    <string name="zoom_to_edit">Слишком большая область для скачивания, приблизьте карту.</string>
+    <string name="download_in_progress">Идёт скачивание всех POI и заметок отображаемой зоны</string>
+    <string name="switch_style_satellite">Спутниковый снимок</string>
+    <string name="switch_style_mapnik">Mapnik</string>
+    <string name="switch_style_default">Вид по умолчанию</string>
+    <string name="zoom_more">Приблизьте карту для того, чтобы скачать POI</string>
+    <string name="search_poitype_hint">Поиск по типу POI</string>
+    <string name="title_3d_view">3D вид</string>
+    <string name="arpi_not_supported">Ваше устройство не поддерживает 3D вид</string>
+    <!--Strings related to login-->
+    <string name="prompt_login">Логин</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="splash_screen_message">Инициализация…</string>
+    <!--Preferences-->
+    <string name="title_activity_my_preferences">Параметры</string>
+    <string name="summary_login">Укажите имя</string>
+    <string name="summary_password">Укажите пароль</string>
+    <string name="error_login">Не удалось подключиться с этими именем/паролем. Вы уверены, что у вас есть права редактирования?</string>
+    <string name="error_first_login">Не удалось подключиться с этими именем/паролем.</string>
+    <string name="valid_login">Успешное подключение</string>
+    <string name="reset_title">Сбросить базу данных</string>
+    <string name="reset_summary">Удалить все POI из базы данных</string>
+    <string name="reset_type_title">Сбросить типы POI</string>
+    <string name="reset_type_summary">Сбросить типы POI и удалить все POI из базы данных</string>
+    <string name="expert_mode_summary">Позволяет вам управлять типами POI</string>
+    <string name="expert_mode_title">Режим эксперта</string>
+    <string name="reset_dialog_message">Вы уверены, что хотите сбросить базу данных? Все несохраненные изменения будут утеряны.</string>
+    <string name="reset_dialog_positive_button">Да</string>
+    <string name="reset_dialog_negative_button">Отмена</string>
+    <string name="reset_success">База данных успешно сброшена</string>
+    <string name="reset_failure">Произошла ошибка при сбросе базы данных</string>
+    <string name="expert_mode_dialog">Вы входите в режим эксперта. В нём вы сможете создавать, обновлять или удалять типы POI и редактировать POI.</string>
+    <string name="ok">OK</string>
+    <!--Shared preferences-->
+    <string name="shared_prefs_google_connection">Войти с аккаунтом Google</string>
+    <!--Login-->
+  <string name="login_google_error">Вы не можете войти в систему с вашей учетной записи Google.\n
+        Однако, вы можете войти в систему, используя ваше имя пользователя и пароль.\n\n
+        Если вы хотите войти в систему с вашей учетной записи Google, свяжите учетную запись с ID, в настройках пользователя.</string>
+    <string name="login_title">Подключение</string>
+    <!--Tuto-->
+    <string name="tuto_text_press_create">Нажмите здесь, чтобы добавить новую точку</string>
+    <string name="tuto_text_choose_type">Выберите тип POI, которую вы хотите добавить</string>
+    <string name="tuto_text_confirm_position_creation">Нажмите, чтобы подтвердить положение, любой возврат сбросит создание.</string>
+    <string name="tuto_text_confirm_creation">Нажмите для завершения создания или изменения.</string>
+    <string name="replay_tuto">Показать руководство</string>
+    <string name="replay_tuto_info">Руководство будет показано</string>
+    <string name="tuto_text_synchronized">Серые иконки не синхронизированы</string>
+    <string name="tuto_text_clic_to_synchronized">Вы можете синхронизировать правки в любое время через это меню</string>
+    <string name="tuto_text_cancel_sync">Здесь вы можете отменить одну или несколько ваших правок</string>
+    <string name="tuto_text_comment">Прокомментируйте ваши правки перед сохранением</string>
+    <string name="tuto_text_confirm_sync">Вы можете проверить и синхронизировать правки</string>
+    <!--note-->
+    <string name="Note">Заметка</string>
+    <string name="comment_text_hint">Введите комментарий</string>
+    <string name="comment_label">Комментарий</string>
+    <string name="action_label">Действие</string>
+    <string name="quit_note_title">Выйти из редактирования комментария</string>
+    <string name="quit_note_message">Вы действительно хотите отменить изменения?</string>
+    <string name="quit_note_positive_btn">Да</string>
+    <string name="quit_note_negative_btn">Отмена</string>
+    <string name="comment_text_cant_be_null">Текст комментария не может быть пустым</string>
+    <string name="comment_synchronizing">Дождитесь завершения синхронизации.</string>
+    <string name="save_note">Сохранить</string>
+    <string name="synchronizing">Синхронизация…</string>
+    <string name="note_already_closed">Заметка уже закрыта</string>
+    <string name="title_activity_note">Заметка</string>
+    <string name="note">Заметка</string>
+    <string name="title_note">Заметка (%s)</string>
+    <string name="title_creation_note">Заметка</string>
+    <string name="create_note">Создать</string>
+    <string name="cancel">Отмена</string>
+    <string name="note_spinner_element">Заметка</string>
+    <string name="failed_apply_comment">Не удалось добавить комментарий, проверьте ваше соединение и имя/пароль</string>
+    <!--Filter drawer-->
+    <string name="filters">Фильтры</string>
+    <string name="filter_notes">Заметки</string>
+    <string name="filter_note_open">Открытые</string>
+    <string name="filter_note_closed">Закрытые</string>
+    <string name="filter_pois">POI</string>
+    <string name="filter_poi_all">Все</string>
+    <!--Profile-->
+    <string name="profile_load">Загрузить профиль</string>
+    <string name="profile_refresh_error">Произошла ошибка при обновлении профилей!</string>
+    <!--Saving-->
+    <string name="save_now">Сохранить…</string>
+    <string name="title_activity_upload">Сохранить изменения</string>
+    <string name="couldnt_save_connectivity">Не удалось передать POI. Проверьте подключение.</string>
+    <string name="saving">Сохранение…</string>
+    <!--Update-->
+    <string name="update_title">Добавьте комментарий к вашим правкам:</string>
+    <string name="need_a_comment">Комментарий не может быть пустым</string>
+    <string name="nothing_to_update">Вам не надо ничего обновлять</string>
+    <string name="nothing_selected">Вы не выбрали правок</string>
+    <string name="created">Созданные</string>
+    <string name="deleted">Удалённые</string>
+    <string name="updated">Обновлённые</string>
+    <!--About-->
+    <string name="title_activity_about">О нас</string>
+    <string name="about_title">О...</string>
+    <!--edit way-->
+    <string name="edit_way">Изменить линию</string>
+    <!--POI types/tags-->
+    <string name="manage_poi_types">Управление типами POI</string>
+    <string name="manage_poi_tags">Управление тегами POI</string>
+    <plurals name="tag_number">
+        <item quantity="one">1 тег</item>
+        <item quantity="few">%1$s тега</item>
+        <item quantity="many">%1$s тегов</item>
+        <item quantity="other">%1$s теги</item>
+    </plurals>
+    <string name="new_poi_type">Новый тип</string>
+    <string name="edit_poi_name">Изменить название типа</string>
+    <string name="new_poi_tag">Новый тег</string>
+    <string name="edit_poi_type">Тип не может быть изменён</string>
+    <string name="edit_poi_tag">Изменить тег</string>
+    <string name="poi_type_name_hint">название</string>
+    <string name="poi_tag_key_hint">ключ</string>
+    <string name="poi_tag_value_hint">значение</string>
+    <string name="poi_tag_mandatory">Обязательный</string>
+    <string name="poi_tag_days">Дней</string>
+    <string name="poi_tag_months">Месяцев</string>
+    <string name="poi_tag_hours">Время работы</string>
+    <string name="hours">Часы</string>
+    <string name="day_monday_letter">П</string>
+    <string name="day_tuesday_letter">В</string>
+    <string name="day_wednesday_letter">С</string>
+    <string name="day_thursday_letter">Ч</string>
+    <string name="day_friday_letter">П</string>
+    <string name="day_saturday_letter">С</string>
+    <string name="day_sunday_letter">В</string>
+    <!--Snackbar-->
+    <string name="item_removed">\"%1$s\" был удалён</string>
+    <string name="undo">Отменить</string>
+    <!--Upload-->
+    <string name="position">Положение:</string>
+    <string name="changed">Изменённые</string>
+    <string name="revert">Отменить</string>
+    <string name="revert_snack_bar">Отменить изменения</string>
+    <string name="undo_snack_bar">Отменить</string>
+    <string name="node_ref_title">Точка</string>
+    <!--Easter Egg-->
+    <string name="easter_egg_activation">Активировано 3D!</string>
+    <!--Android 6.0 dialog messages-->
+    <string name="permissions_title">Требуемые разрешения</string>
+  <string name="permissions_information">Разрешение определения местоположения и доступ на запись
+        необходимы, чтобы работать с картой и базой данных. Мы не собираем личную информацию.
+        Без этих разрешений приложение не может работать корректно.
+    </string>
+    <string name="malformated_tag">Значение этого тега не соблюдает соглашения OSM</string>
+    <string name="malformated_value">Текущее значение:</string>
+    <string name="flickr_title">Нужен аккаунт Flickr</string>
+    <string name="flickr_need">Вам нужен аккаунт Yahoo (Flickr) для отправки фото</string>
+    <string name="upload_message">Идёт передача</string>
+    <string name="login_using">Войти используя</string>
+    <string name="login_verb">Войти</string>
+    <string name="login_later">Войти позднее</string>
+    <string name="google">Google</string>
+    <string name="empty_fields">Пустые поля!</string>
+    <string name="notification_download_title">Скачать</string>
+    <string name="download_offline_area_title">Скачать автономные регионы</string>
+  <string name="download_offline_area_message">Этот пресет содержит регионы просматриваемые в оффлайн режиме.\nЭто требует загрузки этих регионов заранее.
+При загрузке желательно иметь подключение по Wifi.\n\nВы хотите начать загрузку?</string>
+    <string name="download_offline_area_more_later">Скачать позднее</string>
+    <string name="offline_regions">Автономные регионы</string>
+    <string name="no_photos">У этой POI нет фото</string>
+    <string name="offline_regions_empty_list">Нет загруженных оффлайн регионов, нажмите на плюс, чтобы добавить.</string>
+    <string name="delete">Удалить</string>
+    <string name="rename">Переименовать</string>
+    <string name="download">Скачать</string>
+    <string name="offline_regions_deleted">Регион успешно удален</string>
+    <string name="enter_region_name">Введите название региона</string>
+    <string name="region_name_error">15 символов максимум</string>
+    <string name="region_to_large">Слишком большой регион, приблизьте карту.</string>
+    <string name="offline_step3">Нажмите здесь, чтобы скачать зону</string>
+    <string name="offline_step2">Приблизьте для выбора зоны</string>
+    <string name="offline_step1">Нажмите, чтобы выбрать регион</string>
+    <string name="offline_step4">Ваши области появятся здесь</string>
+</resources>

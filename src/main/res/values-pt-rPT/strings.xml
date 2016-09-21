@@ -1,0 +1,257 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    Copyright (C) 2016 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<resources>
+    <string name="title_activity_edit_poi">EditarAtividadePOI</string>
+    <string name="location_not_found">Não foi possível encontrar a sua localização</string>
+    <!--EDITION-->
+    <string name="addValueDialogTitle">Alterar valor de: \"%1$s\"</string>
+    <string name="addValueDialogAdd">Alterar</string>
+    <string name="addValueDialogCancel">Cancelar</string>
+    <string name="uncompleted_fields">Existem campos por preencher</string>
+    <string name="not_any_changes">Não há alterações</string>
+    <string name="quit_edition_title">Sair da edição</string>
+    <string name="quit_edition_message">Quer mesmo descartar as suas alterações?</string>
+    <string name="quit_edition_positive_btn">Sim</string>
+    <string name="quit_edition_negative_btn">Cancelar</string>
+    <string name="no_values_yet">Ainda sem valores</string>
+    <string name="creation_title">Criação</string>
+    <string name="edition_title">Edição</string>
+    <string name="required">Obrigatório</string>
+    <string name="optional">Opcional</string>
+    <string name="add_tag">Adicionar etiqueta</string>
+    <string name="tag_key">Chave</string>
+    <string name="tag_value">Valor</string>
+    <!--Map-->
+    <string name="no_poi_name">Este POI não tem um nome</string>
+    <string name="edit_position">Alterar posição</string>
+    <string name="edit_poi">Editar POI</string>
+    <string name="duplicate_poi">Duplicar POI</string>
+    <plurals name="update_done">
+        <item quantity="one">%1$s ponto atualizado no OSM.</item>
+        <item quantity="other">%1$s pontos atualizados no OSM.</item>
+    </plurals>
+    <plurals name="delete_done">
+        <item quantity="one">%1$s ponto eliminado no OSM.</item>
+        <item quantity="other">%1$s pontos eliminados no OSM.</item>
+    </plurals>
+    <plurals name="noderef_moved">
+        <item quantity="one">1 ponto atualizado no OSM. Atualize o mapa dentro de minutos para ver as suas alterações.</item>
+        <item quantity="other">%1$s pontos atualizados no OSM. Atualize o mapa dentro de minutos para ver as suas alterações.</item>
+    </plurals>
+    <plurals name="add_done">
+        <item quantity="one">%1$s POI adicionado no OSM.</item>
+        <item quantity="other">%1$s POIs adicionados no OSM.</item>
+    </plurals>
+    <string name="couldnt_connect_retrofit">Não foi possível adicionar/atualizar. Verifique o nome de utilizador e palavra-chave nas preferências.</string>
+    <string name="couldnt_create_node">Ocorreu um erro durante a criação. As suas alterações foram revertidas.</string>
+    <string name="couldnt_update_node">Ocorreu um erro durante a atualização. As suas alterações foram revertidas.</string>
+    <string name="couldnt_download_retrofit">Não foi possível descarregar os POIs. Verifique a ligação à Internet.</string>
+    <string name="couldnt_upload_retrofit">Não foi possível enviar os POIs. Verifique a ligação à Internet.</string>
+    <string name="edit_poi_position">Alterar posição do POI</string>
+    <string name="edit_way_title">Editar via</string>
+    <string name="edit_noderef_position_title">Editar posição</string>
+    <string name="poi_creation">Criação de POI</string>
+    <string name="note_creation">Criação de Erro Reportado</string>
+    <string name="delete_poi">Eliminar POI</string>
+    <string name="add_poi">Adicionar POI</string>
+    <string name="delete_poi_title">Eliminar POI</string>
+    <string name="delete_poi_confirm_message">Quer mesmo eliminar este POI?</string>
+    <string name="delete_poi_positive_btn">Eliminar</string>
+    <string name="delete_poi_negative_btn">Cancelar</string>
+    <string name="point_modification_forbidden">Esta versão não permite alteração de pontos</string>
+    <string name="licenses_title">Licenças</string>
+    <string name="zoom_to_edit">Esta área é demasiado grande para ser carregada, por favor aproxime mais.</string>
+    <string name="download_in_progress">A descarregar todos os pontos e erros reportados da zona mostrada</string>
+    <string name="switch_style_satellite">Vista de satélite</string>
+    <string name="switch_style_mapnik">Vista do Mapnik</string>
+    <string name="switch_style_default">Vista padrão</string>
+    <string name="zoom_more">Tem de aproximar mais para descarregar POIs</string>
+    <string name="search_poitype_hint">Procurar tipo de POI</string>
+    <string name="title_3d_view">Vista 3D</string>
+    <string name="arpi_not_supported">O seu dispositivo não suporta vista 3D</string>
+    <!--Strings related to login-->
+    <string name="prompt_login">Nome de utilizador</string>
+    <string name="prompt_password">Palavra-chave</string>
+    <string name="splash_screen_message">A inicializar...</string>
+    <!--Preferences-->
+    <string name="title_activity_my_preferences">Parâmetros</string>
+    <string name="summary_login">Por favor introduza o nome de utilizador</string>
+    <string name="summary_password">Por favor introduza a palavra-chave</string>
+    <string name="error_login">Não foi possível fazer a ligação com estas credenciais de autenticação. Tem a certeza que tem os direitos de edição?</string>
+    <string name="error_first_login">Não foi possível fazer a ligação com estas credenciais de autenticação.</string>
+    <string name="valid_login">Ligação bem sucedida</string>
+    <string name="reset_title">Repôr a base de dados</string>
+    <string name="reset_summary">Remover todos os POIs da base de dados</string>
+    <string name="reset_type_title">Repôr os tipos de POIs</string>
+    <string name="reset_type_summary">Repôr os tipos de POIs e remover todos os POIs da base de dados</string>
+    <string name="expert_mode_summary">Permite gerir os tipos de POIs</string>
+    <string name="expert_mode_title">Modo avançado</string>
+    <string name="reset_dialog_message">Tem a certeza que quer repôr a base de dados? Todas as suas alterações serão perdidas.</string>
+    <string name="reset_dialog_positive_button">Sim</string>
+    <string name="reset_dialog_negative_button">Cancelar</string>
+    <string name="reset_success">A base de dados foi reposta com sucesso</string>
+    <string name="reset_failure">Ocorreu um erro ao repôr a base de dados</string>
+    <string name="expert_mode_dialog">Está a entrar no modo avançado. Poderá criar, atualizar ou eliminar tipos de POIs e editar os POIs.</string>
+    <string name="ok">OK</string>
+    <!--Shared preferences-->
+    <string name="shared_prefs_google_connection">Autenticar com o Google</string>
+    <!--Login-->
+  <string name="login_google_error">Esta conta Google não pode ser usada para autenticação.\n
+        Pode tentar autenticar-se com a sua conta do OpenStreetMap.\n\n
+        Se quiser usar a sua conta do Google para autenticar-se, por favor adicione uma nova conta nas preferências do Android.</string>
+    <string name="login_title">Ligação</string>
+    <!--Tuto-->
+    <string name="tuto_text_press_create">Clique aqui para adicionar um novo ponto</string>
+    <string name="tuto_text_choose_type">Escolha o tipo de POI que quer adicionar</string>
+    <string name="tuto_text_confirm_position_creation">Clique para confirmar a posição, qualquer retorno irá descartar a sua criação.</string>
+    <string name="tuto_text_confirm_creation">Clique para finalizar a criação ou edição.</string>
+    <string name="replay_tuto">Rever o Tutorial</string>
+    <string name="replay_tuto_info">Os tutoriais serão mostrados novamente</string>
+    <string name="tuto_text_synchronized">Os ícones cinzentos não estão sincronizados</string>
+    <string name="tuto_text_clic_to_synchronized">Pode sincronizar as suas alterações a qualquer altura neste menu</string>
+    <string name="tuto_text_cancel_sync">Pode cancelar uma ou mais alterações que fez aqui</string>
+    <string name="tuto_text_comment">Antes de gravar, introduza um sumário das suas alterações</string>
+    <string name="tuto_text_confirm_sync">Pode validar e sincronizar as suas alterações</string>
+    <!--note-->
+    <string name="Note">Erro Reportado</string>
+    <string name="comment_text_hint">Introduza um resumo das alterações</string>
+    <string name="comment_label">Sumário</string>
+    <string name="action_label">Ação</string>
+    <string name="quit_note_title">Sair da edição do erro reportado</string>
+    <string name="quit_note_message">Quer mesmo descartar as suas alterações?</string>
+    <string name="quit_note_positive_btn">Sim</string>
+    <string name="quit_note_negative_btn">Cancelar</string>
+    <string name="comment_text_cant_be_null">O texto do sumário não pode ser deixado em branco</string>
+    <string name="comment_synchronizing">Por favor aguarde que a sincronização seja terminada.</string>
+    <string name="save_note">Gravar</string>
+    <string name="synchronizing">A sincronizar...</string>
+    <string name="note_already_closed">O Erro Reportado já foi fechado</string>
+    <string name="title_activity_note">Erro Reportado</string>
+    <string name="note">Erro Reportado</string>
+    <string name="title_note">Erro Reportado (%s)</string>
+    <string name="title_creation_note">Erro Reportado</string>
+    <string name="create_note">Criar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="note_spinner_element">Erro Reportado</string>
+    <string name="failed_apply_comment">Ocorreu um erro ao adicionar a mensagem. Por favor verifique a ligação à Internet e as credenciais de autenticação</string>
+    <!--Filter drawer-->
+    <string name="filters">Filtros</string>
+    <string name="filter_notes">Erros Reportados</string>
+    <string name="filter_note_open">Aberto</string>
+    <string name="filter_note_closed">Fechado</string>
+    <string name="filter_pois">POIs</string>
+    <string name="filter_poi_all">Tudo</string>
+    <!--Profile-->
+    <string name="profile_load">Carregar perfil</string>
+    <string name="profile_refresh_error">Ocorreu um erro ao atualizar os perfis!</string>
+    <!--Saving-->
+    <string name="save_now">Gravar...</string>
+    <string name="title_activity_upload">Gravar alterações</string>
+    <string name="couldnt_save_connectivity">Não foi possível enviar os POIs. Verifique a ligação à Internet.</string>
+    <string name="saving">A gravar...</string>
+    <!--Update-->
+    <string name="update_title">Adicione um sumário das alterações que fez:</string>
+    <string name="need_a_comment">O comentário não pode estar em branco</string>
+    <string name="nothing_to_update">Não tem alterações para enviar</string>
+    <string name="nothing_selected">Não selecionou nenhumas alterações</string>
+    <string name="created">Criado</string>
+    <string name="deleted">Eliminado</string>
+    <string name="updated">Atualizado</string>
+    <!--About-->
+    <string name="title_activity_about">Sobre nós</string>
+    <string name="about_title">Sobre</string>
+    <!--edit way-->
+    <string name="edit_way">Editar via</string>
+    <!--POI types/tags-->
+    <string name="manage_poi_types">Gerir tipos de POIs</string>
+    <string name="manage_poi_tags">Gerir etiquetas de POIs</string>
+    <plurals name="tag_number">
+        <item quantity="one">1 etiqueta</item>
+        <item quantity="other">%1$s etiquetas</item>
+    </plurals>
+    <string name="new_poi_type">Novo tipo</string>
+    <string name="edit_poi_name">Editar nome do tipo</string>
+    <string name="new_poi_tag">Nova etiqueta</string>
+    <string name="edit_poi_type">O tipo não pode ser editado</string>
+    <string name="edit_poi_tag">Editar etiqueta</string>
+    <string name="poi_type_name_hint">nome</string>
+    <string name="poi_tag_key_hint">chave</string>
+    <string name="poi_tag_value_hint">valor</string>
+    <string name="poi_tag_mandatory">Obrigatório</string>
+    <string name="poi_tag_days">Dias</string>
+    <string name="poi_tag_months">Meses</string>
+    <string name="poi_tag_hours">Horário de abertura</string>
+    <string name="hours">Horas</string>
+    <string name="day_monday_letter">S</string>
+    <string name="day_tuesday_letter">T</string>
+    <string name="day_wednesday_letter">Q</string>
+    <string name="day_thursday_letter">Q</string>
+    <string name="day_friday_letter">S</string>
+    <string name="day_saturday_letter">S</string>
+    <string name="day_sunday_letter">D</string>
+    <!--Snackbar-->
+    <string name="item_removed">\"%1$s\" foi removido</string>
+    <string name="undo">Desfazer</string>
+    <!--Upload-->
+    <string name="position">Posição:</string>
+    <string name="changed">Alterado</string>
+    <string name="revert">Reverter</string>
+    <string name="revert_snack_bar">Reverter alterações</string>
+    <string name="undo_snack_bar">Desfazer</string>
+    <string name="node_ref_title">Ponto</string>
+    <!--Easter Egg-->
+    <string name="easter_egg_activation">Ativado o 3D está!</string>
+    <!--Android 6.0 dialog messages-->
+    <string name="permissions_title">Necessárias permissões</string>
+  <string name="permissions_information">Sáo necessárias permissões para localização e permissão de escrita
+        para manipular o mapa e a base de dados. Não recolhemos dados pessoais.
+        Sem estas permissões, a aplicação não funciona corretamente.
+    </string>
+    <string name="malformated_tag">O valor desta etiqueta não respeita as convenções do OSM</string>
+    <string name="malformated_value">Valor atual:</string>
+    <string name="flickr_title">Conta Flickr necessária</string>
+    <string name="flickr_need">Tem de ter uma conta Yahoo (Flickr) para colocar uma foto</string>
+    <string name="upload_message">A enviar</string>
+    <string name="login_using">Autenticar usando</string>
+    <string name="login_verb">Autenticação</string>
+    <string name="login_later">Autenticar-me mais tarde</string>
+    <string name="google">Google</string>
+    <string name="empty_fields">Campos em branco!</string>
+    <string name="notification_download_title">Descarregar</string>
+    <string name="download_offline_area_title">Descarregar regiões offline</string>
+    <string name="download_offline_area_message">Este modelo contém regiões offline.\nEssas regiões tẽm de ser carregadas primeiro o que pode resultar num grande tráfego de dados. É recomendável usar uma ligação Wi-Fi.\n\nQuer começar a carregar?</string>
+    <string name="download_offline_area_more_later">Descarregar mais tarde</string>
+    <string name="offline_regions">Regiões Offline</string>
+    <string name="no_photos">Este POI não tem fotos</string>
+    <string name="offline_regions_empty_list">Não existem regiões offline descarregadas. Clique no botão mais para adicionar uma.</string>
+    <string name="delete">Eliminar</string>
+    <string name="rename">Renomear</string>
+    <string name="download">Descarregar</string>
+    <string name="offline_regions_deleted">Região eliminada com sucesso</string>
+    <string name="enter_region_name">Introduza o nome da região</string>
+    <string name="region_name_error">no máximo 15 caracteres</string>
+    <string name="region_to_large">A região é demasiado grande, por favor aproxime mais.</string>
+    <string name="offline_step3">Clique aqui para descarregar a zona</string>
+    <string name="offline_step2">Aproxime para selecionar uma zona</string>
+    <string name="offline_step1">Clique para selecionar a região</string>
+    <string name="offline_step4">As suas áreas vão aparecer aqui</string>
+</resources>
