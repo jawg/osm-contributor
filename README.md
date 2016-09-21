@@ -81,7 +81,7 @@ This app is actively developed by:
  + [tommybuonomo](https://github.com/tommybuonomo)
  + [hugoo13](https://github.com/hugoo13)
 
-### Translations
+### Translations / Beta testers
 
 This app is being translated by the community via the awesome tool Transifex.
 Want to help? [Add your language here](https://www.transifex.com/jawg/osm-contributor), and let us know on Twitter.
@@ -91,5 +91,10 @@ Want to help? [Add your language here](https://www.transifex.com/jawg/osm-contri
  + Spanish: [Marco Antonio](https://twitter.com/51114u9) (@51114u9)
  + Portuguese (BR): [Tiago Fassoni](https://github.com/tiagofassoni)
  + Russian: [Nikolay Parukhin]()
+
+We also want to thank our many beta testers:  
+ + Gilles B.
+ + Donat R.
+ + 
 
 We welcome any contributors with issues / pull requests.
