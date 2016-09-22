@@ -51,7 +51,7 @@ You can use the following tags to help us: [Bug], [Mobile], [Web], [Feature], [F
 You can also reach us on Twitter:  
 [@LoicOrtola](https://twitter.com/LoicOrtola)  (Technical)  
 [@Olduv](https://twitter.com/Olduv)  (Legal)  
-[@DesignMyApp](https://twitter.com/DesignMyApp)
+[@jawgio](https://twitter.com/jawgio)
 
 ### RoadMap
  + Add more options for edition of ways.
