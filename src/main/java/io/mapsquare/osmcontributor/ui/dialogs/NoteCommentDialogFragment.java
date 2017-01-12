@@ -31,12 +31,10 @@ import android.text.TextWatcher;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 
-import org.greenrobot.eventbus.EventBus;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.Comment;
@@ -53,9 +51,6 @@ public class NoteCommentDialogFragment extends DialogFragment {
     private static double lat;
     private static double lng;
 
-    // ANALYTICS ATTRIBUTES
-    private Tracker tracker;
-
     public static NoteCommentDialogFragment newInstance(double lat, double lng) {
         NoteCommentDialogFragment dialog = new NoteCommentDialogFragment();
         Bundle args = new Bundle();
@@ -71,9 +66,6 @@ public class NoteCommentDialogFragment extends DialogFragment {
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
         lat = getArguments().getDouble(LAT);
         lng = getArguments().getDouble(LNG);
-
-        tracker = ((OsmTemplateApplication) getActivity().getApplication()).getTracker(OsmTemplateApplication.TrackerName.APP_TRACKER);
-        tracker.setScreenName("NoteActivity");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         final EditText input = new EditText(this.getActivity());
@@ -95,11 +87,6 @@ public class NoteCommentDialogFragment extends DialogFragment {
                             note.setUpdated(true);
                             eventBus.post(new PleaseApplyNewComment(note, Comment.ACTION_OPEN, comment));
                             closeKeyboard();
-
-                            tracker.send(new HitBuilders.EventBuilder()
-                                    .setCategory("Note")
-                                    .setAction("Create a note")
-                                    .build());
                         }
                     }
                 })

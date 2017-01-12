@@ -35,34 +35,31 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
+import io.mapsquare.osmcontributor.model.entities.Comment;
+import io.mapsquare.osmcontributor.model.entities.Note;
 import io.mapsquare.osmcontributor.model.events.NoteLoadedEvent;
 import io.mapsquare.osmcontributor.model.events.NoteSavedEvent;
 import io.mapsquare.osmcontributor.model.events.PleaseLoadNoteEvent;
-import io.mapsquare.osmcontributor.model.entities.Comment;
-import io.mapsquare.osmcontributor.model.entities.Note;
-import io.mapsquare.osmcontributor.ui.events.map.PleaseApplyNewComment;
-import io.mapsquare.osmcontributor.ui.events.note.ApplyNewCommentFailedEvent;
 import io.mapsquare.osmcontributor.rest.events.SyncFinishUploadNote;
 import io.mapsquare.osmcontributor.rest.events.error.SyncConflictingNoteErrorEvent;
 import io.mapsquare.osmcontributor.rest.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.ui.adapters.CommentAdapter;
+import io.mapsquare.osmcontributor.ui.events.map.PleaseApplyNewComment;
+import io.mapsquare.osmcontributor.ui.events.note.ApplyNewCommentFailedEvent;
 
 
 public class NoteActivity extends AppCompatActivity {
@@ -96,9 +93,6 @@ public class NoteActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    // ANALYTICS ATTRIBUTES
-    private Tracker tracker;
-
     @OnClick(R.id.send_comment)
     void addCommentOnClick() {
         if (newCommentEditText.getText().toString().isEmpty()) {
@@ -108,12 +102,6 @@ public class NoteActivity extends AppCompatActivity {
                 Toast.makeText(this, R.string.comment_synchronizing, Toast.LENGTH_SHORT).show();
             } else {
                 eventBus.post(new PleaseApplyNewComment(note, newCommentActionSpinner.getSelectedItem().toString(), newCommentEditText.getText().toString()));
-
-                tracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("Note")
-                        .setAction(newCommentActionSpinner.getSelectedItem().toString() + " a note")
-                        .build());
-
                 newCommentEditText.getText().clear();
                 closeKeyboard();
             }
@@ -132,9 +120,6 @@ public class NoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note);
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
         ButterKnife.bind(this);
-
-        tracker = ((OsmTemplateApplication) getApplication()).getTracker(OsmTemplateApplication.TrackerName.APP_TRACKER);
-        tracker.setScreenName("NoteActivity");
 
         setSupportActionBar(toolbar);
 

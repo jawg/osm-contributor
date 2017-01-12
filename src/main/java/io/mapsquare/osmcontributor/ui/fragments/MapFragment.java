@@ -59,8 +59,6 @@ import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
@@ -244,10 +242,6 @@ public class MapFragment extends Fragment {
         super.onCreate(savedInstanceState);
         OsmTemplateApplication application = ((OsmTemplateApplication) getActivity().getApplication());
         application.getOsmTemplateComponent().inject(this);
-
-        tracker = application.getTracker(OsmTemplateApplication.TrackerName.APP_TRACKER);
-        tracker.setScreenName("MapView");
-        tracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         measureMaxPoiType();
 
@@ -530,28 +524,6 @@ public class MapFragment extends Fragment {
     }
 
     /*-----------------------------------------------------------
-    * ANALYTICS ATTRIBUTES
-    *---------------------------------------------------------*/
-
-    private Tracker tracker;
-
-    private enum Category {
-        MapMode("Map Mode"),
-        GeoLocation("Geolocation"),
-        Edition("Edition POI");
-
-        private final String value;
-
-        Category(String value) {
-            this.value = value;
-        }
-
-        String getValue() {
-            return value;
-        }
-    }
-
-    /*-----------------------------------------------------------
     * ACTIONBAR
     *---------------------------------------------------------*/
 
@@ -634,10 +606,6 @@ public class MapFragment extends Fragment {
                 poi.setUpdated(true);
                 mapboxMap.updateMarker(markerSelected);
                 switchMode(MapMode.DETAIL_POI);
-                tracker.send(new HitBuilders.EventBuilder()
-                        .setCategory(Category.Edition.getValue())
-                        .setAction("POI position edited")
-                        .build());
                 break;
 
             case NODE_REF_POSITION_EDITION:
@@ -648,10 +616,6 @@ public class MapFragment extends Fragment {
                 wayMarkerSelected.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getNodeRefBitmap(PoiNodeRef.State.SELECTED)));
                 removePolyline(editionPolyline);
                 switchMode(MapMode.WAY_EDITION);
-                tracker.send(new HitBuilders.EventBuilder()
-                        .setCategory(Category.Edition.getValue())
-                        .setAction("way point position edited")
-                        .build());
                 break;
 
             case DETAIL_POI:
@@ -758,11 +722,6 @@ public class MapFragment extends Fragment {
         displayPoiTypePicker();
         displayPoiDetailBanner(properties.isShowPoiBanner());
         displayNoteDetailBanner(properties.isShowNodeBanner());
-
-        tracker.send(new HitBuilders.EventBuilder()
-                .setCategory(Category.MapMode.getValue())
-                .setAction(properties.getAnalyticsAction())
-                .build());
 
         switch (mode) {
             case DETAIL_POI:
@@ -1457,10 +1416,6 @@ public class MapFragment extends Fragment {
         } else {
             Toast.makeText(getActivity(), getResources().getString(R.string.location_not_found), Toast.LENGTH_SHORT).show();
         }
-        tracker.send(new HitBuilders.EventBuilder()
-                .setCategory(Category.GeoLocation.getValue())
-                .setAction("Center map on user geolocation")
-                .build());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

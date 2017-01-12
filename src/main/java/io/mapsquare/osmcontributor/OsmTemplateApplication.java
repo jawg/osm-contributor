@@ -35,15 +35,12 @@ import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.stetho.Stetho;
 import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.REST;
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Tracker;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.squareup.leakcanary.LeakCanary;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
-import java.util.HashMap;
 
 import io.fabric.sdk.android.Fabric;
 import io.mapsquare.osmcontributor.modules.DaggerOsmTemplateComponent;
@@ -55,19 +52,8 @@ import timber.log.Timber;
 public class OsmTemplateApplication extends Application {
 
     /*=========================================*/
-    /*---------------CONSTANTS-----------------*/
-    /*=========================================*/
-    private static final String ANALYTICS_PROPERTY_ID = "UA-63422911-1";
-
-    public enum TrackerName {
-        APP_TRACKER, // Tracker used only in this app.
-    }
-
-    /*=========================================*/
     /*--------------ATTRIBUTES-----------------*/
     /*=========================================*/
-    private HashMap<TrackerName, Tracker> trackers = new HashMap<>();
-
     private OsmTemplateComponent osmTemplateComponent;
 
     private Flickr flickr;
@@ -152,20 +138,6 @@ public class OsmTemplateApplication extends Application {
      */
     public OsmTemplateComponent getOsmTemplateComponent() {
         return osmTemplateComponent;
-    }
-
-    public synchronized Tracker getTracker(TrackerName trackerId) {
-        if (!trackers.containsKey(trackerId)) {
-            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-            analytics.setDryRun(BuildConfig.DEBUG);
-            analytics.setLocalDispatchPeriod(1);
-            Tracker t = analytics.newTracker(ANALYTICS_PROPERTY_ID);
-            t.enableAutoActivityTracking(true);
-            t.enableAdvertisingIdCollection(true);
-
-            trackers.put(trackerId, t);
-        }
-        return trackers.get(trackerId);
     }
 
     /**

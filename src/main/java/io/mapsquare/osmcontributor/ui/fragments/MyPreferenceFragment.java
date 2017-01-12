@@ -32,8 +32,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.AccountPicker;
 
 import org.greenrobot.eventbus.EventBus;
@@ -66,8 +64,6 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
     private Preference resetTypePref;
     private Preference googleConnectPref;
 
-    private Tracker tracker;
-
     @Inject
     GoogleOAuthManager googleOAuthManager;
 
@@ -94,10 +90,6 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
                 actionBar.setDisplayHomeAsUpEnabled(true);
             }
         }
-
-        tracker = ((OsmTemplateApplication) this.getActivity().getApplication()).getTracker(OsmTemplateApplication.TrackerName.APP_TRACKER);
-        tracker.setScreenName("CreationView");
-        tracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         loginKey = getString(R.string.shared_prefs_login);
         passwordKey = getString(R.string.shared_prefs_password);
@@ -276,21 +268,10 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
             // Login changed
             updateLoginSummary(sharedPreferences);
             attemptLoginIfValidFields(sharedPreferences);
-
-            tracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Edit preference")
-                    .setAction("Login edited")
-                    .build());
-
         } else if (passwordKey.equals(key)) {
             // Password changed
             updatePasswordSummary(sharedPreferences);
             attemptLoginIfValidFields(sharedPreferences);
-
-            tracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Edit preference")
-                    .setAction("Password edited")
-                    .build());
         }
     }
 

@@ -41,8 +41,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -130,8 +128,6 @@ public class EditPoiFragment extends Fragment {
 
     private Poi poi;
 
-    private Tracker tracker;
-
     private Unbinder unbinder;
 
     /*=========================================*/
@@ -169,19 +165,12 @@ public class EditPoiFragment extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        tracker = ((OsmTemplateApplication) this.getActivity().getApplication()).getTracker(OsmTemplateApplication.TrackerName.APP_TRACKER);
         if (creation) {
             eventBus.post(new PleaseLoadPoiForCreationEvent(lat, lng, poiType, level));
             getActivity().setTitle(getResources().getString(R.string.creation_title));
-            tracker.setScreenName("CreationView");
-            tracker.send(new HitBuilders.ScreenViewBuilder().build());
-
         } else {
             eventBus.post(new PleaseLoadPoiForEditionEvent(poiId));
             getActivity().setTitle(getResources().getString(R.string.edition_title));
-
-            tracker.setScreenName("EditView");
-            tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
 
         fabAdd.setVisibility(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false) ? View.VISIBLE : View.GONE);
@@ -290,17 +279,6 @@ public class EditPoiFragment extends Fragment {
             if (!tagsAdapter.isChange()) {
                 getActivity().setResult(Activity.RESULT_CANCELED, null);
                 getActivity().finish();
-                if (creation) {
-                    tracker.send(new HitBuilders.EventBuilder()
-                            .setCategory(Category.Creation.getValue())
-                            .setAction("Canceled creation")
-                            .build());
-                } else {
-                    tracker.send(new HitBuilders.EventBuilder()
-                            .setCategory(Category.Edition.getValue())
-                            .setAction("Canceled Edition")
-                            .build());
-                }
             } else {
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
 
@@ -308,18 +286,6 @@ public class EditPoiFragment extends Fragment {
                 alertDialog.setMessage(R.string.quit_edition_message);
                 alertDialog.setPositiveButton(R.string.quit_edition_positive_btn, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        if (creation) {
-                            tracker.send(new HitBuilders.EventBuilder()
-                                    .setCategory(Category.Creation.getValue())
-                                    .setAction("Canceled creation")
-                                    .build());
-                        } else {
-                            tracker.send(new HitBuilders.EventBuilder()
-                                    .setCategory(Category.Edition.getValue())
-                                    .setAction("Canceled Edition")
-                                    .build());
-                        }
-
                         getActivity().setResult(Activity.RESULT_CANCELED, null);
                         getActivity().finish();
                     }
@@ -383,18 +349,6 @@ public class EditPoiFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPoiChangesApplyEvent(PoiChangesApplyEvent event) {
-        if (creation) {
-            tracker.send(new HitBuilders.EventBuilder()
-                    .setCategory(Category.Creation.getValue())
-                    .setAction("POI Created")
-                    .build());
-        } else {
-            tracker.send(new HitBuilders.EventBuilder()
-                    .setCategory(Category.Edition.getValue())
-                    .setAction("POI Edited")
-                    .build());
-        }
-
         getActivity().finish();
     }
 }
