@@ -54,7 +54,7 @@
         <item quantity="other">%1$s pontos eliminados no OSM.</item>
     </plurals>
     <plurals name="noderef_moved">
-        <item quantity="one">1 ponto atualizado no OSM. Atualize o mapa dentro de minutos para ver as suas alterações.</item>
+        <item quantity="one">%1$s ponto atualizado no OSM. Atualize o mapa dentro de minutos para ver as suas alterações.</item>
         <item quantity="other">%1$s pontos atualizados no OSM. Atualize o mapa dentro de minutos para ver as suas alterações.</item>
     </plurals>
     <plurals name="add_done">

@@ -233,6 +233,7 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         if (event.getPoiUpdateWrappers().size() == 0) {
             poisListView.setVisibility(View.GONE);
             noValues.setVisibility(View.VISIBLE);
+            finish();
         } else {
             poisListView.setVisibility(View.VISIBLE);
             noValues.setVisibility(View.GONE);
@@ -244,17 +245,20 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         String result;
 
         if (event.getSuccessfullyAddedPoisCount() > 0) {
-            result = getResources().getQuantityString(R.plurals.add_done, event.getSuccessfullyAddedPoisCount());
+            result = getResources().getQuantityString(R.plurals.add_done,
+                    event.getSuccessfullyAddedPoisCount(), event.getSuccessfullyAddedPoisCount());
             Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
             resultReceived();
         }
         if (event.getSuccessfullyUpdatedPoisCount() > 0) {
-            result = getResources().getQuantityString(R.plurals.update_done, event.getSuccessfullyUpdatedPoisCount());
+            result = getResources().getQuantityString(R.plurals.update_done,
+                    event.getSuccessfullyUpdatedPoisCount(), event.getSuccessfullyUpdatedPoisCount());
             Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
             resultReceived();
         }
         if (event.getSuccessfullyDeletedPoisCount() > 0) {
-            result = getResources().getQuantityString(R.plurals.delete_done, event.getSuccessfullyDeletedPoisCount());
+            result = getResources().getQuantityString(R.plurals.delete_done,
+                    event.getSuccessfullyDeletedPoisCount(), event.getSuccessfullyDeletedPoisCount());
             Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
             resultReceived();
         }
