@@ -19,7 +19,6 @@
 package io.mapsquare.osmcontributor.ui.adapters;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -52,7 +51,6 @@ import io.mapsquare.osmcontributor.model.entities.PoiTypeTag;
 import io.mapsquare.osmcontributor.model.utils.OpeningMonth;
 import io.mapsquare.osmcontributor.model.utils.OpeningTime;
 import io.mapsquare.osmcontributor.rest.mappers.PoiTypeMapper;
-import io.mapsquare.osmcontributor.ui.activities.PickValueActivity;
 import io.mapsquare.osmcontributor.ui.adapters.item.TagItem;
 import io.mapsquare.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.mapsquare.osmcontributor.ui.adapters.parser.ParserManager;
@@ -174,6 +172,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onPleaseApplyTagChange(PleaseApplyTagChange event) {
         eventBus.removeStickyEvent(event);
         TagItem tagItem = keyTagItem.get(ParserManager.deparseTagName(event.getKey()));
+        tagItem = tagItemList.get(tagItemList.indexOf(tagItem));
         if (tagItem != null) {
             editTag(tagItem, event.getValue());
         }
@@ -381,45 +380,23 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // Get possible values
         final List<String> values = tagItem.getValues();
 
-        if (values.size() > 2) {
-            // If there are some modification, change the value
-            if (configManager.hasPoiModification()) {
-                holder.getTextViewValue().setText(tagItem.getValue());
+        holder.getTextViewValue().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
-            // If there are more than two propositions, auto complete view
-            holder.getTextViewValue().setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if (hasFocus) {
-                        Intent intent = new Intent(activity, PickValueActivity.class);
-                        intent.putExtra(PickValueActivity.KEY, tagItem.getKey());
-                        intent.putExtra(PickValueActivity.VALUE, tagItem.getValue());
-                        intent.putExtra(PickValueActivity.AUTOCOMPLETE, values.toArray(new String[values.size()]));
-                        intent.putExtra(PickValueActivity.TAG_TYPE, tagItem.getTagType().toString());
-                        activity.startActivityForResult(intent, PickValueActivity.PICK_VALUE_ACTIVITY_CODE);
-                    }
-                    holder.getTextViewValue().clearFocus();
-                }
-            });
-        } else {
-            holder.getTextViewValue().setOnFocusChangeListener(null);
-            holder.getTextViewValue().addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                }
 
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    if (i1 != i2) {
-                        eventBus.post(new PleaseApplyTagChange(holder.getTextViewKey().getText().toString(), holder.getTextViewValue().getText().toString()));
-                    }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (i1 != i2) {
+                    eventBus.post(new PleaseApplyTagChange(holder.getTextViewKey().getText().toString(), charSequence.toString()));
                 }
+            }
 
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
-        }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
         if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
             holder.getContent().addView(LayoutInflater.from(activity).inflate(
                     R.layout.malformated_layout, holder.getContent(), false), 1);
