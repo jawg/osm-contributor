@@ -51,14 +51,6 @@
             android:visible="false"/>
 
         <item
-            android:id="@+id/switch_style"
-            android:title="@string/switch_style_satellite"/>
-
-        <item
-            android:id="@+id/switch_mapnik"
-            android:title="@string/switch_style_mapnik"/>
-
-        <item
             android:id="@+id/profile_load"
             android:title="@string/profile_load"/>
 

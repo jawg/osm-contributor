@@ -67,7 +67,6 @@ import io.mapsquare.osmcontributor.ui.events.map.PleaseInitializeArpiEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseInitializeDrawer;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseInitializeNoteDrawerEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseShowMeArpiglEvent;
-import io.mapsquare.osmcontributor.ui.events.map.PleaseSwitchMapStyleEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseToggleArpiEvent;
@@ -498,20 +497,12 @@ public class MapActivity extends AppCompatActivity {
             case R.id.arpi_view:
                 toggleArpiGl();
                 break;
-            case R.id.switch_style:
+            /*case R.id.switch_style:
                 isSatelliteMode = !isSatelliteMode;
-                isMapnikMode = false;
-                eventBus.post(new PleaseSwitchMapStyleEvent(isSatelliteMode, false));
+                eventBus.post(new PleaseSwitchMapStyleEvent(isSatelliteMode));
                 drawerLayout.closeDrawer(navigationView);
-                menuItem.setTitle(isSatelliteMode ? R.string.switch_style_default : R.string.switch_style_satellite);
-                break;
-            case R.id.switch_mapnik:
-                isMapnikMode = !isMapnikMode;
-                isSatelliteMode = false;
-                eventBus.post(new PleaseSwitchMapStyleEvent(false, isMapnikMode));
-                drawerLayout.closeDrawer(navigationView);
-                menuItem.setTitle(isMapnikMode ? R.string.switch_style_default : R.string.switch_style_mapnik);
-                break;
+                menuItem.setTitle(isSatelliteMode ? R.string.switch_style_mapnik : R.string.switch_style_satellite);
+                break;*/
             case R.id.offline_regions:
                 startOfflineRegionsActivity();
                 break;

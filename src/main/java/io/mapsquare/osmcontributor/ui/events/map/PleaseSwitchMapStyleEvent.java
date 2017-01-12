@@ -24,16 +24,11 @@ public class PleaseSwitchMapStyleEvent {
 
     private boolean isMapnikMode;
 
-    public PleaseSwitchMapStyleEvent(boolean isSatelliteMode, boolean isMapnikMode) {
+    public PleaseSwitchMapStyleEvent(boolean isSatelliteMode) {
         this.isSatelliteMode = isSatelliteMode;
-        this.isMapnikMode = isMapnikMode;
     }
 
     public boolean isSatelliteMode() {
         return isSatelliteMode;
-    }
-
-    public boolean isMapnikMode() {
-        return isMapnikMode;
     }
 }
