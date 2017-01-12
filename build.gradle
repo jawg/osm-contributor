@@ -1,5 +1,5 @@
 ext {
-    appVersion = "3.0.0"
+    appVersion = "3.0.1"
     androidSupportVersion = '25.1.0'
     playServicesVersion = '7.8.0'
     daggerVersion = '2.0'
@@ -99,7 +99,7 @@ android {
         applicationId "io.mapsquare.osmcontributor"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 20
+        versionCode 21
         versionName appVersion
         multiDexEnabled true
         ndk {
