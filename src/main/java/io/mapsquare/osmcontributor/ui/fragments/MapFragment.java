@@ -350,7 +350,6 @@ public class MapFragment extends Fragment {
         if (poiTypePickerAdapter != null) {
             poiTypePickerAdapter.setExpertMode(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
         }
-        switchMode(MapMode.DEFAULT);
         mapboxListener.listen(mapboxMap, mapView);
 
         mapboxMap.getMarkerViewManager().addMarkerViewAdapter(new LocationMarkerViewAdapter(getActivity().getApplicationContext()));
@@ -358,6 +357,7 @@ public class MapFragment extends Fragment {
 
     private void instantiateMapView(final Bundle savedInstanceState) {
         if (mapView != null) {
+            mapMode = MapMode.DEFAULT;
             mapView.onCreate(savedInstanceState);
             mapView.setStyleUrl(BuildConfig.MAP_STYLE);
             mapView.getMapAsync(new OnMapReadyCallback() {
@@ -737,7 +737,7 @@ public class MapFragment extends Fragment {
             } else if (event.isMapnikMode()) {
                 mapboxMap.setStyleUrl("asset://mapnik.json");
             } else {
-                mapboxMap.setStyleUrl("asset://osmMapStyle.json");
+                mapboxMap.setStyleUrl("asset://mapnik.json");
             }
         }
     }
@@ -1570,20 +1570,8 @@ public class MapFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSyncFinishUploadPoiEvent(SyncFinishUploadPoiEvent event) {
-        boolean forceRefresh = false;
-
-        if (event.getSuccessfullyAddedPoisCount() > 0) {
-            Toast.makeText(getActivity(), getResources().getQuantityString(R.plurals.add_done, event.getSuccessfullyAddedPoisCount()), Toast.LENGTH_SHORT).show();
-            forceRefresh = true;
-        }
-        if (event.getSuccessfullyUpdatedPoisCount() > 0) {
-            Toast.makeText(getActivity(), getResources().getQuantityString(mapMode == MapMode.WAY_EDITION ? R.plurals.noderef_moved : R.plurals.update_done, event.getSuccessfullyUpdatedPoisCount()), Toast.LENGTH_SHORT).show();
-            forceRefresh = true;
-        }
-        if (event.getSuccessfullyDeletedPoisCount() > 0) {
-            Toast.makeText(getActivity(), getResources().getQuantityString(R.plurals.delete_done, event.getSuccessfullyDeletedPoisCount()), Toast.LENGTH_SHORT).show();
-            forceRefresh = true;
-        }
+        boolean forceRefresh = event.getSuccessfullyAddedPoisCount() > 0 ||
+                event.getSuccessfullyUpdatedPoisCount() > 0 || event.getSuccessfullyDeletedPoisCount() > 0;
 
         if (forceRefresh) {
             presenter.setForceRefreshPoi();
