@@ -118,6 +118,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix ".debug-1"
+        }
     }
 
     productFlavors {
@@ -224,6 +229,9 @@ dependencies {
     testCompile "org.xerial:sqlite-jdbc:$sqliteJdbcVersion"
     testCompile 'commons-io:commons-io:1.3.2'
     compile("com.crashlytics.sdk.android:crashlytics:$crashlitycsVersion@aar") {
+        transitive = true;
+    }
+    compile('com.crashlytics.sdk.android:answers:1.3.10@aar') {
         transitive = true;
     }
 }

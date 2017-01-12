@@ -37,6 +37,8 @@ proguard/
 .idea/
 *.iml
 
+fabric.properties
+
 #vectorial assets files
 src/main/assets/*.geojson
 src/main/assets/vectorialfiles.json

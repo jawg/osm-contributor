@@ -109,7 +109,7 @@
         <receiver android:name=".service.CancelButtonReceiver"/>
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="6bc19e588429bdccdb609ff2647637bbe28bd75a" />
+            android:value="fd3bf78e94fa9be288a9f662f853e9c8d6ce26c3" />
     </application>
 
 </manifest>
