@@ -33,12 +33,15 @@ http://osm.jawg.io
 The flavour you will most probably want to build yourself is the store flavour which is the one on the Google Playstore.  
 To build the project:
  1. Create a conf.properties file at the project's root  
- 2. Generate a [Bing Maps API key](https://www.bingmapsportal.com)  
- 3. Put the generated key in conf.properties:
+ 2. Put all your secret API Key :
  ```
- bingApiKey=My_Api_Key
+ flickr_api_key=apiKey
+ flickr_api_secret=apiSecret
+ flickr_token=token
+ flickr_token_secret=tokenSecret
+ mapbox_token=pk.yourApiKey
  ```  
- 4. Execute the gradle task assembleStoreRelease, you can specify the OSM api url as a parameter:  
+ 3. Execute the gradle task assembleStoreRelease, you can specify the OSM api url as a parameter:
  ```
  ./gradlew assembleStoreRelease -PosmUrl=http://api.openstreetmap.org/api/0.6
  ```  
