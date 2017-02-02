@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.ui.managers.PoiManager;
 import io.mapsquare.osmcontributor.model.entities.Poi;
 import io.mapsquare.osmcontributor.model.entities.PoiType;
@@ -89,8 +90,9 @@ public class OsmBackend implements Backend {
         List<TagDto> tagDtos = new ArrayList<>();
 
         osmDto.setChangeSetDto(changeSetDto);
-        changeSetDto.setTagDtoList(tagDtos);
         tagDtos.add(new TagDto(comment, "comment"));
+        tagDtos.add(new TagDto("OSM Contributor " + BuildConfig.VERSION_NAME, "created_by"));
+        changeSetDto.setTagDtoList(tagDtos);
 
         OSMProxy.Result<String> result = osmProxy.proceed(new OSMProxy.NetworkAction<String>() {
             @Override

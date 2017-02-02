@@ -539,8 +539,8 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         PoiChanges result = new PoiChanges(poi.getId());
         for (TagItem tagItem : tagItemList) {
             // Only mandatory tags and optional tags that have been changed are saved
-            if (tagItem.isMandatory() || tagItem.getValue() != null) {
-                result.getTagsMap().put(tagItem.getKey(), tagItem.getValue());
+            if (tagItem.isMandatory() || (tagItem.getValue() != null && tagItem.getValue().trim().length() != 0)) {
+                result.getTagsMap().put(tagItem.getKey().trim(), tagItem.getValue().trim());
             }
         }
         return result;
