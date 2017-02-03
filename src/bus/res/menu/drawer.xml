@@ -52,11 +52,13 @@
 
         <item
             android:id="@+id/switch_style"
-            android:title="@string/switch_style_satellite"/>
+            android:title="@string/switch_style_satellite"
+            android:visible="false"/>
 
         <item
             android:id="@+id/profile_load"
-            android:title="@string/profile_load"/>
+            android:title="@string/profile_load"
+            android:visible="false"/>
 
         <item
             android:id="@+id/offline_regions"

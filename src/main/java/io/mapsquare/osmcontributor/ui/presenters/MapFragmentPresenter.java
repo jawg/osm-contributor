@@ -57,6 +57,7 @@ import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.LocationMarkerViewOptions;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
+import io.mapsquare.osmcontributor.utils.OsmAnswers;
 import io.mapsquare.osmcontributor.utils.core.MapElement;
 import timber.log.Timber;
 
@@ -152,6 +153,7 @@ public class MapFragmentPresenter {
                 markerOptions.position(poi.getPosition()).relatedObject(poi);
             }
             setIcon(markerOptions, poi, false);
+            OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "cancel");
         } else if (object instanceof PoiNodeRef) {
             mapFragment.switchMode(MapMode.WAY_EDITION);
         }

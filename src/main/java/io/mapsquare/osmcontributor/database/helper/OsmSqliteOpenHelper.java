@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
+import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.model.entities.Comment;
 import io.mapsquare.osmcontributor.model.entities.Note;
 import io.mapsquare.osmcontributor.model.entities.Poi;
@@ -43,7 +44,7 @@ import timber.log.Timber;
 
 public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
 
-    public static final String DATABASE_NAME = "osm-db.sqlite";
+    public static final String DATABASE_NAME = "osm-db" + BuildConfig.APPLICATION_ID + ".sqlite";
     public static final int CURRENT_VERSION = 10;
 
     private Context context;

@@ -73,6 +73,7 @@ import io.mapsquare.osmcontributor.ui.events.edition.PoiChangesApplyEvent;
 import io.mapsquare.osmcontributor.ui.managers.tutorial.AddPoiTutoManager;
 import io.mapsquare.osmcontributor.ui.managers.tutorial.TutorialManager;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
+import io.mapsquare.osmcontributor.utils.OsmAnswers;
 
 
 public class EditPoiFragment extends Fragment {
@@ -239,9 +240,11 @@ public class EditPoiFragment extends Fragment {
                 if (creation) {
                     getActivity().setResult(EditPoiActivity.POI_CREATED, null);
                     eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges()));
+                    OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "add");
                 } else if (tagsAdapter.isChange()) {
                     getActivity().setResult(EditPoiActivity.POI_EDITED, null);
                     eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges()));
+                    OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "update");
                 } else {
                     Toast.makeText(getActivity(), R.string.not_any_changes, Toast.LENGTH_SHORT).show();
                 }
@@ -255,6 +258,7 @@ public class EditPoiFragment extends Fragment {
                 if (!poi.getType().hasMandatoryTags() || tagsAdapter.isValidChanges()) {
                     getActivity().setResult(EditPoiActivity.POI_CREATED, null);
                     eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges()));
+                    OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "add");
                 } else {
                     Toast.makeText(getActivity(), R.string.uncompleted_fields, Toast.LENGTH_SHORT).show();
                 }
@@ -266,6 +270,7 @@ public class EditPoiFragment extends Fragment {
                 if (tagsAdapter.isValidChanges()) {
                     getActivity().setResult(EditPoiActivity.POI_EDITED, null);
                     eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges()));
+                    OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "update");
                 } else {
                     Toast.makeText(getActivity(), R.string.uncompleted_fields, Toast.LENGTH_SHORT).show();
                 }

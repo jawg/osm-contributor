@@ -1,4 +1,9 @@
 ## Changelog
+[3.0.2]
+
+  - Empty value are not saved on OSM Server
+  - All changeset are now marked as created by OSM Contributor
+
 [3.0.0-beta.1]
 
  - OAuth support / Sign-in with Google

@@ -49,6 +49,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.mapsquare.osmcontributor.BuildConfig;
 import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.model.entities.PoiType;
@@ -67,6 +68,7 @@ import io.mapsquare.osmcontributor.ui.events.map.PleaseInitializeArpiEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseInitializeDrawer;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseInitializeNoteDrawerEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseShowMeArpiglEvent;
+import io.mapsquare.osmcontributor.ui.events.map.PleaseSwitchMapStyleEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseSwitchWayEditionModeEvent;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseTellIfDbChanges;
 import io.mapsquare.osmcontributor.ui.events.map.PleaseToggleArpiEvent;
@@ -183,10 +185,6 @@ public class MapActivity extends AppCompatActivity {
 
         selectAllMenuItem = filterView.getMenu().findItem(R.id.select_all_item);
 
-        if (!FlavorUtils.isPoiStorage() && configManager.hasPoiModification()) {
-            navigationView.getMenu().findItem(R.id.edit_way).setVisible(true);
-        }
-
         if (configManager.hasPoiAddition()) {
             navigationView.getMenu().findItem(R.id.replay_tuto_menu).setVisible(true);
         }
@@ -237,7 +235,7 @@ public class MapActivity extends AppCompatActivity {
         super.onResume();
         eventBus.register(this);
 
-        if (!sharedPreferences.getBoolean(getString(R.string.shared_prefs_preset_default), false)) {
+        if (!sharedPreferences.getBoolean(getString(R.string.shared_prefs_preset_default), false) || !BuildConfig.FLAVOR.equals("store")) {
             navigationView.getMenu().findItem(R.id.edit_way).setVisible(false);
             navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(false);
             eventBus.post(new PleaseLoadPoiTypes());
@@ -497,12 +495,12 @@ public class MapActivity extends AppCompatActivity {
             case R.id.arpi_view:
                 toggleArpiGl();
                 break;
-            /*case R.id.switch_style:
+            case R.id.switch_style:
                 isSatelliteMode = !isSatelliteMode;
                 eventBus.post(new PleaseSwitchMapStyleEvent(isSatelliteMode));
                 drawerLayout.closeDrawer(navigationView);
                 menuItem.setTitle(isSatelliteMode ? R.string.switch_style_mapnik : R.string.switch_style_satellite);
-                break;*/
+                break;
             case R.id.offline_regions:
                 startOfflineRegionsActivity();
                 break;

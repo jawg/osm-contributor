@@ -162,6 +162,7 @@ import io.mapsquare.osmcontributor.ui.utils.views.map.marker.WayMarker;
 import io.mapsquare.osmcontributor.ui.utils.views.map.marker.WayMarkerOptions;
 import io.mapsquare.osmcontributor.utils.ConfigManager;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
+import io.mapsquare.osmcontributor.utils.OsmAnswers;
 import io.mapsquare.osmcontributor.utils.StringUtils;
 import io.mapsquare.osmcontributor.utils.ways.Geocoder;
 import io.mapsquare.osmcontributor.utils.ways.LevelBar;
@@ -1329,6 +1330,7 @@ public class MapFragment extends Fragment {
         removeMarkerView(markersPoi.get(poi.getId()));
         markersPoi.remove(poi.getId());
         eventBus.post(new PleaseDeletePoiEvent(poi));
+        OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "delete");
         switchMode(MapMode.DEFAULT);
     }
 

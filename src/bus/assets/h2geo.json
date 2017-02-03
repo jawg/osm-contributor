@@ -1,0 +1,181 @@
+{
+  "name": {
+    "default": "Bus preset",
+    "en": "Bus preset",
+    "fr": "Preset bus"
+  },
+  "version": "0.1",
+  "author": "Hugo Bernardi",
+  "link": "https://github.com/jawg/h2geo-presets",
+  "description": {
+    "default": "The only profile you need to contribute your favourite bus amenities.",
+    "en": "The only profile you need to contribute your favourite bus amenities.",
+    "fr": "Le seul profil dont vous aurez besoin pour contribuer des données utiles liées aux arrêts de bus."
+  },
+  "image": "https://wiki.openstreetmap.org/w/images/thumb/c/ca/Citadis402Grenoble_citeinternationale.jpg/480px-Citadis402Grenoble_citeinternationale.jpg",
+  "groups": [
+    {
+      "name": {
+        "default": "Bus group",
+        "en": "Bus group",
+        "fr": "Groupe bus"
+      },
+      "icon": "http://static.directmatin.fr/sites/default/files/velib_frein_arriere.jpg",
+      "url": "https://wiki.openstreetmap.org/wiki/Bicycle",
+      "items": [
+        {
+          "name": "public_transport=platform",
+          "url": "https://wiki.openstreetmap.org/wiki/Tag:amenity=bicycle_parking",
+          "label": {
+            "default": "Bus stop",
+            "en": "Bus stop",
+            "fr": "Arrêt de bus"
+          },
+          "description": {
+            "default": "A bus stop.",
+            "en": "A bus stop.",
+            "fr": "Un arrêt de bus."
+          },
+          "keywords": {
+            "default": [
+              "bus stop"
+            ],
+            "en": [
+              "bus stop"
+            ],
+            "fr": [
+              "Arrêt de bus"
+            ]
+          },
+          "tags": [
+            {
+              "key": "public_transport",
+              "value": "platform",
+              "type": "CONSTANT"
+            },
+            {
+              "key": "name",
+              "type": "TEXT"
+            },
+            {
+              "key": "shelter",
+              "type": "SINGLE_CHOICE",
+              "values": [
+                {
+                  "yes": {
+                    "default": "Yes",
+                    "fr": "Oui",
+                    "en": "Yes"
+                  }
+                },
+                {
+                  "no": {
+                    "default": "No",
+                    "fr": "Non",
+                    "en": "No"
+                  }
+                }
+              ]
+            },
+            {
+              "key": "bench",
+              "type": "SINGLE_CHOICE",
+              "values": [
+                {
+                  "yes": {
+                    "default": "Yes",
+                    "fr": "Oui",
+                    "en": "Yes"
+                  }
+                },
+                {
+                  "no": {
+                    "default": "No",
+                    "fr": "Non",
+                    "en": "No"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "highway=bus_stop",
+          "url": "https://wiki.openstreetmap.org/wiki/Tag:amenity=bicycle_parking",
+          "label": {
+            "default": "Bus stop (Obsolete)",
+            "en": "Bus stop (Obsolete)",
+            "fr": "Arrêt de bus (Obsolète)"
+          },
+          "description": {
+            "default": "A bus stop.",
+            "en": "A bus stop.",
+            "fr": "Un arrêt de bus."
+          },
+          "keywords": {
+            "default": [
+              "bus stop"
+            ],
+            "en": [
+              "bus stop"
+            ],
+            "fr": [
+              "Arrêt de bus"
+            ]
+          },
+          "tags": [
+            {
+              "key": "highway",
+              "value": "bus_stop",
+              "type": "CONSTANT"
+            },
+            {
+              "key": "name",
+              "type": "TEXT"
+            },
+            {
+              "key": "shelter",
+              "type": "SINGLE_CHOICE",
+              "values": [
+                {
+                  "yes": {
+                    "default": "Yes",
+                    "fr": "Oui",
+                    "en": "Yes"
+                  }
+                },
+                {
+                  "no": {
+                    "default": "No",
+                    "fr": "Non",
+                    "en": "No"
+                  }
+                }
+              ]
+            },
+            {
+              "key": "bench",
+              "type": "SINGLE_CHOICE",
+              "values": [
+                {
+                  "yes": {
+                    "default": "Yes",
+                    "fr": "Oui",
+                    "en": "Yes"
+                  }
+                },
+                {
+                  "no": {
+                    "default": "No",
+                    "fr": "Non",
+                    "en": "No"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

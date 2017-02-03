@@ -52,6 +52,7 @@ import io.mapsquare.osmcontributor.rest.events.error.SyncUnauthorizedEvent;
 import io.mapsquare.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
 import io.mapsquare.osmcontributor.utils.Box;
 import io.mapsquare.osmcontributor.utils.FlavorUtils;
+import io.mapsquare.osmcontributor.utils.OsmAnswers;
 import timber.log.Timber;
 
 /**
@@ -282,6 +283,7 @@ public class SyncManager {
                 poi.setBackendId(creationResult.getBackendId());
                 poi.setUpdated(false);
                 poiManager.savePoi(poi);
+                OsmAnswers.remotePoiAction(poi.getType().getTechnicalName(), "add");
                 return true;
             case FAILURE_UNKNOWN:
             default:
@@ -324,6 +326,7 @@ public class SyncManager {
                 poi.setVersion(updateResult.getVersion());
                 poi.setUpdated(false);
                 poiManager.savePoi(poi);
+                OsmAnswers.remotePoiAction(poi.getType().getTechnicalName(), "update");
                 return true;
             case FAILURE_CONFLICT:
                 bus.post(new SyncConflictingNodeErrorEvent(poi.getName(), poi.getId()));
@@ -375,6 +378,7 @@ public class SyncManager {
         switch (modificationStatus) {
             case SUCCESS:
             case FAILURE_NOT_EXISTING:
+                OsmAnswers.remotePoiAction(poi.getType().getTechnicalName(), "delete");
                 poiManager.deletePoi(poi);
                 return true;
             case FAILURE_CONFLICT:

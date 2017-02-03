@@ -179,6 +179,7 @@ public class BitmapHandler {
         icons.put("street", R.drawable.street);
         icons.put("suburb", R.drawable.town);
         icons.put("subway_entrance", R.drawable.bus_stop);
+        icons.put("platform", R.drawable.bus_stop);
         icons.put("supermarket", R.drawable.mall);
         icons.put("terminal", R.drawable.aerodrome);
         icons.put("tertiary", R.drawable.street);

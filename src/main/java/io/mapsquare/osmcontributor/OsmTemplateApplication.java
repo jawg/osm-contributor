@@ -36,7 +36,6 @@ import com.facebook.stetho.Stetho;
 import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.REST;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
-import com.squareup.leakcanary.LeakCanary;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -119,7 +118,6 @@ public class OsmTemplateApplication extends Application {
         editor.apply();
 
         MapboxAccountManager.start(this, BuildConfig.MAPBOX_TOKEN);
-        LeakCanary.install(this);
     }
 
     @Override
