@@ -91,7 +91,7 @@ public class OsmBackend implements Backend {
 
         osmDto.setChangeSetDto(changeSetDto);
         tagDtos.add(new TagDto(comment, "comment"));
-        tagDtos.add(new TagDto("OSM Contributor " + BuildConfig.VERSION_NAME, "created_by"));
+        tagDtos.add(new TagDto(BuildConfig.APP_NAME + " " + BuildConfig.VERSION_NAME, "created_by"));
         changeSetDto.setTagDtoList(tagDtos);
 
         OSMProxy.Result<String> result = osmProxy.proceed(new OSMProxy.NetworkAction<String>() {

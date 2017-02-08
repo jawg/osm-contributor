@@ -28,6 +28,7 @@ import android.support.v7.widget.Toolbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.mapsquare.osmcontributor.R;
+import io.mapsquare.osmcontributor.utils.OsmAnswers;
 
 public class MyPreferencesActivity extends AppCompatActivity {
     private static final String TAG = "MyPreferencesActivity";
@@ -42,6 +43,9 @@ public class MyPreferencesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preference);
         ButterKnife.bind(this);
+
+        OsmAnswers.visitedActivity("Page de préférence");
+
         fragment = getSupportFragmentManager().findFragmentById(R.id.preference_fragment);
         setSupportActionBar(toolbar);
 

@@ -35,6 +35,7 @@ import io.mapsquare.osmcontributor.OsmTemplateApplication;
 import io.mapsquare.osmcontributor.R;
 import io.mapsquare.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
 import io.mapsquare.osmcontributor.ui.fragments.EditPoiFragment;
+import io.mapsquare.osmcontributor.utils.OsmAnswers;
 
 public class EditPoiActivity extends AppCompatActivity {
     public static final String POI_ID = "POI_ID";
@@ -70,6 +71,8 @@ public class EditPoiActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Bundle args = new Bundle();
+
+        OsmAnswers.visitedActivity("Page d'édition/ajout");
 
         if (savedInstanceState == null) {
             Long poiId = intent.getLongExtra(POI_ID, 1);

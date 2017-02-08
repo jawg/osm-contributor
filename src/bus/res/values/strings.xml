@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="name" translatable="false">Osm Contributor for Bus</string>
+    <string name="name" translatable="false">Bus Contributor</string>
 </resources>

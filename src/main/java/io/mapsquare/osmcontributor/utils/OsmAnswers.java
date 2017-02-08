@@ -57,6 +57,13 @@ public class OsmAnswers {
                         .putCustomAttribute("Type", poiType));
     }
 
+    public static void visitedActivity(String activity) {
+        Answers.getInstance()
+                // Create an event for creation of POI.
+                .logCustom(new CustomEvent("Pages visitées")
+                        .putCustomAttribute("Page", activity));
+    }
+
 
 
 

@@ -24,6 +24,7 @@ public class FlavorUtils {
     public static final String TEMPLATE = "template";
     public static final String POI_STORAGE = "poi_storage";
     public static final String STORE = "store";
+    public static final String BUS = "bus";
 
     public static boolean isTemplate() {
         return TEMPLATE.equals(BuildConfig.FLAVOR);
@@ -35,5 +36,9 @@ public class FlavorUtils {
 
     public static boolean isStore() {
         return STORE.equals(BuildConfig.FLAVOR);
+    }
+
+    public static boolean isBus() {
+        return BUS.endsWith(BuildConfig.FLAVOR);
     }
 }

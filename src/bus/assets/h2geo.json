@@ -24,88 +24,12 @@
       "url": "https://wiki.openstreetmap.org/wiki/Bicycle",
       "items": [
         {
-          "name": "public_transport=platform",
+          "name": "highway=bus_stop",
           "url": "https://wiki.openstreetmap.org/wiki/Tag:amenity=bicycle_parking",
           "label": {
             "default": "Bus stop",
             "en": "Bus stop",
             "fr": "Arrêt de bus"
-          },
-          "description": {
-            "default": "A bus stop.",
-            "en": "A bus stop.",
-            "fr": "Un arrêt de bus."
-          },
-          "keywords": {
-            "default": [
-              "bus stop"
-            ],
-            "en": [
-              "bus stop"
-            ],
-            "fr": [
-              "Arrêt de bus"
-            ]
-          },
-          "tags": [
-            {
-              "key": "public_transport",
-              "value": "platform",
-              "type": "CONSTANT"
-            },
-            {
-              "key": "name",
-              "type": "TEXT"
-            },
-            {
-              "key": "shelter",
-              "type": "SINGLE_CHOICE",
-              "values": [
-                {
-                  "yes": {
-                    "default": "Yes",
-                    "fr": "Oui",
-                    "en": "Yes"
-                  }
-                },
-                {
-                  "no": {
-                    "default": "No",
-                    "fr": "Non",
-                    "en": "No"
-                  }
-                }
-              ]
-            },
-            {
-              "key": "bench",
-              "type": "SINGLE_CHOICE",
-              "values": [
-                {
-                  "yes": {
-                    "default": "Yes",
-                    "fr": "Oui",
-                    "en": "Yes"
-                  }
-                },
-                {
-                  "no": {
-                    "default": "No",
-                    "fr": "Non",
-                    "en": "No"
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "highway=bus_stop",
-          "url": "https://wiki.openstreetmap.org/wiki/Tag:amenity=bicycle_parking",
-          "label": {
-            "default": "Bus stop (Obsolete)",
-            "en": "Bus stop (Obsolete)",
-            "fr": "Arrêt de bus (Obsolète)"
           },
           "description": {
             "default": "A bus stop.",

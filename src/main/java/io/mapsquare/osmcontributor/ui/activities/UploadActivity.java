@@ -64,6 +64,7 @@ import io.mapsquare.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEven
 import io.mapsquare.osmcontributor.ui.adapters.PoisAdapter;
 import io.mapsquare.osmcontributor.ui.managers.tutorial.SyncTutoManager;
 import io.mapsquare.osmcontributor.ui.managers.tutorial.TutorialManager;
+import io.mapsquare.osmcontributor.utils.OsmAnswers;
 import io.mapsquare.osmcontributor.utils.helper.SwipeItemTouchHelperCallback;
 import io.mapsquare.osmcontributor.utils.upload.PoiUpdateWrapper;
 
@@ -119,6 +120,8 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        OsmAnswers.visitedActivity("Page de synchronisation");
 
         adapter = new PoisAdapter(this, poisWrapper);
         adapter.setOnStartSwipeListener(this);

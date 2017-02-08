@@ -67,6 +67,7 @@ import io.mapsquare.osmcontributor.ui.adapters.OfflineRegionsAdapter;
 import io.mapsquare.osmcontributor.ui.listeners.RecyclerItemClickListener;
 import io.mapsquare.osmcontributor.ui.managers.tutorial.OfflineTutoManager;
 import io.mapsquare.osmcontributor.ui.managers.tutorial.TutorialManager;
+import io.mapsquare.osmcontributor.utils.OsmAnswers;
 
 /**
  * @author Tommy Buonomo on 08/08/16.
@@ -161,6 +162,8 @@ public class OfflineRegionsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_offline_regions);
         ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
         ButterKnife.bind(this);
+
+        OsmAnswers.visitedActivity("Page des cartes hors ligne");
 
         offlineTutoManager = new OfflineTutoManager(this, TutorialManager.forceDisplayOfflineTuto);
 

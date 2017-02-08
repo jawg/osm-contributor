@@ -1209,7 +1209,7 @@ public class MapFragment extends Fragment {
         FloatingActionButton floatingActionButton;
 
         //add note
-        if (!FlavorUtils.isPoiStorage()) {
+        if (!FlavorUtils.isBus()) {
             floatingActionButton = new FloatingActionButton(getActivity());
             floatingActionButton.setLabelText(getString(R.string.note));
             floatingActionButton.setColorPressed(ContextCompat.getColor(getActivity(), R.color.material_green_700));
@@ -1797,8 +1797,13 @@ public class MapFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPleaseApplyNoteFilterEvent(PleaseApplyNoteFilterEvent event) {
         Timber.d("filtering Notes");
-        displayOpenNotes = event.isDisplayOpenNotes();
-        displayClosedNotes = event.isDisplayClosedNotes();
+        if (FlavorUtils.isBus()) {
+            displayClosedNotes = false;
+            displayOpenNotes = false;
+        } else {
+            displayOpenNotes = event.isDisplayOpenNotes();
+            displayClosedNotes = event.isDisplayClosedNotes();
+        }
         applyNoteFilter();
     }
 
