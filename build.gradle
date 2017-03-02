@@ -1,5 +1,5 @@
 ext {
-    appVersion = "3.0.2"
+    appVersion = "3.0.3"
     androidSupportVersion = '25.1.0'
     playServicesVersion = '7.8.0'
     daggerVersion = '2.0'
@@ -96,10 +96,10 @@ android {
     }
 
     defaultConfig {
-        applicationId "io.mapsquare.osmcontributor"
+        applicationId "io.jawg.osmcontributor"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 22
+        versionCode 23
         versionName appVersion
         multiDexEnabled true
         ndk {
@@ -118,7 +118,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            buildConfigField "String", "BASE_OSM_URL", '"http://api.openstreetmap.org/api/0.6/"'
+            buildConfigField "String", "BASE_OSM_URL", '"http://www.openstreetmap.org/api/0.6/"'
         }
 
         debug {
@@ -132,7 +132,7 @@ android {
     productFlavors {
         store {
             buildConfigField "String", "APP_NAME", '"OSM Contributor"'
-            buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.store"'
+            buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
             buildConfigField "int", "DEFAULT_ZOOM", "16"
             buildConfigField "int", "ZOOM_VECTORIAL", "18"
             buildConfigField "int", "ZOOM_MAX_PROVIDER", "19"
@@ -154,11 +154,11 @@ android {
 
         bus {
             applicationIdSuffix ".bus"
-            versionName appVersion
+            versionName "1.0"
             versionCode 1
 
             buildConfigField "String", "APP_NAME", '"Bus Contributor"'
-            buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.mapsquare.osmcontributor.store"'
+            buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
             buildConfigField "int", "DEFAULT_ZOOM", "16"
             buildConfigField "int", "ZOOM_VECTORIAL", "18"
             buildConfigField "int", "ZOOM_MAX_PROVIDER", "19"

@@ -20,5 +20,5 @@
 
 -->
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <external-path name="my_images" path="Android/data/io.mapsquare.osmcontributor/files/Pictures" />
+    <external-path name="my_images" path="Android/data/io.jawg.osmcontributor/files/Pictures" />
 </paths>

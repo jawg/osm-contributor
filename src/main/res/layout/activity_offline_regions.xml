@@ -59,7 +59,7 @@
                 android:orientation="horizontal"
                 android:background="@android:color/transparent"/>
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+            <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
                 android:id="@+id/offline_regions_empty_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

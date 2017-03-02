@@ -29,7 +29,7 @@
     android:paddingRight="16dp"
     android:minWidth="1000dp">
 
-    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+    <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/login_title"
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:theme="@style/TextInputLayout">
 
-        <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
+        <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
             android:id="@+id/dialog_connection_login_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
         android:layout_height="wrap_content"
         android:theme="@style/TextInputLayout">
 
-        <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
+        <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
             android:id="@+id/dialog_connection_password_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
         android:textColor="@android:color/white"
         android:layout_margin="16dp"/>
 
-    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+    <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -97,7 +97,7 @@
         android:layout_gravity="center"
         android:textAllCaps="false"/>
 
-    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+    <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:id="@+id/dialog_connection_login_later"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

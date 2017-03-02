@@ -6,15 +6,15 @@
 ####################################################################################################
 ## Project specific
 
--keepclasseswithmembernames class io.mapsquare.osmcontributor.type.dto.* {
+-keepclasseswithmembernames class io.jawg.osmcontributor.type.dto.* {
     *;
 }
 
--keep class io.mapsquare.osmcontributor.sync.dto.osm.* {
+-keep class io.jawg.osmcontributor.sync.dto.osm.* {
     *;
 }
 
--keepclasseswithmembernames class io.mapsquare.osmcontributor.utils.Box { *; }
+-keepclasseswithmembernames class io.jawg.osmcontributor.utils.Box { *; }
 
 
 ####################################################################################################
@@ -79,7 +79,7 @@
 -keep class retrofit.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
--keep class io.mapsquare.osmcontributor.rest.utils.BODY_DELETE { *; }
+-keep class io.jawg.osmcontributor.rest.utils.BODY_DELETE { *; }
 
 
 ####################################################################################################

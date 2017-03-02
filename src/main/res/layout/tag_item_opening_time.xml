@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+        <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
             android:id="@+id/poi_key"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

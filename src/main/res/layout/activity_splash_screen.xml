@@ -27,7 +27,7 @@
     tools:activity=".ui.activities.SplashScreenActivity"
     android:background="@color/colorPrimaryDark">
 
-    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+    <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:id="@+id/splash_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         android:textSize="40sp"
         app:typeface="Roboto-Light.ttf"/>
 
-    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+    <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:id="@+id/mapsquare"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
         android:src="@drawable/splash"/>
 
 
-    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+    <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:id="@+id/sync"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

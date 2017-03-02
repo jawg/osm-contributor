@@ -41,7 +41,7 @@
             android:layout_marginTop="8dp"
             android:src="@drawable/ic_add_photo" />
 
-        <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+        <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
             android:id="@+id/poi_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
             android:textSize="20sp"
             app:typeface="RobotoCondensed-Regular.ttf" />
 
-        <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+        <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
             android:id="@+id/poi_type_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

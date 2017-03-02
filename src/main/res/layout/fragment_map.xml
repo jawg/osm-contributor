@@ -90,7 +90,7 @@
         android:src="@drawable/hand_tuto"
         android:visibility="gone" />
 
-    <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+    <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
         android:id="@+id/osm_copyright"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
         android:background="@android:color/white"
         android:visibility="gone" />
 
-    <io.mapsquare.osmcontributor.utils.ways.LevelBar
+    <io.jawg.osmcontributor.utils.ways.LevelBar
         android:id="@+id/level_bar"
         style="@android:style/Widget.Holo.SeekBar"
         android:layout_width="200dp"
@@ -176,7 +176,7 @@
 
         <fragment
             android:id="@+id/note_info_panel"
-            android:name="io.mapsquare.osmcontributor.ui.fragments.NoteDetailFragment"
+            android:name="io.jawg.osmcontributor.ui.fragments.NoteDetailFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true" />
@@ -190,7 +190,7 @@
 
         <fragment
             android:id="@+id/poi_info_panel"
-            android:name="io.mapsquare.osmcontributor.ui.fragments.PoiDetailFragment"
+            android:name="io.jawg.osmcontributor.ui.fragments.PoiDetailFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true" />

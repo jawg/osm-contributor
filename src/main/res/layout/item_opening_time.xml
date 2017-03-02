@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:theme="@style/TextInputLayout">
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
+            <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
                 android:id="@+id/poi_month_value"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -35,7 +35,7 @@
             android:layout_weight="0.5"
             android:theme="@style/TextInputLayout">
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
+            <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
                 android:id="@+id/opening_hours_days_value"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
             android:layout_weight="0.5"
             android:theme="@style/TextInputLayout">
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
+            <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextInputEditText
                 android:id="@+id/opening_hours_hours_value"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

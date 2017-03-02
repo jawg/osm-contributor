@@ -47,7 +47,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_jan_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
                 app:typeface="Roboto-Light.ttf"
                 android:textSize="18sp"/>
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_feb_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
                 app:typeface="Roboto-Light.ttf"
                 android:textSize="18sp"/>
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_mar_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_apr_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
                 app:typeface="Roboto-Light.ttf"
                 android:textSize="18sp"/>
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_may_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -143,7 +143,7 @@
                 app:typeface="Roboto-Light.ttf"
                 android:textSize="18sp"/>
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_jun_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -167,7 +167,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_jul_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -185,7 +185,7 @@
                 app:typeface="Roboto-Light.ttf"
                 android:textSize="18sp"/>
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_aug_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -203,7 +203,7 @@
                 app:typeface="Roboto-Light.ttf"
                 android:textSize="18sp"/>
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_sep_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -227,7 +227,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_oct_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -245,7 +245,7 @@
                 app:typeface="Roboto-Light.ttf"
                 android:textSize="18sp"/>
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_nov_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -263,7 +263,7 @@
                 app:typeface="Roboto-Light.ttf"
                 android:textSize="18sp"/>
 
-            <io.mapsquare.osmcontributor.ui.utils.views.customs.TextViewCheck
+            <io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck
                 android:id="@+id/dialog_edit_month_dec_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

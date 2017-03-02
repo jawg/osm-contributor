@@ -40,7 +40,7 @@
 
         <fragment
             android:id="@+id/map_fragment"
-            android:name="io.mapsquare.osmcontributor.ui.fragments.MapFragment"
+            android:name="io.jawg.osmcontributor.ui.fragments.MapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/toolbar"/>
