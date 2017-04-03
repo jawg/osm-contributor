@@ -54,10 +54,14 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 
@@ -69,6 +73,7 @@ import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.flickr.event.PhotosFoundEvent;
 import io.jawg.osmcontributor.flickr.oauth.FlickrOAuth;
 import io.jawg.osmcontributor.flickr.oauth.OAuthRequest;
+import io.jawg.osmcontributor.flickr.rest.FlickrAddTagClient;
 import io.jawg.osmcontributor.flickr.rest.FlickrPhotoClient;
 import io.jawg.osmcontributor.flickr.rest.FlickrUploadClient;
 import io.jawg.osmcontributor.flickr.rest.asynctask.GetFlickrPhotos;
@@ -76,12 +81,16 @@ import io.jawg.osmcontributor.flickr.util.FlickrPhotoUtils;
 import io.jawg.osmcontributor.flickr.util.FlickrUploadUtils;
 import io.jawg.osmcontributor.flickr.util.OAuthParams;
 import io.jawg.osmcontributor.flickr.util.ResponseConverter;
+import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.ui.adapters.ImageAdapter;
 import io.jawg.osmcontributor.utils.ConfigManager;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedFile;
+import retrofit.mime.TypedString;
+
+import static org.apache.http.protocol.HTTP.UTF_8;
 
 public class PhotoActivity extends AppCompatActivity {
 
@@ -101,6 +110,8 @@ public class PhotoActivity extends AppCompatActivity {
     private FlickrPhotoClient flickrPhotoClient;
 
     private FlickrUploadClient flickrUploadClient;
+
+    private FlickrAddTagClient flickrAddTagClient;
 
     /*=========================================*/
     /*------------INJECTIONS-------------------*/
@@ -388,43 +399,92 @@ public class PhotoActivity extends AppCompatActivity {
         flickrPhotoClient.setProperties(oauthRequest.getParams(), new Callback<String>() {
             @Override
             public void success(String s, Response response) {
-                setPhotoTag(photoId);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                progressDialog.dismiss();
-            }
-        });
-    }
-
-    private void setPhotoTag(final String photoId) {
-        OAuthRequest oauthRequest = new OAuthRequest(configManager.getFlickrApiKey(), configManager.getFlickrApiKeySecret());
-        oauthRequest.setRequestUrl("https://api.flickr.com/services/rest");
-        oauthRequest.setOAuthToken(configManager.getFlickrToken());
-        oauthRequest.setOAuthTokenSecret(configManager.getFlickrTokenSecret());
-        oauthRequest.initParam(OAuthParams.getOAuthParams()
-                .put(OAuthParams.OAUTH_TOKEN, configManager.getFlickrToken())
-                .put("method", "flickr.photos.addTags")
-                .put("photo_id", photoId)
-                .put("tags", "openstreetmap").toMap());
-        oauthRequest.signRequest(Verb.GET);
-        flickrPhotoClient.setProperties(oauthRequest.getParams(), new Callback<String>() {
-            @Override
-            public void success(String s, Response response) {
-                progressDialog.dismiss();
-                photoFile.delete();
-                Toast.makeText(PhotoActivity.this, "Votre photo a été envoyée. Elle s'affichera dans quelques minutes", Toast.LENGTH_LONG).show();
-                if (ImageAdapter.getPhotoUrlsCachedThumbs(poiId) == null || ImageAdapter.getPhotoUrlsCachedThumbs(poiId).isEmpty()) {
-                    finish();
+                try {
+                    flickrOAuth.setOAuthRequest(null);
+                    setPhotoTag(photoId);
+                } catch (UnsupportedEncodingException e) {
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
+                Toast.makeText(PhotoActivity.this, "Erreur lors de l'envoi de la photo, réessayer", Toast.LENGTH_LONG).show();
                 progressDialog.dismiss();
             }
         });
+    }
+
+    private void setPhotoTag(final String photoId) throws UnsupportedEncodingException {
+        //Create the machine tag for Flickr to associate picture to this Poi
+        Poi currentPoi = application.getOsmTemplateComponent().getPoiManager().queryForId(poiId);
+        String flickrOsmTag = "openstreetmap";
+        if (currentPoi.getBackendId().length() > 0) {
+            flickrOsmTag += ",osm:" + ((currentPoi.getWay()) ? "way" : "node") + "=" + currentPoi.getBackendId() + "";
+        }
+        flickrOsmTag = URLEncoder.encode(flickrOsmTag, UTF_8);
+
+        OAuthRequest oauthRequest = flickrOAuth.getOAuthRequest();
+        if (oauthRequest == null) {
+            oauthRequest = new OAuthRequest(application.getFlickr().getApiKey(), application.getFlickr().getSharedSecret());
+            oauthRequest.setOAuthToken(configManager.getFlickrToken());
+            oauthRequest.setOAuthTokenSecret(configManager.getFlickrTokenSecret());
+            flickrOAuth.setOAuthRequest(oauthRequest);
+        }
+
+        oauthRequest.setRequestUrl("https://api.flickr.com/services/rest");
+        oauthRequest.initParam(OAuthParams.getOAuthParams()
+                .put(OAuthParams.OAUTH_TOKEN, oauthRequest.getOAuthToken())
+                .put("method", "flickr.photos.addTags")
+                .put("photo_id", photoId)
+                .put("tags", flickrOsmTag).toMap());
+
+        oauthRequest.signRequest(Verb.POST);
+
+        //Filter params for Authorization header
+        Map<String, String> oauthParams = new TreeMap<String, String>();
+        for (Map.Entry<String, String> entry : oauthRequest.getParams().entrySet()) {
+            if (entry.getKey().startsWith("oauth_")) {
+                oauthParams.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        if (flickrAddTagClient == null) {
+            flickrAddTagClient = FlickrPhotoUtils.getAdapter(oauthParams).create(FlickrAddTagClient.class);
+        }
+
+        flickrAddTagClient.addTags(
+                new TypedString("method=flickr.photos.addTags&photo_id=" + photoId + "&tags=" + flickrOsmTag),
+                new Callback<String>() {
+                    @Override
+                    public void success(String s, Response response) {
+                        System.out.println(s);
+
+                        progressDialog.dismiss();
+                        photoFile.delete();
+                        Toast.makeText(PhotoActivity.this, "Votre photo a été envoyée. Elle s'affichera dans quelques minutes", Toast.LENGTH_LONG).show();
+                        if (ImageAdapter.getPhotoUrlsCachedThumbs(poiId) == null || ImageAdapter.getPhotoUrlsCachedThumbs(poiId).isEmpty()) {
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        error.printStackTrace();
+
+                        if (nbTry < 10) {
+                            nbTry++;
+                            try {
+                                setPhotoTag(photoId);
+                            } catch (UnsupportedEncodingException e) {
+                            }
+                        } else {
+                            nbTry = 0;
+                            Toast.makeText(PhotoActivity.this, "Erreur lors de l'association au POI", Toast.LENGTH_LONG).show();
+                            progressDialog.dismiss();
+                        }
+                    }
+                }
+        );
     }
 
     /*=========================================*/
