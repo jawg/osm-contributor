@@ -26,7 +26,6 @@ import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.Set;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -82,12 +81,12 @@ public class FlickrSecurityUtils {
                     .append(SEPARATOR);
 
             StringBuilder paramsBuilder = new StringBuilder();
-            Set<Map.Entry<String, String>> values = params.entrySet();
-            for (Map.Entry<String, String> param : values) {
+            for (Map.Entry<String, String> param : params.entrySet()) {
                 paramsBuilder.append(param.getKey()).append(EQUAL).append(param.getValue()).append(SEPARATOR);
             }
 
-            String paramsEncoded = URLEncoder.encode(paramsBuilder.deleteCharAt(paramsBuilder.lastIndexOf(SEPARATOR)).toString(), UTF_8);
+            String urlToEncode = (paramsBuilder.lastIndexOf(SEPARATOR) >= 0) ? paramsBuilder.deleteCharAt(paramsBuilder.lastIndexOf(SEPARATOR)).toString() : paramsBuilder.toString();
+            String paramsEncoded = URLEncoder.encode(urlToEncode, UTF_8);
             return urlBuilder.append(paramsEncoded).toString();
         } catch (UnsupportedEncodingException e) {
             return null;
