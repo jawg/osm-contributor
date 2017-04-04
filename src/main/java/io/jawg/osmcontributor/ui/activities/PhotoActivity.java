@@ -369,7 +369,7 @@ public class PhotoActivity extends AppCompatActivity {
             @Override
             public void failure(RetrofitError error) {
                 error.printStackTrace();
-                if (nbTry < 10) {
+                if (nbTry < 5) {
                     nbTry++;
                     uploadPhoto();
                 } else {
@@ -400,7 +400,6 @@ public class PhotoActivity extends AppCompatActivity {
             @Override
             public void success(String s, Response response) {
                 try {
-                    flickrOAuth.setOAuthRequest(null);
                     setPhotoTag(photoId);
                 } catch (UnsupportedEncodingException e) {
                 }
@@ -418,8 +417,12 @@ public class PhotoActivity extends AppCompatActivity {
         //Create the machine tag for Flickr to associate picture to this Poi
         Poi currentPoi = application.getOsmTemplateComponent().getPoiManager().queryForId(poiId);
         String flickrOsmTag = "openstreetmap";
-        if (currentPoi.getBackendId().length() > 0) {
+        if (currentPoi.getBackendId() != null && currentPoi.getBackendId().length() > 0) {
             flickrOsmTag += ",osm:" + ((currentPoi.getWay()) ? "way" : "node") + "=" + currentPoi.getBackendId() + "";
+        }
+        else {
+            //TODO Handle pictures added on new POIs which haven't an OSM ID yet
+            //Such POIs might be sent to OSM first, and when an ID is defined, update the Flickr picture
         }
         flickrOsmTag = URLEncoder.encode(flickrOsmTag, UTF_8);
 
@@ -448,9 +451,7 @@ public class PhotoActivity extends AppCompatActivity {
             }
         }
 
-        if (flickrAddTagClient == null) {
-            flickrAddTagClient = FlickrPhotoUtils.getAdapter(oauthParams).create(FlickrAddTagClient.class);
-        }
+        flickrAddTagClient = FlickrPhotoUtils.getAdapter(oauthParams).create(FlickrAddTagClient.class);
 
         flickrAddTagClient.addTags(
                 new TypedString("method=flickr.photos.addTags&photo_id=" + photoId + "&tags=" + flickrOsmTag),
@@ -470,18 +471,8 @@ public class PhotoActivity extends AppCompatActivity {
                     @Override
                     public void failure(RetrofitError error) {
                         error.printStackTrace();
-
-                        if (nbTry < 10) {
-                            nbTry++;
-                            try {
-                                setPhotoTag(photoId);
-                            } catch (UnsupportedEncodingException e) {
-                            }
-                        } else {
-                            nbTry = 0;
-                            Toast.makeText(PhotoActivity.this, "Erreur lors de l'association au POI", Toast.LENGTH_LONG).show();
-                            progressDialog.dismiss();
-                        }
+                        Toast.makeText(PhotoActivity.this, "Erreur lors de l'association au POI", Toast.LENGTH_LONG).show();
+                        progressDialog.dismiss();
                     }
                 }
         );

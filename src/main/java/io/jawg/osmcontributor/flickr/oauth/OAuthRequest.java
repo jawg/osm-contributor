@@ -58,7 +58,7 @@ public class OAuthRequest {
     /*----------------CODE---------------------*/
     /*=========================================*/
     public void initParam(Map<String, String> params) {
-        this.params.clear();
+        this.params = new TreeMap<>();
         this.params.put("oauth_consumer_key", apiKey);
         for (Map.Entry<String, String> param : params.entrySet()) {
             this.params.put(param.getKey(), param.getValue());
