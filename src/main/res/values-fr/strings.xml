@@ -223,6 +223,12 @@
   <!--Android 6.0 dialog messages-->
   <string name="permissions_title">Permissions nécessaires</string>
   <string name="permissions_information">L\'accès à la localisation et en écriture au téléphone sont nécessaires pour gérer la carte et la base de données. Nous ne récupérons aucunes données personnelles sur votre téléphone. En refusant ces deux permissions, l\'application ne peut fonctionner correctement.</string>
+  <!-- Pictures -->
+  <string name="picture_sent_failure">Erreur lors de l\'envoi de la photo, réessayer</string>
+  <string name="flickr_communication_failure">La communication avec Flickr a échoué, réessayer</string>
+  <string name="picture_sent_success">Votre photo a été envoyée. Elle s\'affichera dans quelques minutes</string>
+  <string name="poi_association_failure">Erreur lors de l\'association au POI</string>
+
   <string name="malformated_tag">La valeur de ce tag ne respecte pas les conventions OpenStreetMap</string>
   <string name="malformated_value">Valeur actuelle :</string>
   <string name="flickr_title">Compte Flickr requis</string>

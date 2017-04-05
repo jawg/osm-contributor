@@ -85,8 +85,10 @@ public class OAuthRequest {
         for (Map.Entry<String, String> param: params.entrySet()) {
             url.append(param.getKey()).append("=").append(param.getValue()).append("&");
         }
-        if (url.lastIndexOf("&") >= 0) {
-            url.deleteCharAt(url.lastIndexOf("&"));
+
+        int lastIndexEsp = url.lastIndexOf("&");
+        if (lastIndexEsp >= 0) {
+            url.deleteCharAt(lastIndexEsp);
         }
         return url.toString();
     }
