@@ -34,6 +34,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
@@ -107,11 +108,17 @@ public class PhotoActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA = 200;
 
-    private FlickrPhotoClient flickrPhotoClient;
+    private static final int MAX_RETRY_UPLOAD = 5;
 
-    private FlickrUploadClient flickrUploadClient;
+    private static final String PARAM_OAUTH_PREFIX = "oauth_";
 
-    private FlickrAddTagClient flickrAddTagClient;
+    private static final String FLICKR_API_SERVICES = "https://api.flickr.com/services/rest";
+
+    private static final String FLICKR_API_UPLOAD = "https://up.flickr.com/services/upload";
+
+    private static final String FLICKR_DEFAULT_TAG = "openstreetmap";
+
+    private static final String FLICKR_METHOD_ADDTAGS = "flickr.photos.addTags";
 
     /*=========================================*/
     /*------------INJECTIONS-------------------*/
@@ -155,6 +162,12 @@ public class PhotoActivity extends AppCompatActivity {
     private GetFlickrPhotos asyncGetPhotos;
 
     private OsmTemplateApplication application;
+
+    private FlickrPhotoClient flickrPhotoClient;
+
+    private FlickrUploadClient flickrUploadClient;
+
+    private FlickrAddTagClient flickrAddTagClient;
 
     private FlickrOAuth flickrOAuth;
 
@@ -316,6 +329,7 @@ public class PhotoActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
+            flickrUploadClient = null;
             uploadPhoto();
         }
     }
@@ -351,7 +365,7 @@ public class PhotoActivity extends AppCompatActivity {
             oAuthRequest.setOAuthTokenSecret(configManager.getFlickrTokenSecret());
             flickrOAuth.setOAuthRequest(oAuthRequest);
         }
-        oAuthRequest.setRequestUrl("https://up.flickr.com/services/upload");
+        oAuthRequest.setRequestUrl(FLICKR_API_UPLOAD);
         oAuthRequest.initParam(OAuthParams.getOAuthParams().put(OAuthParams.OAUTH_TOKEN, oAuthRequest.getOAuthToken()).toMap());
         oAuthRequest.signRequest(Verb.POST);
 
@@ -368,13 +382,13 @@ public class PhotoActivity extends AppCompatActivity {
 
             @Override
             public void failure(RetrofitError error) {
-                error.printStackTrace();
-                if (nbTry < 5) {
+                Log.e(TAG, error.getBody().toString());
+                if (nbTry < MAX_RETRY_UPLOAD) {
                     nbTry++;
                     uploadPhoto();
                 } else {
                     nbTry = 0;
-                    Toast.makeText(PhotoActivity.this, "La communication avec Flickr a échoué, réessayer", Toast.LENGTH_LONG).show();
+                    Toast.makeText(PhotoActivity.this, R.string.flickr_communication_failure, Toast.LENGTH_LONG).show();
                     progressDialog.dismiss();
                 }
             }
@@ -386,7 +400,7 @@ public class PhotoActivity extends AppCompatActivity {
             flickrPhotoClient = FlickrPhotoUtils.getAdapter().create(FlickrPhotoClient.class);
         }
         OAuthRequest oauthRequest = new OAuthRequest(configManager.getFlickrApiKey(), configManager.getFlickrApiKeySecret());
-        oauthRequest.setRequestUrl("https://api.flickr.com/services/rest");
+        oauthRequest.setRequestUrl(FLICKR_API_SERVICES);
         oauthRequest.setOAuthToken(configManager.getFlickrToken());
         oauthRequest.setOAuthTokenSecret(configManager.getFlickrTokenSecret());
         oauthRequest.initParam(OAuthParams.getOAuthParams()
@@ -402,12 +416,13 @@ public class PhotoActivity extends AppCompatActivity {
                 try {
                     setPhotoTag(photoId);
                 } catch (UnsupportedEncodingException e) {
+                    failure(null);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Toast.makeText(PhotoActivity.this, "Erreur lors de l'envoi de la photo, réessayer", Toast.LENGTH_LONG).show();
+                Toast.makeText(PhotoActivity.this, R.string.picture_sent_failure, Toast.LENGTH_LONG).show();
                 progressDialog.dismiss();
             }
         });
@@ -416,15 +431,18 @@ public class PhotoActivity extends AppCompatActivity {
     private void setPhotoTag(final String photoId) throws UnsupportedEncodingException {
         //Create the machine tag for Flickr to associate picture to this Poi
         Poi currentPoi = application.getOsmTemplateComponent().getPoiManager().queryForId(poiId);
-        String flickrOsmTag = "openstreetmap";
+        StringBuilder flickrOsmTagBuilder = new StringBuilder(FLICKR_DEFAULT_TAG);
         if (currentPoi.getBackendId() != null && currentPoi.getBackendId().length() > 0) {
-            flickrOsmTag += ",osm:" + ((currentPoi.getWay()) ? "way" : "node") + "=" + currentPoi.getBackendId() + "";
-        }
-        else {
+            flickrOsmTagBuilder.append(",osm:");
+            flickrOsmTagBuilder.append((currentPoi.getWay()) ? "way" : "node");
+            flickrOsmTagBuilder.append("=");
+            flickrOsmTagBuilder.append(currentPoi.getBackendId());
+        } else {
             //TODO Handle pictures added on new POIs which haven't an OSM ID yet
             //Such POIs might be sent to OSM first, and when an ID is defined, update the Flickr picture
         }
-        flickrOsmTag = URLEncoder.encode(flickrOsmTag, UTF_8);
+
+        String flickrOsmTag = URLEncoder.encode(flickrOsmTagBuilder.toString(), UTF_8);
 
         OAuthRequest oauthRequest = flickrOAuth.getOAuthRequest();
         if (oauthRequest == null) {
@@ -434,10 +452,10 @@ public class PhotoActivity extends AppCompatActivity {
             flickrOAuth.setOAuthRequest(oauthRequest);
         }
 
-        oauthRequest.setRequestUrl("https://api.flickr.com/services/rest");
+        oauthRequest.setRequestUrl(FLICKR_API_SERVICES);
         oauthRequest.initParam(OAuthParams.getOAuthParams()
                 .put(OAuthParams.OAUTH_TOKEN, oauthRequest.getOAuthToken())
-                .put("method", "flickr.photos.addTags")
+                .put("method", FLICKR_METHOD_ADDTAGS)
                 .put("photo_id", photoId)
                 .put("tags", flickrOsmTag).toMap());
 
@@ -446,7 +464,7 @@ public class PhotoActivity extends AppCompatActivity {
         //Filter params for Authorization header
         Map<String, String> oauthParams = new TreeMap<String, String>();
         for (Map.Entry<String, String> entry : oauthRequest.getParams().entrySet()) {
-            if (entry.getKey().startsWith("oauth_")) {
+            if (entry.getKey().startsWith(PARAM_OAUTH_PREFIX)) {
                 oauthParams.put(entry.getKey(), entry.getValue());
             }
         }
@@ -454,15 +472,23 @@ public class PhotoActivity extends AppCompatActivity {
         flickrAddTagClient = FlickrPhotoUtils.getAdapter(oauthParams).create(FlickrAddTagClient.class);
 
         flickrAddTagClient.addTags(
-                new TypedString("method=flickr.photos.addTags&photo_id=" + photoId + "&tags=" + flickrOsmTag),
+                new TypedString(
+                        new StringBuilder("method=")
+                                .append(FLICKR_METHOD_ADDTAGS)
+                                .append("&photo_id=")
+                                .append(photoId)
+                                .append("&tags=")
+                                .append(flickrOsmTag)
+                                .toString()
+                ),
                 new Callback<String>() {
                     @Override
                     public void success(String s, Response response) {
-                        System.out.println(s);
+                        Log.d(TAG, s);
 
                         progressDialog.dismiss();
                         photoFile.delete();
-                        Toast.makeText(PhotoActivity.this, "Votre photo a été envoyée. Elle s'affichera dans quelques minutes", Toast.LENGTH_LONG).show();
+                        Toast.makeText(PhotoActivity.this, R.string.picture_sent_success, Toast.LENGTH_LONG).show();
                         if (ImageAdapter.getPhotoUrlsCachedThumbs(poiId) == null || ImageAdapter.getPhotoUrlsCachedThumbs(poiId).isEmpty()) {
                             finish();
                         }
@@ -470,9 +496,18 @@ public class PhotoActivity extends AppCompatActivity {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        error.printStackTrace();
-                        Toast.makeText(PhotoActivity.this, "Erreur lors de l'association au POI", Toast.LENGTH_LONG).show();
-                        progressDialog.dismiss();
+                        if (nbTry < MAX_RETRY_UPLOAD) {
+                            nbTry++;
+                            try {
+                                setPhotoTag(photoId);
+                            } catch (UnsupportedEncodingException e) {
+                                failure(null);
+                            }
+                        } else {
+                            nbTry = 0;
+                            Toast.makeText(PhotoActivity.this, R.string.poi_association_failure, Toast.LENGTH_LONG).show();
+                            progressDialog.dismiss();
+                        }
                     }
                 }
         );

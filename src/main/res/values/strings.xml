@@ -285,6 +285,12 @@
         Without this permissions, the application can\'t work correctly.
     </string>
 
+    <!-- Pictures -->
+    <string name="picture_sent_failure">Error occurred when sending picture, please retry</string>
+    <string name="flickr_communication_failure">Can\'t communicate with Flickr, please retry</string>
+    <string name="picture_sent_success">Picture was successfully sent. It will be available in a few minutes</string>
+    <string name="poi_association_failure">Can\'t associate picture to POI</string>
+
     <string name="malformated_tag">The value of this tag doesn\'t respect OSM conventions</string>
     <string name="malformated_value">Current value: </string>
 

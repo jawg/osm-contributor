@@ -18,6 +18,8 @@
  */
 package io.jawg.osmcontributor.flickr.util;
 
+import android.util.Log;
+
 import com.flickr4java.flickr.util.Base64;
 import com.github.scribejava.core.model.Verb;
 
@@ -29,6 +31,8 @@ import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import io.jawg.osmcontributor.BuildConfig;
 
 
 public class FlickrSecurityUtils {
@@ -44,6 +48,8 @@ public class FlickrSecurityUtils {
 
     private static final String UTF_8 = "UTF-8";
 
+    private static final String TAG = "FlickrSecurityUtils";
+
     /*=========================================*/
     /*------------UTILS METHOD-----------------*/
     /*=========================================*/
@@ -58,6 +64,9 @@ public class FlickrSecurityUtils {
             Mac mac = Mac.getInstance(HMAC_SHA1);
             mac.init(new SecretKeySpec(key.getBytes(), HMAC_SHA1));
             byte[] digest = mac.doFinal(convertedRequestUrl.getBytes());
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, convertedRequestUrl);
+            }
             return new String(Base64.encode(digest));
         } catch (NoSuchAlgorithmException | InvalidKeyException exception) {
             return null;
@@ -85,7 +94,8 @@ public class FlickrSecurityUtils {
                 paramsBuilder.append(param.getKey()).append(EQUAL).append(param.getValue()).append(SEPARATOR);
             }
 
-            String urlToEncode = (paramsBuilder.lastIndexOf(SEPARATOR) >= 0) ? paramsBuilder.deleteCharAt(paramsBuilder.lastIndexOf(SEPARATOR)).toString() : paramsBuilder.toString();
+            int lastIndexSep = paramsBuilder.lastIndexOf(SEPARATOR);
+            String urlToEncode = (lastIndexSep >= 0) ? paramsBuilder.deleteCharAt(lastIndexSep).toString() : paramsBuilder.toString();
             String paramsEncoded = URLEncoder.encode(urlToEncode, UTF_8);
             return urlBuilder.append(paramsEncoded).toString();
         } catch (UnsupportedEncodingException e) {
