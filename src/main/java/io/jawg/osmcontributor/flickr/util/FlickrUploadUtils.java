@@ -27,10 +27,12 @@ import java.util.Map;
 
 import javax.net.ssl.SSLSocketFactory;
 
+import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.flickr.oauth.NoSSLv3SocketFactory;
 import io.jawg.osmcontributor.rest.utils.StringConverter;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.android.AndroidLog;
 import retrofit.client.OkClient;
 
 public class FlickrUploadUtils {
@@ -51,7 +53,9 @@ public class FlickrUploadUtils {
                             public void intercept(RequestFacade request) {
                                 request.addHeader("Authorization", FlickrSecurityUtils.getAuthorizationHeader(oAuthParams));
                             }
-                        }).build();
+                        })
+                        .setLogLevel((BuildConfig.DEBUG) ? RestAdapter.LogLevel.HEADERS_AND_ARGS : RestAdapter.LogLevel.BASIC).setLog(new AndroidLog("---------------------->"))
+                        .build();
             } catch (MalformedURLException e) {
 
             } catch (IOException e) {

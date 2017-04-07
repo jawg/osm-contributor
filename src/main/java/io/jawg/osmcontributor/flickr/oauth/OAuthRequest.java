@@ -58,7 +58,7 @@ public class OAuthRequest {
     /*----------------CODE---------------------*/
     /*=========================================*/
     public void initParam(Map<String, String> params) {
-        this.params.clear();
+        this.params = new TreeMap<>();
         this.params.put("oauth_consumer_key", apiKey);
         for (Map.Entry<String, String> param : params.entrySet()) {
             this.params.put(param.getKey(), param.getValue());
@@ -85,7 +85,11 @@ public class OAuthRequest {
         for (Map.Entry<String, String> param: params.entrySet()) {
             url.append(param.getKey()).append("=").append(param.getValue()).append("&");
         }
-        url.deleteCharAt(url.lastIndexOf("&"));
+
+        int lastIndexEsp = url.lastIndexOf("&");
+        if (lastIndexEsp >= 0) {
+            url.deleteCharAt(lastIndexEsp);
+        }
         return url.toString();
     }
 

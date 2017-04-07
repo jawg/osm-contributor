@@ -23,16 +23,21 @@ import com.squareup.okhttp.OkHttpClient;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 import javax.net.ssl.SSLSocketFactory;
 
+import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.flickr.oauth.NoSSLv3SocketFactory;
 import io.jawg.osmcontributor.rest.utils.StringConverter;
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.android.AndroidLog;
 import retrofit.client.OkClient;
 
 public class FlickrPhotoUtils {
+
+    private static final String FLICKR_API_URL = "https://api.flickr.com/services";
 
     public static RestAdapter adapter;
 
@@ -40,13 +45,13 @@ public class FlickrPhotoUtils {
         if (adapter == null) {
             OkHttpClient okHttpClient = new OkHttpClient();
             try {
-                SSLSocketFactory NoSSLv3Factory = new NoSSLv3SocketFactory(new URL("https://api.flickr.com/services/rest"));
+                SSLSocketFactory NoSSLv3Factory = new NoSSLv3SocketFactory(new URL(FLICKR_API_URL));
                 okHttpClient.setSslSocketFactory(NoSSLv3Factory);
                 adapter = new RestAdapter.Builder()
                         .setConverter(new StringConverter())
-                        .setEndpoint("https://api.flickr.com/services")
+                        .setEndpoint(FLICKR_API_URL)
                         .setClient(new OkClient(okHttpClient))
-                        .setLogLevel(RestAdapter.LogLevel.FULL).setLog(new AndroidLog("---------------------->"))
+                        .setLogLevel((BuildConfig.DEBUG) ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.BASIC).setLog(new AndroidLog("---------------------->"))
                         .build();
             } catch (MalformedURLException e) {
 
@@ -55,5 +60,30 @@ public class FlickrPhotoUtils {
             }
         }
         return adapter;
+    }
+
+    public static RestAdapter getAdapter(final Map<String, String> oAuthParams) {
+        RestAdapter adapterOauth = null;
+        OkHttpClient okHttpClient = new OkHttpClient();
+        try {
+            SSLSocketFactory NoSSLv3Factory = new NoSSLv3SocketFactory(new URL(FLICKR_API_URL));
+            okHttpClient.setSslSocketFactory(NoSSLv3Factory);
+            adapterOauth = new RestAdapter.Builder()
+                    .setConverter(new StringConverter())
+                    .setEndpoint(FLICKR_API_URL)
+                    .setClient(new OkClient(okHttpClient)).setRequestInterceptor(new RequestInterceptor() {
+                        @Override
+                        public void intercept(RequestFacade request) {
+                            request.addHeader("Authorization", FlickrSecurityUtils.getAuthorizationHeader(oAuthParams));
+                        }
+                    })
+                    .setLogLevel((BuildConfig.DEBUG) ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.BASIC).setLog(new AndroidLog("---------------------->"))
+                    .build();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return adapterOauth;
     }
 }
