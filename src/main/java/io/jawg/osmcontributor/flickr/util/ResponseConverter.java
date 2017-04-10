@@ -70,4 +70,14 @@ public class ResponseConverter {
         String model = "<photoid>";
         return response.substring(response.indexOf(model) + model.length(), response.indexOf("</photoid>"));
     }
+
+    /**
+     * Get image URL from Flickr response
+     * @param response response from request
+     * @return photo URL as string
+     */
+    public static String convertImageUrl(String response) {
+        String model = "<url type=\"photopage\">";
+        return response.substring(response.indexOf(model) + model.length(), response.indexOf("</url>")).trim();
+    }
 }
