@@ -59,6 +59,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -84,7 +85,9 @@ import io.jawg.osmcontributor.flickr.util.OAuthParams;
 import io.jawg.osmcontributor.flickr.util.ResponseConverter;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.ui.adapters.ImageAdapter;
+import io.jawg.osmcontributor.ui.events.edition.PleaseApplyPoiChanges;
 import io.jawg.osmcontributor.utils.ConfigManager;
+import io.jawg.osmcontributor.utils.edition.PoiChanges;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -120,6 +123,8 @@ public class PhotoActivity extends AppCompatActivity {
 
     private static final String FLICKR_METHOD_ADDTAGS = "flickr.photos.addTags";
 
+    private static final String OSM_FLICKR_TAG = "flickr";
+
     /*=========================================*/
     /*------------INJECTIONS-------------------*/
     /*=========================================*/
@@ -128,6 +133,9 @@ public class PhotoActivity extends AppCompatActivity {
 
     @Inject
     ConfigManager configManager;
+
+    @Inject
+    EventBus eventBus;
 
     /*=========================================*/
     /*---------------VIEWS---------------------*/
@@ -377,7 +385,7 @@ public class PhotoActivity extends AppCompatActivity {
         flickrUploadClient.upload(typedFile, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
-                onUploadFinishedEVent(ResponseConverter.convertImageId(s));
+                onUploadFinishedEvent(ResponseConverter.convertImageId(s));
             }
 
             @Override
@@ -395,7 +403,36 @@ public class PhotoActivity extends AppCompatActivity {
         });
     }
 
-    public void onUploadFinishedEVent(final String photoId) {
+    public void onUploadFinishedEvent(final String photoId) {
+        //Retrieve picture URL
+        if (flickrPhotoClient == null) {
+            flickrPhotoClient = FlickrPhotoUtils.getAdapter().create(FlickrPhotoClient.class);
+        }
+        OAuthRequest oauthRequest = new OAuthRequest(configManager.getFlickrApiKey(), configManager.getFlickrApiKeySecret());
+        oauthRequest.setRequestUrl(FLICKR_API_SERVICES);
+        oauthRequest.setOAuthToken(configManager.getFlickrToken());
+        oauthRequest.setOAuthTokenSecret(configManager.getFlickrTokenSecret());
+        oauthRequest.initParam(OAuthParams.getOAuthParams()
+                .put(OAuthParams.OAUTH_TOKEN, configManager.getFlickrToken())
+                .put("method", "flickr.photos.getInfo")
+                .put("photo_id", photoId).toMap());
+        oauthRequest.signRequest(Verb.GET);
+        flickrPhotoClient.setProperties(oauthRequest.getParams(), new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+                defineImageOnPoi(ResponseConverter.convertImageUrl(s));
+                setPhotoLocation(photoId);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Toast.makeText(PhotoActivity.this, R.string.flickr_communication_failure, Toast.LENGTH_LONG).show();
+                progressDialog.dismiss();
+            }
+        });
+    }
+
+    private void setPhotoLocation(final String photoId) {
         if (flickrPhotoClient == null) {
             flickrPhotoClient = FlickrPhotoUtils.getAdapter().create(FlickrPhotoClient.class);
         }
@@ -511,6 +548,32 @@ public class PhotoActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    /**
+     * Associate the newly uploaded flickr picture to the current Poi
+     * @param imageUrl The complete URL to access this picture
+     */
+    private void defineImageOnPoi(String imageUrl) {
+        if (imageUrl.length() > 0) {
+            Poi currentPoi = application.getOsmTemplateComponent().getPoiManager().queryForId(poiId);
+            Map<String, String> currentPoiTagsMap = new HashMap<String, String>(currentPoi.getTagsMap());
+
+            if (currentPoiTagsMap.containsKey(OSM_FLICKR_TAG)) {
+                StringBuilder newFlickrTag = new StringBuilder(currentPoiTagsMap.get(OSM_FLICKR_TAG).trim())
+                        .append(";")
+                        .append(imageUrl);
+                currentPoiTagsMap.put(OSM_FLICKR_TAG, newFlickrTag.toString());
+            } else {
+                currentPoiTagsMap.put(OSM_FLICKR_TAG, imageUrl);
+            }
+
+            PoiChanges currentPoiChanges = new PoiChanges(poiId);
+            currentPoiChanges.setTagsMap(currentPoiTagsMap);
+            eventBus.post(new PleaseApplyPoiChanges(currentPoiChanges));
+        } else {
+            Log.e(TAG, "Invalid Flickr URL: " + imageUrl);
+        }
     }
 
     /*=========================================*/
