@@ -30,9 +30,11 @@ import com.flickr4java.flickr.photos.Size;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.jawg.osmcontributor.flickr.event.PhotosFoundEvent;
+import io.jawg.osmcontributor.model.entities.Poi;
 
 /**
  * Get a list of photos from FLickr by latitude/longitude for openstreetmap tag.
@@ -62,21 +64,34 @@ public class GetFlickrPhotos extends AsyncTask<Void, Void, List<List<Size>>> {
 
     private Integer nbPage = 1;
 
-    public GetFlickrPhotos(Double longitude, Double latitude, Flickr flickr, Integer limitPerPage, Integer nbPage) {
+    private Poi featurePoi;
+
+    public GetFlickrPhotos(Double longitude, Double latitude, Flickr flickr, Integer limitPerPage, Integer nbPage, Poi featurePoi) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.flickr = flickr;
         this.limitPerPage = limitPerPage;
         this.nbPage = nbPage;
+        this.featurePoi = featurePoi;
     }
 
     @Override
     protected List<List<Size>> doInBackground(Void... params) {
+        //Create search tags list
+        ArrayList<String> searchTags = new ArrayList<String>(Arrays.asList(TAGS));
+        searchTags.add(
+                new StringBuilder("osm:")
+                        .append((featurePoi.getWay()) ? "way" : "node")
+                        .append("=")
+                        .append(featurePoi.getBackendId())
+                        .toString()
+        );
+
         SearchParameters parameters = new SearchParameters();
         parameters.setLatitude(String.valueOf(latitude));
         parameters.setLongitude(String.valueOf(longitude));
         parameters.setRadius(RADIUS);
-        parameters.setTags(TAGS);
+        parameters.setTags(searchTags.toArray(new String[searchTags.size()]));
         parameters.setSort(SearchParameters.INTERESTINGNESS_DESC);
         try {
             PhotoList<Photo> photos = flickr.getPhotosInterface().search(parameters, limitPerPage, nbPage);
@@ -93,6 +108,6 @@ public class GetFlickrPhotos extends AsyncTask<Void, Void, List<List<Size>>> {
 
     @Override
     protected void onPostExecute(List<List<Size>> photos) {
-        EventBus.getDefault().post(new PhotosFoundEvent(photos));
+        EventBus.getDefault().post(new PhotosFoundEvent(photos, featurePoi.getId()));
     }
 }
