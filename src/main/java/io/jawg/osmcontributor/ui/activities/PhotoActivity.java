@@ -161,7 +161,7 @@ public class PhotoActivity extends AppCompatActivity {
     /*=========================================*/
     /*------------ATTRIBUTES-------------------*/
     /*=========================================*/
-    private Map<Long, ImageAdapter> imageAdapters;
+    private ImageAdapter imageAdapter;
 
     private int lastVisiblePos;
 
@@ -217,12 +217,19 @@ public class PhotoActivity extends AppCompatActivity {
         // Init parameters.
         latitude = getIntent().getDoubleExtra("latitude", 0);
         longitude = getIntent().getDoubleExtra("longitude", 0);
-        imageAdapters = new HashMap<Long, ImageAdapter>();
 
         // Init listener and view
         initScrollListener();
         initOnClickItemListener();
         initView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (asyncGetPhotos != null) {
+            asyncGetPhotos.cancel(true);
+        }
     }
 
     /*=========================================*/
@@ -296,10 +303,6 @@ public class PhotoActivity extends AppCompatActivity {
 
     private void initView() {
         poiId = getIntent().getLongExtra("poiId", 0);
-        if (!imageAdapters.containsKey(poiId)) {
-            imageAdapters.put(poiId, new ImageAdapter(this, poiId));
-        }
-        gridPhotos.setAdapter(imageAdapters.get(poiId));
 
         if (ImageAdapter.getPhotoUrlsCachedThumbs(poiId) == null || ImageAdapter.getPhotoUrlsCachedThumbs(poiId).isEmpty()) {
             gridPhotos.setVisibility(View.INVISIBLE);
@@ -361,9 +364,12 @@ public class PhotoActivity extends AppCompatActivity {
         if (photos != null && !photos.isEmpty() && photosFoundEvent.getPoiId().equals(poiId)) {
             noPhotos.setVisibility(View.INVISIBLE);
             gridPhotos.setVisibility(View.VISIBLE);
+            imageAdapter = new ImageAdapter(this, poiId);
+            gridPhotos.setAdapter(imageAdapter);
+
             for (List<Size> size : photos) {
-                imageAdapters.get(poiId).addPhoto(size.get(Size.SQUARE).getSource(), poiId, Size.SQUARE);
-                imageAdapters.get(poiId).addPhoto(size.get(Size.ORIGINAL).getSource(), poiId, Size.ORIGINAL);
+                imageAdapter.addPhoto(size.get(Size.SQUARE).getSource(), poiId, Size.SQUARE);
+                imageAdapter.addPhoto(size.get(Size.ORIGINAL).getSource(), poiId, Size.ORIGINAL);
             }
         } else {
             noPhotos.setVisibility(View.VISIBLE);

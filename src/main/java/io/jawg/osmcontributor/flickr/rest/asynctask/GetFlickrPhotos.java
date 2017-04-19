@@ -49,7 +49,8 @@ public class GetFlickrPhotos extends AsyncTask<Void, Void, List<List<Size>>> {
      */
     private static final Integer RADIUS = 1;
 
-    private static final String[] TAGS = {"openstreetmap"};
+    private static final String[] TAGS_ARRAY = { "openstreetmap" };
+    private static final List<String> TAGS = Arrays.asList(TAGS_ARRAY);
 
     /*=========================================*/
     /*------------ATTRIBUTES-------------------*/
@@ -78,7 +79,7 @@ public class GetFlickrPhotos extends AsyncTask<Void, Void, List<List<Size>>> {
     @Override
     protected List<List<Size>> doInBackground(Void... params) {
         //Create search tags list
-        ArrayList<String> searchTags = new ArrayList<String>(Arrays.asList(TAGS));
+        ArrayList<String> searchTags = new ArrayList<String>(TAGS);
         searchTags.add(
                 new StringBuilder("osm:")
                         .append((featurePoi.getWay()) ? "way" : "node")
@@ -93,15 +94,18 @@ public class GetFlickrPhotos extends AsyncTask<Void, Void, List<List<Size>>> {
         parameters.setRadius(RADIUS);
         parameters.setTags(searchTags.toArray(new String[searchTags.size()]));
         parameters.setSort(SearchParameters.INTERESTINGNESS_DESC);
-        try {
-            PhotoList<Photo> photos = flickr.getPhotosInterface().search(parameters, limitPerPage, nbPage);
-            List<List<Size>> photosList = new ArrayList<>();
-            for (Photo photo : photos) {
-                photosList.add((List<Size>) flickr.getPhotosInterface().getSizes(photo.getId()));
+
+        if (!isCancelled()) {
+            try {
+                PhotoList<Photo> photos = flickr.getPhotosInterface().search(parameters, limitPerPage, nbPage);
+                List<List<Size>> photosList = new ArrayList<>();
+                for (Photo photo : photos) {
+                    photosList.add((List<Size>) flickr.getPhotosInterface().getSizes(photo.getId()));
+                }
+                return photosList;
+            } catch (FlickrException e) {
+                e.printStackTrace();
             }
-            return photosList;
-        } catch (FlickrException e) {
-            e.printStackTrace();
         }
         return null;
     }
