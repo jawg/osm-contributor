@@ -12,7 +12,7 @@
     "en": "The only profile you need to contribute your favourite bus amenities.",
     "fr": "Le seul profil dont vous aurez besoin pour contribuer des données utiles liées aux arrêts de bus."
   },
-  "image": "https://wiki.openstreetmap.org/w/images/thumb/c/ca/Citadis402Grenoble_citeinternationale.jpg/480px-Citadis402Grenoble_citeinternationale.jpg",
+  "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Abrit_bus_Alto.jpg/640px-Abrit_bus_Alto.jpg",
   "groups": [
     {
       "name": {
@@ -20,12 +20,12 @@
         "en": "Bus group",
         "fr": "Groupe bus"
       },
-      "icon": "http://static.directmatin.fr/sites/default/files/velib_frein_arriere.jpg",
-      "url": "https://wiki.openstreetmap.org/wiki/Bicycle",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/King_Long_KLQ_6118GQ_bus_in_Damascus.JPG/1024px-King_Long_KLQ_6118GQ_bus_in_Damascus.JPG",
+      "url": "https://wiki.openstreetmap.org/wiki/Buses",
       "items": [
         {
           "name": "highway=bus_stop",
-          "url": "https://wiki.openstreetmap.org/wiki/Tag:amenity=bicycle_parking",
+          "url": "https://wiki.openstreetmap.org/wiki/Tag:highway=bus_stop",
           "label": {
             "default": "Bus stop",
             "en": "Bus stop",
@@ -54,6 +54,11 @@
               "type": "CONSTANT"
             },
             {
+              "key": "public_transport",
+              "value": "platform",
+              "type": "CONSTANT"
+            },
+            {
               "key": "name",
               "type": "TEXT"
             },
@@ -66,6 +71,33 @@
                     "default": "Yes",
                     "fr": "Oui",
                     "en": "Yes"
+                  }
+                },
+                {
+                  "no": {
+                    "default": "No",
+                    "fr": "Non",
+                    "en": "No"
+                  }
+                }
+              ]
+            },
+            {
+              "key": "wheelchair",
+              "type": "SINGLE_CHOICE",
+              "values": [
+                {
+                  "yes": {
+                    "default": "Yes",
+                    "fr": "Oui",
+                    "en": "Yes"
+                  }
+                },
+                {
+                  "limited": {
+                    "default": "Limited",
+                    "fr": "Partiel",
+                    "en": "Limited"
                   }
                 },
                 {
@@ -96,6 +128,10 @@
                   }
                 }
               ]
+            },
+            {
+              "key": "route_ref",
+              "type": "TEXT"
             }
           ]
         }
