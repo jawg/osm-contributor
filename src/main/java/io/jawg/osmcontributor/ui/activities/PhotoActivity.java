@@ -194,7 +194,7 @@ public class PhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
         ButterKnife.bind(this);
-        EventBus.getDefault().register(this);
+
         application = (OsmTemplateApplication) getApplication();
         flickrOAuth = new FlickrOAuth();
         application.getOsmTemplateComponent().inject(this);
@@ -221,12 +221,19 @@ public class PhotoActivity extends AppCompatActivity {
         // Init listener and view
         initScrollListener();
         initOnClickItemListener();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
         initView();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
         if (asyncGetPhotos != null) {
             asyncGetPhotos.cancel(true);
         }
