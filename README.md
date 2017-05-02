@@ -75,7 +75,7 @@ See the [CHANGELOG.md](/CHANGELOG.md) file.
 
 ### Contributors
 This app is actively developed by:
-
+ + [panieravide](https://github.com/panieravide)
  + [fredszaq](https://github.com/fredszaq)
  + [sdesprez](https://github.com/sdesprez)
  + [nicolasfavier](https://github.com/nicolasfavier)
