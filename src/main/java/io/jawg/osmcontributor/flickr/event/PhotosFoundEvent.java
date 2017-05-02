@@ -26,11 +26,18 @@ public class PhotosFoundEvent {
 
     private List<List<Size>> photos;
 
-    public PhotosFoundEvent(List<List<Size>> photos) {
+    private Long poiId;
+
+    public PhotosFoundEvent(List<List<Size>> photos, Long poiId) {
         this.photos = photos;
+        this.poiId = poiId;
     }
 
     public List<List<Size>> getPhotos() {
         return photos;
+    }
+
+    public Long getPoiId() {
+        return poiId;
     }
 }

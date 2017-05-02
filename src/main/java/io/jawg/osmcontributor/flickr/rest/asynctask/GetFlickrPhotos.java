@@ -30,9 +30,11 @@ import com.flickr4java.flickr.photos.Size;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.jawg.osmcontributor.flickr.event.PhotosFoundEvent;
+import io.jawg.osmcontributor.model.entities.Poi;
 
 /**
  * Get a list of photos from FLickr by latitude/longitude for openstreetmap tag.
@@ -47,7 +49,8 @@ public class GetFlickrPhotos extends AsyncTask<Void, Void, List<List<Size>>> {
      */
     private static final Integer RADIUS = 1;
 
-    private static final String[] TAGS = {"openstreetmap"};
+    private static final String[] TAGS_ARRAY = { "openstreetmap" };
+    private static final List<String> TAGS = Arrays.asList(TAGS_ARRAY);
 
     /*=========================================*/
     /*------------ATTRIBUTES-------------------*/
@@ -62,37 +65,53 @@ public class GetFlickrPhotos extends AsyncTask<Void, Void, List<List<Size>>> {
 
     private Integer nbPage = 1;
 
-    public GetFlickrPhotos(Double longitude, Double latitude, Flickr flickr, Integer limitPerPage, Integer nbPage) {
+    private Poi featurePoi;
+
+    public GetFlickrPhotos(Double longitude, Double latitude, Flickr flickr, Integer limitPerPage, Integer nbPage, Poi featurePoi) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.flickr = flickr;
         this.limitPerPage = limitPerPage;
         this.nbPage = nbPage;
+        this.featurePoi = featurePoi;
     }
 
     @Override
     protected List<List<Size>> doInBackground(Void... params) {
+        //Create search tags list
+        ArrayList<String> searchTags = new ArrayList<String>(TAGS);
+        searchTags.add(
+                new StringBuilder("osm:")
+                        .append((featurePoi.getWay()) ? "way" : "node")
+                        .append("=")
+                        .append(featurePoi.getBackendId())
+                        .toString()
+        );
+
         SearchParameters parameters = new SearchParameters();
         parameters.setLatitude(String.valueOf(latitude));
         parameters.setLongitude(String.valueOf(longitude));
         parameters.setRadius(RADIUS);
-        parameters.setTags(TAGS);
+        parameters.setTags(searchTags.toArray(new String[searchTags.size()]));
         parameters.setSort(SearchParameters.INTERESTINGNESS_DESC);
-        try {
-            PhotoList<Photo> photos = flickr.getPhotosInterface().search(parameters, limitPerPage, nbPage);
-            List<List<Size>> photosList = new ArrayList<>();
-            for (Photo photo : photos) {
-                photosList.add((List<Size>) flickr.getPhotosInterface().getSizes(photo.getId()));
+
+        if (!isCancelled()) {
+            try {
+                PhotoList<Photo> photos = flickr.getPhotosInterface().search(parameters, limitPerPage, nbPage);
+                List<List<Size>> photosList = new ArrayList<>();
+                for (Photo photo : photos) {
+                    photosList.add((List<Size>) flickr.getPhotosInterface().getSizes(photo.getId()));
+                }
+                return photosList;
+            } catch (FlickrException e) {
+                e.printStackTrace();
             }
-            return photosList;
-        } catch (FlickrException e) {
-            e.printStackTrace();
         }
         return null;
     }
 
     @Override
     protected void onPostExecute(List<List<Size>> photos) {
-        EventBus.getDefault().post(new PhotosFoundEvent(photos));
+        EventBus.getDefault().post(new PhotosFoundEvent(photos, featurePoi.getId()));
     }
 }

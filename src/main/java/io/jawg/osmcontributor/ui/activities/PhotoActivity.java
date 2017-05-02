@@ -111,7 +111,7 @@ public class PhotoActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA = 200;
 
-    private static final int MAX_RETRY_UPLOAD = 5;
+    private static final int MAX_RETRY_UPLOAD = 3;
 
     private static final String PARAM_OAUTH_PREFIX = "oauth_";
 
@@ -194,7 +194,7 @@ public class PhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
         ButterKnife.bind(this);
-        EventBus.getDefault().register(this);
+
         application = (OsmTemplateApplication) getApplication();
         flickrOAuth = new FlickrOAuth();
         application.getOsmTemplateComponent().inject(this);
@@ -217,14 +217,26 @@ public class PhotoActivity extends AppCompatActivity {
         // Init parameters.
         latitude = getIntent().getDoubleExtra("latitude", 0);
         longitude = getIntent().getDoubleExtra("longitude", 0);
-        poiId = getIntent().getLongExtra("poiId", 0);
-        imageAdapter = new ImageAdapter(this, poiId);
-        gridPhotos.setAdapter(imageAdapter);
 
         // Init listener and view
         initScrollListener();
         initOnClickItemListener();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
         initView();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+        if (asyncGetPhotos != null) {
+            asyncGetPhotos.cancel(true);
+        }
     }
 
     /*=========================================*/
@@ -297,11 +309,15 @@ public class PhotoActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        poiId = getIntent().getLongExtra("poiId", 0);
+
         if (ImageAdapter.getPhotoUrlsCachedThumbs(poiId) == null || ImageAdapter.getPhotoUrlsCachedThumbs(poiId).isEmpty()) {
             gridPhotos.setVisibility(View.INVISIBLE);
             loadingImage.setVisibility(View.VISIBLE);
         }
-        asyncGetPhotos = new GetFlickrPhotos(longitude, latitude, application.getFlickr(), NB_IMAGE_REQUESTED, NB_PAGE_REQUESTED);
+
+        Poi currentPoi = application.getOsmTemplateComponent().getPoiManager().queryForId(poiId);
+        asyncGetPhotos = new GetFlickrPhotos(longitude, latitude, application.getFlickr(), NB_IMAGE_REQUESTED, NB_PAGE_REQUESTED, currentPoi);
         asyncGetPhotos.execute();
     }
 
@@ -352,17 +368,21 @@ public class PhotoActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPhotosFoundEvent(PhotosFoundEvent photosFoundEvent) {
         List<List<Size>> photos = photosFoundEvent.getPhotos();
-        if (photos != null && !photos.isEmpty()) {
+        if (photos != null && !photos.isEmpty() && photosFoundEvent.getPoiId().equals(poiId)) {
             noPhotos.setVisibility(View.INVISIBLE);
+            gridPhotos.setVisibility(View.VISIBLE);
+            imageAdapter = new ImageAdapter(this, poiId);
+            gridPhotos.setAdapter(imageAdapter);
+
             for (List<Size> size : photos) {
                 imageAdapter.addPhoto(size.get(Size.SQUARE).getSource(), poiId, Size.SQUARE);
                 imageAdapter.addPhoto(size.get(Size.ORIGINAL).getSource(), poiId, Size.ORIGINAL);
             }
         } else {
             noPhotos.setVisibility(View.VISIBLE);
+            gridPhotos.setVisibility(View.INVISIBLE);
         }
         loadingImage.setVisibility(View.INVISIBLE);
-        gridPhotos.setVisibility(View.VISIBLE);
     }
 
     private void uploadPhoto() {
