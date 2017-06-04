@@ -118,13 +118,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            buildConfigField "String", "BASE_OSM_URL", '"http://www.openstreetmap.org/api/0.6/"'
+            buildConfigField "String", "BASE_OSM_URL", '"https://www.openstreetmap.org/api/0.6/"'
         }
 
         debug {
             versionNameSuffix ".debug-3"
 
-            buildConfigField "String", "BASE_OSM_URL", '"http://api06.dev.openstreetmap.org/api/0.6/"'
+            buildConfigField "String", "BASE_OSM_URL", '"https://master.apis.dev.openstreetmap.org/api/0.6/"'
         }
     }
 
@@ -263,11 +263,11 @@ dependencies {
 }
 
 // Specify the OSM API url to use when building by adding -PosmUrl=myUrl
-// Default url is the developer API at http://api06.dev.openstreetmap.org/api/0.6
-// The official API url is http://api.openstreetmap.org/api/0.6
+// Default url is the developer API at https://master.apis.dev.openstreetmap.org/api/0.6
+// The official API url is https://api.openstreetmap.org/api/0.6
 def osmUrl() {
     def osmUrl = project.getProperties().get("osmUrl")
-    return osmUrl != null ? '"' + osmUrl + '"' : '"http://www.openstreetmap.org/api/0.6"'
+    return osmUrl != null ? '"' + osmUrl + '"' : '"https://www.openstreetmap.org/api/0.6"'
 }
 
 // Load the properties from the given file

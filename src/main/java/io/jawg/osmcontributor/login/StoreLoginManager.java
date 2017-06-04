@@ -63,7 +63,7 @@ public class StoreLoginManager extends LoginManager {
 
             // OAuth connection
             if (oAuthParams != null) {
-                String requestUrl = "http://www.openstreetmap.org/api/0.6/permissions";
+                String requestUrl = "https://www.openstreetmap.org/api/0.6/permissions";
 
                 OAuthRequest oAuthRequest = new OAuthRequest(oAuthParams.get(CONSUMER_PARAM), oAuthParams.get(CONSUMER_SECRET_PARAM));
                 oAuthRequest.initParam(OAuthParams.getOAuthParams().put(TOKEN_PARAM, oAuthParams.get(TOKEN_PARAM)).toMap());

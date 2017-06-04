@@ -43,7 +43,7 @@ To build the project:
  ```  
  3. Execute the gradle task assembleStoreRelease, you can specify the OSM api url as a parameter:
  ```
- ./gradlew assembleStoreRelease -PosmUrl=http://api.openstreetmap.org/api/0.6
+ ./gradlew assembleStoreRelease -PosmUrl=https://api.openstreetmap.org/api/0.6
  ```  
 
 ### Feedback / Issue tracking
