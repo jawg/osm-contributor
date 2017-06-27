@@ -74,7 +74,7 @@ public class StoreLoginManager extends LoginManager {
                 permissions = osmRestClient.getPermissions(oAuthRequest.getParams());
             } else {
                 // Basic Auth connection
-                String authorization = "Basic " + Base64.encodeToString((login + ":" + password).getBytes(), Base64.NO_WRAP);
+                String authorization = "Basic " + Base64.encodeToString((login.trim() + ":" + password).getBytes(), Base64.NO_WRAP);
                 permissions = osmRestClient.getPermissions(authorization);
             }
 
