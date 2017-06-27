@@ -64,11 +64,12 @@ public abstract class LoginManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onCheckFirstConnectionEvent(CheckFirstConnectionEvent event) {
-        if (checkFirstConnection()) {
-            bus.post(new PleaseOpenLoginDialogEvent());
-        } else {
-            bus.postSticky(new LoginInitializedEvent());
-        }
+        bus.post(new PleaseOpenLoginDialogEvent());
+//        if (checkFirstConnection()) {
+//            bus.post(new PleaseOpenLoginDialogEvent());
+//        } else {
+//            bus.postSticky(new LoginInitializedEvent());
+//        }
     }
 
     /**
