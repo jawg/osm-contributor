@@ -33,6 +33,7 @@ import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.rest.events.GoogleAuthenticatedEvent;
 import io.jawg.osmcontributor.rest.utils.MapParams;
 import io.jawg.osmcontributor.ui.dialogs.WebViewDialogFragment;
+import timber.log.Timber;
 
 /**
  * @author Tommy Buonomo on 25/07/16.
@@ -80,9 +81,10 @@ public class GoogleOAuthManager {
                             "+ ' ' " +
                             "+ OSM.oauth_consumer_secret)");
                 }
-
+                //https://www.openstreetmap.org/user/new?auth_provider=google&auth_uid=115718820124131004058&email=osm.test2017%40gmail.com#
                 if (url.contains(OSM_NEW_USER_URL) && !url.equals(OSM_NEW_USER_URL)) {
                     dialog.startProgressBar();
+                    Timber.i("URL %s ",url);
                     // Skip the inscription page
                     webView.loadUrl("javascript:" +
                             "document.getElementsByName('user[display_name]')[0].value = '"
