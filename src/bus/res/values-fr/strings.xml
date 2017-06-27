@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="poi_creation">Placer l\'arrêt</string>
+    <string name="delete_poi">Supprimer</string>
+    <string name="edit_poi">Editer</string>
+    <string name="duplicate_poi">Dupliquer</string>
+    <string name="no_poi_name">Cet arrêt n\'a pas de nom</string>
+    <string name="delete_poi_title">Suppression de l\'arrêt</string>
+    <string name="delete_poi_confirm_message">Voulez-vous vraiment supprimer cet arrêt?</string>
+</resources>
