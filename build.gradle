@@ -277,25 +277,25 @@ def loadPropertiesFile(String name) {
     return props
 }
 
-checkstyle {
-    configFile project.file('checkstyle.xml')
-    showViolations true
-}
-
-task checkstyle(type: Checkstyle) {
-    source 'src'
-    include '**/*.java'
-    exclude '**/gen/**'
-    exclude '**/R.java'
-    exclude '**/BuildConfig.java'
-
-    configFile project.file('checkstyle.xml')
-
-    // empty classpath
-    classpath = files()
-}
-
-preBuild.dependsOn('checkstyle')
+//checkstyle {
+//    configFile project.file('checkstyle.xml')
+//    showViolations true
+//}
+//
+//task checkstyle(type: Checkstyle) {
+//    source 'src'
+//    include '**/*.java'
+//    exclude '**/gen/**'
+//    exclude '**/R.java'
+//    exclude '**/BuildConfig.java'
+//
+//    configFile project.file('checkstyle.xml')
+//
+//    // empty classpath
+//    classpath = files()
+//}
+//
+//preBuild.dependsOn('checkstyle')
 
 /*apply plugin: 'com.github.hierynomus.license'
 license {
