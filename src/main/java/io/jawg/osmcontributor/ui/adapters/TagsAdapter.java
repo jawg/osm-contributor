@@ -367,7 +367,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 return;
 
             case SINGLE_CHOICE:
-                onBindViewHolder((TagRadioChoiceHolder) holder, position);
+                onBindViewHolder((TagRadioChoiceHolder) holder, position, tagItemList.get(position).isMandatory());
                 break;
 
             default:
@@ -502,7 +502,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * @param holder holder
      * @param position position
      */
-    private void onBindViewHolder(TagRadioChoiceHolder holder, int position) {
+    private void onBindViewHolder(TagRadioChoiceHolder holder, int position, boolean mandatory) {
         // Get tag item from list
         final TagItem tagItem = tagItemList.get(position);
         boolean isVisible = tagItem.isShow();
@@ -520,6 +520,12 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         // List of radio buttons without undefined. Undefined is always showing
         RadioButton[] radioButtons = holder.getRadioButtons();
+
+        if (mandatory) {
+            RadioButton undefinedRadioButton = holder.getUndefinedRadioButton();
+            undefinedRadioButton.setEnabled(false);
+            undefinedRadioButton.setChecked(false);
+        }
 
         // Access element for values
         int pos = 0;
