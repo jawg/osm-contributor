@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="poi_creation">Criação de ponto de ônibus</string>
+    <string name="delete_poi">Eliminar</string>
+    <string name="edit_poi">Editar</string>
+    <string name="duplicate_poi">Duplicar</string>
+    <string name="no_poi_name">Este ponto de ônibus não tem um nome</string>
+    <string name="delete_poi_title">Eliminar ponto de ônibus</string>
+    <string name="delete_poi_confirm_message">Quer mesmo eliminar este ponto de ônibus?</string>
+</resources>
