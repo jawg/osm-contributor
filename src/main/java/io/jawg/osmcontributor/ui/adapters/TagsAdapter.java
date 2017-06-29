@@ -292,7 +292,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // FIXME will have to change possible values into a map
         for (String valueAndLabel : valuesAndLabels) {
             String[] split = valueAndLabel.split(PoiTypeMapper.VALUE_SEPARATOR);
-            values.add(split[0]);
+            values.add(split[1]);
         }
         return values;
     }
@@ -307,6 +307,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // Tags not in the PoiType should not be displayed if we are not in expert mode
             if (poiTypeTag.getValue() == null) {
                 String key = poiTypeTag.getKey();
+
                 // Display tags as mandatory if they are mandatory and we are not in expert mode
                 if (poiTypeTag.getMandatory() && !expertMode) {
                     addTag(key, poiTags.get(key), true, values, nbMandatory + nbImposed, true, poiTypeTag.getTagType());
