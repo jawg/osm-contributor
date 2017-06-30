@@ -367,7 +367,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 return;
 
             case SINGLE_CHOICE:
-                onBindViewHolder((TagRadioChoiceHolder) holder, position, tagItemList.get(position).isMandatory());
+                onBindViewHolder((TagRadioChoiceHolder) holder, position);
                 break;
 
             default:
@@ -502,7 +502,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * @param holder holder
      * @param position position
      */
-    private void onBindViewHolder(TagRadioChoiceHolder holder, int position, boolean mandatory) {
+    private void onBindViewHolder(TagRadioChoiceHolder holder, int position) {
         // Get tag item from list
         final TagItem tagItem = tagItemList.get(position);
         boolean isVisible = tagItem.isShow();
@@ -521,10 +521,20 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // List of radio buttons without undefined. Undefined is always showing
         RadioButton[] radioButtons = holder.getRadioButtons();
 
+        // `undefined` radio button
+        RadioButton undefinedRadioButton = holder.getUndefinedRadioButton();
+
+        // Get if the tag is mandatory
+        final boolean mandatory = tagItemList.get(position).isMandatory();
+
+        // If the tag is required, we disable the `undefined` radio button
         if (mandatory) {
-            RadioButton undefinedRadioButton = holder.getUndefinedRadioButton();
             undefinedRadioButton.setEnabled(false);
-            undefinedRadioButton.setChecked(false);
+        }
+
+        // If the tag value is `undefined`, we check the undefined radio button
+        if (tagItem.getValue() != null && tagItem.getValue().equals(TagItem.VALUE_UNDEFINED)) {
+            undefinedRadioButton.setChecked(true);
         }
 
         // Access element for values
@@ -546,7 +556,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                     // Select radio if value is not undefined
                     if (tagItem.getValue() != null && tagItem.getValue().equals(values.get(pos))) {
-                        holder.getUndefinedRadioButton().setChecked(false);
                         radioButtons[i].setChecked(true);
                     }
                     pos++;

@@ -70,6 +70,7 @@ import io.jawg.osmcontributor.model.events.ResetTypeDatabaseEvent;
 import io.jawg.osmcontributor.model.events.RevertFinishedEvent;
 import io.jawg.osmcontributor.rest.dtos.dma.H2GeoDto;
 import io.jawg.osmcontributor.rest.mappers.PoiTypeMapper;
+import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.events.map.ChangesInDB;
 import io.jawg.osmcontributor.ui.events.map.LastUsePoiTypeLoaded;
 import io.jawg.osmcontributor.ui.events.map.PleaseLoadLastUsedPoiType;
@@ -857,9 +858,14 @@ public class PoiManager {
 
         Map<String, String> defaultTags = new HashMap<>();
         for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
+            // If the tag is a multi-choice and not required, we set `undefined` by default
+            if (poiTypeTag.getTagType() == TagItem.Type.SINGLE_CHOICE && !poiTypeTag.getMandatory()) {
+                poiTypeTag.setValue(TagItem.VALUE_UNDEFINED);
+            }
             if (poiTypeTag.getValue() != null) { // default tags should be set in the corresponding POI
                 defaultTags.put(poiTypeTag.getKey(), poiTypeTag.getValue());
             }
+
         }
         poi.applyChanges(defaultTags);
 
