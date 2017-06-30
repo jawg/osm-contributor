@@ -68,8 +68,7 @@
                         android:id="@+id/rb_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="undefined"
-                        android:checked="true" />
+                        android:text="undefined"/>
 
                     <RadioButton
                         android:id="@+id/rb_2"

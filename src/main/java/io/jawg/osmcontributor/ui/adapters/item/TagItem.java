@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TagItem implements Parcelable {
+
+    public static final String VALUE_UNDEFINED = "undefined";
+
     private String key;
     private String value;
     private boolean mandatory;
