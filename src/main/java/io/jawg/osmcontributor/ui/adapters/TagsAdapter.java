@@ -165,6 +165,15 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return true;
     }
 
+    public void showInvalidityMessage(final LinearLayout content, TagItem tagItem) {
+        if (!tagItem.isConform() && content.getChildAt(1).getId() != R.id.malformated_layout) {
+            content.addView(LayoutInflater.from(activity).inflate(
+                    R.layout.malformated_layout, content, false), 1);
+            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
+            ((TextView) ((LinearLayout) content.getChildAt(1)).getChildAt(1)).setText(currentValue);
+        }
+    }
+
     /*=========================================*/
     /*----------------EVENTS-------------------*/
     /*=========================================*/
@@ -397,12 +406,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         });
 
-        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
+        showInvalidityMessage(holder.getContent(), tagItem);
     }
 
     /**
@@ -459,12 +463,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         });
 
-        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
+        showInvalidityMessage(holder.getContent(), tagItem);
 
     }
 
@@ -517,12 +516,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
 
-        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
+        showInvalidityMessage(holder.getContent(), tagItem);
     }
 
 
