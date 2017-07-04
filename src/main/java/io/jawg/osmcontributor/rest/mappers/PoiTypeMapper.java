@@ -76,6 +76,7 @@ public class PoiTypeMapper {
                 poiTypeTag.setValue(tagDto.getValue());
                 poiTypeTag.setMandatory(tagDto.getRequired());
                 poiTypeTag.setOrdinal(ordinal++);
+                poiTypeTag.setShow(tagDto.getShow());
                 if (tagDto.getValues() != null && !tagDto.getValues().isEmpty()) {
                     List<String> possibleValues = new ArrayList<>();
                     for (Map<String, Map<String, String>> valuesMap : tagDto.getValues()) {

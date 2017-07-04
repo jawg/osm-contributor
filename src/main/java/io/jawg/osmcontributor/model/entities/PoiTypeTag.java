@@ -38,6 +38,7 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
     public static final String ORDINAL = "ORDINAL";
     public static final String POSSIBLE_VALUES = "POSSIBLE_VALUES";
     public static final String TAG_TYPE = "TAG_TYPE";
+    public static final String SHOW = "SHOW";
 
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
@@ -62,6 +63,9 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
 
     @DatabaseField(columnName = TAG_TYPE)
     private TagItem.Type tagType;
+
+    @DatabaseField(columnName = SHOW)
+    private Boolean show;
 
     public Long getId() {
         return id;
@@ -127,6 +131,14 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
         this.tagType = tagType;
     }
 
+    public void setShow(Boolean show) {
+        this.show = show;
+    }
+
+    public Boolean getShow() {
+        return show;
+    }
+
     @Override
     public String toString() {
         return "PoiTypeTag{" +
@@ -138,6 +150,7 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
                 ", poiType=" + (poiType == null ? null : poiType.getId()) +
                 ", possibleValues=" + possibleValues +
                 ", tagType=" + tagType +
+                ", show=" + show +
                 '}';
     }
 
@@ -210,6 +223,11 @@ public class PoiTypeTag implements Comparable<PoiTypeTag> {
 
         public Builder poiTypeTag(TagItem.Type poiTagType) {
             this.poiTypeTag.tagType = poiTagType;
+            return this;
+        }
+
+        public Builder show(Boolean show) {
+            this.poiTypeTag.show = show;
             return this;
         }
 
