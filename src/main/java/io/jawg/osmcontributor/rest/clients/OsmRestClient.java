@@ -32,6 +32,7 @@ import retrofit.http.Path;
 import retrofit.http.Query;
 import retrofit.http.QueryMap;
 
+
 /**
  * Rest interface for requests to OpenStreetMap.
  */
@@ -98,8 +99,18 @@ public interface OsmRestClient {
      * @return The id of the created ChangeSet.
      */
     @PUT("/changeset/create")
-    String addChangeSet(@Body OsmDto osmDto);
+    String addChangeSet(@Header("Authorization") String auth, @Body OsmDto osmDto);
 
+    /**
+     * Create a ChangeSet.
+     *
+     * @param osmDto an OsmDto containing a ChangeSetDto.
+     *               It is recommended to add the tags "comment=[description]" and "created-by=[user]"
+     *               to the ChangeSetDto.
+     * @return The id of the created ChangeSet.
+     */
+    @PUT("/changeset/create")
+    String addChangeSet(@Body OsmDto osmDto);
     /**
      * Close the changeSet.
      *

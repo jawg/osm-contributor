@@ -18,6 +18,8 @@
  */
 package io.jawg.osmcontributor.rest.utils;
 
+
+
 import android.util.Base64;
 
 import com.github.scribejava.core.model.Verb;
@@ -34,6 +36,8 @@ import javax.inject.Inject;
 import io.jawg.osmcontributor.database.preferences.LoginPreferences;
 import io.jawg.osmcontributor.rest.security.OAuthParams;
 import io.jawg.osmcontributor.rest.security.OAuthRequest;
+
+
 
 /**
  * {@link retrofit.RequestInterceptor} adding Base64 encoded credentials to the requests.
@@ -57,7 +61,9 @@ public class AuthenticationRequestInterceptor implements Authenticator {
     @Override
     public Request authenticate(Proxy proxy, Response response) throws IOException {
         Map<String, String> oAuthParams = loginPreferences.retrieveOAuthParams();
-
+       if (response.request().header("Authorization") != null) {
+           return null;
+       }
         if (oAuthParams != null) {
             Request originalRequest = response.request();
             String requestUrl = originalRequest.urlString();
@@ -69,11 +75,9 @@ public class AuthenticationRequestInterceptor implements Authenticator {
             oAuthRequest.setRequestUrl(requestUrl);
             oAuthRequest.signRequest(Verb.valueOf(originalRequest.method()));
             oAuthRequest.encodeParams();
-
             Request.Builder finalRequest = originalRequest
                     .newBuilder()
-                    .header("Accept", "text/xml")
-                    .header("Authorization", oAuthRequest.getOAuthHeader())
+                    .addHeader("Authorization", oAuthRequest.getOAuthHeader())
                     .method(originalRequest.method(), originalRequest.body());
             return finalRequest.build();
         } else {
@@ -91,5 +95,19 @@ public class AuthenticationRequestInterceptor implements Authenticator {
     @Override
     public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
         return null;
+    }
+
+    public static OAuthRequest getOAuthRequest(LoginPreferences loginPreferences, String requestUrl, Verb verb) {
+
+        Map<String, String> oAuthParams = loginPreferences.retrieveOAuthParams();
+
+        OAuthRequest oAuthRequest = new OAuthRequest(oAuthParams.get(CONSUMER_PARAM), oAuthParams.get(CONSUMER_SECRET_PARAM));
+        oAuthRequest.initParam(OAuthParams.getOAuthParams().put(TOKEN_PARAM, oAuthParams.get(TOKEN_PARAM)).toMap());
+        oAuthRequest.setOAuthToken(oAuthParams.get(TOKEN_PARAM));
+        oAuthRequest.setOAuthTokenSecret(oAuthParams.get(TOKEN_SECRET_PARAM));
+        oAuthRequest.setRequestUrl(requestUrl);
+        oAuthRequest.signRequest(verb);
+        oAuthRequest.encodeParams();
+        return  oAuthRequest;
     }
 }

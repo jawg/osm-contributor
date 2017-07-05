@@ -29,6 +29,7 @@ import dagger.Module;
 import dagger.Provides;
 import io.jawg.osmcontributor.database.PoiAssetLoader;
 import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
+import io.jawg.osmcontributor.database.preferences.LoginPreferences;
 import io.jawg.osmcontributor.rest.Backend;
 import io.jawg.osmcontributor.rest.OSMProxy;
 import io.jawg.osmcontributor.rest.OsmBackend;
@@ -41,26 +42,33 @@ import io.jawg.osmcontributor.rest.managers.SyncWayManager;
 import io.jawg.osmcontributor.rest.mappers.NoteMapper;
 import io.jawg.osmcontributor.rest.mappers.PoiMapper;
 import io.jawg.osmcontributor.rest.utils.XMLMapper;
+import io.jawg.osmcontributor.ui.activities.AuthorisationInterceptor;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.ConfigManager;
 import retrofit.RestAdapter;
 import retrofit.android.AndroidLog;
 import retrofit.client.OkClient;
 
+
+
 @Module
 @Singleton
 public class SyncModule {
-    @Provides
-    Backend getBackend(EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient, OsmRestClient osmRestClient, PoiMapper poiMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
-        return new OsmBackend(bus, osmProxy, overpassRestClient, osmRestClient, poiMapper, poiManager, poiAssetLoader);
-    }
 
     @Provides
+    Backend getBackend(LoginPreferences loginPreferences, EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient, OsmRestClient osmRestClient, PoiMapper poiMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
+        return new OsmBackend(loginPreferences, bus, osmProxy, overpassRestClient, osmRestClient, poiMapper, poiManager, poiAssetLoader);
+    }
+
+    @Singleton
+    @Provides
     RestAdapter getRestAdapter(Persister persister, OkHttpClient okHttpClient, ConfigManager configManager) {
+
+
         return new RestAdapter.Builder()
                 .setEndpoint(configManager.getBasePoiApiUrl())
-                .setConverter(getXMLConverterWithDateTime(persister))
                 .setClient(new OkClient(okHttpClient))
+                .setConverter(getXMLConverterWithDateTime(persister))
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setLog(new AndroidLog("-------------------->"))
                 .build();
@@ -82,7 +90,8 @@ public class SyncModule {
     }
 
     @Provides
-    OverpassRestClient getOverpassRestClient(Persister persister, ConfigManager configManager) {
+    OverpassRestClient getOverpassRestClient(Persister persister, AuthorisationInterceptor interceptor, ConfigManager configManager) {
+
         return new RestAdapter.Builder()
                 .setEndpoint(configManager.getBaseOverpassApiUrl())
                 .setConverter(getXMLConverterWithDateTime(persister))

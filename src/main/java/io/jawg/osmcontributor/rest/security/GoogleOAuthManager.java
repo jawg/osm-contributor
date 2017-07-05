@@ -33,7 +33,6 @@ import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.rest.events.GoogleAuthenticatedEvent;
 import io.jawg.osmcontributor.rest.utils.MapParams;
 import io.jawg.osmcontributor.ui.dialogs.WebViewDialogFragment;
-import timber.log.Timber;
 
 /**
  * @author Tommy Buonomo on 25/07/16.
@@ -71,20 +70,19 @@ public class GoogleOAuthManager {
                     if (dialog.isProgressing()) {
                         dialog.stopProgressBar();
                     }
-                    // Get the tokens in hidden input in the html page
+
                     webView.loadUrl("javascript:Android.showToken(" +
-                            "OSM.oauth_token " +
-                            "+ ' ' " +
-                            "+ OSM.oauth_token_secret" +
-                            "+ ' ' " +
-                            "+ OSM.oauth_consumer_key" +
-                            "+ ' ' " +
-                            "+ OSM.oauth_consumer_secret)");
+                            "document.getElementsByTagName('head')[0].getAttribute('data-token') " +
+                            "+ ' ' +" +
+                            "document.getElementsByTagName('head')[0].getAttribute('data-token-secret') " +
+                            "+' '+" +
+                            "document.getElementsByTagName('head')[0].getAttribute('data-consumer-key')" +
+                            "+' '+" +
+                            "document.getElementsByTagName('head')[0].getAttribute('data-consumer-secret'));");
+
                 }
-                //https://www.openstreetmap.org/user/new?auth_provider=google&auth_uid=115718820124131004058&email=osm.test2017%40gmail.com#
                 if (url.contains(OSM_NEW_USER_URL) && !url.equals(OSM_NEW_USER_URL)) {
                     dialog.startProgressBar();
-                    Timber.i("URL %s ",url);
                     // Skip the inscription page
                     webView.loadUrl("javascript:" +
                             "document.getElementsByName('user[display_name]')[0].value = '"
@@ -149,6 +147,7 @@ public class GoogleOAuthManager {
                 }
             });
         }
+
 
         @JavascriptInterface
         @SuppressWarnings("unused")
