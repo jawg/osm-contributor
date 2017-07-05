@@ -43,6 +43,7 @@
     <string name="add_tag">Add a tag</string>
     <string name="tag_key">Key</string>
     <string name="tag_value">Value</string>
+    <string name="undefined">undefined</string>
 
     <!-- Map -->
     <string name="no_poi_name">This POI doesn\'t have a name</string>
