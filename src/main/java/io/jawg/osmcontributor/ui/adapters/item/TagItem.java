@@ -34,6 +34,7 @@ public class TagItem implements Parcelable {
     private List<String> values = new ArrayList<>();
     private Type type;
     private boolean isConform;
+    private boolean show;
 
     /**
      * Use the best UI widget based on the tag name and possible values.
@@ -47,13 +48,14 @@ public class TagItem implements Parcelable {
         TIME
     }
 
-    public TagItem(String key, String value, boolean mandatory, List<String> values, Type separator, boolean isConform) {
-        this.key = key;
-        this.value = value;
-        this.values = values;
-        this.mandatory = mandatory;
-        this.type = separator;
-        this.isConform = isConform;
+    private TagItem(TagItemBuilder builder) {
+        this.key = builder.key;
+        this.value = builder.value;
+        this.values = builder.values;
+        this.mandatory = builder.mandatory;
+        this.type = builder.type;
+        this.isConform = builder.isConform;
+        this.show = builder.show;
     }
 
     public TagItem(Parcel in) {
@@ -118,6 +120,14 @@ public class TagItem implements Parcelable {
         isConform = conform;
     }
 
+    public boolean isShow() {
+        return show;
+    }
+
+    public void setShow(boolean show) {
+        this.show = show;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -171,5 +181,50 @@ public class TagItem implements Parcelable {
     @Override
     public int hashCode() {
         return key != null ? key.hashCode() : 0;
+    }
+
+
+    public static class TagItemBuilder {
+        private String key;
+        private String value;
+        private boolean mandatory;
+        private List<String> values = new ArrayList<>();
+        private Type type;
+        private boolean isConform;
+        private boolean show;
+
+        public TagItemBuilder(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public TagItemBuilder mandatory(boolean mandatory) {
+            this.mandatory = mandatory;
+            return this;
+        }
+
+        public TagItemBuilder values(List<String> values) {
+            this.values = values;
+            return this;
+        }
+
+        public TagItemBuilder type(Type type) {
+            this.type = type;
+            return this;
+        }
+
+        public TagItemBuilder isConform(boolean isConform) {
+            this.isConform = isConform;
+            return this;
+        }
+
+        public TagItemBuilder show(boolean show) {
+            this.show = show;
+            return this;
+        }
+
+        public TagItem build() {
+            return new TagItem(this);
+        }
     }
 }
