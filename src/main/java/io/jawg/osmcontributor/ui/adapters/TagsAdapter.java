@@ -51,6 +51,7 @@ import io.jawg.osmcontributor.model.entities.PoiTypeTag;
 import io.jawg.osmcontributor.model.utils.OpeningMonth;
 import io.jawg.osmcontributor.model.utils.OpeningTime;
 import io.jawg.osmcontributor.rest.mappers.PoiTypeMapper;
+import io.jawg.osmcontributor.ui.adapters.binding.TagViewBinder;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
@@ -71,6 +72,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<TagItem> tagItemList = new ArrayList<>();
     private Map<String, TagItem> keyTagItem = new HashMap<>();
+
     private Poi poi;
     private Activity activity;
     private EventBus eventBus;
@@ -80,6 +82,8 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
+    @Inject
+    List<TagViewBinder> viewBinders;
 
     public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity activity, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
@@ -103,27 +107,21 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /*=========================================*/
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        /* Create different views depending of type of the tag */
-        switch (TagItem.Type.values()[viewType]) {
-            case CONSTANT:
-                View poiTagImposedLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_constant, parent, false);
-                return new TagItemConstantViewHolder(poiTagImposedLayout);
 
-            case OPENING_HOURS:
-                View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_time, parent, false);
-                return new TagItemOpeningTimeViewHolder(poiTagOpeningHoursLayout);
-
-            case TIME:
-                View poiTime = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_time, parent, false);
-                return new TagItemOpeningTimeViewHolder(poiTime);
-
-            case SINGLE_CHOICE:
-                View booleanChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_radio, parent, false);
-                return new TagRadioChoiceHolder(booleanChoiceLayout);
-            default:
-                View autoCompleteLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_multi_choice, parent, false);
-                return new TagItemAutoCompleteViewHolder(autoCompleteLayout);
+        TagViewBinder t = pickViewBinder(TagItem.Type.values()[viewType]);
+        if (t == null) {
+            throw new IllegalStateException("Invalid view type");
         }
+        return t.onCreateViewHolder(parent);
+    }
+
+    private TagViewBinder pickViewBinder(TagItem.Type type) {
+        for (TagViewBinder t : viewBinders) {
+            if (t.supports(type)) {
+                return t;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -336,27 +334,12 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder,
                                  int position) {
-        switch (tagItemList.get(position).getTagType()) {
-            case CONSTANT:
-                onBindViewHolder((TagItemConstantViewHolder) holder, position);
-                break;
-
-            case OPENING_HOURS:
-                onBindViewHolder((TagItemOpeningTimeViewHolder) holder, position);
-                return;
-
-            case TIME:
-                onBindViewHolder((TagItemOpeningTimeViewHolder) holder, position);
-                return;
-
-            case SINGLE_CHOICE:
-                onBindViewHolder((TagRadioChoiceHolder) holder, position);
-                break;
-
-            default:
-                onBindViewHolder((TagItemAutoCompleteViewHolder) holder, position);
-                break;
+        TagItem tag = tagItemList.get(position);
+        TagViewBinder t = pickViewBinder(tag.getTagType());
+        if (t == null) {
+            throw new IllegalStateException("Invalid tag type. Should not happen");
         }
+        t.onBindViewHolder(holder, tag);
     }
 
     /**

@@ -42,7 +42,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:2.3.2'
 
         // add -Pfoss=true to gradlew args to build a version with no Crashlytics/Google analytics
         if(!project.hasProperty('foss')) {
@@ -50,7 +50,7 @@ buildscript {
         }
         classpath "com.neenbedankt.gradle.plugins:android-apt:1.8"
 
-        // this plugin is provided as a jar as atm there is no relase with android support
+        // this plugin is provided as a jar as atm there is no relase with android supports
         classpath "nl.javadude.gradle.plugins:license-gradle-plugin:0.11.1-SNAPSHOT"
 
         // BEGIN Dependencies of license-gradle-plugin
@@ -188,12 +188,12 @@ configurations {
 
 dependencies {
     // Android
-    compile "com.android.support:multidex:$multidexSupportVersion"
-    compile "com.android.support:appcompat-v7:$androidSupportVersion"
-    compile "com.android.support:support-core-utils:$androidSupportVersion"
-    compile "com.android.support:design:$androidSupportVersion"
-    compile "com.android.support:cardview-v7:$androidSupportVersion"
-    compile "com.android.support:recyclerview-v7:$androidSupportVersion"
+    compile "com.android.supports:multidex:$multidexSupportVersion"
+    compile "com.android.supports:appcompat-v7:$androidSupportVersion"
+    compile "com.android.supports:supports-core-utils:$androidSupportVersion"
+    compile "com.android.supports:design:$androidSupportVersion"
+    compile "com.android.supports:cardview-v7:$androidSupportVersion"
+    compile "com.android.supports:recyclerview-v7:$androidSupportVersion"
 
     // Dependency injection
     compile "com.google.dagger:dagger:$daggerVersion"
@@ -221,9 +221,9 @@ dependencies {
     compile "org.simpleframework:simple-xml:$simplexmlVersion"
 
     // UI libraries
-    compile "com.android.support:cardview-v7:$androidSupportVersion"
-    compile "com.android.support:recyclerview-v7:$androidSupportVersion"
-    compile "com.android.support:design:$androidSupportVersion"
+    compile "com.android.supports:cardview-v7:$androidSupportVersion"
+    compile "com.android.supports:recyclerview-v7:$androidSupportVersion"
+    compile "com.android.supports:design:$androidSupportVersion"
     compile "com.github.iammert:MaterialIntroView:$materialIntroViewVersion"
     compile "com.yarolegovich:lovely-dialog:$lovelyDialogVersion"
     compile "com.github.clans:fab:$clansFabVersion"

@@ -45,7 +45,7 @@ public class NumberTagParserImpl implements TagParser {
     }
 
     @Override
-    public boolean support(String value) {
+    public boolean supports(String value) {
         return value == null || value.matches(NUMBER_PATTERN);
     }
 

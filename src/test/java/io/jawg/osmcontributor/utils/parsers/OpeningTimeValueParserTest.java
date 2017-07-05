@@ -317,27 +317,27 @@ public class OpeningTimeValueParserTest {
     public void regexOpeningTime1() {
         OpeningTimeTagParserImpl openingTimeParser = new OpeningTimeTagParserImpl();
         System.out.println("One period with month");
-        Assert.assertTrue(openingTimeParser.support("May,Jun: Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
+        Assert.assertTrue(openingTimeParser.supports("May,Jun: Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
     }
 
     @Test
     public void regexOpeningTime2() {
         OpeningTimeTagParserImpl openingTimeParser = new OpeningTimeTagParserImpl();
         System.out.println("Without month");
-        Assert.assertTrue(openingTimeParser.support("May,Jun: Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
+        Assert.assertTrue(openingTimeParser.supports("May,Jun: Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
     }
 
     @Test
     public void regexOpeningTime3() {
         OpeningTimeTagParserImpl openingTimeParser = new OpeningTimeTagParserImpl();
         System.out.println("Without month, only a day");
-        Assert.assertTrue(openingTimeParser.support("Th 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
+        Assert.assertTrue(openingTimeParser.supports("Th 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
     }
 
     @Test
     public void regexOpeningTime4() {
         OpeningTimeTagParserImpl openingTimeParser = new OpeningTimeTagParserImpl();
         System.out.println("Two period month");
-        Assert.assertTrue(openingTimeParser.support("May,Jun: Th 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00; May: Th 08:00-18:00,Th,Su 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
+        Assert.assertTrue(openingTimeParser.supports("May,Jun: Th 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00; May: Th 08:00-18:00,Th,Su 08:00-18:00,Th,Su-Fr 08:00-18:00,Th,Su-Fr 08:00-18:00"));
     }
 }

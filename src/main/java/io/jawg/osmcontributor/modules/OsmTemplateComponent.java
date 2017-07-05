@@ -56,6 +56,7 @@ import io.jawg.osmcontributor.ui.adapters.OpeningHoursLinearLayoutAdapter;
 import io.jawg.osmcontributor.ui.adapters.OpeningMonthAdapter;
 import io.jawg.osmcontributor.ui.adapters.ProfileAdapter;
 import io.jawg.osmcontributor.ui.adapters.TagsAdapter;
+import io.jawg.osmcontributor.ui.adapters.binding.TagViewBinder;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningMonthValueParser;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.jawg.osmcontributor.ui.dialogs.AddValueDialogFragment;
@@ -97,6 +98,8 @@ public interface OsmTemplateComponent {
     // INJECTING
 
     void inject(Application osmTemplateApplication);
+
+    void inject(TagViewBinder b);
 
     // Activities
     void inject(SplashScreenActivity splashScreenActivity);
