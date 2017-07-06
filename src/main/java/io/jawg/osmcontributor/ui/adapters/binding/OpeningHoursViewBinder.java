@@ -1,7 +1,6 @@
 package io.jawg.osmcontributor.ui.adapters.binding;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,7 +23,6 @@ import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.utils.views.DividerItemDecoration;
-import io.jawg.osmcontributor.ui.utils.views.holders.TagItemConstantViewHolder;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagItemOpeningTimeViewHolder;
 
 /**
@@ -34,7 +32,7 @@ import io.jawg.osmcontributor.ui.utils.views.holders.TagItemOpeningTimeViewHolde
 public class OpeningHoursViewBinder implements TagViewBinder<TagItemOpeningTimeViewHolder> {
 
     @Inject
-    private OpeningTimeValueParser openingTimeValueParser;
+    OpeningTimeValueParser openingTimeValueParser;
 
     private WeakReference<Activity> activity;
 
@@ -96,7 +94,7 @@ public class OpeningHoursViewBinder implements TagViewBinder<TagItemOpeningTimeV
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        View poiTagImposedLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_constant, parent, false);
-        return new TagItemConstantViewHolder(poiTagImposedLayout);
+        View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_time, parent, false);
+        return new TagItemOpeningTimeViewHolder(poiTagOpeningHoursLayout);
     }
 }
