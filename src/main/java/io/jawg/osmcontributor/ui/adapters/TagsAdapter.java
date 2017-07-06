@@ -19,18 +19,8 @@
 package io.jawg.osmcontributor.ui.adapters;
 
 import android.app.Activity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -45,12 +35,13 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
-import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
-import io.jawg.osmcontributor.model.utils.OpeningMonth;
-import io.jawg.osmcontributor.model.utils.OpeningTime;
 import io.jawg.osmcontributor.rest.mappers.PoiTypeMapper;
+import io.jawg.osmcontributor.ui.adapters.binding.AutoCompleteViewBinder;
+import io.jawg.osmcontributor.ui.adapters.binding.ConstantViewBinder;
+import io.jawg.osmcontributor.ui.adapters.binding.OpeningHoursViewBinder;
+import io.jawg.osmcontributor.ui.adapters.binding.RadioChoiceViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.TagViewBinder;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
@@ -58,11 +49,6 @@ import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChange;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
-import io.jawg.osmcontributor.ui.utils.views.DividerItemDecoration;
-import io.jawg.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHolder;
-import io.jawg.osmcontributor.ui.utils.views.holders.TagItemConstantViewHolder;
-import io.jawg.osmcontributor.ui.utils.views.holders.TagItemOpeningTimeViewHolder;
-import io.jawg.osmcontributor.ui.utils.views.holders.TagRadioChoiceHolder;
 import io.jawg.osmcontributor.utils.ConfigManager;
 import io.jawg.osmcontributor.utils.StringUtils;
 import io.jawg.osmcontributor.utils.edition.PoiChanges;
@@ -75,15 +61,16 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Poi poi;
     private Activity activity;
-    private EventBus eventBus;
     private ConfigManager configManager;
     private boolean change = false;
     private boolean expertMode = false;
+    private List<TagViewBinder> viewBinders = new ArrayList<>();
+
+    @Inject
+    EventBus eventBus;
 
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
-    @Inject
-    List<TagViewBinder> viewBinders;
 
     public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity activity, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
@@ -98,8 +85,13 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.tagItemList = tagItemList;
             notifyDataSetChanged();
         }
-        this.eventBus = EventBus.getDefault();
+
         eventBus.register(this);
+
+        viewBinders.add(new AutoCompleteViewBinder(activity, eventBus));
+        viewBinders.add(new ConstantViewBinder(activity));
+        viewBinders.add(new OpeningHoursViewBinder(activity));
+        viewBinders.add(new RadioChoiceViewBinder(activity));
     }
 
     /*=========================================*/
@@ -341,173 +333,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         t.onBindViewHolder(holder, tag);
     }
-
-    /**
-     * View for tag type text.
-     * @param holder holder
-     * @param position position of tag item
-     */
-    private void onBindViewHolder(final TagItemAutoCompleteViewHolder holder, int position) {
-        final TagItem tagItem = tagItemList.get(holder.getAdapterPosition());
-
-        // Set values input
-        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
-        holder.getTextViewValue().setText(tagItem.getValue());
-        holder.getTextInputLayout().setHint(tagItem.getKey());
-
-        // If phone type if phone, set input type to number
-        if (tagItem.getTagType() == TagItem.Type.NUMBER) {
-            holder.getTextViewValue().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        }
-
-        // Get possible values
-        final List<String> values = tagItem.getValues();
-
-        holder.getTextViewValue().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (i1 != i2) {
-                    eventBus.post(new PleaseApplyTagChange(holder.getTextViewKey().getText().toString(), charSequence.toString()));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
-        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
-    }
-
-    /**
-     * Holder for tag type constant.
-     * @param holder holder
-     * @param position tag item position
-     */
-    private void onBindViewHolder(TagItemConstantViewHolder holder, int position) {
-        final TagItem tagItem = tagItemList.get(position);
-        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
-        holder.getTextViewValue().setText(tagItem.getValue());
-    }
-
-    /**
-     * Binding tag item for opening time
-     * @param holder
-     * @param position
-     */
-    public void onBindViewHolder(final TagItemOpeningTimeViewHolder holder, int position) {
-        final TagItem tagItem = tagItemList.get(position);
-        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
-
-        OpeningTime openingTime = null;
-        try {
-             openingTime = openingTimeValueParser.fromValue(tagItem.getValue());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            tagItem.setConform(false);
-        }
-
-        if (openingTime == null) {
-            openingTime = new OpeningTime();
-        }
-
-        final OpeningMonthAdapter adapter = new OpeningMonthAdapter(openingTime, activity);
-        adapter.setTime(tagItem.getValue());
-        if (tagItem.getTagType() == TagItem.Type.TIME) {
-            adapter.hideMonth(true);
-        }
-        holder.getOpeningTimeRecyclerView().setAdapter(adapter);
-        holder.getOpeningTimeRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
-        holder.getOpeningTimeRecyclerView().setHasFixedSize(false);
-        RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
-        itemAnimator.setAddDuration(300);
-        holder.getOpeningTimeRecyclerView().setItemAnimator(itemAnimator);
-        holder.getOpeningTimeRecyclerView().addItemDecoration(new DividerItemDecoration(activity));
-
-        final OpeningTime finalOpeningTime = openingTime;
-        holder.getAddButton().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finalOpeningTime.addOpeningMonth(new OpeningMonth());
-                adapter.notifyItemInserted(adapter.getItemCount() - 1);
-            }
-        });
-
-        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
-
-    }
-
-    /**
-     * Bind view for list of 6 elements max.
-     * @param holder holder
-     * @param position position
-     */
-    private void onBindViewHolder(TagRadioChoiceHolder holder, int position) {
-        // Get tag item from list
-        final TagItem tagItem = tagItemList.get(position);
-
-        // Set key text view
-        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
-
-        // Check if size of possible values are 3, means special action to organize layout
-        List<String> values = tagItem.getValues();
-        boolean isFourElements = values.size() == 3;
-
-        // List of radio buttons without undefined. Undefined is always showing
-        RadioButton[] radioButtons = holder.getRadioButtons();
-
-        // Access element for values
-        int pos = 0;
-        for (int i = 0; i < radioButtons.length; i++) {
-            if (!values.isEmpty()) {
-                // If values is not empty...
-                if (isFourElements && i == 1) {
-                    // ... and list contains four values, skip one radio to have a 2/2 side by side printing
-                    radioButtons[i].setVisibility(View.INVISIBLE);
-                    i++;
-                    isFourElements = false;
-                }
-
-                if (pos < values.size()) {
-                    // Set value of radio button and show it
-                    radioButtons[i].setText(values.get(pos));
-                    radioButtons[i].setVisibility(View.VISIBLE);
-
-                    // Select radio if value is not undefined
-                    if (tagItem.getValue() != null && tagItem.getValue().equals(values.get(pos))) {
-                        holder.getUndefinedRadioButton().setChecked(false);
-                        radioButtons[i].setChecked(true);
-                    }
-                    pos++;
-                } else {
-                    // If all values are set, hide radio button not used
-                    radioButtons[i].setVisibility(View.INVISIBLE);
-                }
-            }
-        }
-
-        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
-    }
-
 
     /*=========================================*/
     /*------------GETTER/SETTER----------------*/
