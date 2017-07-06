@@ -296,4 +296,3 @@ task checkstyle(type: Checkstyle) {
 }
 
 preBuild.dependsOn('checkstyle')
-
