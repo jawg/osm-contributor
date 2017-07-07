@@ -106,7 +106,12 @@ public class OsmBackend implements Backend {
             @Override
             public String proceed() {
 
-                String changeSetId = osmRestClient.addChangeSet(AuthenticationRequestInterceptor.getOAuthRequest(loginPreferences, BuildConfig.BASE_OSM_URL + "changeset/create", Verb.PUT).getOAuthHeader(), osmDto);
+                String changeSetId;
+                if (loginPreferences.retrieveOAuthParams() != null) {
+                     changeSetId = osmRestClient.addChangeSet(AuthenticationRequestInterceptor.getOAuthRequest(loginPreferences, BuildConfig.BASE_OSM_URL + "changeset/create", Verb.PUT).getOAuthHeader(), osmDto);
+                } else {
+                    changeSetId = osmRestClient.addChangeSet(osmDto);
+                }
                 Timber.d("Retrieved changeSet Id: %s", changeSetId);
                 return changeSetId;
             }
