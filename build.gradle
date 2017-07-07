@@ -42,7 +42,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:2.3.3'
 
         // add -Pfoss=true to gradlew args to build a version with no Crashlytics/Google analytics
         if(!project.hasProperty('foss')) {

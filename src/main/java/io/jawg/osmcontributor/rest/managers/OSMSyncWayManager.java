@@ -171,7 +171,7 @@ public class OSMSyncWayManager implements SyncWayManager {
         final List<Long> ids = poiNodeRefDao.queryAllUpdated();
         List<Poi> pois = new ArrayList<>();
 
-        if (ids != null) {
+        if (ids != null && !ids.isEmpty()) {
             OSMProxy.Result<List<Poi>> result = osmProxy.proceed(new OSMProxy.NetworkAction<List<Poi>>() {
                 @Override
                 public List<Poi> proceed() {

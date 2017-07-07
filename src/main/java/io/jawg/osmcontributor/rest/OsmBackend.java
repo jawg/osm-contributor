@@ -105,7 +105,8 @@ public class OsmBackend implements Backend {
         OSMProxy.Result<String> result = osmProxy.proceed(new OSMProxy.NetworkAction<String>() {
             @Override
             public String proceed() {
-                String changeSetId = osmRestClient.addChangeSet(AuthenticationRequestInterceptor.getOAuthRequest(loginPreferences, "https://www.openstreetmap.org/api/0.6/changeset/create", Verb.PUT).getOAuthHeader(), osmDto);
+
+                String changeSetId = osmRestClient.addChangeSet(AuthenticationRequestInterceptor.getOAuthRequest(loginPreferences, BuildConfig.BASE_OSM_URL + "changeset/create", Verb.PUT).getOAuthHeader(), osmDto);
                 Timber.d("Retrieved changeSet Id: %s", changeSetId);
                 return changeSetId;
             }
