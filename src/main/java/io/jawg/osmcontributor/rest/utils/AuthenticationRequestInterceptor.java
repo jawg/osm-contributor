@@ -37,8 +37,6 @@ import io.jawg.osmcontributor.database.preferences.LoginPreferences;
 import io.jawg.osmcontributor.rest.security.OAuthParams;
 import io.jawg.osmcontributor.rest.security.OAuthRequest;
 
-
-
 /**
  * {@link retrofit.RequestInterceptor} adding Base64 encoded credentials to the requests.
  */

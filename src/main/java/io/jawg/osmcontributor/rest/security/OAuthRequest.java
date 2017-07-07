@@ -81,7 +81,7 @@ public class OAuthRequest {
         String convertedUrl = SecurityUtils.convertUrl(requestUrl, verb, params);
         if (convertedUrl != null) {
             params.put("oauth_signature", SecurityUtils.getSignatureFromRequest(convertedUrl,
-                    apiKeySecret + SEPARATOR + (oAuthTokenSecret == null ? "" : oAuthTokenSecret)).replace("/", "%2F").replace("=", "%3D").replace("\n", ""));
+                    apiKeySecret + SEPARATOR + (oAuthTokenSecret == null ? "" : oAuthTokenSecret)).replace("\n", ""));
         }
     }
 

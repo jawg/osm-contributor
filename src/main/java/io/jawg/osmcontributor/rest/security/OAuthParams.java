@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 
+
 import io.jawg.osmcontributor.rest.utils.MapParams;
 
 public class OAuthParams {
@@ -36,7 +37,7 @@ public class OAuthParams {
     public static final String SIGNATURE_METHOD = "HMAC-SHA1";
 
     public static MapParams<String, String> getOAuthParams() {
-        String str = String.valueOf(new Timestamp(new Date().getTime()).getTime()).substring(0, 10);
+
         return new MapParams<String, String>()
                 .put("oauth_timestamp", String.valueOf(new Timestamp(new Date().getTime()).getTime()).substring(0, 10))
                 .put("oauth_nonce", UUID.randomUUID().toString().substring(0, 6))
