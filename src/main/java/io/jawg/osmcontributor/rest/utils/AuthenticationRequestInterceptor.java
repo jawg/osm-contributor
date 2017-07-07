@@ -98,14 +98,17 @@ public class AuthenticationRequestInterceptor implements Authenticator {
     public static OAuthRequest getOAuthRequest(LoginPreferences loginPreferences, String requestUrl, Verb verb) {
 
         Map<String, String> oAuthParams = loginPreferences.retrieveOAuthParams();
-
-        OAuthRequest oAuthRequest = new OAuthRequest(oAuthParams.get(CONSUMER_PARAM), oAuthParams.get(CONSUMER_SECRET_PARAM));
-        oAuthRequest.initParam(OAuthParams.getOAuthParams().put(TOKEN_PARAM, oAuthParams.get(TOKEN_PARAM)).toMap());
-        oAuthRequest.setOAuthToken(oAuthParams.get(TOKEN_PARAM));
-        oAuthRequest.setOAuthTokenSecret(oAuthParams.get(TOKEN_SECRET_PARAM));
-        oAuthRequest.setRequestUrl(requestUrl);
-        oAuthRequest.signRequest(verb);
-        oAuthRequest.encodeParams();
-        return  oAuthRequest;
+        if (oAuthParams != null) {
+            OAuthRequest oAuthRequest = new OAuthRequest(oAuthParams.get(CONSUMER_PARAM), oAuthParams.get(CONSUMER_SECRET_PARAM));
+            oAuthRequest.initParam(OAuthParams.getOAuthParams().put(TOKEN_PARAM, oAuthParams.get(TOKEN_PARAM)).toMap());
+            oAuthRequest.setOAuthToken(oAuthParams.get(TOKEN_PARAM));
+            oAuthRequest.setOAuthTokenSecret(oAuthParams.get(TOKEN_SECRET_PARAM));
+            oAuthRequest.setRequestUrl(requestUrl);
+            oAuthRequest.signRequest(verb);
+            oAuthRequest.encodeParams();
+            return  oAuthRequest;
+        } else {
+            return null;
+        }
     }
 }
