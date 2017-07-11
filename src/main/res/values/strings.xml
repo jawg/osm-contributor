@@ -43,7 +43,6 @@
     <string name="add_tag">Add a tag</string>
     <string name="tag_key">Key</string>
     <string name="tag_value">Value</string>
-    <string name="undefined">undefined</string>
 
     <!-- Map -->
     <string name="no_poi_name">This POI doesn\'t have a name</string>
@@ -261,6 +260,7 @@
     <string name="day_friday_letter">F</string>
     <string name="day_saturday_letter">S</string>
     <string name="day_sunday_letter">S</string>
+    <string name="undefined_button_text">undefined</string>
 
     <!-- Snackbar -->
     <string name="item_removed">\"%1$s\" was removed</string>
