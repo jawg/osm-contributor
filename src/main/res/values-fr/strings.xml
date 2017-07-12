@@ -176,6 +176,7 @@
   <string name="created">Créé</string>
   <string name="deleted">Supprimé</string>
   <string name="updated">Modifié</string>
+  <string name="undefined_button_text">non renseigné</string>
   <!--About-->
   <string name="title_activity_about">A propos de nous</string>
   <string name="about_title">A propos</string>
