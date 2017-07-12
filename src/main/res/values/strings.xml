@@ -260,6 +260,7 @@
     <string name="day_friday_letter">F</string>
     <string name="day_saturday_letter">S</string>
     <string name="day_sunday_letter">S</string>
+    <string name="undefined_button_text">undefined</string>
 
     <!-- Snackbar -->
     <string name="item_removed">\"%1$s\" was removed</string>
