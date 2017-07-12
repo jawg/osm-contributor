@@ -260,6 +260,7 @@ public class EditPoiFragment extends Fragment {
                     eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges()));
                     OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "add");
                 } else {
+                    tagsAdapter.showInvalidityForAll();
                     Toast.makeText(getActivity(), R.string.uncompleted_fields, Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -272,6 +273,7 @@ public class EditPoiFragment extends Fragment {
                     eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges()));
                     OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "update");
                 } else {
+                    tagsAdapter.showInvalidityForAll();
                     Toast.makeText(getActivity(), R.string.uncompleted_fields, Toast.LENGTH_SHORT).show();
                 }
             } else {
