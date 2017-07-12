@@ -70,17 +70,17 @@ public class GoogleOAuthManager {
                     if (dialog.isProgressing()) {
                         dialog.stopProgressBar();
                     }
-                    // Get the tokens in hidden input in the html page
-                    webView.loadUrl("javascript:Android.showToken(" +
-                            "OSM.oauth_token " +
-                            "+ ' ' " +
-                            "+ OSM.oauth_token_secret" +
-                            "+ ' ' " +
-                            "+ OSM.oauth_consumer_key" +
-                            "+ ' ' " +
-                            "+ OSM.oauth_consumer_secret)");
-                }
 
+                    webView.loadUrl("javascript:Android.showToken(" +
+                            "document.getElementsByTagName('head')[0].getAttribute('data-token') " +
+                            "+ ' ' +" +
+                            "document.getElementsByTagName('head')[0].getAttribute('data-token-secret') " +
+                            "+' '+" +
+                            "document.getElementsByTagName('head')[0].getAttribute('data-consumer-key')" +
+                            "+' '+" +
+                            "document.getElementsByTagName('head')[0].getAttribute('data-consumer-secret'));");
+
+                }
                 if (url.contains(OSM_NEW_USER_URL) && !url.equals(OSM_NEW_USER_URL)) {
                     dialog.startProgressBar();
                     // Skip the inscription page
@@ -147,6 +147,7 @@ public class GoogleOAuthManager {
                 }
             });
         }
+
 
         @JavascriptInterface
         @SuppressWarnings("unused")

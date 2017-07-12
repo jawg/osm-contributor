@@ -31,6 +31,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -92,6 +94,7 @@ public class WebViewDialogFragment extends DialogFragment {
         startProgressBar();
 
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setUserAgentString("Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0");
         clearCookies(getActivity());
 
         webView.setWebViewClient(new WebViewClient() {
@@ -106,6 +109,12 @@ public class WebViewDialogFragment extends DialogFragment {
                 view.loadUrl(url);
                 isRedirect = true;
                 return true;
+            }
+
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+
+                return super.shouldInterceptRequest(view, request);
             }
 
             @Override

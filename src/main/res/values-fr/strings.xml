@@ -22,6 +22,7 @@
 <resources>
   <string name="title_activity_edit_poi">Edition de poi</string>
   <string name="location_not_found">Impossible de trouver votre position</string>
+  <string name="undefined">non défini</string>
   <!--EDITION-->
   <string name="addValueDialogTitle">Modifier la valeur de : \"%1$s\"</string>
   <string name="addValueDialogAdd">Modifier</string>

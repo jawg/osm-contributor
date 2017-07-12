@@ -42,7 +42,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:2.3.3'
 
         // add -Pfoss=true to gradlew args to build a version with no Crashlytics/Google analytics
         if(!project.hasProperty('foss')) {
@@ -97,7 +97,7 @@ android {
 
     defaultConfig {
         applicationId "io.jawg.osmcontributor"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 24
         versionName appVersion
@@ -123,8 +123,8 @@ android {
 
         debug {
             versionNameSuffix ".debug-3"
-
-            buildConfigField "String", "BASE_OSM_URL", '"https://master.apis.dev.openstreetmap.org/api/0.6/"'
+            buildConfigField "String", "BASE_OSM_URL", '"https://www.openstreetmap.org/api/0.6/"'
+            //buildConfigField "String", "BASE_OSM_URL", '"https://master.apis.dev.openstreetmap.org/api/0.6/"'
         }
     }
 
