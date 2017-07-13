@@ -33,6 +33,8 @@ public class H2GeoPresetPoi {
 
     private Map<String, List<String>> keywords;
 
+    private  String query;
+
     private List<H2GeoPresetPoiTag> tags;
 
     public String getName() {
@@ -81,5 +83,13 @@ public class H2GeoPresetPoi {
 
     public void setTags(List<H2GeoPresetPoiTag> tags) {
         this.tags = tags;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 }

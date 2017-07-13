@@ -35,6 +35,9 @@ public class PoiTypeDto {
     @SerializedName("icon")
     private String icon;
 
+    @SerializedName("query")
+    private String query;
+
     @SerializedName("label")
     private Map<String, String> label = new HashMap<>();
 
@@ -101,5 +104,13 @@ public class PoiTypeDto {
 
     public void setTags(List<PoiTypeTagDto> tags) {
         this.tags = tags;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 }

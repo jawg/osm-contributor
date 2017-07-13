@@ -33,6 +33,7 @@ import retrofit.http.Query;
 import retrofit.http.QueryMap;
 
 
+
 /**
  * Rest interface for requests to OpenStreetMap.
  */
@@ -81,6 +82,7 @@ public interface OsmRestClient {
     @GET("/ways")
     OsmDto getWay(@Query("ways") long id);
 
+
     /**
      * Get a changeSet and it's discussion from it's id.
      *
@@ -89,6 +91,7 @@ public interface OsmRestClient {
      */
     @GET("/changeset/{id}?include_discussion=true")
     OsmDto getChangeSet(@Path("id") String id);
+
 
     /**
      * Create a ChangeSet.

@@ -26,7 +26,9 @@ import com.github.scribejava.core.model.Verb;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+
 import java.util.List;
+
 import java.util.Map;
 
 import io.jawg.osmcontributor.BuildConfig;
@@ -136,11 +138,37 @@ public class OsmBackend implements Backend {
     @NonNull
     public List<Poi> getPoisInBox(final Box box) {
         Timber.d("Requesting overpass for download");
+        List<Poi> poiList = new ArrayList<>();
+        final Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
+        for (final PoiType poiTypeDto : poiTypes.values()) {
+            if (poiTypeDto.getQuery() != null) {
+                OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
+                    @Override
+                    public OsmDto proceed() {
+                        return overpassRestClient.sendRequest(new TypedString(poiTypeDto.getQuery()));
+                    }
+                });
+                if (!result.isSuccess()) {
+                    if (result.getRetrofitError() != null) {
+                        Timber.e(result.getRetrofitError(), "Retrofit error, couldn't download from overpass");
+                    }
+                    bus.post(new SyncDownloadRetrofitErrorEvent());
+                    return new ArrayList<>();
+                }
+
+                OsmDto osmDto = result.getResult();
+                poiList.addAll(convertPois(osmDto));
+                poiTypes.remove(poiTypeDto);
+            }
+        }
+
+
 
         OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
             @Override
             public OsmDto proceed() {
-                String request = generateOverpassRequest(box);
+
+                String request = generateOverpassRequest(box, poiTypes);
                 return overpassRestClient.sendRequest(new TypedString(request));
             }
         });
@@ -153,7 +181,8 @@ public class OsmBackend implements Backend {
         }
 
         OsmDto osmDto = result.getResult();
-        return convertPois(osmDto);
+        poiList.addAll(convertPois(osmDto));
+        return poiList;
     }
 
     @NonNull
@@ -163,10 +192,15 @@ public class OsmBackend implements Backend {
         return pois;
     }
 
-    private String generateOverpassRequest(Box box) {
+    private String generateOverpassRequest(Box box, Map<Long, PoiType> poiTypes) {
         StringBuilder cmplReq = new StringBuilder("(");
 
-        Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
+        for (PoiType poiTypeDto : poiTypes.values()) {
+            if (poiTypeDto.getQuery() != null) {
+                cmplReq.append(poiTypeDto.getQuery());
+                poiTypes.remove(poiTypeDto);
+            }
+        }
         if (poiTypes.size() > 15) {
             // we've got lots of pois, overpath will struggle with the finer request, download all the pois in the box
             for (String type : OBJECT_TYPES) {
@@ -190,28 +224,33 @@ public class OsmBackend implements Backend {
                 for (PoiType poiTypeDto : poiTypes.values()) {
                     // Check for tags who have a value and add a ["key"~"value"] string to the request
                     boolean valid = false;
-                    for (PoiTypeTag poiTypeTag : poiTypeDto.getTags()) {
-                        if (poiTypeTag.getValue() != null) {
-                            if (!valid) {
-                                cmplReq.append(type);
+
+                        for (PoiTypeTag poiTypeTag : poiTypeDto.getTags()) {
+
+
+                            if (poiTypeTag.getValue() != null) {
+                                if (!valid) {
+                                    cmplReq.append(type);
+                                }
+                                valid = true;
+                                cmplReq.append("[\"")
+                                        .append(poiTypeTag.getKey())
+                                        .append("\"~\"")
+                                        .append(poiTypeTag.getValue())
+                                        .append("\"]");
                             }
-                            valid = true;
-                            cmplReq.append("[\"")
-                                    .append(poiTypeTag.getKey())
-                                    .append("\"~\"")
-                                    .append(poiTypeTag.getValue())
-                                    .append("\"]");
                         }
-                    }
-                    // If there was at least one tag with a value, add the box coordinates to the request
-                    if (valid) {
-                        cmplReq.append("(")
-                                .append(box.getSouth()).append(",")
-                                .append(box.getWest()).append(",")
-                                .append(box.getNorth()).append(",")
-                                .append(box.getEast())
-                                .append(");");
-                    }
+                        // If there was at least one tag with a value, add the box coordinates to the request
+                        if (valid) {
+                            cmplReq.append("(")
+                                    .append(box.getSouth()).append(",")
+                                    .append(box.getWest()).append(",")
+                                    .append(box.getNorth()).append(",")
+                                    .append(box.getEast())
+                                    .append(");");
+                        }
+
+
                 }
             }
         }

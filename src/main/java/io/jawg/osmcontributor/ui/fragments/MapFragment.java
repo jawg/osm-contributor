@@ -74,6 +74,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,6 +100,7 @@ import io.jawg.osmcontributor.model.entities.PoiTypeTag;
 import io.jawg.osmcontributor.model.entities.Way;
 import io.jawg.osmcontributor.model.events.PleaseDeletePoiEvent;
 import io.jawg.osmcontributor.model.events.PleaseRemoveArpiMarkerEvent;
+import io.jawg.osmcontributor.rest.clients.OsmRestClient;
 import io.jawg.osmcontributor.rest.events.SyncDownloadWayEvent;
 import io.jawg.osmcontributor.rest.events.SyncFinishUploadPoiEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncConflictingNodeErrorEvent;
@@ -166,6 +168,7 @@ import io.jawg.osmcontributor.utils.OsmAnswers;
 import io.jawg.osmcontributor.utils.StringUtils;
 import io.jawg.osmcontributor.utils.ways.Geocoder;
 import io.jawg.osmcontributor.utils.ways.LevelBar;
+
 import timber.log.Timber;
 
 public class MapFragment extends Fragment {
@@ -213,6 +216,9 @@ public class MapFragment extends Fragment {
 
     @Inject
     EventBus eventBus;
+
+    @Inject
+    OsmRestClient osmRestClient;
 
     @BindView(R.id.mapview)
     MapView mapView;
@@ -370,6 +376,7 @@ public class MapFragment extends Fragment {
         lastLocation = mapboxMap.getMyLocation();
         if (lastLocation != null) {
             mapboxMap.setCameraPosition(new CameraPosition.Builder().target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).zoom(configManager.getDefaultZoom()).build());
+
         } else {
             mapboxMap.setCameraPosition(new CameraPosition.Builder().target(configManager.getDefaultCenter()).zoom(configManager.getDefaultZoom()).build());
         }

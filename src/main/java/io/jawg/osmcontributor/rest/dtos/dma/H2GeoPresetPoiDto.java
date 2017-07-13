@@ -34,6 +34,9 @@ public class H2GeoPresetPoiDto {
     @SerializedName("label")
     private Map<String, String> label;
 
+    @SerializedName("query")
+    private String query;
+
     @SerializedName("description")
     private Map<String, String> description;
 
@@ -89,5 +92,13 @@ public class H2GeoPresetPoiDto {
 
     public void setTags(List<H2GeoPresetPoiTagDto> tags) {
         this.tags = tags;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 }
