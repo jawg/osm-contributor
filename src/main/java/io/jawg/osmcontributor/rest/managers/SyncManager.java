@@ -114,6 +114,8 @@ public class SyncManager {
         }
     }
 
+
+
     /**
      * Initialize the database if the Flavor is PoiStorage.
      *
@@ -292,6 +294,8 @@ public class SyncManager {
                 return false;
         }
     }
+
+
 
     /**
      * Update a List of POIs to the backend.

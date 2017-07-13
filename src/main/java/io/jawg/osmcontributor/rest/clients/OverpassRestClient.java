@@ -25,7 +25,6 @@ import retrofit.mime.TypedString;
 
 public interface OverpassRestClient {
 
-
     @POST("/")
     OsmDto sendRequest(@Body TypedString data);
 }

@@ -44,6 +44,7 @@ public class H2GeoPresetPoiMapper {
       h2GeoPresetPoi.setKeywords(h2GeoPresetPoiDto.getKeywords());
       h2GeoPresetPoi.setLabel(h2GeoPresetPoiDto.getLabel());
       h2GeoPresetPoi.setName(h2GeoPresetPoiDto.getName());
+      h2GeoPresetPoi.setQuery(h2GeoPresetPoiDto.getQuery());
       h2GeoPresetPoi.setTags(
           h2GeoPresetPoiTagMapper.convertToH2GeoPresetPoiTag(h2GeoPresetPoiDto.getTags()));
       h2GeoPresetPoi.setUrl(h2GeoPresetPoiDto.getUrl());

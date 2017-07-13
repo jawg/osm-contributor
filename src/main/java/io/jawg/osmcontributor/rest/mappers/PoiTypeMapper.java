@@ -60,6 +60,7 @@ public class PoiTypeMapper {
         type.setTechnicalName(dto.getName());
         type.setDescription(getTranslationFormJson(dto.getDescription(), ""));
         type.setKeyWords(getKeywordsFormJson(dto.getKeywords()));
+        type.setQuery(dto.getQuery());
         type.setIcon(getName(dto.getName()));
         // When creating a new PoiType from file, put the same date of last use to all new PoiTypes : 1970-01-01T00:00:00Z
         type.setLastUse(dateTime);
