@@ -28,7 +28,7 @@ public interface TagParser {
 
     boolean isCandidate(String key, List<String> values);
 
-    boolean support(String value);
+    boolean supports(String value);
 
     int getPriority();
 }

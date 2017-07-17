@@ -57,7 +57,7 @@ public class OpeningTimeTagParserImpl implements TagParser {
     }
 
     @Override
-    public boolean support(String value) {
+    public boolean supports(String value) {
         return value == null || value.equals("24/7") || value.matches(PATTERN_FINAL);
     }
 

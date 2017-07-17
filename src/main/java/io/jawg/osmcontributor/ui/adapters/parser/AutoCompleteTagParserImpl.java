@@ -38,7 +38,7 @@ public class AutoCompleteTagParserImpl implements TagParser {
     }
 
     @Override
-    public boolean support(String value) {
+    public boolean supports(String value) {
         return true;
     }
 

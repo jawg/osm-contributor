@@ -95,7 +95,7 @@ public class ParserManager {
             return value;
         }
 
-        if (tagParsers.get(valueParser.getPriority()).support(value)) {
+        if (tagParsers.get(valueParser.getPriority()).supports(value)) {
             return (String) valueParser.fromValue(value);
         }
         if (value == null) {
