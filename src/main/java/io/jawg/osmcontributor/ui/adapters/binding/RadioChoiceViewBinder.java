@@ -23,9 +23,7 @@ import io.jawg.osmcontributor.ui.utils.views.holders.TagRadioChoiceHolder;
  * Created by capaldi on 05/07/17.
  */
 
-public class RadioChoiceViewBinder implements TagViewBinder<TagRadioChoiceHolder> {
-
-    private WeakReference<Activity> activity;
+public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHolder> {
 
     public RadioChoiceViewBinder(Activity activity) {
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
@@ -39,6 +37,10 @@ public class RadioChoiceViewBinder implements TagViewBinder<TagRadioChoiceHolder
 
     @Override
     public void onBindViewHolder(TagRadioChoiceHolder holder, TagItem tagItem) {
+        // Save holder
+        this.content = holder.getContent();
+        this.tagItem = tagItem;
+
         // Set key text view
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
 
@@ -83,17 +85,17 @@ public class RadioChoiceViewBinder implements TagViewBinder<TagRadioChoiceHolder
             }
         }
 
-        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity.get()).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.get().getString(R.string.malformated_value) + " " + tagItem.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
+        showValidation();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         View booleanChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_radio, parent, false);
         return new TagRadioChoiceHolder(booleanChoiceLayout);
+    }
+
+    @Override
+    public void showValidation() {
+        showInvalidityMessage(activity, content, tagItem);
     }
 }
