@@ -370,8 +370,6 @@ public class MapFragment extends Fragment {
         lastLocation = mapboxMap.getMyLocation();
         if (lastLocation != null) {
             mapboxMap.setCameraPosition(new CameraPosition.Builder().target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).zoom(configManager.getDefaultZoom()).build());
-        } else {
-            mapboxMap.setCameraPosition(new CameraPosition.Builder().target(configManager.getDefaultCenter()).zoom(configManager.getDefaultZoom()).build());
         }
     }
 

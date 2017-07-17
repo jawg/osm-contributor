@@ -18,7 +18,6 @@
  */
 package io.jawg.osmcontributor.utils;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 
 /**
@@ -81,13 +80,6 @@ public interface ConfigManager {
      * @return The BoundingBox of the map.
      */
     LatLngBounds getLatLngBounds();
-
-    /**
-     * Get the default center of the map at startup.
-     *
-     * @return The default center.
-     */
-    LatLng getDefaultCenter();
 
     /**
      * Get the url of the map tiles provider.
