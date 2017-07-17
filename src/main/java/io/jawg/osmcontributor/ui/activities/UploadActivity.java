@@ -310,6 +310,5 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         ringProgressDialog.cancel();
         //get all pois not updated
         eventBus.post(new PleaseLoadPoisToUpdateEvent());
-        editTextComment.setText("");
     }
 }
