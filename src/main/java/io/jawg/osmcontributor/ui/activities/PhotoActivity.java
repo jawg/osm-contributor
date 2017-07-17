@@ -483,12 +483,7 @@ public class PhotoActivity extends AppCompatActivity {
                 .setIcon(R.mipmap.icon)
                 .setTitle(R.string.permissions_title)
                 .setMessage(R.string.permissions_information)
-                .setPositiveButton(android.R.string.ok, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        requestPermissionIfNeeded();
-                    }
-                }).show();
+                .setPositiveButton(android.R.string.ok, null).show();
     }
 
 }

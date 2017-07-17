@@ -45,7 +45,7 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
 
         if (!tagItem.isShow()) {
-            ((RelativeLayout) holder.getContent().getParent()).setVisibility(View.INVISIBLE);
+            ((RelativeLayout) holder.getContent().getParent()).setVisibility(View.GONE);
         }
 
         // Check if size of possible values are 3, means special action to organize layout

@@ -56,7 +56,7 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
         }
 
         if (!tagItem.isShow()) {
-            holder.getContent().setVisibility(View.INVISIBLE);
+            holder.getContent().setVisibility(View.GONE);
         }
 
         holder.getTextViewValue().addTextChangedListener(new TextWatcher() {
