@@ -33,13 +33,17 @@ import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
 import io.jawg.osmcontributor.BuildConfig;
+import io.jawg.osmcontributor.model.entities.Action;
 import io.jawg.osmcontributor.model.entities.Comment;
+import io.jawg.osmcontributor.model.entities.Condition;
+import io.jawg.osmcontributor.model.entities.Constraint;
 import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
+import io.jawg.osmcontributor.model.entities.Source;
 import timber.log.Timber;
 
 public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
@@ -58,6 +62,10 @@ public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
             TableUtils.createTable(connectionSource, PoiType.class);
+            TableUtils.createTable(connectionSource, Constraint.class);
+            TableUtils.createTable(connectionSource, Source.class);
+            TableUtils.createTable(connectionSource, Condition.class);
+            TableUtils.createTable(connectionSource, Action.class);
             TableUtils.createTable(connectionSource, PoiTypeTag.class);
             TableUtils.createTable(connectionSource, Poi.class);
             TableUtils.createTable(connectionSource, PoiTag.class);

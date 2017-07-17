@@ -20,6 +20,7 @@ package io.jawg.osmcontributor.model.entities;
 
 import android.support.annotation.NonNull;
 
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -72,6 +73,9 @@ public class PoiType implements Comparable<PoiType> {
 
     @DatabaseField(columnName = KEYWORDS)
     private String keyWords;
+
+    @ForeignCollectionField
+    private ForeignCollection<Constraint> constraints;
 
     public int getUsageCount() {
         return usageCount;
@@ -153,6 +157,10 @@ public class PoiType implements Comparable<PoiType> {
         this.lastUse = lastUse;
     }
 
+    public Collection<Constraint> getConstraints() {
+        return constraints;
+    }
+
     @Override
     public String toString() {
         return "PoiType{" +
@@ -166,6 +174,7 @@ public class PoiType implements Comparable<PoiType> {
                 ", technicalName='" + technicalName + '\'' +
                 ", lastUse=" + lastUse +
                 ", keyWords=" + keyWords +
+                ", constraints=" + constraints +
                 '}';
     }
 
