@@ -58,7 +58,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<TagItem> tagItemList = new ArrayList<>();
     private Map<String, TagItem> keyTagItem = new HashMap<>();
-
+    private Map<String, LinearLayout> checkedViews = new HashMap<>();
     private Poi poi;
     private Activity activity;
     private ConfigManager configManager;
@@ -157,6 +157,26 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
         return true;
+    }
+
+    private void showInvalidityMessage(final LinearLayout content, TagItem tagItem) {
+        // If the tag is not conform we show the error message, if not we remove it exists
+        if (!tagItem.isConform() && content.getChildAt(1).getId() != R.id.malformated_layout) {
+            content.addView(LayoutInflater.from(activity).inflate(
+                    R.layout.malformated_layout, content, false), 1);
+            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
+            ((TextView) ((LinearLayout) content.getChildAt(1)).getChildAt(1)).setText(currentValue);
+        } else if (content.getChildAt(1).getId() == R.id.malformated_layout) {
+            content.removeViewAt(1);
+        }
+    }
+
+    public void showInvalidityForAll() {
+        for (Map.Entry<String, LinearLayout> entry : checkedViews.entrySet()) {
+            TagItem tagItem = keyTagItem.get(entry.getKey());
+            LinearLayout content = entry.getValue();
+            showInvalidityMessage(content, tagItem);
+        }
     }
 
     /*=========================================*/
@@ -349,6 +369,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         t.onBindViewHolder(holder, tag);
     }
 
+    
     /*=========================================*/
     /*------------GETTER/SETTER----------------*/
     /*=========================================*/
