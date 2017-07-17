@@ -14,7 +14,6 @@ import android.widget.TextView;
 import org.greenrobot.eventbus.EventBus;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
@@ -55,8 +54,9 @@ public class AutoCompleteViewBinder implements TagViewBinder<TagItemAutoComplete
             holder.getTextViewValue().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         }
 
-        // Get possible values
-        final List<String> values = tagItem.getValues();
+        if (!tagItem.isShow()) {
+            holder.getContent().setVisibility(View.INVISIBLE);
+        }
 
         holder.getTextViewValue().addTextChangedListener(new TextWatcher() {
             @Override

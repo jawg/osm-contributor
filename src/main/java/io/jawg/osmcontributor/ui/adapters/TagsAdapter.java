@@ -19,18 +19,8 @@
 package io.jawg.osmcontributor.ui.adapters;
 
 import android.app.Activity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -45,12 +35,13 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
-import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
-import io.jawg.osmcontributor.model.utils.OpeningMonth;
-import io.jawg.osmcontributor.model.utils.OpeningTime;
 import io.jawg.osmcontributor.rest.mappers.PoiTypeMapper;
+import io.jawg.osmcontributor.ui.adapters.binding.AutoCompleteViewBinder;
+import io.jawg.osmcontributor.ui.adapters.binding.ConstantViewBinder;
+import io.jawg.osmcontributor.ui.adapters.binding.OpeningHoursViewBinder;
+import io.jawg.osmcontributor.ui.adapters.binding.RadioChoiceViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.TagViewBinder;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
@@ -58,11 +49,6 @@ import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChange;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyTagChangeView;
-import io.jawg.osmcontributor.ui.utils.views.DividerItemDecoration;
-import io.jawg.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHolder;
-import io.jawg.osmcontributor.ui.utils.views.holders.TagItemConstantViewHolder;
-import io.jawg.osmcontributor.ui.utils.views.holders.TagItemOpeningTimeViewHolder;
-import io.jawg.osmcontributor.ui.utils.views.holders.TagRadioChoiceHolder;
 import io.jawg.osmcontributor.utils.ConfigManager;
 import io.jawg.osmcontributor.utils.StringUtils;
 import io.jawg.osmcontributor.utils.edition.PoiChanges;
@@ -75,7 +61,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Poi poi;
     private Activity activity;
-    private EventBus eventBus;
     private ConfigManager configManager;
     private boolean change = false;
     private boolean expertMode = false;
@@ -86,8 +71,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
-    @Inject
-    List<TagViewBinder> viewBinders;
 
     public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity activity, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
@@ -152,7 +135,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * @return the position of the inserted element
      */
     public int addLast(String key, String value, List<String> possibleValues) {
-        TagItem tagItem = new TagItemBuilder(key, value).mandatory(false)
+        TagItem tagItem = new TagItem.TagItemBuilder(key, value).mandatory(false)
                 .values(possibleValues)
                 .type(key.contains("hours") ? TagItem.Type.OPENING_HOURS : TagItem.Type.TEXT)
                 .isConform(true)
@@ -239,7 +222,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         type = key.equals("collection_times") ? TagItem.Type.TIME : type;
         type = key.equals("opening_hours") ? TagItem.Type.OPENING_HOURS : type;
 
-        TagItem tagItem = new TagItemBuilder(key, value).mandatory(mandatory)
+        TagItem tagItem = new TagItem.TagItemBuilder(key, value).mandatory(mandatory)
                 .values(values)
                 .type(updatable ? type : TagItem.Type.CONSTANT)
                 .isConform(valueFormatted != null || type == TagItem.Type.NUMBER)

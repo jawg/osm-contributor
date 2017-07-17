@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
@@ -40,6 +41,10 @@ public class RadioChoiceViewBinder implements TagViewBinder<TagRadioChoiceHolder
     public void onBindViewHolder(TagRadioChoiceHolder holder, TagItem tagItem) {
         // Set key text view
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
+
+        if (!tagItem.isShow()) {
+            ((RelativeLayout) holder.getContent().getParent()).setVisibility(View.INVISIBLE);
+        }
 
         // Check if size of possible values are 3, means special action to organize layout
         List<String> values = tagItem.getValues();
