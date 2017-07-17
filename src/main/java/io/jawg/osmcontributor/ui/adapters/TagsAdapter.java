@@ -25,6 +25,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,6 +73,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<TagItem> tagItemList = new ArrayList<>();
     private Map<String, TagItem> keyTagItem = new HashMap<>();
+    private Map<String, LinearLayout> checkedViews = new HashMap<>();
     private Poi poi;
     private Activity activity;
     private EventBus eventBus;
@@ -168,6 +170,26 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
         return true;
+    }
+
+    private void showInvalidityMessage(final LinearLayout content, TagItem tagItem) {
+        // If the tag is not conform we show the error message, if not we remove it exists
+        if (!tagItem.isConform() && content.getChildAt(1).getId() != R.id.malformated_layout) {
+            content.addView(LayoutInflater.from(activity).inflate(
+                    R.layout.malformated_layout, content, false), 1);
+            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
+            ((TextView) ((LinearLayout) content.getChildAt(1)).getChildAt(1)).setText(currentValue);
+        } else if (content.getChildAt(1).getId() == R.id.malformated_layout) {
+            content.removeViewAt(1);
+        }
+    }
+
+    public void showInvalidityForAll() {
+        for (Map.Entry<String, LinearLayout> entry : checkedViews.entrySet()) {
+            TagItem tagItem = keyTagItem.get(entry.getKey());
+            LinearLayout content = entry.getValue();
+            showInvalidityMessage(content, tagItem);
+        }
     }
 
     /*=========================================*/
@@ -419,12 +441,10 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         });
 
-        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
+        // Save holder
+        checkedViews.put(tagItem.getKey(), holder.getContent());
+
+        showInvalidityMessage(holder.getContent(), tagItem);
     }
 
     /**
@@ -446,6 +466,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     public void onBindViewHolder(final TagItemOpeningTimeViewHolder holder, int position) {
         final TagItem tagItem = tagItemList.get(position);
+
         boolean isVisible = tagItem.isShow();
 
         if (!isVisible) {
@@ -488,12 +509,10 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         });
 
-        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
+        // Save holder
+        checkedViews.put(tagItem.getKey(), holder.getContent());
+
+        showInvalidityMessage(holder.getContent(), tagItem);
 
     }
 
@@ -566,12 +585,10 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
 
-        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.getString(R.string.malformated_value) + " " + tagItem.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
+        // Save holder
+        checkedViews.put(tagItem.getKey(), holder.getContent());
+
+        showInvalidityMessage(holder.getContent(), tagItem);
     }
 
 
