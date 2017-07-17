@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="name" translatable="false">Jungle Bus</string>
+    <string name="poi_creation">Place your stop</string>
+    <string name="delete_poi">Delete</string>
+    <string name="edit_poi">Edit</string>
+    <string name="duplicate_poi">Duplicate</string>
+    <string name="no_poi_name">This bus stop doesn\'t have a name</string>
+    <string name="delete_poi_title">Delete Bus stop</string>
+    <string name="delete_poi_confirm_message">Do you really want to delete this bus stop?</string>
 </resources>

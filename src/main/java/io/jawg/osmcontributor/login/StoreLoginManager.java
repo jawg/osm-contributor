@@ -20,12 +20,14 @@ package io.jawg.osmcontributor.login;
 
 import android.util.Base64;
 
+
 import com.github.scribejava.core.model.Verb;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.Map;
 
+import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.database.preferences.LoginPreferences;
 import io.jawg.osmcontributor.rest.clients.OsmRestClient;
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
@@ -57,28 +59,30 @@ public class StoreLoginManager extends LoginManager {
      */
     @Override
     public boolean isValidLogin(final String login, final String password) {
-        try {
-            OsmDto permissions = null;
-            Map<String, String> oAuthParams = loginPreferences.retrieveOAuthParams();
 
+        try {
+                OsmDto permissions;
+                Map<String, String> oAuthParams = loginPreferences.retrieveOAuthParams();
             // OAuth connection
             if (oAuthParams != null) {
-                String requestUrl = "https://www.openstreetmap.org/api/0.6/permissions";
-
+                String requestUrl = BuildConfig.BASE_OSM_URL + "permissions";
                 OAuthRequest oAuthRequest = new OAuthRequest(oAuthParams.get(CONSUMER_PARAM), oAuthParams.get(CONSUMER_SECRET_PARAM));
                 oAuthRequest.initParam(OAuthParams.getOAuthParams().put(TOKEN_PARAM, oAuthParams.get(TOKEN_PARAM)).toMap());
                 oAuthRequest.setOAuthToken(oAuthParams.get(TOKEN_PARAM));
                 oAuthRequest.setOAuthTokenSecret(oAuthParams.get(TOKEN_SECRET_PARAM));
                 oAuthRequest.setRequestUrl(requestUrl);
                 oAuthRequest.signRequest(Verb.GET);
-                permissions = osmRestClient.getPermissions(oAuthRequest.getParams());
+                oAuthRequest.encodeParams();
+                String headerRequest = oAuthRequest.getOAuthHeader();
+                permissions = osmRestClient.getPermissions(headerRequest);
+
             } else {
                 // Basic Auth connection
-                String authorization = "Basic " + Base64.encodeToString((login + ":" + password).getBytes(), Base64.NO_WRAP);
+                String authorization = "Basic " + Base64.encodeToString((login.trim() + ":" + password).getBytes(), Base64.NO_WRAP);
                 permissions = osmRestClient.getPermissions(authorization);
             }
 
-            if (permissions.getPermissionsDto() != null && permissions.getPermissionsDto().getPermissionDtoList() != null) {
+             if (permissions.getPermissionsDto() != null && permissions.getPermissionsDto().getPermissionDtoList() != null) {
                 for (PermissionDto permissionDto : permissions.getPermissionsDto().getPermissionDtoList()) {
                     if ("allow_write_api".equals(permissionDto.getName())) {
                         return true;

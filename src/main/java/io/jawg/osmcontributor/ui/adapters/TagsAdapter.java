@@ -51,8 +51,8 @@ import io.jawg.osmcontributor.model.entities.PoiTypeTag;
 import io.jawg.osmcontributor.model.utils.OpeningMonth;
 import io.jawg.osmcontributor.model.utils.OpeningTime;
 import io.jawg.osmcontributor.rest.mappers.PoiTypeMapper;
-import io.jawg.osmcontributor.ui.adapters.binding.TagViewBinder;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.ui.adapters.item.TagItem.TagItemBuilder;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChange;
@@ -72,7 +72,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<TagItem> tagItemList = new ArrayList<>();
     private Map<String, TagItem> keyTagItem = new HashMap<>();
-
     private Poi poi;
     private Activity activity;
     private EventBus eventBus;
@@ -82,8 +81,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
-    @Inject
-    List<TagViewBinder> viewBinders;
 
     public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity activity, Map<String, List<String>> tagValueSuggestionsMap, ConfigManager configManager, boolean expertMode) {
         this.poi = poi;
@@ -107,21 +104,27 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /*=========================================*/
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        /* Create different views depending of type of the tag */
+        switch (TagItem.Type.values()[viewType]) {
+            case CONSTANT:
+                View poiTagImposedLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_constant, parent, false);
+                return new TagItemConstantViewHolder(poiTagImposedLayout);
 
-        TagViewBinder t = pickViewBinder(TagItem.Type.values()[viewType]);
-        if (t == null) {
-            throw new IllegalStateException("Invalid view type");
-        }
-        return t.onCreateViewHolder(parent);
-    }
+            case OPENING_HOURS:
+                View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_time, parent, false);
+                return new TagItemOpeningTimeViewHolder(poiTagOpeningHoursLayout);
 
-    private TagViewBinder pickViewBinder(TagItem.Type type) {
-        for (TagViewBinder t : viewBinders) {
-            if (t.supports(type)) {
-                return t;
-            }
+            case TIME:
+                View poiTime = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_time, parent, false);
+                return new TagItemOpeningTimeViewHolder(poiTime);
+
+            case SINGLE_CHOICE:
+                View booleanChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_radio, parent, false);
+                return new TagRadioChoiceHolder(booleanChoiceLayout);
+            default:
+                View autoCompleteLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_multi_choice, parent, false);
+                return new TagItemAutoCompleteViewHolder(autoCompleteLayout);
         }
-        return null;
     }
 
     @Override
@@ -143,7 +146,11 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * @return the position of the inserted element
      */
     public int addLast(String key, String value, List<String> possibleValues) {
-        TagItem tagItem = new TagItem(key, value, false, possibleValues, key.contains("hours") ? TagItem.Type.OPENING_HOURS : TagItem.Type.TEXT, true);
+        TagItem tagItem = new TagItemBuilder(key, value).mandatory(false)
+                .values(possibleValues)
+                .type(key.contains("hours") ? TagItem.Type.OPENING_HOURS : TagItem.Type.TEXT)
+                .isConform(true)
+                .show(true).build();
         // Add into the list
         tagItemList.add(tagItem);
         keyTagItem.put(key, tagItem);
@@ -219,14 +226,19 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * @param position position inside the list
      * @param updatable is updatable
      */
-    private void addTag(String key, String value, boolean mandatory, List<String> values, int position, boolean updatable, TagItem.Type type) {
+    private void addTag(String key, String value, boolean mandatory, List<String> values, int position, boolean updatable, TagItem.Type type, boolean show) {
         // Parse value if needed
         String valueFormatted = ParserManager.getValue(value, type);
         type = type == null ? TagItem.Type.TEXT : type;
         type = key.equals("collection_times") ? TagItem.Type.TIME : type;
         type = key.equals("opening_hours") ? TagItem.Type.OPENING_HOURS : type;
 
-        TagItem tagItem = new TagItem(key, value, mandatory, values, updatable ? type : TagItem.Type.CONSTANT, valueFormatted != null || type == TagItem.Type.NUMBER);
+        TagItem tagItem = new TagItemBuilder(key, value).mandatory(mandatory)
+                .values(values)
+                .type(updatable ? type : TagItem.Type.CONSTANT)
+                .isConform(valueFormatted != null || type == TagItem.Type.NUMBER)
+                .show(show).build();
+
         // Add into the list
         if (!tagItemList.contains(tagItem)) {
             tagItemList.add(position, tagItem);
@@ -290,7 +302,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // FIXME will have to change possible values into a map
         for (String valueAndLabel : valuesAndLabels) {
             String[] split = valueAndLabel.split(PoiTypeMapper.VALUE_SEPARATOR);
-            values.add(split[0]);
+            values.add(split[1]);
         }
         return values;
     }
@@ -302,20 +314,26 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
             List<String> values = removeDuplicate(getPossibleValuesAsList(poiTypeTag.getPossibleValues()),
                     tagValueSuggestionsMap.get(poiTypeTag.getKey()));
+
+            boolean show = true;
+            if (poiTypeTag.getShow() != null) {
+                show = poiTypeTag.getShow().booleanValue();
+            }
             // Tags not in the PoiType should not be displayed if we are not in expert mode
             if (poiTypeTag.getValue() == null) {
                 String key = poiTypeTag.getKey();
+
                 // Display tags as mandatory if they are mandatory and we are not in expert mode
                 if (poiTypeTag.getMandatory() && !expertMode) {
-                    addTag(key, poiTags.get(key), true, values, nbMandatory + nbImposed, true, poiTypeTag.getTagType());
+                    addTag(key, poiTags.get(key), true, values, nbMandatory + nbImposed, true, poiTypeTag.getTagType(), show);
                     nbMandatory++;
                 } else {
-                    addTag(key, poiTags.get(key), false, values, this.getItemCount(), true, poiTypeTag.getTagType());
+                    addTag(key, poiTags.get(key), false, values, this.getItemCount(), true, poiTypeTag.getTagType(), show);
                 }
             } else if (expertMode) {
                 // Display the tags of the poi that are not in the PoiType
                 String key = poiTypeTag.getKey();
-                addTag(key, poiTags.get(key), true, values, nbImposed, false, poiTypeTag.getTagType());
+                addTag(key, poiTags.get(key), true, values, nbImposed, false, poiTypeTag.getTagType(), show);
                 nbImposed++;
             }
         }
@@ -323,7 +341,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (expertMode) {
             for (String key : poiTags.keySet()) {
                 addTag(key, poiTags.get(key), false, removeDuplicate(tagValueSuggestionsMap.get(key),
-                        Collections.singletonList(poiTags.get(key))), this.getItemCount(), true, TagItem.Type.TEXT);
+                        Collections.singletonList(poiTags.get(key))), this.getItemCount(), true, TagItem.Type.TEXT, true);
             }
         }
     }
@@ -334,12 +352,28 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder,
                                  int position) {
-        TagItem tag = tagItemList.get(position);
-        TagViewBinder t = pickViewBinder(tag.getTagType());
-        if (t == null) {
-            throw new IllegalStateException("Invalid tag type. Should not happen");
+
+        switch (tagItemList.get(position).getTagType()) {
+            case CONSTANT:
+                onBindViewHolder((TagItemConstantViewHolder) holder, position);
+                break;
+
+            case OPENING_HOURS:
+                onBindViewHolder((TagItemOpeningTimeViewHolder) holder, position);
+                return;
+
+            case TIME:
+                onBindViewHolder((TagItemOpeningTimeViewHolder) holder, position);
+                return;
+
+            case SINGLE_CHOICE:
+                onBindViewHolder((TagRadioChoiceHolder) holder, position);
+                break;
+
+            default:
+                onBindViewHolder((TagItemAutoCompleteViewHolder) holder, position);
+                break;
         }
-        t.onBindViewHolder(holder, tag);
     }
 
     /**
@@ -349,6 +383,11 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     private void onBindViewHolder(final TagItemAutoCompleteViewHolder holder, int position) {
         final TagItem tagItem = tagItemList.get(holder.getAdapterPosition());
+        boolean isVisible = tagItem.isShow();
+
+        if (!isVisible) {
+            holder.getContent().setVisibility(View.GONE);
+        }
 
         // Set values input
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
@@ -395,6 +434,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     private void onBindViewHolder(TagItemConstantViewHolder holder, int position) {
         final TagItem tagItem = tagItemList.get(position);
+
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
         holder.getTextViewValue().setText(tagItem.getValue());
     }
@@ -406,6 +446,12 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     public void onBindViewHolder(final TagItemOpeningTimeViewHolder holder, int position) {
         final TagItem tagItem = tagItemList.get(position);
+        boolean isVisible = tagItem.isShow();
+
+        if (!isVisible) {
+            holder.getContent().setVisibility(View.GONE);
+        }
+
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
 
         OpeningTime openingTime = null;
@@ -459,6 +505,11 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void onBindViewHolder(TagRadioChoiceHolder holder, int position) {
         // Get tag item from list
         final TagItem tagItem = tagItemList.get(position);
+        boolean isVisible = tagItem.isShow();
+
+        if (!isVisible) {
+            ((View) holder.getContent().getParent()).setVisibility(View.GONE);
+        }
 
         // Set key text view
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));

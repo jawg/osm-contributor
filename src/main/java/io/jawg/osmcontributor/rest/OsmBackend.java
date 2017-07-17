@@ -20,6 +20,9 @@ package io.jawg.osmcontributor.rest;
 
 import android.support.annotation.NonNull;
 
+
+import com.github.scribejava.core.model.Verb;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
@@ -27,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 import io.jawg.osmcontributor.BuildConfig;
+import io.jawg.osmcontributor.database.preferences.LoginPreferences;
+import io.jawg.osmcontributor.rest.utils.AuthenticationRequestInterceptor;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiType;
@@ -68,9 +73,12 @@ public class OsmBackend implements Backend {
 
     EventBus bus;
 
+    LoginPreferences loginPreferences;
+
     public static final String[] OBJECT_TYPES = new String[]{"node", "way"};
 
-    public OsmBackend(EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient, OsmRestClient osmRestClient, PoiMapper poiMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
+    public OsmBackend(LoginPreferences loginPreferences, EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient, OsmRestClient osmRestClient, PoiMapper poiMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
+        this.loginPreferences = loginPreferences;
         this.bus = bus;
         this.osmProxy = osmProxy;
         this.overpassRestClient = overpassRestClient;
@@ -97,7 +105,13 @@ public class OsmBackend implements Backend {
         OSMProxy.Result<String> result = osmProxy.proceed(new OSMProxy.NetworkAction<String>() {
             @Override
             public String proceed() {
-                String changeSetId = osmRestClient.addChangeSet(osmDto);
+
+                String changeSetId;
+                if (loginPreferences.retrieveOAuthParams() != null) {
+                     changeSetId = osmRestClient.addChangeSet(AuthenticationRequestInterceptor.getOAuthRequest(loginPreferences, BuildConfig.BASE_OSM_URL + "changeset/create", Verb.PUT).getOAuthHeader(), osmDto);
+                } else {
+                    changeSetId = osmRestClient.addChangeSet(osmDto);
+                }
                 Timber.d("Retrieved changeSet Id: %s", changeSetId);
                 return changeSetId;
             }
