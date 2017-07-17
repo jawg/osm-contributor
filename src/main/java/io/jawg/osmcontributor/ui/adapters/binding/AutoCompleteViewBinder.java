@@ -55,7 +55,7 @@ public class AutoCompleteViewBinder implements TagViewBinder<TagItemAutoComplete
         }
 
         if (!tagItem.isShow()) {
-            holder.getContent().setVisibility(View.INVISIBLE);
+            holder.getContent().setVisibility(View.GONE);
         }
 
         holder.getTextViewValue().addTextChangedListener(new TextWatcher() {
