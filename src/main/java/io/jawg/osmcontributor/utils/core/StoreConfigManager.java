@@ -18,7 +18,6 @@
  */
 package io.jawg.osmcontributor.utils.core;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 
 import javax.inject.Singleton;
@@ -70,11 +69,6 @@ public class StoreConfigManager implements ConfigManager {
     @Override
     public LatLngBounds getLatLngBounds() {
         return null;
-    }
-
-    @Override
-    public LatLng getDefaultCenter() {
-        return new LatLng(BuildConfig.CENTER_LAT, BuildConfig.CENTER_LNG);
     }
 
     @Override
