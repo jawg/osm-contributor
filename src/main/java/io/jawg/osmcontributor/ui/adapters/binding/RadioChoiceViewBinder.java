@@ -52,6 +52,14 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
 
         // List of radio buttons without undefined. Undefined is always showing
         RadioButton[] radioButtons = holder.getRadioButtons();
+        RadioButton undefinedRadioButton = holder.getUndefinedRadioButton();
+
+        if (tagItem.isMandatory()) {
+            undefinedRadioButton.setEnabled(false);
+            undefinedRadioButton.setChecked(false);
+        } else {
+            undefinedRadioButton.setChecked(true);
+        }
 
         // Access element for values
         int pos = 0;
