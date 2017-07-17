@@ -8,8 +8,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -26,9 +24,8 @@ import io.jawg.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHold
  * Created by capaldi on 05/07/17.
  */
 
-public class AutoCompleteViewBinder implements TagViewBinder<TagItemAutoCompleteViewHolder> {
+public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoCompleteViewHolder> {
 
-    private WeakReference<Activity> activity;
     private WeakReference<EventBus> eventBus;
 
     public AutoCompleteViewBinder(Activity activity, EventBus eventBus) {
@@ -44,6 +41,10 @@ public class AutoCompleteViewBinder implements TagViewBinder<TagItemAutoComplete
 
     @Override
     public void onBindViewHolder(final TagItemAutoCompleteViewHolder holder, TagItem tagItem) {
+        // Save holder
+        this.content = holder.getContent();
+        this.tagItem = tagItem;
+
         // Set values input
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
         holder.getTextViewValue().setText(tagItem.getValue());
@@ -75,17 +76,16 @@ public class AutoCompleteViewBinder implements TagViewBinder<TagItemAutoComplete
             }
         });
 
-        if (!tagItem.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity.get()).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.get().getString(R.string.malformated_value) + " " + tagItem.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
+        showValidation();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         View autoCompleteLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_multi_choice, parent, false);
         return new TagItemAutoCompleteViewHolder(autoCompleteLayout);
+    }
+
+    public void showValidation() {
+        showInvalidityMessage(activity, content, tagItem);
     }
 }

@@ -7,8 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
@@ -29,12 +27,10 @@ import io.jawg.osmcontributor.ui.utils.views.holders.TagItemOpeningTimeViewHolde
  * Created by loicortola on 05/07/2017.
  */
 
-public class OpeningHoursViewBinder implements TagViewBinder<TagItemOpeningTimeViewHolder> {
+public class OpeningHoursViewBinder extends CheckedTagViewBinder<TagItemOpeningTimeViewHolder> {
 
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
-
-    private WeakReference<Activity> activity;
 
     public OpeningHoursViewBinder(Activity activity) {
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
@@ -47,15 +43,19 @@ public class OpeningHoursViewBinder implements TagViewBinder<TagItemOpeningTimeV
     }
 
     @Override
-    public void onBindViewHolder(TagItemOpeningTimeViewHolder holder, TagItem tag) {
-        holder.getTextViewKey().setText(ParserManager.parseTagName(tag.getKey()));
+    public void onBindViewHolder(TagItemOpeningTimeViewHolder holder, TagItem tagItem) {
+        // Save holder
+        this.content = holder.getContent();
+        this.tagItem = tagItem;
+
+        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
 
         OpeningTime openingTime = null;
         try {
-            openingTime = openingTimeValueParser.fromValue(tag.getValue());
+            openingTime = openingTimeValueParser.fromValue(tagItem.getValue());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-            tag.setConform(false);
+            tagItem.setConform(false);
         }
 
         if (openingTime == null) {
@@ -63,8 +63,8 @@ public class OpeningHoursViewBinder implements TagViewBinder<TagItemOpeningTimeV
         }
 
         final OpeningMonthAdapter adapter = new OpeningMonthAdapter(openingTime, activity.get());
-        adapter.setTime(tag.getValue());
-        if (tag.getTagType() == TagItem.Type.TIME) {
+        adapter.setTime(tagItem.getValue());
+        if (tagItem.getTagType() == TagItem.Type.TIME) {
             adapter.hideMonth(true);
         }
         holder.getOpeningTimeRecyclerView().setAdapter(adapter);
@@ -84,17 +84,17 @@ public class OpeningHoursViewBinder implements TagViewBinder<TagItemOpeningTimeV
             }
         });
 
-        if (!tag.isConform() && holder.getContent().getChildAt(1).getId() != R.id.malformated_layout) {
-            holder.getContent().addView(LayoutInflater.from(activity.get()).inflate(
-                    R.layout.malformated_layout, holder.getContent(), false), 1);
-            String currentValue = activity.get().getString(R.string.malformated_value) + " " + tag.getValue();
-            ((TextView) ((LinearLayout) holder.getContent().getChildAt(1)).getChildAt(1)).setText(currentValue);
-        }
+        showValidation();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_time, parent, false);
         return new TagItemOpeningTimeViewHolder(poiTagOpeningHoursLayout);
+    }
+
+    @Override
+    public void showValidation() {
+        showInvalidityMessage(activity, content, tagItem);
     }
 }
