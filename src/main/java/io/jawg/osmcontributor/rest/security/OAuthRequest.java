@@ -18,12 +18,16 @@
  */
 package io.jawg.osmcontributor.rest.security;
 
+import com.flickr4java.flickr.util.Base64;
 import com.github.scribejava.core.model.Verb;
+
+
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.TreeMap;
+
 
 public class OAuthRequest {
 
@@ -43,6 +47,12 @@ public class OAuthRequest {
     private String oAuthToken;
 
     private String oAuthTokenSecret;
+
+    private static final String ENC = "UTF-8";
+
+    private static final String HMAC_SHA1 = "HmacSHA1";
+
+    private static Base64 base64 = new Base64();
 
     /*=========================================*/
     /*------------CONSTRUCTORS-----------------*/
@@ -71,7 +81,7 @@ public class OAuthRequest {
         String convertedUrl = SecurityUtils.convertUrl(requestUrl, verb, params);
         if (convertedUrl != null) {
             params.put("oauth_signature", SecurityUtils.getSignatureFromRequest(convertedUrl,
-                    apiKeySecret + SEPARATOR + (oAuthTokenSecret == null ? "" : oAuthTokenSecret)));
+                    apiKeySecret + SEPARATOR + (oAuthTokenSecret == null ? "" : oAuthTokenSecret)).replace("\n", ""));
         }
     }
 
