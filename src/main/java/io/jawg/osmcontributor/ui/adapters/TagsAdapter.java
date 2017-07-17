@@ -521,6 +521,22 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // List of radio buttons without undefined. Undefined is always showing
         RadioButton[] radioButtons = holder.getRadioButtons();
 
+        // `undefined` radio button
+        RadioButton undefinedRadioButton = holder.getUndefinedRadioButton();
+
+        // Get if the tag is mandatory
+        final boolean mandatory = tagItemList.get(position).isMandatory();
+
+        // If the tag is required, we disable the `undefined` radio button
+        if (mandatory) {
+            undefinedRadioButton.setEnabled(false);
+        }
+
+        // If the tag value is `undefined`, we check the undefined radio button
+        if (tagItem.getValue() != null && tagItem.getValue().equals(TagItem.VALUE_UNDEFINED)) {
+            undefinedRadioButton.setChecked(true);
+        }
+
         // Access element for values
         int pos = 0;
         for (int i = 0; i < radioButtons.length; i++) {
@@ -540,7 +556,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                     // Select radio if value is not undefined
                     if (tagItem.getValue() != null && tagItem.getValue().equals(values.get(pos))) {
-                        holder.getUndefinedRadioButton().setChecked(false);
                         radioButtons[i].setChecked(true);
                     }
                     pos++;
