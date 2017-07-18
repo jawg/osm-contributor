@@ -101,6 +101,6 @@ public class ParserManager {
         if (value == null) {
             return "";
         }
-        return null;
+        return value;
     }
 }
