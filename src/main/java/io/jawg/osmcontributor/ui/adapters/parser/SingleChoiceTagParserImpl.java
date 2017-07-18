@@ -42,7 +42,7 @@ public class SingleChoiceTagParserImpl implements TagParser {
     /**
      * Supported value.
      */
-    private List<String> supportedValues = Arrays.asList("y", "n", "0", "1", "true", "false", "oui", "non", "si", "yes", "no", "undefined", "non renseigné", "");
+    private List<String> supportedValues = Arrays.asList("y", "n", "0", "1", "true", "false", "oui", "non", "si", "yes", "no", "undefined", "");
 
     @Override
     public TagItem.Type getType() {
@@ -53,13 +53,13 @@ public class SingleChoiceTagParserImpl implements TagParser {
     public boolean isCandidate(String key, List<String> values) {
         this.possibleValues = values;
         // If size is < 7 and values must be choose in a list with yes/no.
-        return values.size() < LIMIT && values.contains("yes") || values.contains("no");
+        return values.size() < LIMIT && (values.contains("yes") || values.contains("no"));
     }
 
     @Override
     public boolean supports(String value) {
         // If value is not in possible values, user have to format the value.
-        return value == null || possibleValues.contains(value.toLowerCase()) || supportedValues.contains(value.toLowerCase());
+        return value == null || possibleValues.contains(value) || supportedValues.contains(value);
     }
 
     @Override

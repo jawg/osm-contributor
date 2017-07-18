@@ -27,6 +27,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -135,7 +136,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * Add an element at the end of the List.
      * @return the position of the inserted element
      */
-    public int addLast(String key, String value, List<String> possibleValues) {
+    public int addLast(String key, String value, Map<String, String> possibleValues) {
         TagItem tagItem = new TagItem.TagItemBuilder(key, value).mandatory(false)
                 .values(possibleValues)
                 .type(key.contains("hours") ? TagItem.Type.OPENING_HOURS : TagItem.Type.TEXT)
@@ -209,7 +210,24 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * @param newValue new value
      */
     private void editTag(TagItem tagItem, String newValue) {
-        tagItem.setValue(newValue);
+        // If event comes from SingleChoiceTag
+        if (tagItem.getTagType() == TagItem.Type.SINGLE_CHOICE) {
+            // Get the key from value, safe cause no duplicate
+            String key = "";
+            for (Map.Entry<String, String> entry : tagItem.getValues().entrySet()) {
+                if (newValue.equals(entry.getValue())) {
+                    key = entry.getKey();
+                    break;
+                }
+            }
+            // If no match were found, then undefined is checked cause not in map
+            if (key.equals("")) {
+                key = "undefined";
+            }
+            tagItem.setValue(key);
+        } else {
+            tagItem.setValue(newValue);
+        }
         change = true;
     }
 
@@ -222,7 +240,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * @param position position inside the list
      * @param updatable is updatable
      */
-    private void addTag(String key, String value, boolean mandatory, List<String> values, int position, boolean updatable, TagItem.Type type, boolean show) {
+    private void addTag(String key, String value, boolean mandatory, Map<String, String> values, int position, boolean updatable, TagItem.Type type, boolean show) {
         // Parse value if needed
         String valueFormatted = ParserManager.getValue(value, type);
         type = type == null ? TagItem.Type.TEXT : type;
@@ -251,34 +269,44 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * @param autoCompleteValues proposition from last used values
      * @return a merged list
      */
-    private List<String> removeDuplicate(List<String> possibleValues, List<String> autoCompleteValues) {
-        // Create a default empty list to avoid null pointer exception
-        List<String> values = new ArrayList<>();
+    private Map<String, String> removeDuplicate(List<String> possibleValues, List<String> autoCompleteValues) {
+        // Create a default empty map to avoid null pointer exception
+        Map<String, String> values = new HashMap<>();
 
         if (possibleValues != null) {
             // If possible values are not null, init values with it
-            values.addAll(possibleValues);
+            for (String possibleValue : possibleValues) {
+                // if values are type of 'XXX;;XXX' split'em
+                if (possibleValue.contains(PoiTypeMapper.VALUE_SEPARATOR)) {
+                    String[] split = possibleValue.split(PoiTypeMapper.VALUE_SEPARATOR);
+                    values.put(split[0], split[1]);
+                } else {
+                    values.put(possibleValue, possibleValue);
+                }
+            }
         }
 
         if (autoCompleteValues != null) {
             // If auto complete values are not null and values are empty, fill it with it
             if (values.isEmpty()) {
-                values.addAll(autoCompleteValues);
+                for (String autoCompleteValue: autoCompleteValues) {
+                    values.put(autoCompleteValue, autoCompleteValue);
+                }
             }
 
-            // For each auto complete values, if the value does not exist, add it to the new list
+            // For each auto complete values, if the value does not exist, add it to the new map
             for (String possibleValue : autoCompleteValues) {
-                if (!values.contains(possibleValue) && (!possibleValue.isEmpty() || !possibleValue.trim().isEmpty())) {
-                    values.add(possibleValue);
+                if (!values.containsKey(possibleValue) && (!possibleValue.isEmpty() || !possibleValue.trim().isEmpty())) {
+                    values.put(possibleValue, possibleValue);
                 }
             }
         }
 
         // Sometimes, with yes value there is no value, this is a non sens
-        if (values.contains("yes") && !values.contains("no")) {
-            values.add("no");
-        } else if (values.contains("no") && !values.contains("yes")) {
-            values.add("yes");
+        if (values.containsKey("yes") && !values.containsKey("no")) {
+            values.put("no", "No");
+        } else if (values.containsKey("no") && !values.containsKey("yes")) {
+            values.put("yes", "Yes");
         }
         return values;
     }
@@ -294,13 +322,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         // Split into an array of value:label
         String[] valuesAndLabels = possibleValuesAsString.split(PoiTypeMapper.ITEM_SEPARATOR);
-        List<String> values = new ArrayList<>(valuesAndLabels.length);
-        // FIXME will have to change possible values into a map
-        for (String valueAndLabel : valuesAndLabels) {
-            String[] split = valueAndLabel.split(PoiTypeMapper.VALUE_SEPARATOR);
-            values.add(split[1]);
-        }
-        return values;
+        return new ArrayList<>(Arrays.asList(valuesAndLabels));
     }
 
     private void loadTags(Map<String, String> poiTags, Map<String, List<String>> tagValueSuggestionsMap) {
@@ -308,7 +330,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         int nbImposed = 0;
 
         for (PoiTypeTag poiTypeTag : poi.getType().getTags()) {
-            List<String> values = removeDuplicate(getPossibleValuesAsList(poiTypeTag.getPossibleValues()),
+            Map<String, String> values = removeDuplicate(getPossibleValuesAsList(poiTypeTag.getPossibleValues()),
                     tagValueSuggestionsMap.get(poiTypeTag.getKey()));
 
             boolean show = true;

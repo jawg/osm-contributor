@@ -9,7 +9,8 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
@@ -47,7 +48,7 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
         }
 
         // Check if size of possible values are 3, means special action to organize layout
-        List<String> values = tagItem.getValues();
+        Map<String, String> values = tagItem.getValues();
         boolean isFourElements = values.size() == 3;
 
         // List of radio buttons without undefined. Undefined is always showing
@@ -75,11 +76,11 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
 
                 if (pos < values.size()) {
                     // Set value of radio button and show it
-                    radioButtons[i].setText(values.get(pos));
+                    radioButtons[i].setText((new ArrayList<>(values.values())).get(pos));
                     radioButtons[i].setVisibility(View.VISIBLE);
 
                     // Select radio if value is not undefined
-                    if (tagItem.getValue() != null && tagItem.getValue().equals(values.get(pos))) {
+                    if (tagItem.getValue() != null && tagItem.getValue().equals((new ArrayList<>(values.keySet())).get(pos))) {
                         holder.getUndefinedRadioButton().setChecked(false);
                         radioButtons[i].setChecked(true);
                     }

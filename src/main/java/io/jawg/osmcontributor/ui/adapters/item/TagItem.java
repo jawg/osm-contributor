@@ -21,8 +21,8 @@ package io.jawg.osmcontributor.ui.adapters.item;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class TagItem implements Parcelable {
 
@@ -31,7 +31,7 @@ public class TagItem implements Parcelable {
     private String key;
     private String value;
     private boolean mandatory;
-    private List<String> values = new ArrayList<>();
+    private Map<String, String> values = new LinkedHashMap<>();
     private Type type;
     private boolean isConform;
     private boolean show;
@@ -72,15 +72,15 @@ public class TagItem implements Parcelable {
 
         for (int i = 0; i < size; i++) {
             final String value = in.readString();
-            this.values.add(value);
+            this.values.put(value, value);
         }
     }
 
-    public List<String> getValues() {
+    public Map<String, String> getValues() {
         return values;
     }
 
-    public void setValues(List<String> values) {
+    public void setValues(Map<String, String> values) {
         this.values = values;
     }
 
@@ -142,7 +142,7 @@ public class TagItem implements Parcelable {
 
         if (values != null) {
             dest.writeInt(values.size());
-            for (String autocomplete : values) {
+            for (String autocomplete : values.values()) {
                 dest.writeString(autocomplete);
             }
         } else {
@@ -188,7 +188,7 @@ public class TagItem implements Parcelable {
         private String key;
         private String value;
         private boolean mandatory;
-        private List<String> values = new ArrayList<>();
+        private Map<String, String> values = new LinkedHashMap<>();
         private Type type;
         private boolean isConform;
         private boolean show;
@@ -203,7 +203,7 @@ public class TagItem implements Parcelable {
             return this;
         }
 
-        public TagItemBuilder values(List<String> values) {
+        public TagItemBuilder values(Map<String, String> values) {
             this.values = values;
             return this;
         }
