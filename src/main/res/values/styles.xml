@@ -61,7 +61,7 @@
         <item name="android:textColorHighlight">#333333</item>
     </style>
 
-    <style name="TextInputLayout" parent="TextAppearance.AppCompat">
+    <style name="TextInputLayout" parent="Widget.Design.TextInputLayout">
         <!-- Hint color and label color in FALSE state -->
         <item name="android:textColorHint">@color/disable_text</item>
         <item name="android:textColor">@color/hint_color</item>

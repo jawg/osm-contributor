@@ -247,7 +247,6 @@ public class MapFragment extends Fragment {
         measureMaxPoiType();
 
         presenter = new MapFragmentPresenter(this);
-        mapboxListener = new MapboxListener(this, eventBus);
     }
 
     @Override
@@ -260,6 +259,8 @@ public class MapFragment extends Fragment {
 
         unbinder = ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
+
+        mapboxListener = new MapboxListener(this, eventBus);
 
         zoomVectorial = configManager.getZoomVectorial();
 
