@@ -28,7 +28,8 @@ public class Constraint {
     public static final String SOURCE = "SOURCE";
     public static final String CONDITION = "CONDITION";
     public static final String ACTION = "ACTION";
-    public static final String POI_TYPE = "POI_TYPE_ID";
+    public static final String POI_TYPE_ID = "POI_TYPE_ID";
+    public static final String ORDINAL = "ORDINAL";
 
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
@@ -42,8 +43,11 @@ public class Constraint {
     @DatabaseField(columnName = ACTION, canBeNull = false, foreign = true)
     private Action action;
 
-    @DatabaseField(columnName = POI_TYPE, foreign = true, foreignAutoRefresh = true)
-    private PoiType poiTypeID;
+    @DatabaseField(foreign = true, columnName = POI_TYPE_ID, canBeNull = false)
+    private PoiType poiType;
+
+    @DatabaseField(columnName = ORDINAL, canBeNull = false)
+    private Integer ordinal;
 
     public Long getId() {
         return id;
@@ -77,12 +81,20 @@ public class Constraint {
         this.action = action;
     }
 
-    public PoiType getPoiTypeID() {
-        return poiTypeID;
+    public PoiType getPoiType() {
+        return poiType;
     }
 
-    public void setPoiTypeID(PoiType poiTypeID) {
-        this.poiTypeID = poiTypeID;
+    public void setPoiType(PoiType poiType) {
+        this.poiType = poiType;
+    }
+
+    public Integer getOrdinal() {
+        return ordinal;
+    }
+
+    public void setOrdinal(Integer ordinal) {
+        this.ordinal = ordinal;
     }
 
     @Override
@@ -126,5 +138,47 @@ public class Constraint {
         result = 31 * result + (condition != null ? condition.hashCode() : 0);
         result = 31 * result + (action != null ? action.hashCode() : 0);
         return result;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final Constraint constraint = new Constraint();
+
+        public Builder setId(Long id) {
+            this.constraint.setId(id);
+            return this;
+        }
+
+        public Builder setSource(Source source) {
+            this.constraint.setSource(source);
+            return this;
+        }
+
+        public Builder setCondition(Condition condition) {
+            this.constraint.setCondition(condition);
+            return this;
+        }
+
+        public Builder setAction(Action action) {
+            this.constraint.setAction(action);
+            return this;
+        }
+
+        public Builder setPoiType(PoiType poiType) {
+            this.constraint.setPoiType(poiType);
+            return this;
+        }
+
+        public Builder setOrdinal(Integer ordinal) {
+            this.constraint.setOrdinal(ordinal);
+            return this;
+        }
+
+        public Constraint build() {
+            return this.constraint;
+        }
     }
 }

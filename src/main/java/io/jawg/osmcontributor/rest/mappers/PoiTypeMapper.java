@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -30,8 +30,13 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.jawg.osmcontributor.model.entities.Action;
+import io.jawg.osmcontributor.model.entities.Condition;
+import io.jawg.osmcontributor.model.entities.Constraint;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
+import io.jawg.osmcontributor.model.entities.Source;
+import io.jawg.osmcontributor.rest.dtos.dma.ConstraintDto;
 import io.jawg.osmcontributor.rest.dtos.dma.PoiTypeDto;
 import io.jawg.osmcontributor.rest.dtos.dma.PoiTypeTagDto;
 
@@ -63,7 +68,6 @@ public class PoiTypeMapper {
         type.setIcon(getName(dto.getName()));
         // When creating a new PoiType from file, put the same date of last use to all new PoiTypes : 1970-01-01T00:00:00Z
         type.setLastUse(dateTime);
-
         int ordinal = 0;
         if (dto.getTags() != null) {
             ArrayList<PoiTypeTag> tags = new ArrayList<>(dto.getTags().size());
@@ -89,6 +93,40 @@ public class PoiTypeMapper {
                 poiTypeTag.setTagType(tagDto.getType());
                 tags.add(poiTypeTag);
 
+            }
+        }
+
+        ordinal = 0;
+        if (dto.getConstraints() != null) {
+            ArrayList<Constraint> constraints = new ArrayList<>();
+            type.setConstraints(constraints);
+            for (ConstraintDto constraintDto : dto.getConstraints()) {
+                // Constraint's Source
+                Source source = Source.builder()
+                        .setType(constraintDto.getSource().getType())
+                        .setKey(constraintDto.getSource().getKey())
+                        .build();
+                // Constraint's Condition
+                Condition condition = Condition.builder()
+                        .setType(constraintDto.getCondition().getType())
+                        .setValue(constraintDto.getCondition().getValue())
+                        .build();
+                // Constraint's Action
+                Action action = Action.builder()
+                        .setType(constraintDto.getAction().getType())
+                        .setKey(constraintDto.getAction().getKey())
+                        .setValue(constraintDto.getAction().getValue())
+                        .build();
+                // Complete constraint
+                Constraint constraint = Constraint.builder()
+                        .setPoiType(type)
+                        .setSource(source)
+                        .setCondition(condition)
+                        .setAction(action)
+                        .setOrdinal(ordinal++)
+                        .build();
+                // Add constraint to the list
+                constraints.add(constraint);
             }
         }
         return type;

@@ -102,4 +102,31 @@ public class Source {
         result = 31 * result + (key != null ? key.hashCode() : 0);
         return result;
     }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final Source source = new Source();
+
+        public Builder setId(Long id) {
+            this.source.setId(id);
+            return this;
+        }
+
+        public Builder setType(SourceValue sourceValue) {
+            this.source.setType(sourceValue);
+            return this;
+        }
+
+        public Builder setKey(String key) {
+            this.source.setKey(key);
+            return this;
+        }
+
+        public Source build() {
+            return this.source;
+        }
+    }
 }
