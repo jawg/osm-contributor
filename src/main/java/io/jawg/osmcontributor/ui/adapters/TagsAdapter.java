@@ -220,10 +220,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     break;
                 }
             }
-            // If no match were found, then undefined is checked cause not in map
-            if (key.equals("")) {
-                key = "undefined";
-            }
             tagItem.setValue(key);
         } else {
             tagItem.setValue(newValue);
@@ -396,7 +392,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         PoiChanges result = new PoiChanges(poi.getId());
         for (TagItem tagItem : tagItemList) {
             // Only mandatory tags and optional tags that have been changed are saved
-            if (tagItem.isMandatory() || (tagItem.getValue() != null && tagItem.getValue().trim().length() != 0)) {
+            if (tagItem.isMandatory() || (tagItem.getValue() != null)) {
                 result.getTagsMap().put(tagItem.getKey().trim(), tagItem.getValue().trim());
             }
         }

@@ -76,11 +76,13 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
 
                 if (pos < values.size()) {
                     // Set value of radio button and show it
-                    radioButtons[i].setText((new ArrayList<>(values.values())).get(pos));
+                    String value = (new ArrayList<>(values.values())).get(pos);
+                    radioButtons[i].setText(value);
                     radioButtons[i].setVisibility(View.VISIBLE);
 
                     // Select radio if value is not undefined
-                    if (tagItem.getValue() != null && tagItem.getValue().equals((new ArrayList<>(values.keySet())).get(pos))) {
+                    String key = (new ArrayList<>(values.keySet())).get(pos);
+                    if (tagItem.getValue() != null && tagItem.getValue().equals(key)) {
                         holder.getUndefinedRadioButton().setChecked(false);
                         radioButtons[i].setChecked(true);
                     }
