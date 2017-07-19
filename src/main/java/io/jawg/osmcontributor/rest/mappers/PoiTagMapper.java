@@ -36,11 +36,8 @@ public class PoiTagMapper {
     public List<TagDto> convertFromPoiTag(Collection<PoiTag> poiTags) {
         List<TagDto> result = new ArrayList<>();
         for (PoiTag tag : poiTags) {
-            if ("undefined".equalsIgnoreCase(tag.getValue())) {
-                continue;
-            }
-            TagDto tagDto = new TagDto();
 
+            TagDto tagDto = new TagDto();
             tagDto.setKey(tag.getKey());
             tagDto.setValue(tag.getValue());
 
