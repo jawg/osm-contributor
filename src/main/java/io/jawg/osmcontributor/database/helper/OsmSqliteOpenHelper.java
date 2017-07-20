@@ -45,7 +45,7 @@ import timber.log.Timber;
 public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DATABASE_NAME = "osm-db" + BuildConfig.APPLICATION_ID + ".sqlite";
-    public static final int CURRENT_VERSION = 10;
+    public static final int CURRENT_VERSION = 11;
 
     private Context context;
 
@@ -72,15 +72,10 @@ public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         Timber.d("Upgrading schema from version " + oldVersion + " to " + newVersion);
-
-        for (int version = oldVersion; version < newVersion; version++) {
-            String sqlScriptFilename = "updateSql-" + version + "-" + (version + 1) + ".sql";
-            try {
-                executeSqlScript(context, connectionSource, database, sqlScriptFilename);
-            } catch (Exception e) {
-                Timber.e(e, "Error while upgrading database");
-            }
-        }
+        // Drop all tables
+        dropTables();
+        // Create All over
+        onCreate(database, connectionSource);
     }
 
     /**
@@ -107,5 +102,19 @@ public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
             }
         }));
         reader.close();
+    }
+
+    private void dropTables() {
+        try {
+            TableUtils.dropTable(connectionSource, PoiType.class, true);
+            TableUtils.dropTable(connectionSource, PoiTypeTag.class, true);
+            TableUtils.dropTable(connectionSource, Poi.class, true);
+            TableUtils.dropTable(connectionSource, PoiTag.class, true);
+            TableUtils.dropTable(connectionSource, PoiNodeRef.class, true);
+            TableUtils.dropTable(connectionSource, Note.class, true);
+            TableUtils.dropTable(connectionSource, Comment.class, true);
+        } catch (SQLException e) {
+            Timber.e(e, "Error while creating tables");
+        }
     }
 }
