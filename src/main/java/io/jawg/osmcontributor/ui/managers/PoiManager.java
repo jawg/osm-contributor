@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -38,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 
 import io.jawg.osmcontributor.database.PoiAssetLoader;
+import io.jawg.osmcontributor.database.dao.ConstraintDao;
 import io.jawg.osmcontributor.database.dao.PoiDao;
 import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
 import io.jawg.osmcontributor.database.dao.PoiTagDao;
@@ -46,6 +47,7 @@ import io.jawg.osmcontributor.database.dao.PoiTypeTagDao;
 import io.jawg.osmcontributor.database.events.DbInitializedEvent;
 import io.jawg.osmcontributor.database.events.InitDbEvent;
 import io.jawg.osmcontributor.database.helper.DatabaseHelper;
+import io.jawg.osmcontributor.model.entities.Constraint;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiTag;
@@ -99,13 +101,17 @@ public class PoiManager {
     PoiNodeRefDao poiNodeRefDao;
     PoiTypeDao poiTypeDao;
     PoiTypeTagDao poiTypeTagDao;
+    ConstraintDao constraintDao;
     DatabaseHelper databaseHelper;
     ConfigManager configManager;
     EventBus bus;
     PoiAssetLoader poiAssetLoader;
 
     @Inject
-    public PoiManager(Application application, BitmapHandler bitmapHandler, PoiDao poiDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao, PoiTypeTagDao poiTypeTagDao, DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus, PoiAssetLoader poiAssetLoader) {
+    public PoiManager(Application application, BitmapHandler bitmapHandler, PoiDao poiDao,
+                      PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao,
+                      PoiTypeTagDao poiTypeTagDao, ConstraintDao constraintDao, DatabaseHelper databaseHelper,
+                      ConfigManager configManager, EventBus bus, PoiAssetLoader poiAssetLoader) {
         this.application = application;
         this.bitmapHandler = bitmapHandler;
         this.poiDao = poiDao;
@@ -113,6 +119,7 @@ public class PoiManager {
         this.poiNodeRefDao = poiNodeRefDao;
         this.poiTypeDao = poiTypeDao;
         this.poiTypeTagDao = poiTypeTagDao;
+        this.constraintDao = constraintDao;
         this.databaseHelper = databaseHelper;
         this.configManager = configManager;
         this.bus = bus;
@@ -244,6 +251,7 @@ public class PoiManager {
 
     /**
      * Load poi types from h2GeoDto and save them in the database.
+     *
      * @param h2GeoDto
      */
     public void savePoiTypesFromH2Geo(H2GeoDto h2GeoDto) {
@@ -394,6 +402,11 @@ public class PoiManager {
                 for (PoiTypeTag poiTypeTag : poiType.getTags()) {
                     poiTypeTag.setPoiType(poiType);
                     poiTypeTagDao.createOrUpdate(poiTypeTag);
+                }
+                // Save the Constraints
+                for (Constraint constraint : poiType.getConstraints()) {
+                    constraint.setPoiType(poiType);
+                    constraintDao.createOrUpdate(constraint);
                 }
                 return poiType;
             }
