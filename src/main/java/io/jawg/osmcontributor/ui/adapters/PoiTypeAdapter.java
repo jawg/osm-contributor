@@ -218,7 +218,7 @@ public class PoiTypeAdapter extends RecyclerView.Adapter<PoiTypeAdapter.PoiTypeV
         public void onBind(PoiType item) {
             text.setText(item.getName());
             technicalName.setText(item.getTechnicalName());
-            details.setText(itemView.getContext().getResources().getQuantityString(R.plurals.tag_number, item.getTags().size()));
+            details.setText(itemView.getContext().getResources().getQuantityString(R.plurals.tag_number, item.getTags().size(), item.getTags().size()));
             icon.setImageDrawable(bitmapHandler.getDrawable(item.getIcon()));
         }
 
