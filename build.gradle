@@ -1,5 +1,5 @@
 ext {
-    appVersion = "3.0.8"
+    appVersion = "3.0.9"
     androidSupportVersion = '25.1.0'
     playServicesVersion = '7.8.0'
     daggerVersion = '2.0'
@@ -99,7 +99,7 @@ android {
         applicationId "io.jawg.osmcontributor"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 27
+        versionCode 28
         versionName appVersion
         multiDexEnabled true
         ndk {
@@ -152,8 +152,8 @@ android {
 
         bus {
             applicationId "io.jawg.osmcontributor.bus"
-            versionName "1.2.3"
-            versionCode 6
+            versionName "1.2.4"
+            versionCode 7
 
             buildConfigField "String", "APP_NAME", '"Jungle Bus"'
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
