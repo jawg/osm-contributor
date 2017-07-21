@@ -20,10 +20,13 @@ package io.jawg.osmcontributor.ui.managers;
 
 
 import android.app.Application;
+import android.util.Log;
+import android.widget.Switch;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -33,6 +36,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
+import io.jawg.osmcontributor.model.entities.Action;
+import io.jawg.osmcontributor.model.entities.Condition;
+import io.jawg.osmcontributor.model.entities.Constraint;
+import io.jawg.osmcontributor.model.entities.Source;
 import io.jawg.osmcontributor.model.events.PleaseCreatePoiEvent;
 import io.jawg.osmcontributor.model.events.PleaseDeletePoiEvent;
 import io.jawg.osmcontributor.model.entities.Poi;
@@ -188,5 +195,34 @@ public class EditPoiManager {
             return old.getId();
         }
         return poiNodeRef.getOldPoiId();
+    }
+
+    private void applyConstraints(Poi poi){
+        Collection<Constraint> constraints = poi.getType().getConstraints();
+        if (constraints.size() > 0){
+            for (Constraint constraint : constraints){
+                Source source = constraint.getSource();
+                Condition condition = constraint.getCondition();
+                Action action = constraint.getAction();
+
+                PoiTag poiTag;
+
+                switch (source.getType()){
+                    case TAG:
+                        poiTag = findTagByKey(poi, source.getKey()); break;
+                    default:
+                        continue;
+                }
+            }
+        }
+    }
+
+    private PoiTag findTagByKey(Poi poi, String key){
+        Collection<PoiTag> poiTags = poi.getTags();
+        for (PoiTag poiTag : poiTags){
+            if (poiTag.getKey().equals(key)){
+                return poiTag;
+            }
+        }
     }
 }
