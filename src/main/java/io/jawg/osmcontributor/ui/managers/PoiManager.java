@@ -38,12 +38,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 
 import io.jawg.osmcontributor.database.PoiAssetLoader;
+import io.jawg.osmcontributor.database.dao.ActionDao;
+import io.jawg.osmcontributor.database.dao.ConditionDao;
 import io.jawg.osmcontributor.database.dao.ConstraintDao;
 import io.jawg.osmcontributor.database.dao.PoiDao;
 import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
 import io.jawg.osmcontributor.database.dao.PoiTagDao;
 import io.jawg.osmcontributor.database.dao.PoiTypeDao;
 import io.jawg.osmcontributor.database.dao.PoiTypeTagDao;
+import io.jawg.osmcontributor.database.dao.SourceDao;
 import io.jawg.osmcontributor.database.events.DbInitializedEvent;
 import io.jawg.osmcontributor.database.events.InitDbEvent;
 import io.jawg.osmcontributor.database.helper.DatabaseHelper;
@@ -102,6 +105,9 @@ public class PoiManager {
     PoiTypeDao poiTypeDao;
     PoiTypeTagDao poiTypeTagDao;
     ConstraintDao constraintDao;
+    SourceDao sourceDao;
+    ConditionDao conditionDao;
+    ActionDao actionDao;
     DatabaseHelper databaseHelper;
     ConfigManager configManager;
     EventBus bus;
@@ -110,7 +116,8 @@ public class PoiManager {
     @Inject
     public PoiManager(Application application, BitmapHandler bitmapHandler, PoiDao poiDao,
                       PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao,
-                      PoiTypeTagDao poiTypeTagDao, ConstraintDao constraintDao, DatabaseHelper databaseHelper,
+                      PoiTypeTagDao poiTypeTagDao, ConstraintDao constraintDao, SourceDao sourceDao,
+                      ConditionDao conditionDao, ActionDao actionDao, DatabaseHelper databaseHelper,
                       ConfigManager configManager, EventBus bus, PoiAssetLoader poiAssetLoader) {
         this.application = application;
         this.bitmapHandler = bitmapHandler;
@@ -120,6 +127,9 @@ public class PoiManager {
         this.poiTypeDao = poiTypeDao;
         this.poiTypeTagDao = poiTypeTagDao;
         this.constraintDao = constraintDao;
+        this.sourceDao = sourceDao;
+        this.conditionDao = conditionDao;
+        this.actionDao = actionDao;
         this.databaseHelper = databaseHelper;
         this.configManager = configManager;
         this.bus = bus;
@@ -405,7 +415,12 @@ public class PoiManager {
                 }
                 // Save the Constraints
                 for (Constraint constraint : poiType.getConstraints()) {
+                    // Create (or get from the DB if exists) the constraint's source/condition/action
+                    sourceDao.createIfNotExist(constraint.getSource());
+                    conditionDao.createIfNotExist(constraint.getCondition());
+                    actionDao.createIfNotExist(constraint.getAction());
                     constraint.setPoiType(poiType);
+                    // Save the constraint the to DB
                     constraintDao.createOrUpdate(constraint);
                 }
                 return poiType;
