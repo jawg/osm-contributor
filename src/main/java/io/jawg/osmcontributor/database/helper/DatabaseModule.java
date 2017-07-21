@@ -31,6 +31,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.jawg.osmcontributor.model.entities.Comment;
+import io.jawg.osmcontributor.model.entities.Constraint;
 import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiNodeRef;
@@ -86,6 +87,10 @@ public class DatabaseModule {
         return createDao(helper, PoiTypeTag.class);
     }
 
+    @Provides
+    Dao<Constraint, Long> getConstraintDao(OsmSqliteOpenHelper helper) {
+        return createDao(helper, Constraint.class);
+    }
 
     /**
      * Create a Dao of a given model class.

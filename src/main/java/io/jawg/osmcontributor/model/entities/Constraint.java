@@ -34,16 +34,16 @@ public class Constraint {
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
 
-    @DatabaseField(columnName = SOURCE, canBeNull = false, foreign = true)
+    @DatabaseField(columnName = SOURCE, canBeNull = false, foreign = true, foreignAutoCreate = true)
     private Source source;
 
-    @DatabaseField(columnName = CONDITION, canBeNull = false, foreign = true)
+    @DatabaseField(columnName = CONDITION, canBeNull = false, foreign = true, foreignAutoCreate = true)
     private Condition condition;
 
-    @DatabaseField(columnName = ACTION, canBeNull = false, foreign = true)
+    @DatabaseField(columnName = ACTION, canBeNull = false, foreign = true, foreignAutoCreate = true)
     private Action action;
 
-    @DatabaseField(foreign = true, columnName = POI_TYPE_ID, canBeNull = false)
+    @DatabaseField(foreign = true, columnName = POI_TYPE_ID, canBeNull = false, foreignAutoCreate = true)
     private PoiType poiType;
 
     @DatabaseField(columnName = ORDINAL, canBeNull = false)
