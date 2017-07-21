@@ -888,7 +888,6 @@ public class PoiManager {
             if (poiTypeTag.getValue() != null) { // default tags should be set in the corresponding POI
                 defaultTags.put(poiTypeTag.getKey(), poiTypeTag.getValue());
             }
-
         }
         poi.applyChanges(defaultTags);
 

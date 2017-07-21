@@ -34,13 +34,13 @@ public class Constraint {
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
 
-    @DatabaseField(columnName = SOURCE, canBeNull = false, foreign = true)
+    @DatabaseField(columnName = SOURCE, canBeNull = false, foreign = true, foreignAutoRefresh = true)
     private Source source;
 
-    @DatabaseField(columnName = CONDITION, canBeNull = false, foreign = true)
+    @DatabaseField(columnName = CONDITION, canBeNull = false, foreign = true, foreignAutoRefresh = true)
     private Condition condition;
 
-    @DatabaseField(columnName = ACTION, canBeNull = false, foreign = true)
+    @DatabaseField(columnName = ACTION, canBeNull = false, foreign = true, foreignAutoRefresh = true)
     private Action action;
 
     @DatabaseField(columnName = POI_TYPE_ID, canBeNull = false, foreign = true)
