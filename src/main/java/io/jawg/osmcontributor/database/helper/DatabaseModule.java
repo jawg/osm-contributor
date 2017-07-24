@@ -30,13 +30,17 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.jawg.osmcontributor.model.entities.Action;
 import io.jawg.osmcontributor.model.entities.Comment;
+import io.jawg.osmcontributor.model.entities.Condition;
+import io.jawg.osmcontributor.model.entities.Constraint;
 import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
+import io.jawg.osmcontributor.model.entities.Source;
 import timber.log.Timber;
 
 /**
@@ -86,6 +90,25 @@ public class DatabaseModule {
         return createDao(helper, PoiTypeTag.class);
     }
 
+    @Provides
+    Dao<Constraint, Long> getConstraintDao(OsmSqliteOpenHelper helper) {
+        return createDao(helper, Constraint.class);
+    }
+
+    @Provides
+    Dao<Source, Long> getSourceDao(OsmSqliteOpenHelper helper) {
+        return createDao(helper, Source.class);
+    }
+
+    @Provides
+    Dao<Condition, Long> getConditionDao(OsmSqliteOpenHelper helper) {
+        return createDao(helper, Condition.class);
+    }
+
+    @Provides
+    Dao<Action, Long> getActionDao(OsmSqliteOpenHelper helper) {
+        return createDao(helper, Action.class);
+    }
 
     /**
      * Create a Dao of a given model class.

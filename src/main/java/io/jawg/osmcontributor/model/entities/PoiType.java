@@ -77,6 +77,9 @@ public class PoiType implements Comparable<PoiType> {
     @DatabaseField(columnName = QUERY)
     private String query;
 
+    @ForeignCollectionField(orderColumnName = Constraint.ORDINAL)
+    private Collection<Constraint> constraints;
+
     public int getUsageCount() {
         return usageCount;
     }
@@ -165,6 +168,14 @@ public class PoiType implements Comparable<PoiType> {
         this.query = query;
     }
 
+    public Collection<Constraint> getConstraints() {
+        return constraints;
+    }
+
+    public void setConstraints(Collection<Constraint> constraints) {
+        this.constraints = constraints;
+    }
+
     @Override
     public String toString() {
         return "PoiType{" +
@@ -178,6 +189,7 @@ public class PoiType implements Comparable<PoiType> {
                 ", technicalName='" + technicalName + '\'' +
                 ", lastUse=" + lastUse +
                 ", keyWords=" + keyWords +
+                ", constraints=" + constraints +
                 '}';
     }
 
