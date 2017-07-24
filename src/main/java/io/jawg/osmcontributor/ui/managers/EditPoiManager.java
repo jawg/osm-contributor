@@ -200,31 +200,39 @@ public class EditPoiManager {
     }
 
     private Map<String, String> applyConstraints(Poi poi) {
-        Map<String, String> tagsMap = null;
+        Map<String, String> tagsMap = new HashMap<>();
         Collection<Constraint> constraints = poi.getType().getConstraints();
         if (constraints != null) {
-            tagsMap = new HashMap<>();
             for (Constraint constraint : constraints) {
                 Source source = constraint.getSource();
                 Condition condition = constraint.getCondition();
                 Action action = constraint.getAction();
 
-                PoiTag poiTag;
+                PoiTag poiTag = null;
 
                 switch (source.getType()) {
                     case TAG:
                         poiTag = findTagByKey(poi, source.getKey());
                         break;
-                    default:
-                        continue;
                 }
 
                 switch (condition.getType()) {
                     case EXISTS:
-                        //TODO: This needs to be implemented later
-                        continue;
+                        // if the value is true and tag exists
+                        if (poiTag != null && condition.getValue()
+                                .equalsIgnoreCase(Condition.ExistsValues.TRUE.getValue())) {
+                            continue;
+                        // if the value is false and tag doesn't exists
+                        } else if (poiTag == null && condition.getValue()
+                                .equalsIgnoreCase(Condition.ExistsValues.FALSE.getValue())) {
+                            continue;
+                        // If none is valid
+                        } else {
+                            break;
+                        }
                     case EQUALS:
-                        if (poiTag != null && poiTag.getValue().equalsIgnoreCase(condition.getValue())) {
+                        if (poiTag != null && poiTag.getValue()
+                                .equalsIgnoreCase(condition.getValue())) {
                             break;
                         }
                     default:
@@ -233,8 +241,12 @@ public class EditPoiManager {
 
                 switch (action.getType()) {
                     case SET_TAG_VALUE:
+                        // Add to map of tags
                         tagsMap.put(action.getKey(), action.getValue());
                         break;
+                    case REMOVE_TAG:
+                        // Set value to empty string to remove
+                        tagsMap.put(action.getKey(), "");
                 }
             }
         }

@@ -31,7 +31,7 @@ public class Action {
     public static final String VALUE = "VALUE";
 
     public enum ActionValue {
-        SET_TAG_VALUE
+        SET_TAG_VALUE, REMOVE_TAG
     }
 
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)

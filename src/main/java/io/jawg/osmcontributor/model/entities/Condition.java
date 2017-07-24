@@ -34,7 +34,16 @@ public class Condition {
     }
 
     public enum ExistsValues {
-        TRUE, FALSE
+        TRUE("true"), FALSE("false");
+        String value;
+
+        ExistsValues(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
