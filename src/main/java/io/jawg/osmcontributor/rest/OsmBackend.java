@@ -140,16 +140,18 @@ public class OsmBackend implements Backend {
 
         List<Poi> poiList = new ArrayList<>();
         final Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
-        for (final Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
-            if (entry.getValue().getQuery() != null) {
+        for (final PoiType poiTypeDto : poiTypes.values()) {
+            if (poiTypeDto.getQuery() != null) {
                 OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
                     @Override
                     public OsmDto proceed() {
-                        if (entry.getValue().getQuery().contains(BBOX)) {
-                            String format = entry.getValue().getQuery().replace(BBOX, box.osmFormat());
+                        // if it is a customize overpass request which contain ({{bbox}})
+                        // replace it by the coordinates of the current position
+                        if (poiTypeDto.getQuery().contains(BBOX)) {
+                            String format = poiTypeDto.getQuery().replace(BBOX, box.osmFormat());
                             return overpassRestClient.sendRequest(new TypedString(format));
                         } else {
-                            return overpassRestClient.sendRequest(new TypedString(entry.getValue().getQuery()));
+                            return overpassRestClient.sendRequest(new TypedString(poiTypeDto.getQuery()));
                         }
                     }
                 });
@@ -192,6 +194,13 @@ public class OsmBackend implements Backend {
         return pois;
     }
 
+    /**
+     * Generate a String corresponding to an Overpass request
+     * which will call all the POI given by the map.
+     * @param box The coordinates of each direction of the map
+     * @param poiTypes Map of poiTypes depending the preset loaded
+     * @return A String of the request.
+     */
     private String generateOverpassRequest(Box box, Map<Long, PoiType> poiTypes) {
         StringBuilder cmplReq = new StringBuilder("(");
 

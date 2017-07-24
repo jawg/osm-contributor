@@ -43,6 +43,7 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
         // Set key text view
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
 
+        // if Tag is show=false, hide it
         if (!tagItem.isShow()) {
             ((RelativeLayout) holder.getContent().getParent()).setVisibility(View.GONE);
         }
@@ -55,6 +56,7 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
         RadioButton[] radioButtons = holder.getRadioButtons();
         RadioButton undefinedRadioButton = holder.getUndefinedRadioButton();
 
+        // If the tag is mandatory, the undefined button is disabled and unchecked
         if (tagItem.isMandatory()) {
             undefinedRadioButton.setEnabled(false);
             undefinedRadioButton.setChecked(false);
@@ -94,6 +96,7 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
             }
         }
 
+        // run validation process
         showValidation();
     }
 

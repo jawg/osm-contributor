@@ -109,6 +109,12 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return t.onCreateViewHolder(parent);
     }
 
+    /**
+     * Given the type of the Tag, check if it corresponds to
+     * a supported viewBinder
+     * @param type TagItem type
+     * @return Return the supported viewBinder or null
+     */
     private TagViewBinder pickViewBinder(TagItem.Type type) {
         for (TagViewBinder t : viewBinders) {
             if (t.supports(type)) {
