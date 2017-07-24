@@ -55,6 +55,7 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
             holder.getTextViewValue().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         }
 
+        // if Tag is show=false, hide it
         if (!tagItem.isShow()) {
             holder.getContent().setVisibility(View.GONE);
         }
@@ -76,6 +77,7 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
             }
         });
 
+        // run validation process
         showValidation();
     }
 

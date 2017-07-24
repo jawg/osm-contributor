@@ -20,6 +20,12 @@ public abstract class CheckedTagViewBinder<T> implements TagViewBinder<T> {
     public LinearLayout content;
     public TagItem tagItem;
 
+    /**
+     * Check if the tag contains correct values
+     * @param activity Current activity (EditionPOI)
+     * @param content Current LinearLayout containing each tag
+     * @param tagItem tag currently checked
+     */
     public void showInvalidityMessage(WeakReference<Activity> activity, LinearLayout content, TagItem tagItem) {
         // If the tag is not conform we show the error message, if not we remove it exists
         if (!tagItem.isConform() && content.getChildAt(1).getId() != R.id.malformated_layout) {
