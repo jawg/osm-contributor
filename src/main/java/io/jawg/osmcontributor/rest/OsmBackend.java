@@ -20,7 +20,6 @@ package io.jawg.osmcontributor.rest;
 
 import android.support.annotation.NonNull;
 
-
 import com.github.scribejava.core.model.Verb;
 
 import org.greenrobot.eventbus.EventBus;
@@ -74,6 +73,8 @@ public class OsmBackend implements Backend {
     EventBus bus;
 
     LoginPreferences loginPreferences;
+
+    private static final String BBOX = "({{bbox}});";
 
     public static final String[] OBJECT_TYPES = new String[]{"node", "way"};
 
@@ -137,10 +138,37 @@ public class OsmBackend implements Backend {
     public List<Poi> getPoisInBox(final Box box) {
         Timber.d("Requesting overpass for download");
 
+        List<Poi> poiList = new ArrayList<>();
+        final Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
+        for (final Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
+            if (entry.getValue().getQuery() != null) {
+                OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
+                    @Override
+                    public OsmDto proceed() {
+                        if (entry.getValue().getQuery().contains(BBOX)) {
+                            String format = entry.getValue().getQuery().replace(BBOX, box.osmFormat());
+                            return overpassRestClient.sendRequest(new TypedString(format));
+                        } else {
+                            return overpassRestClient.sendRequest(new TypedString(entry.getValue().getQuery()));
+                        }
+                    }
+                });
+                if (!result.isSuccess()) {
+                    if (result.getRetrofitError() != null) {
+                          Timber.e(result.getRetrofitError(), "Retrofit error, couldn't download from overpass");
+                    }
+                    bus.post(new SyncDownloadRetrofitErrorEvent());
+                    return new ArrayList<>();
+                }
+                OsmDto osmDto = result.getResult();
+                poiList.addAll(convertPois(osmDto));
+            }
+        }
+
         OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
             @Override
             public OsmDto proceed() {
-                String request = generateOverpassRequest(box);
+                String request = generateOverpassRequest(box, poiTypes);
                 return overpassRestClient.sendRequest(new TypedString(request));
             }
         });
@@ -153,7 +181,8 @@ public class OsmBackend implements Backend {
         }
 
         OsmDto osmDto = result.getResult();
-        return convertPois(osmDto);
+        poiList.addAll(convertPois(osmDto));
+        return poiList;
     }
 
     @NonNull
@@ -163,10 +192,9 @@ public class OsmBackend implements Backend {
         return pois;
     }
 
-    private String generateOverpassRequest(Box box) {
+    private String generateOverpassRequest(Box box, Map<Long, PoiType> poiTypes) {
         StringBuilder cmplReq = new StringBuilder("(");
 
-        Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
         if (poiTypes.size() > 15) {
             // we've got lots of pois, overpath will struggle with the finer request, download all the pois in the box
             for (String type : OBJECT_TYPES) {
@@ -175,12 +203,7 @@ public class OsmBackend implements Backend {
                             .append("[\"")
                             .append(key)
                             .append("\"]")
-                            .append("(")
-                            .append(box.getSouth()).append(",")
-                            .append(box.getWest()).append(",")
-                            .append(box.getNorth()).append(",")
-                            .append(box.getEast())
-                            .append(");");
+                            .append(box.osmFormat());
                 }
             }
         } else {
@@ -205,12 +228,7 @@ public class OsmBackend implements Backend {
                     }
                     // If there was at least one tag with a value, add the box coordinates to the request
                     if (valid) {
-                        cmplReq.append("(")
-                                .append(box.getSouth()).append(",")
-                                .append(box.getWest()).append(",")
-                                .append(box.getNorth()).append(",")
-                                .append(box.getEast())
-                                .append(");");
+                        cmplReq.append(box.osmFormat());
                     }
                 }
             }

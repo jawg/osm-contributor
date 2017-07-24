@@ -75,12 +75,7 @@ public class OSMSyncWayManager implements SyncWayManager {
         StringBuilder cmplReq = new StringBuilder("(way");
 
         // bounding box
-        cmplReq.append("(")
-                .append(box.getSouth()).append(",")
-                .append(box.getWest()).append(",")
-                .append(box.getNorth()).append(",")
-                .append(box.getEast())
-                .append(");");
+        cmplReq.append(box.osmFormat());
 
         cmplReq.append(");out meta geom;");
         return cmplReq.toString();
