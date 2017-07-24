@@ -33,6 +33,10 @@ public class Condition {
         EXISTS, EQUALS
     }
 
+    public enum ExistsValues {
+        TRUE, FALSE
+    }
+
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
 

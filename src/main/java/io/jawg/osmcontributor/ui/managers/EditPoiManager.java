@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -20,10 +20,12 @@ package io.jawg.osmcontributor.ui.managers;
 
 
 import android.app.Application;
-import android.util.Log;
-import android.widget.Switch;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,21 +33,17 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
 import io.jawg.osmcontributor.model.entities.Action;
 import io.jawg.osmcontributor.model.entities.Condition;
 import io.jawg.osmcontributor.model.entities.Constraint;
-import io.jawg.osmcontributor.model.entities.Source;
-import io.jawg.osmcontributor.model.events.PleaseCreatePoiEvent;
-import io.jawg.osmcontributor.model.events.PleaseDeletePoiEvent;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
+import io.jawg.osmcontributor.model.entities.Source;
+import io.jawg.osmcontributor.model.events.PleaseCreatePoiEvent;
+import io.jawg.osmcontributor.model.events.PleaseDeletePoiEvent;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyNodeRefPositionChange;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyPoiChanges;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyPoiPositionChange;
@@ -81,6 +79,7 @@ public class EditPoiManager {
             //this is the edition of a new poi or we already edited this poi
             editPoi.applyChanges(event.getPoiChanges().getTagsMap());
             editPoi.setUpdated(true);
+            applyConstraints(editPoi);
             poiManager.savePoi(editPoi);
             poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
         }
@@ -124,6 +123,7 @@ public class EditPoiManager {
         Poi poi = event.getPoi();
         poi.setUpdated(true);
         poi.applyChanges(event.getPoiChanges().getTagsMap());
+        applyConstraints(poi);
         poiManager.savePoi(poi);
         poiManager.updatePoiTypeLastUse(poi.getType().getId());
         eventBus.post(new PoiChangesApplyEvent());
@@ -197,32 +197,60 @@ public class EditPoiManager {
         return poiNodeRef.getOldPoiId();
     }
 
-    private void applyConstraints(Poi poi){
+    private void applyConstraints(Poi poi) {
         Collection<Constraint> constraints = poi.getType().getConstraints();
-        if (constraints.size() > 0){
-            for (Constraint constraint : constraints){
+        if (constraints != null) {
+            for (Constraint constraint : constraints) {
                 Source source = constraint.getSource();
                 Condition condition = constraint.getCondition();
                 Action action = constraint.getAction();
 
                 PoiTag poiTag;
 
-                switch (source.getType()){
+                switch (source.getType()) {
                     case TAG:
-                        poiTag = findTagByKey(poi, source.getKey()); break;
+                        poiTag = findTagByKey(poi, source.getKey());
+                        break;
                     default:
                         continue;
+                }
+
+                switch (condition.getType()) {
+                    case EXISTS:
+                        //TODO
+                    case EQUALS:
+                        if (poiTag != null && poiTag.getValue().equalsIgnoreCase(condition.getValue())) {
+                            break;
+                        }
+                    default:
+                        continue;
+                }
+
+                switch (action.getType()) {
+                    case SET_TAG_VALUE:
+                        // Check if the tag already exists, otherwise create a new one
+                        PoiTag newPoiTag = findTagByKey(poi, action.getKey());
+                        if (newPoiTag != null) {
+                            newPoiTag.setValue(action.getValue());
+                        } else {
+                            newPoiTag = new PoiTag();
+                            newPoiTag.setKey(action.getKey());
+                            newPoiTag.setValue(action.getValue());
+                            poi.getTags().add(newPoiTag);
+                        }
+                        break;
                 }
             }
         }
     }
 
-    private PoiTag findTagByKey(Poi poi, String key){
-        Collection<PoiTag> poiTags = poi.getTags();
-        for (PoiTag poiTag : poiTags){
-            if (poiTag.getKey().equals(key)){
+    private PoiTag findTagByKey(Poi poi, String key) {
+        Collection<PoiTag> poiTypeTags = poi.getTags();
+        for (PoiTag poiTag : poiTypeTags) {
+            if (poiTag.getKey().equals(key)) {
                 return poiTag;
             }
         }
+        return null;
     }
 }
