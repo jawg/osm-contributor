@@ -47,6 +47,9 @@ public class PoiTypeDto {
     @SerializedName("tags")
     private List<PoiTypeTagDto> tags = new ArrayList<>();
 
+    @SerializedName("query")
+    private String query;
+
     public String getName() {
         return name;
     }
@@ -101,5 +104,13 @@ public class PoiTypeDto {
 
     public void setTags(List<PoiTypeTagDto> tags) {
         this.tags = tags;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 }

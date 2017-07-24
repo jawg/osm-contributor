@@ -42,6 +42,7 @@ public class PoiType implements Comparable<PoiType> {
     public static final String USAGE_COUNT = "USAGE_COUNT";
     public static final String LAST_USE = "LAST_USE";
     public static final String KEYWORDS = "KEYWORDS";
+    public static final String QUERY = "QUERY";
 
     @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
@@ -72,6 +73,9 @@ public class PoiType implements Comparable<PoiType> {
 
     @DatabaseField(columnName = KEYWORDS)
     private String keyWords;
+
+    @DatabaseField(columnName = QUERY)
+    private String query;
 
     public int getUsageCount() {
         return usageCount;
@@ -151,6 +155,14 @@ public class PoiType implements Comparable<PoiType> {
 
     public void setLastUse(DateTime lastUse) {
         this.lastUse = lastUse;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 
     @Override

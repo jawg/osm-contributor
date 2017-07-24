@@ -68,6 +68,7 @@ public class PoiTypeMapper {
         if (dto.getTags() != null) {
             ArrayList<PoiTypeTag> tags = new ArrayList<>(dto.getTags().size());
             type.setTags(tags);
+            type.setQuery(dto.getQuery());
             for (PoiTypeTagDto tagDto : dto.getTags()) {
                 // If the tag is implied, do not keep it
                 PoiTypeTag poiTypeTag = new PoiTypeTag();
