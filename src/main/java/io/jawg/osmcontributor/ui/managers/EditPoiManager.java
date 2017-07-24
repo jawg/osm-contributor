@@ -29,7 +29,9 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -78,8 +80,8 @@ public class EditPoiManager {
 
             //this is the edition of a new poi or we already edited this poi
             editPoi.applyChanges(event.getPoiChanges().getTagsMap());
+            editPoi.applyChanges(applyConstraints(editPoi));
             editPoi.setUpdated(true);
-            applyConstraints(editPoi);
             poiManager.savePoi(editPoi);
             poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
         }
@@ -123,7 +125,7 @@ public class EditPoiManager {
         Poi poi = event.getPoi();
         poi.setUpdated(true);
         poi.applyChanges(event.getPoiChanges().getTagsMap());
-        applyConstraints(poi);
+        poi.applyChanges(applyConstraints(poi));
         poiManager.savePoi(poi);
         poiManager.updatePoiTypeLastUse(poi.getType().getId());
         eventBus.post(new PoiChangesApplyEvent());
@@ -197,9 +199,11 @@ public class EditPoiManager {
         return poiNodeRef.getOldPoiId();
     }
 
-    private void applyConstraints(Poi poi) {
+    private Map<String, String> applyConstraints(Poi poi) {
+        Map<String, String> tagsMap = null;
         Collection<Constraint> constraints = poi.getType().getConstraints();
         if (constraints != null) {
+            tagsMap = new HashMap<>();
             for (Constraint constraint : constraints) {
                 Source source = constraint.getSource();
                 Condition condition = constraint.getCondition();
@@ -217,7 +221,8 @@ public class EditPoiManager {
 
                 switch (condition.getType()) {
                     case EXISTS:
-                        //TODO
+                        //TODO: This needs to be implemented later
+                        continue;
                     case EQUALS:
                         if (poiTag != null && poiTag.getValue().equalsIgnoreCase(condition.getValue())) {
                             break;
@@ -228,20 +233,12 @@ public class EditPoiManager {
 
                 switch (action.getType()) {
                     case SET_TAG_VALUE:
-                        // Check if the tag already exists, otherwise create a new one
-                        PoiTag newPoiTag = findTagByKey(poi, action.getKey());
-                        if (newPoiTag != null) {
-                            newPoiTag.setValue(action.getValue());
-                        } else {
-                            newPoiTag = new PoiTag();
-                            newPoiTag.setKey(action.getKey());
-                            newPoiTag.setValue(action.getValue());
-                            poi.getTags().add(newPoiTag);
-                        }
+                        tagsMap.put(action.getKey(), action.getValue());
                         break;
                 }
             }
         }
+        return tagsMap;
     }
 
     private PoiTag findTagByKey(Poi poi, String key) {
