@@ -73,6 +73,13 @@ public class Box {
         return box != null && (north >= box.getNorth() && east >= box.getEast() && south <= box.getSouth() && west <= box.getWest());
     }
 
+    public String osmFormat() {
+        return "(" + this.south + "," +
+                this.west + "," +
+                this.north + "," +
+                this.east + ");";
+    }
+
     /**
      * Convert a {@link com.mapbox.mapboxsdk.geometry.LatLngBounds} to a box.
      *
