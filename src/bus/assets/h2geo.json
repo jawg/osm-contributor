@@ -4,8 +4,8 @@
     "en": "Bus preset",
     "fr": "Preset bus"
   },
-  "version": "0.1",
-  "author": "Hugo Bernardi",
+  "version": "0.2",
+  "author": "Favier Nicolas",
   "link": "https://github.com/jawg/h2geo-presets",
   "description": {
     "default": "The only profile you need to contribute your favourite bus amenities.",
@@ -131,6 +131,10 @@
             },
             {
               "key": "route_ref",
+              "type": "TEXT"
+            },
+            {
+              "key": "note",
               "type": "TEXT"
             }
           ]
