@@ -1,3 +1,5 @@
+---- OSM Contributor ----
+
 OSM Contributor is the latest mobile OpenStreetMap editor.
 
 NEW: in the new 3.0 Release:
@@ -22,3 +24,74 @@ Features:
 - Offline Mode
 
 Code is OpenSource and available on Github.
+
+---- JungleBus ----
+
+Collect nearby bus stops during your next trip in town
+
+
+Simple as ABC
+
+1. Locate yourself on the map
+2. Add more details on already existing bus stops
+3. Add new unlisted bus stops
+4. Save
+
+It's live!
+
+---
+
+Note:
+This app is currently under development: you are testing a beta version.
+Your feedback is warmly welcomed in order to improve it.
+
+---
+
+The OpenStreetMap community
+
+Cooperate with other contributors within your city and help us build the most complete bus stops inventory in the World.
+
+All the data created contributes to the OpenStreetMap community project.
+
+OpenStreetMap is the "Wikipedia of Maps": a community project which everyone can freely contribute to.
+
+---
+
+A simple and smart app
+
+This app works even when you don't access the Internet: download regions to edit them offline later.
+
+You can contribute with your own OpenStreetMap account or use your Google / Gmail account.
+
+Index all bus networks of the World! This app works worldwide.
+
+---
+
+Free/Libre software
+
+This app is a free/libre software. It has been developed free of charge by Jawg Maps for the OpenStreetMap community.
+Its code is fully available on Github and you are welcome to help us improve it.
+This app is and will always remain free to use, share and improve.
+
+---
+
+Stay in touch
+
+Any questions or suggestion regarding the app?
+Find us on Twitter https://twitter.com/BusJungle and https://twitter.com/jawgio
+
+Interested by the OpenStreetMap project?
+Contribute at http://www.openstreetmap.org
+
+Any questions regarding the OpenStreetMap project?
+Find your local user group and more support at https://wiki.openstreetmap.org
+
+---
+
+Note to contributors
+
+You collected all the bus stops of your city? Well done! It's now time to create bus lines with the OpenStreetMap community.
+
+Once it's done, contact us for these data to be available within the Transportr mobile app in your city.
+
+Transportr is "the public transport companion that respects your privacy and your freedom. "
