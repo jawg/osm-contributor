@@ -94,6 +94,7 @@ Want to help? [Add your language here](https://www.transifex.com/jawg/osm-contri
  + Spanish: [Marco Antonio](https://twitter.com/51114u9) (@51114u9)
  + Portuguese (BR): [Tiago Fassoni](https://github.com/tiagofassoni)
  + Russian: [Nikolay Parukhin]()
+ + Japanese: [Takeshi Furuta](https://github.com/mq-sol)
 
 We also want to thank our many beta testers:  
  + Gilles B.
