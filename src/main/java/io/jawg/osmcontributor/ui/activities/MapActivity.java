@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -166,24 +166,8 @@ public class MapActivity extends AppCompatActivity {
                 return true;
             }
         });
-        filterView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-                if (menuItem.getItemId() == R.id.select_all_item) {
-                    selectAllMenuItem.setChecked(!selectAllMenuItem.isChecked());
-                    onSelectAllClick();
-                } else if (menuItem.getItemId() != R.id.display_open_notes_item && menuItem.getItemId() != R.id.display_closed_notes_item) {
-                    menuItem.setChecked(!menuItem.isChecked());
-                    onFilterItemClick(menuItem);
-                } else {
-                    menuItem.setChecked(!menuItem.isChecked());
-                    onNoteItemClick(menuItem);
-                }
-                return true;
-            }
-        });
 
-        selectAllMenuItem = filterView.getMenu().findItem(R.id.select_all_item);
+        initFilterDrawer();
 
         if (configManager.hasPoiAddition()) {
             navigationView.getMenu().findItem(R.id.replay_tuto_menu).setVisible(true);
@@ -213,9 +197,6 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
-        if (FlavorUtils.isBus()) {
-            eventBus.post(new PleaseApplyNoteFilterEvent(false, false));
-        }
         navigationView.getMenu().findItem(R.id.manage_poi_types).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -230,6 +211,34 @@ public class MapActivity extends AppCompatActivity {
 
         if (sharedPreferences.getBoolean(getString(R.string.easter_egg), false)) {
             navigationView.getMenu().findItem(R.id.arpi_view).setVisible(true);
+        }
+    }
+
+    private void initFilterDrawer() {
+        if (FlavorUtils.isBus()) {
+            eventBus.post(new PleaseApplyNoteFilterEvent(false, false));
+        }
+        if (FlavorUtils.hasFilter()) {
+            filterView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    if (menuItem.getItemId() == R.id.select_all_item) {
+                        selectAllMenuItem.setChecked(!selectAllMenuItem.isChecked());
+                        onSelectAllClick();
+                    } else if (menuItem.getItemId() != R.id.display_open_notes_item && menuItem.getItemId() != R.id.display_closed_notes_item) {
+                        menuItem.setChecked(!menuItem.isChecked());
+                        onFilterItemClick(menuItem);
+                    } else {
+                        menuItem.setChecked(!menuItem.isChecked());
+                        onNoteItemClick(menuItem);
+                    }
+                    return true;
+                }
+            });
+
+            selectAllMenuItem = filterView.getMenu().findItem(R.id.select_all_item);
+        } else {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, filterView);
         }
     }
 
@@ -451,9 +460,13 @@ public class MapActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPleaseToggleDrawerLock(PleaseToggleDrawerLock event) {
         if (event.isLock()) {
-            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, navigationView);
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, filterView);
         } else {
-            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, navigationView);
+            if (FlavorUtils.hasFilter()) {
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, filterView);
+            }
         }
     }
 

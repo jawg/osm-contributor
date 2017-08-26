@@ -41,4 +41,8 @@ public class FlavorUtils {
     public static boolean isBus() {
         return BUS.endsWith(BuildConfig.FLAVOR);
     }
+
+    public static boolean hasFilter() {
+        return BuildConfig.WITH_FILTER;
+    }
 }
