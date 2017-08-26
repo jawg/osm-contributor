@@ -64,6 +64,7 @@ import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdate;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -370,7 +371,9 @@ public class MapFragment extends Fragment {
         mapboxMap.setMyLocationEnabled(true);
         lastLocation = mapboxMap.getMyLocation();
         if (lastLocation != null) {
-            mapboxMap.setCameraPosition(new CameraPosition.Builder().target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).zoom(configManager.getDefaultZoom()).build());
+            mapboxMap.animateCamera(CameraUpdateFactory
+                    .newCameraPosition(new CameraPosition.Builder().target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).build()));
+
         }
     }
 
