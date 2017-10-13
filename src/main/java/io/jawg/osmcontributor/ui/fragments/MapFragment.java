@@ -773,7 +773,7 @@ public class MapFragment extends Fragment {
                 break;
         }
         //the marker is displayed at the end of the animation
-        creationPin.setVisibility(properties.isShowCreationPin() ? View.VISIBLE : View.GONE);
+        displayCreationPin(properties.isShowCreationPin());
         wayCreationPin.setVisibility(properties.isShowCreationPin() ? View.VISIBLE : View.GONE);
 
         if (addPoiFloatingMenu.isOpened()) {
@@ -1165,13 +1165,17 @@ public class MapFragment extends Fragment {
         }
 
         creationPin.setImageBitmap(bitmap);
-        creationPin.setVisibility(View.VISIBLE);
+        displayCreationPin(true);
+    }
+
+    private void displayCreationPin(boolean display) {
+        creationPin.setVisibility(display ? View.VISIBLE : View.GONE);
     }
 
     private void noteSelected() {
         Bitmap bitmap = bitmapHandler.getNoteBitmap(Note.computeState(null, false, true));
         creationPin.setImageBitmap(bitmap);
-        creationPin.setVisibility(View.VISIBLE);
+        displayCreationPin(true);
         poiTypeSelected = null;
     }
 
@@ -1302,7 +1306,7 @@ public class MapFragment extends Fragment {
         Timber.d("Received event PleaseChangePoiPosition");
         if (configManager.hasPoiModification()) {
             switchMode(MapMode.POI_POSITION_EDITION);
-            creationPin.setVisibility(View.GONE);
+            displayCreationPin(false);
 
             ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, OsmAnimatorUpdateListener.STEPS_CENTER_ANIMATION);
             valueAnimator.setDuration(900);
@@ -1311,7 +1315,7 @@ public class MapFragment extends Fragment {
             valueAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    creationPin.setVisibility(View.VISIBLE);
+                    displayCreationPin(true);
                     hideMarker(markerSelected);
                 }
             });
@@ -1826,7 +1830,6 @@ public class MapFragment extends Fragment {
         } else if (mapMode.equals(MapMode.DETAIL_NOTE) && ((Note) markerSelected.getRelatedObject()).getId().equals(note.getId())) {
             switchMode(MapMode.DEFAULT);
         }
-        creationPin.setVisibility(View.GONE);
     }
 
     private void addPoiMarkerDependingOnFilters(LocationMarkerViewOptions<Poi> markerOption) {
