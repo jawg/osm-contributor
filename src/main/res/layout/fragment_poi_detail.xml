@@ -101,6 +101,7 @@
             app:fab_colorPressed="@color/material_blue_grey_800"
             android:src="@drawable/duplicate"
             app:fab_size="mini"
+            android:visibility="gone"
             app:fab_label="@string/duplicate_poi" />
 
         <com.github.clans.fab.FloatingActionButton

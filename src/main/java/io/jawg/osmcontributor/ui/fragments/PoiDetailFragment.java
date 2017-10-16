@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -57,6 +57,7 @@ import io.jawg.osmcontributor.ui.events.map.PleaseDeletePoiFromMapEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseDuplicatePoiEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseOpenEditionEvent;
 import io.jawg.osmcontributor.utils.ConfigManager;
+import io.jawg.osmcontributor.utils.FlavorUtils;
 
 /**
  * Fragment to display when the user click on marker
@@ -96,6 +97,9 @@ public class PoiDetailFragment extends Fragment {
     @BindView(R.id.thumbnail)
     ImageView thumbnail;
 
+    @BindView(R.id.duplicate_poi_detail_floating_button)
+    View duplicateBtn;
+
     /*=========================================*/
     /*--------------ATTRIBUTES-----------------*/
     /*=========================================*/
@@ -111,6 +115,8 @@ public class PoiDetailFragment extends Fragment {
 
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
         ButterKnife.bind(this, rootView);
+
+        duplicateBtn.setVisibility(FlavorUtils.isBus() ? View.GONE : View.VISIBLE);
 
         if (!configManager.hasPoiModification()) {
             floatingButtonEditPoi.setImageResource(R.drawable.eye);
