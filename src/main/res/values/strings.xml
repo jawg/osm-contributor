@@ -285,6 +285,12 @@
         Without this permissions, the application can\'t work correctly.
     </string>
 
+    <string name="permissions_information_gps">Location permission is disabled. Please change it your device setting.</string>
+
+    <string name="redirection_title">GPS is disabled</string>
+    <string name="enable_gps">You are going to be redirect to setting page in order to enable GPS.
+    </string>
+
     <!-- Pictures -->
     <string name="picture_sent_failure">Error occurred when sending picture, please retry</string>
     <string name="flickr_communication_failure">Can\'t communicate with Flickr, please retry</string>

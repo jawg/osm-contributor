@@ -225,6 +225,12 @@
   <!--Android 6.0 dialog messages-->
   <string name="permissions_title">Permissions nécessaires</string>
   <string name="permissions_information">L\'accès à la localisation et en écriture au téléphone sont nécessaires pour gérer la carte et la base de données. Nous ne récupérons aucunes données personnelles sur votre téléphone. En refusant ces deux permissions, l\'application ne peut fonctionner correctement.</string>
+  <string name="permissions_information_gps">Vous avez refusé l\'accès au GPS. Vous allez être redirigé vers les paramètres de l\'application</string>
+
+  <string name="redirection_title">Le GPS est désactivé</string>
+  <string name="enable_gps">Vous allez être redirigé vers la page des paramètres de l\'appareil pour activer le GPS
+    </string>
+
   <!-- Pictures -->
   <string name="picture_sent_failure">Erreur lors de l\'envoi de la photo, réessayer</string>
   <string name="flickr_communication_failure">La communication avec Flickr a échoué, réessayer</string>
