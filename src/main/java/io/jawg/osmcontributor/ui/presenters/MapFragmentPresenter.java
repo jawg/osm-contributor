@@ -40,9 +40,7 @@ import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.events.NotesLoadedEvent;
-import io.jawg.osmcontributor.model.events.PleaseLoadNotesEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiTypes;
-import io.jawg.osmcontributor.model.events.PleaseLoadPoisEvent;
 import io.jawg.osmcontributor.model.events.PoiTypesLoaded;
 import io.jawg.osmcontributor.model.events.PoisAndNotesDownloadedEvent;
 import io.jawg.osmcontributor.model.events.PoisLoadedEvent;
@@ -52,6 +50,7 @@ import io.jawg.osmcontributor.ui.events.map.PleaseChangeValuesDetailNoteFragment
 import io.jawg.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseInitializeDrawer;
 import io.jawg.osmcontributor.ui.fragments.MapFragment;
+import io.jawg.osmcontributor.ui.managers.loadPoi.GetPois;
 import io.jawg.osmcontributor.ui.utils.MapMode;
 import io.jawg.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
 import io.jawg.osmcontributor.ui.utils.views.map.marker.LocationMarkerViewOptions;
@@ -59,6 +58,7 @@ import io.jawg.osmcontributor.utils.Box;
 import io.jawg.osmcontributor.utils.ConfigManager;
 import io.jawg.osmcontributor.utils.OsmAnswers;
 import io.jawg.osmcontributor.utils.core.MapElement;
+import rx.Subscriber;
 import timber.log.Timber;
 
 public class MapFragmentPresenter {
@@ -83,6 +83,9 @@ public class MapFragmentPresenter {
 
     @Inject
     ConfigManager configManager;
+
+    @Inject
+    GetPois getPois;
 
 
     /*=========================================*/
@@ -209,18 +212,34 @@ public class MapFragmentPresenter {
             eventBus.post(new PleaseLoadPoiTypes());
         }
 
-        LatLngBounds viewLatLngBounds = mapFragment.getViewLatLngBounds();
-        if (viewLatLngBounds != null) {
-            if (mapFragment.getZoomLevel() > BuildConfig.ZOOM_MARKER_MIN) {
-                if (shouldReload(viewLatLngBounds)) {
-                    Timber.d("Reloading pois");
-                    previousZoom = mapFragment.getZoomLevel();
-                    triggerReloadPoiLatLngBounds = enlarge(viewLatLngBounds, 1.5);
-                    eventBus.post(new PleaseLoadPoisEvent(enlarge(viewLatLngBounds, 1.75)));
-                    eventBus.post(new PleaseLoadNotesEvent(enlarge(viewLatLngBounds, 1.75)));
-                }
+        getPois.init(new Box(1, 2, 3, 40)).execute(new Subscriber() {
+            @Override
+            public void onCompleted() {
+
             }
-        }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        });
+//        LatLngBounds viewLatLngBounds = mapFragment.getViewLatLngBounds();
+//        if (viewLatLngBounds != null) {
+//            if (mapFragment.getZoomLevel() > BuildConfig.ZOOM_MARKER_MIN) {
+//                if (shouldReload(viewLatLngBounds)) {
+//                    Timber.d("Reloading pois");
+//                    previousZoom = mapFragment.getZoomLevel();
+//                    triggerReloadPoiLatLngBounds = enlarge(viewLatLngBounds, 1.5);
+//                    eventBus.post(new PleaseLoadPoisEvent(enlarge(viewLatLngBounds, 1.75)));
+//                    eventBus.post(new PleaseLoadNotesEvent(enlarge(viewLatLngBounds, 1.75)));
+//                }
+//            }
+//        }
     }
 
     public void downloadAreaPoisAndNotes() {

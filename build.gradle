@@ -31,6 +31,8 @@ ext {
     sqliteJdbcVersion = '3.8.10.1'
     mockitoVersion = '1.10.19'
     robolectricVersion = '2.4'
+    rxAndroidVersion = '1.0.1'
+    rxJavaVersion = '1.0.14'
 }
 
 buildscript {
@@ -198,6 +200,10 @@ dependencies {
     apt "com.google.dagger:dagger-compiler:$daggerVersion"
     // Required for part of the generated code
     provided "org.glassfish:javax.annotation:$javaxAnnotationVersion"
+
+    //RX
+    compile "io.reactivex:rxjava:$rxJavaVersion"
+    compile "io.reactivex:rxandroid:$rxAndroidVersion"
 
     // Core
     compile "com.jakewharton:butterknife:$butterknifeVersion"
