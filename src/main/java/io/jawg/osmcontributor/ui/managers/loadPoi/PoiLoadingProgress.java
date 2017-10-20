@@ -6,6 +6,9 @@ import io.jawg.osmcontributor.model.entities.Poi;
 
 public class PoiLoadingProgress {
 
+    //todo create fonction that return new instance by state like getInstanceFinish ...
+
+
     private LoadingStatus loadingStatus;
     private boolean dataNeedRefresh;
     private List<Poi> pois;

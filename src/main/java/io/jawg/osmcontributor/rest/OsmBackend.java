@@ -149,13 +149,6 @@ public class OsmBackend implements Backend {
             }
           }
         });
-        if (!result.isSuccess()) {
-          if (result.getRetrofitError() != null) {
-            Timber.e(result.getRetrofitError(), "Retrofit error, couldn't download from overpass");
-          }
-          bus.post(new SyncDownloadRetrofitErrorEvent());
-          return new ArrayList<>();
-        }
         OsmDto osmDto = result.getResult();
         poiList.addAll(convertPois(osmDto));
         poiTypes.remove(entry.getKey());

@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,6 +21,7 @@ package io.jawg.osmcontributor.database.dao;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.SelectArg;
 
 import org.joda.time.DateTime;
@@ -35,6 +36,8 @@ import javax.inject.Inject;
 import io.jawg.osmcontributor.database.helper.DatabaseHelper;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.utils.Box;
+
+import static android.R.attr.offset;
 
 /**
  * Dao for {@link io.jawg.osmcontributor.model.entities.Poi} objects.
@@ -66,6 +69,39 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
                         .and().lt(Poi.LONGITUDE, new SelectArg(box.getEast()))
                         .and().eq(Poi.OLD, false)
                         .query();
+            }
+        });
+    }
+
+    /**
+     * Query for all the POIs contained in the bounds defined by the box, retrived by pages.
+     * The first page will get Pois closer to the center.
+     *
+     * @param box Bounds of the search in latitude and longitude coordinates.
+     * @return The notes contained in the box.
+     */
+    public List<Poi> queryForAllInRect(final Box box, final long offcet, final long limit) {
+        return DatabaseHelper.wrapException(new Callable<List<Poi>>() {
+            @Override
+            public List<Poi> call() throws Exception {
+
+//                List<SaleDO> salesDO = saleQuery.distinct().offset(offset).limit((long) Constants.SALES_PER_PAGE).query();
+
+                Double latCenter = box.getNorth() - box.getSouth();
+                Double lngCenter = box.getEast() - box.getWest();
+
+                QueryBuilder<Poi, Long> poiLongQueryBuilder = queryBuilder();
+                poiLongQueryBuilder
+                        .where().gt(Poi.LATITUDE, new SelectArg(box.getSouth()))
+                        .and().lt(Poi.LATITUDE, new SelectArg(box.getNorth()))
+                        .and().gt(Poi.LONGITUDE, new SelectArg(box.getWest()))
+                        .and().lt(Poi.LONGITUDE, new SelectArg(box.getEast()))
+                        .and().eq(Poi.OLD, false);
+
+
+                String rawSql = "Select ABS(" + latCenter + "-" + Poi.LATITUDE + ") + " + "ABS(" + lngCenter + "-" + Poi.LONGITUDE + ")";
+                poiLongQueryBuilder.distinct().offset(offset).limit(limit).orderByRaw(rawSql);
+                return poiLongQueryBuilder.query();
             }
         });
     }

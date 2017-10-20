@@ -4,8 +4,8 @@ import org.joda.time.LocalDateTime;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -16,11 +16,13 @@ import io.jawg.osmcontributor.database.dao.PoiDao;
 import io.jawg.osmcontributor.model.entities.MapArea;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.rest.Backend;
+import io.jawg.osmcontributor.rest.NetworkException;
 import io.jawg.osmcontributor.utils.Box;
 import rx.Observable;
 import rx.Subscriber;
 
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.FINISH;
+import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.LOADING_FROM_DB;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.LOADING_FROM_SERVER;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.OUT_DATED_DATA;
 
@@ -33,6 +35,8 @@ public class PoiRepository {
 
     public static final BigDecimal GRANULARITY_LAT = new BigDecimal(1000);
     public static final BigDecimal GRANULARITY_LNG = new BigDecimal(1000);
+    public static final int POI_PAGE = 20;
+    public static final int SAVE_POI_PAGE = 20;
     private final PoiDao poiDao;
     private final MapAreaDao mapAreaDao;
     private final Backend backend;
@@ -52,105 +56,123 @@ public class PoiRepository {
         return Observable.create(new Observable.OnSubscribe<PoiLoadingProgress>() {
             @Override
             public void call(Subscriber<? super PoiLoadingProgress> subscriber) {
-                getPois(subscriber, box);
+                List<MapArea> areasNeeded = computeMapAreaOfBox(box);
+
+                getPois(subscriber, box, areasNeeded);
                 subscriber.onCompleted();
             }
         });
     }
 
-    private void getPois(Subscriber<? super PoiLoadingProgress> subscriber, Box box) {
+    private void getPois(Subscriber<? super PoiLoadingProgress> subscriber, Box box, List<MapArea> areasNeeded) {
 
-        List<Long> ids = PoiRepository.this.computeIdOfBox(box);
-        List<MapArea> mapAreas = mapAreaDao.queryForIds(ids);
+        List<MapArea> localAreas = mapAreaDao.queryForIds(getIds(areasNeeded));
 
-        if (ids.size() != mapAreas.size()) {
+        if (areasNeeded.size() != localAreas.size()) {
             // some areas are not loaded in ou BD
             // we call the backend to received the data
             //we notify the subscriber that we have some loading to do
-            loadMissingMapAreas(ids, mapAreas);
 
             PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
             loadingProgress.setLoadingStatus(LOADING_FROM_SERVER);
-            //add notion of progress
+            // todo add notion of progress
             //handle network errors
-
             subscriber.onNext(loadingProgress);
 
-            getPois(subscriber, box);
+            loadMissingMapAreas(areasNeeded, localAreas, subscriber);
+
+            getPois(subscriber, box, areasNeeded);
         } else {
             //all the data is present in the BDD
-
-            //todo paginate the querry by id or something and send by successive onNext
             // load in first the poi in the center of the box
-            List<Poi> pois = poiDao.queryForAllInRect(box);
-            PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
-            loadingProgress.setLoadingStatus(FINISH);
-            loadingProgress.setPois(pois);
+            boolean allLoaded = false;
+            int page = 0;
+            do {
+                List<Poi> pois = poiDao.queryForAllInRect(box, page * POI_PAGE, POI_PAGE);
+                allLoaded = pois.size() < POI_PAGE;
+                PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
+                loadingProgress.setLoadingStatus(allLoaded ? FINISH : LOADING_FROM_DB);
+                loadingProgress.setPois(pois);
+                subscriber.onNext(loadingProgress);
+            } while (!allLoaded);
 
-            subscriber.onNext(loadingProgress);
         }
 
-        for (MapArea mapArea : mapAreas) {
+        for (MapArea mapArea : localAreas) {
             LocalDateTime lastUpate = new LocalDateTime(mapArea.getUpdatedDate());
-            //todo check if the data is outDated and ask for Update
+            //we check if the data is outDated and ask for Update
             boolean outDatedData = LocalDateTime.now().isAfter(lastUpate.plusMonths(1));
             if (outDatedData) {
                 PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
                 loadingProgress.setLoadingStatus(OUT_DATED_DATA);
-
-                //Todo progress as enum or cast
                 subscriber.onNext(loadingProgress);
             }
         }
     }
 
-    private void loadMissingMapAreas(List<Long> ids, List<MapArea> mapAreas) {
-        List<Box> boxToLoad = getDiff(ids, mapAreas);
-        for (Box b : boxToLoad) {
-            backend.getPoisInBox(b);
-            mapAreas.add(new MapArea());
+    private List<Long> getIds(List<MapArea> areasNeeded) {
+        List<Long> ids = new ArrayList<>();
+        for (MapArea mapArea : areasNeeded) {
+            ids.add(mapArea.getId());
+        }
+        return ids;
+    }
+
+    private void loadMissingMapAreas(List<MapArea> toLoadAreas, List<MapArea> loadedAreas, Subscriber<? super PoiLoadingProgress> subscriber) {
+        for (MapArea toLoadArea : toLoadAreas) {
+            if (!loadedAreas.contains(toLoadArea)) {
+                try {
+                    List<Poi> poisInBox = backend.getPoisInBox(toLoadArea.getBox());
+                    int i = 0;
+                    for (Poi poi : poisInBox) {
+                        poiDao.createOrUpdate(poi);
+                        i++;
+
+                        if (i > SAVE_POI_PAGE) {
+                            i = 0;
+                            //todo publish result
+                        }
+                    }
+                    //publish poi loaded
+                    toLoadArea.setUpdatedDate(new Date(System.currentTimeMillis()));
+                    loadedAreas.add(toLoadArea);
+                } catch (NetworkException e) {
+                    subscriber.onNext(new PoiLoadingProgress());
+                }
+
+            }
         }
     }
 
-    private List<Long> computeIdOfBox(Box box) {
+    private List<MapArea> computeMapAreaOfBox(Box box) {
+        List<MapArea> areas = new ArrayList<>();
         //a coup de modulo on calcul l'id
 
         BigDecimal north = new BigDecimal(box.getNorth());
-        BigDecimal weast = new BigDecimal(box.getWest());
+        BigDecimal west = new BigDecimal(box.getWest());
         BigDecimal east = new BigDecimal(box.getEast());
         BigDecimal south = new BigDecimal(box.getSouth());
 
-        long northID = north.multiply(GRANULARITY_LAT).setScale(0, RoundingMode.HALF_UP).longValue();
-        long westID = weast.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-        long southID = south.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.HALF_DOWN).longValue();
-        long eastID = east.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.HALF_UP).longValue();
-
-        Long upLeftCorner = Long.valueOf(String.valueOf(northID) + String.valueOf(westID));
-        Long downRightCorner = Long.valueOf(String.valueOf(southID) + String.valueOf(eastID));
+        long northArea = north.multiply(GRANULARITY_LAT).setScale(0, RoundingMode.HALF_UP).longValue();
+        long westArea = west.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.HALF_DOWN).longValue();
+        long southArea = south.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.HALF_DOWN).longValue();
+        long eastArea = east.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.HALF_UP).longValue();
 
         //we get the long up the area is rounded up for north and down for south
+        for (int latInc = 0; latInc <= northArea - southArea; latInc++) {
+            for (int lngInc = 0; lngInc <= westArea - eastArea; lngInc++) {
+                long idLat = southArea + latInc;
+                long idLng = westArea + lngInc;
+                Long id = Long.valueOf(String.valueOf(idLat) + String.valueOf(idLng));
 
-        if (upLeftCorner.equals(downRightCorner)) {
-            return Collections.singletonList(downRightCorner);
-        } else {
-            List<Long> ids = new ArrayList<>();
-            for (int latInc = 0; latInc < northID - southID; latInc++) {
-                for (int lngInc = 0; lngInc < westID - eastID; lngInc++) {
-                    long idLat = southID + latInc;
-                    long idLng = westID + lngInc;
-                    ids.add(Long.valueOf(String.valueOf(idLat) + String.valueOf(idLng)));
-                }
+                areas.add(new MapArea(id,
+                        northArea / GRANULARITY_LAT.doubleValue(),
+                        westArea / GRANULARITY_LAT.doubleValue(),
+                        southArea / GRANULARITY_LAT.doubleValue(),
+                        eastArea / GRANULARITY_LAT.doubleValue()));
             }
-            // loop to find all ids
         }
 
-
-        return Collections.singletonList(1203L);
+        return areas;
     }
-
-    private List<Box> getDiff(List<Long> ids, List<MapArea> mapAreas) {
-        return new ArrayList<>();
-    }
-
 }
