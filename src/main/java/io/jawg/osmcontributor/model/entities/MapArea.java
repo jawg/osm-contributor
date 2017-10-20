@@ -35,10 +35,10 @@ public class MapArea  {
     public static final String TABLE_NAME = "MapArea";
 
     public static final String ID = "ID";
-    public static final String NORTH = "LONGITUDE";
-    public static final String SOUTH = "LATITUDE";
-    public static final String EAST = "NAME";
-    public static final String WEAST = "BACKEND_ID";
+    public static final String NORTH = "NORTH";
+    public static final String SOUTH = "SOUTH";
+    public static final String EAST = "EAST";
+    public static final String WEAST = "WEAST";
     public static final String DATE = "DATE";
 
 
