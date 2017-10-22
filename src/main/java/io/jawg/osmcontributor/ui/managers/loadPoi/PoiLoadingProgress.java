@@ -2,6 +2,7 @@ package io.jawg.osmcontributor.ui.managers.loadPoi;
 
 import java.util.List;
 
+import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
 
 public class PoiLoadingProgress {
@@ -12,6 +13,7 @@ public class PoiLoadingProgress {
     private LoadingStatus loadingStatus;
     private boolean dataNeedRefresh;
     private List<Poi> pois;
+    private List<Note> notes;
 
 
     public LoadingStatus getLoadingStatus() {
@@ -34,12 +36,18 @@ public class PoiLoadingProgress {
         return pois;
     }
 
+    public List<Note> getNotes() {
+        return notes;
+    }
+
+
     public void setPois(List<Poi> pois) {
         this.pois = pois;
     }
 
     public enum LoadingStatus {
-        LOADING_FROM_DB,
+        POI_LOADING,
+        NOTE_LOADING,
         LOADING_FROM_SERVER,
         FINISH,
         OUT_DATED_DATA,

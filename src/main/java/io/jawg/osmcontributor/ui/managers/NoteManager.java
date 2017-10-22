@@ -39,7 +39,6 @@ import io.jawg.osmcontributor.database.dao.NoteDao;
 import io.jawg.osmcontributor.model.events.NoteLoadedEvent;
 import io.jawg.osmcontributor.model.events.NoteSavedEvent;
 import io.jawg.osmcontributor.model.events.NotesArpiLoadedEvent;
-import io.jawg.osmcontributor.model.events.NotesLoadedEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadNoteEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadNoteForArpiEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadNotesEvent;

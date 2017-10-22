@@ -21,7 +21,6 @@ package io.jawg.osmcontributor.ui.presenters;
 import android.graphics.Bitmap;
 
 import com.mapbox.mapboxsdk.annotations.IconFactory;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 
 import org.greenrobot.eventbus.EventBus;
@@ -39,11 +38,9 @@ import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiType;
-import io.jawg.osmcontributor.model.events.NotesLoadedEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiTypes;
 import io.jawg.osmcontributor.model.events.PoiTypesLoaded;
 import io.jawg.osmcontributor.model.events.PoisAndNotesDownloadedEvent;
-import io.jawg.osmcontributor.model.events.PoisLoadedEvent;
 import io.jawg.osmcontributor.model.events.RevertFinishedEvent;
 import io.jawg.osmcontributor.rest.events.SyncDownloadPoisAndNotesEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseChangeValuesDetailNoteFragmentEvent;
@@ -51,6 +48,8 @@ import io.jawg.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFragmentE
 import io.jawg.osmcontributor.ui.events.map.PleaseInitializeDrawer;
 import io.jawg.osmcontributor.ui.fragments.MapFragment;
 import io.jawg.osmcontributor.ui.managers.loadPoi.GetPois;
+import io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress;
+import io.jawg.osmcontributor.ui.utils.LatLngBoundsUtils;
 import io.jawg.osmcontributor.ui.utils.MapMode;
 import io.jawg.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
 import io.jawg.osmcontributor.ui.utils.views.map.marker.LocationMarkerViewOptions;
@@ -85,7 +84,7 @@ public class MapFragmentPresenter {
     ConfigManager configManager;
 
     @Inject
-    GetPois getPois;
+    GetPois getPoisAndNotes;
 
 
     /*=========================================*/
@@ -120,6 +119,16 @@ public class MapFragmentPresenter {
         this.forceRefreshNotes = true;
     }
 
+
+    /*=========================================*/
+    /*------------- Life cycle  ---------------*/
+    /*=========================================*/
+
+    public void onDestroy() {
+        if (getPoisAndNotes != null) {
+            getPoisAndNotes.unsubscribe();
+        }
+    }
 
     /*=========================================*/
     /*----------------EVENTS-------------------*/
@@ -171,29 +180,6 @@ public class MapFragmentPresenter {
         loadPoisIfNeeded();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPoisLoadedEvent(PoisLoadedEvent event) {
-        List<Poi> pois = event.getPois();
-        forceRefreshPoi = false;
-        List<MapElement> mapElements = new ArrayList<>(pois.size());
-        for (Poi poi : pois) {
-            mapElements.add(poi);
-        }
-        onLoaded(mapElements, LocationMarkerView.MarkerType.POI);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNotesLoadedEvent(NotesLoadedEvent event) {
-        mapFragment.removeAllNotes();
-        List<Note> notes = event.getNotes();
-        List<MapElement> mapElements = new ArrayList<>(notes.size());
-        for (Note note : notes) {
-            mapElements.add(note);
-        }
-        forceRefreshNotes = false;
-        onLoaded(mapElements, LocationMarkerView.MarkerType.NOTE);
-    }
-
     public void register() {
         eventBus.register(this);
     }
@@ -212,39 +198,26 @@ public class MapFragmentPresenter {
             eventBus.post(new PleaseLoadPoiTypes());
         }
 
-        getPois.init(new Box(1, 2, 3, 40)).execute(new Subscriber() {
-            @Override
-            public void onCompleted() {
 
+        LatLngBounds viewLatLngBounds = mapFragment.getViewLatLngBounds();
+        if (viewLatLngBounds != null) {
+            if (mapFragment.getZoomLevel() > BuildConfig.ZOOM_MARKER_MIN) {
+                if (shouldReload(viewLatLngBounds)) {
+                    Timber.d("Reloading pois");
+                    previousZoom = mapFragment.getZoomLevel();
+                    triggerReloadPoiLatLngBounds = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.5);
+                    LatLngBounds latLngToLoad = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.75);
+                    getPoisAndNotes.unsubscribe();
+                    //todo clean the loader add a stat pater
+                    getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad)).execute(new GetPoisSubscriber());
+                }
             }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Object o) {
-
-            }
-        });
-//        LatLngBounds viewLatLngBounds = mapFragment.getViewLatLngBounds();
-//        if (viewLatLngBounds != null) {
-//            if (mapFragment.getZoomLevel() > BuildConfig.ZOOM_MARKER_MIN) {
-//                if (shouldReload(viewLatLngBounds)) {
-//                    Timber.d("Reloading pois");
-//                    previousZoom = mapFragment.getZoomLevel();
-//                    triggerReloadPoiLatLngBounds = enlarge(viewLatLngBounds, 1.5);
-//                    eventBus.post(new PleaseLoadPoisEvent(enlarge(viewLatLngBounds, 1.75)));
-//                    eventBus.post(new PleaseLoadNotesEvent(enlarge(viewLatLngBounds, 1.75)));
-//                }
-//            }
-//        }
+        }
     }
 
     public void downloadAreaPoisAndNotes() {
         mapFragment.showProgressBar(true);
-        eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromLatLngBounds(enlarge(mapFragment.getViewLatLngBounds(), 1.75))));
+        eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromLatLngBounds(LatLngBoundsUtils.enlarge(mapFragment.getViewLatLngBounds(), 1.75))));
     }
 
 
@@ -262,18 +235,6 @@ public class MapFragmentPresenter {
         }
         return triggerReloadPoiLatLngBounds == null
                 || !triggerReloadPoiLatLngBounds.union(viewLatLngBounds).equals(triggerReloadPoiLatLngBounds);
-    }
-
-    private LatLngBounds enlarge(LatLngBounds viewLatLngBounds, double factor) {
-        double n = viewLatLngBounds.getLatNorth();
-        double e = viewLatLngBounds.getLonEast();
-        double s = viewLatLngBounds.getLatSouth();
-        double w = viewLatLngBounds.getLonWest();
-        double f = (factor - 1) / 2;
-        return new LatLngBounds.Builder()
-                .include(new LatLng(n + f * (n - s), e + f * (e - w)))
-                .include(new LatLng(s - f * (n - s), w - f * (e - w)))
-                .build();
     }
 
     private void setIcon(LocationMarkerViewOptions markerOptions, Object relatedObject, boolean selected) {
@@ -369,6 +330,71 @@ public class MapFragmentPresenter {
 
         if (mapFragment.getSelectedMarkerType().equals(markerType) && markerSelected == null) {
             mapFragment.setMarkerSelectedId(-1L);
+        }
+    }
+
+    private void impacteLoadedPoi(List<Poi> pois) {
+        List<MapElement> mapElements = new ArrayList<>(pois.size());
+        for (Poi poi : pois) {
+            mapElements.add(poi);
+        }
+        onLoaded(mapElements, LocationMarkerView.MarkerType.POI);
+    }
+
+    private void impacteLoadedNotes(List<Note> notes) {
+        List<MapElement> mapElements = new ArrayList<>(notes.size());
+        for (Note note : notes) {
+            mapElements.add(note);
+        }
+        onLoaded(mapElements, LocationMarkerView.MarkerType.NOTE);
+    }
+
+    public void refreshAreaConfirmed() {
+        //todo refresh data
+    }
+
+
+    /*=========================================*/
+    /*------------  SUBSCRIBER  ---------------*/
+    /*=========================================*/
+
+    private final class GetPoisSubscriber extends Subscriber<PoiLoadingProgress> {
+        @Override
+        public void onStart() {
+            super.onStart();
+        }
+
+        @Override
+        public void onCompleted() {
+            mapFragment.showProgressBar(false);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            mapFragment.showProgressBar(false);
+            Timber.e(e, "Error while loading Pois");
+        }
+
+        @Override
+        public void onNext(PoiLoadingProgress poiLoadingProgress) {
+            switch (poiLoadingProgress.getLoadingStatus()) {
+                case POI_LOADING:
+                    impacteLoadedPoi(poiLoadingProgress.getPois());
+                    break;
+                case NOTE_LOADING:
+                    impacteLoadedNotes(poiLoadingProgress.getNotes());
+                    break;
+                case LOADING_FROM_SERVER:
+                    mapFragment.showProgressBar(true);
+                    break;
+                case FINISH:
+                    break;
+                case OUT_DATED_DATA:
+                    mapFragment.showNeedToRefreshData();
+                    break;
+                case NETWORK_ERROR:
+                    break;
+            }
         }
     }
 }

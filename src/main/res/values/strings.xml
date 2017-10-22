@@ -24,6 +24,11 @@
     <string name="title_activity_edit_poi">EditPoiActivity</string>
     <string name="location_not_found">Couldn\'t find your location</string>
 
+    <string name="load_poi_data_outdated_refresh_btn">Refresh</string>
+    <string name="load_poi_data_outdated_refresh_cancel">Cancel</string>
+    <string name="load_poi_data_outdated_refresh_titel">Data outdated</string>
+    <string name="load_poi_data_outdated_refresh_content">The data of this area is outdated, the last sync was the %s. Do you want to refresh this data ?</string>
+
     <!-- EDITION -->
     <string name="addValueDialogTitle">Change value for: \"%1$s\"</string>
     <string name="addValueDialogAdd">Change</string>

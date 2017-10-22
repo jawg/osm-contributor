@@ -68,7 +68,6 @@ import io.jawg.osmcontributor.model.events.PleaseRevertPoiNodeRefEvent;
 import io.jawg.osmcontributor.model.events.PoiForEditionLoadedEvent;
 import io.jawg.osmcontributor.model.events.PoiTypesLoaded;
 import io.jawg.osmcontributor.model.events.PoisArpiLoadedEvent;
-import io.jawg.osmcontributor.model.events.PoisLoadedEvent;
 import io.jawg.osmcontributor.model.events.PoisToUpdateLoadedEvent;
 import io.jawg.osmcontributor.model.events.ResetDatabaseEvent;
 import io.jawg.osmcontributor.model.events.ResetTypeDatabaseEvent;

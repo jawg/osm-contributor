@@ -22,8 +22,10 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -91,6 +93,7 @@ import io.jawg.osmcontributor.model.entities.PoiTypeTag;
 import io.jawg.osmcontributor.model.entities.Way;
 import io.jawg.osmcontributor.model.events.PleaseDeletePoiEvent;
 import io.jawg.osmcontributor.model.events.PleaseRemoveArpiMarkerEvent;
+import io.jawg.osmcontributor.model.events.ResetDatabaseEvent;
 import io.jawg.osmcontributor.rest.events.SyncDownloadWayEvent;
 import io.jawg.osmcontributor.rest.events.SyncFinishUploadPoiEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncConflictingNodeErrorEvent;
@@ -173,47 +176,49 @@ import timber.log.Timber;
 
 public class MapFragment extends Fragment {
 
-  private static final String LOCATION = "location";
-  private static final String ZOOM_LEVEL = "zoom level";
-  private static final String LEVEL = "level";
-  private static final String MARKER_TYPE = "MARKER_TYPE";
-  public static final String CREATION_MODE = "CREATION_MODE";
-  public static final String POI_TYPE_ID = "POI_TYPE_ID";
-  public static final String SELECTED_MARKER_ID = "SELECTED_MARKER_ID";
-  public static final String HIDDEN_POI_TYPE = "HIDDEN_POI_TYPE";
-  private static final String DISPLAY_OPEN_NOTES = "DISPLAY_OPEN_NOTES";
-  private static final String DISPLAY_CLOSED_NOTES = "DISPLAY_CLOSED_NOTES";
+    private static final String LOCATION = "location";
+    private static final String ZOOM_LEVEL = "zoom level";
+    private static final String LEVEL = "level";
+    private static final String MARKER_TYPE = "MARKER_TYPE";
+    public static final String CREATION_MODE = "CREATION_MODE";
+    public static final String POI_TYPE_ID = "POI_TYPE_ID";
+    public static final String SELECTED_MARKER_ID = "SELECTED_MARKER_ID";
+    public static final String HIDDEN_POI_TYPE = "HIDDEN_POI_TYPE";
+    private static final String DISPLAY_OPEN_NOTES = "DISPLAY_OPEN_NOTES";
+    private static final String DISPLAY_CLOSED_NOTES = "DISPLAY_CLOSED_NOTES";
 
-  private LocationMarkerView markerSelected = null;
+    private LocationMarkerView markerSelected = null;
 
-  private WayMarker wayMarkerSelected = null;
+    private WayMarker wayMarkerSelected = null;
 
-  // when resuming app we use this id to re-select the good marker
-  private Long markerSelectedId = -1L;
-  private MapMode mapMode = MapMode.DEFAULT;
+    // when resuming app we use this id to re-select the good marker
+    private Long markerSelectedId = -1L;
+    private MapMode mapMode = MapMode.DEFAULT;
 
-  private boolean isMenuLoaded = false;
-  private boolean pleaseSwitchToPoiSelected = false;
+    private boolean isMenuLoaded = false;
+    private boolean pleaseSwitchToPoiSelected = false;
 
-  private Map<Long, LocationMarkerViewOptions<Poi>> markersPoi;
-  private Map<Long, LocationMarkerViewOptions<Note>> markersNotes;
-  private Map<Long, WayMarkerOptions> markersNodeRef;
+    private Map<Long, LocationMarkerViewOptions<Poi>> markersPoi;
+    private Map<Long, LocationMarkerViewOptions<Note>> markersNotes;
+    private Map<Long, WayMarkerOptions> markersNodeRef;
 
-  private int maxPoiType;
-  private PoiType poiTypeSelected;
-  private ButteryProgressBar progressBar;
-  private MapFragmentPresenter presenter;
-  private MapboxListener mapboxListener;
+    private int maxPoiType;
+    private PoiType poiTypeSelected;
+    private ButteryProgressBar progressBar;
+    private MapFragmentPresenter presenter;
+    private MapboxListener mapboxListener;
 
-  private MapboxMap mapboxMap;
+    private MapboxMap mapboxMap;
 
-  private Unbinder unbinder;
+    private Unbinder unbinder;
 
-  private Location lastLocation;
+    private Location lastLocation;
 
-  @Inject BitmapHandler bitmapHandler;
+    @Inject
+    BitmapHandler bitmapHandler;
 
-  @Inject EventBus eventBus;
+    @Inject
+    EventBus eventBus;
 
   @BindView(R.id.mapview) MapView mapView;
 
@@ -435,14 +440,18 @@ public class MapFragment extends Fragment {
     }
   }
 
-  @Override public void onDestroy() {
-    super.onDestroy();
-    if (mapView != null) {
-      mapView.onDestroy();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mapView != null) {
+            mapView.onDestroy();
+        }
+        if (presenter != null) {
+            presenter.onDestroy();
+        }
+        // Clear bitmapHandler even if activity leaks.
+        bitmapHandler = null;
     }
-    // Clear bitmapHandler even if activity leaks.
-    bitmapHandler = null;
-  }
 
   @Override public void onDestroyView() {
     super.onDestroyView();
@@ -913,6 +922,24 @@ public class MapFragment extends Fragment {
   public LocationMarkerViewOptions<Note> getNote(Long id) {
     return markersNotes.get(id);
   }
+
+
+    public void showNeedToRefreshData() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.load_poi_data_outdated_refresh_titel)
+                .setMessage(R.string.load_poi_data_outdated_refresh_content)
+                .setPositiveButton(R.string.load_poi_data_outdated_refresh_btn, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        presenter.refreshAreaConfirmed();
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(R.string.load_poi_data_outdated_refresh_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                }).show();
+    }
 
     /*-----------------------------------------------------------
     * WAY EDITION

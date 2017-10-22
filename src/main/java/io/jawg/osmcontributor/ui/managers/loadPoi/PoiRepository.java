@@ -22,7 +22,7 @@ import rx.Observable;
 import rx.Subscriber;
 
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.FINISH;
-import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.LOADING_FROM_DB;
+import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.POI_LOADING;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.LOADING_FROM_SERVER;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.OUT_DATED_DATA;
 
@@ -91,7 +91,7 @@ public class PoiRepository {
                 List<Poi> pois = poiDao.queryForAllInRect(box, page * POI_PAGE, POI_PAGE);
                 allLoaded = pois.size() < POI_PAGE;
                 PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
-                loadingProgress.setLoadingStatus(allLoaded ? FINISH : LOADING_FROM_DB);
+                loadingProgress.setLoadingStatus(allLoaded ? FINISH : POI_LOADING);
                 loadingProgress.setPois(pois);
                 subscriber.onNext(loadingProgress);
             } while (!allLoaded);

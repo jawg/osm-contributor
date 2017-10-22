@@ -18,7 +18,7 @@ public class GetPois extends UseCase {
     }
 
     @Override
-    protected Observable buildUseCaseObservable() {
+    protected Observable<PoiLoadingProgress> buildUseCaseObservable() {
         return this.poiRepository.getPoiFromBox(box);
     }
 
