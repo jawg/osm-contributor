@@ -147,8 +147,8 @@ public class PoiRepository {
                     loadingProgress.setLoadingStatus(NETWORK_ERROR);
                     subscriber.onNext(loadingProgress);
                 }
-
             }
+            mapAreaDao.createOrUpdate(toLoadArea);
         }
     }
 
