@@ -93,7 +93,6 @@ import io.jawg.osmcontributor.model.entities.PoiTypeTag;
 import io.jawg.osmcontributor.model.entities.Way;
 import io.jawg.osmcontributor.model.events.PleaseDeletePoiEvent;
 import io.jawg.osmcontributor.model.events.PleaseRemoveArpiMarkerEvent;
-import io.jawg.osmcontributor.model.events.ResetDatabaseEvent;
 import io.jawg.osmcontributor.rest.events.SyncDownloadWayEvent;
 import io.jawg.osmcontributor.rest.events.SyncFinishUploadPoiEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncConflictingNodeErrorEvent;

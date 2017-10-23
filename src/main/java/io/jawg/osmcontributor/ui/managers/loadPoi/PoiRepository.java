@@ -1,10 +1,10 @@
 package io.jawg.osmcontributor.ui.managers.loadPoi;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +22,10 @@ import rx.Observable;
 import rx.Subscriber;
 
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.FINISH;
-import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.POI_LOADING;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.LOADING_FROM_SERVER;
+import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.NETWORK_ERROR;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.OUT_DATED_DATA;
+import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.POI_LOADING;
 
 
 /**
@@ -57,8 +58,9 @@ public class PoiRepository {
             @Override
             public void call(Subscriber<? super PoiLoadingProgress> subscriber) {
                 List<MapArea> areasNeeded = computeMapAreaOfBox(box);
-
-                getPois(subscriber, box, areasNeeded);
+                if (areasNeeded != null && !areasNeeded.isEmpty()) {
+                    getPois(subscriber, box, areasNeeded);
+                }
                 subscriber.onCompleted();
             }
         });
@@ -99,7 +101,7 @@ public class PoiRepository {
         }
 
         for (MapArea mapArea : localAreas) {
-            LocalDateTime lastUpate = new LocalDateTime(mapArea.getUpdatedDate());
+            LocalDateTime lastUpate = new LocalDateTime(mapArea.getUpdateDate());
             //we check if the data is outDated and ask for Update
             boolean outDatedData = LocalDateTime.now().isAfter(lastUpate.plusMonths(1));
             if (outDatedData) {
@@ -119,25 +121,31 @@ public class PoiRepository {
     }
 
     private void loadMissingMapAreas(List<MapArea> toLoadAreas, List<MapArea> loadedAreas, Subscriber<? super PoiLoadingProgress> subscriber) {
+        PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
+
         for (MapArea toLoadArea : toLoadAreas) {
             if (!loadedAreas.contains(toLoadArea)) {
                 try {
                     List<Poi> poisInBox = backend.getPoisInBox(toLoadArea.getBox());
+                    loadingProgress.setTotalsElements(poisInBox.size());
+
                     int i = 0;
                     for (Poi poi : poisInBox) {
                         poiDao.createOrUpdate(poi);
                         i++;
 
-                        if (i > SAVE_POI_PAGE) {
-                            i = 0;
+                        if (i % SAVE_POI_PAGE == 0) {
+                            loadingProgress.setLoadingStatus(POI_LOADING);
+                            loadingProgress.setLoadedElements(i);
                             //todo publish result
                         }
                     }
                     //publish poi loaded
-                    toLoadArea.setUpdatedDate(new Date(System.currentTimeMillis()));
+                    toLoadArea.setUpdateDate(new DateTime(System.currentTimeMillis()));
                     loadedAreas.add(toLoadArea);
                 } catch (NetworkException e) {
-                    subscriber.onNext(new PoiLoadingProgress());
+                    loadingProgress.setLoadingStatus(NETWORK_ERROR);
+                    subscriber.onNext(loadingProgress);
                 }
 
             }
@@ -160,16 +168,18 @@ public class PoiRepository {
 
         //we get the long up the area is rounded up for north and down for south
         for (int latInc = 0; latInc <= northArea - southArea; latInc++) {
-            for (int lngInc = 0; lngInc <= westArea - eastArea; lngInc++) {
+            for (int lngInc = 0; lngInc <= eastArea - westArea; lngInc++) {
                 long idLat = southArea + latInc;
                 long idLng = westArea + lngInc;
+
+                //ID is south west
                 Long id = Long.valueOf(String.valueOf(idLat) + String.valueOf(idLng));
 
                 areas.add(new MapArea(id,
-                        northArea / GRANULARITY_LAT.doubleValue(),
-                        westArea / GRANULARITY_LAT.doubleValue(),
-                        southArea / GRANULARITY_LAT.doubleValue(),
-                        eastArea / GRANULARITY_LAT.doubleValue()));
+                        (southArea + latInc + 1) / GRANULARITY_LAT.doubleValue(),
+                        (westArea + lngInc) / GRANULARITY_LAT.doubleValue(),
+                        (southArea + latInc) / GRANULARITY_LAT.doubleValue(),
+                        (westArea + lngInc + 1) / GRANULARITY_LAT.doubleValue()));
             }
         }
 

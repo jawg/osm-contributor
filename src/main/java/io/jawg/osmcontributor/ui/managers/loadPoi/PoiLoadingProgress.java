@@ -12,6 +12,8 @@ public class PoiLoadingProgress {
 
     private LoadingStatus loadingStatus;
     private boolean dataNeedRefresh;
+    private long totalsElements = 0L;
+    private long loadedElements = 0L;
     private List<Poi> pois;
     private List<Note> notes;
 
@@ -43,6 +45,27 @@ public class PoiLoadingProgress {
 
     public void setPois(List<Poi> pois) {
         this.pois = pois;
+    }
+
+
+    public long getTotalsElements() {
+        return totalsElements;
+    }
+
+    public void setTotalsElements(long totalsElements) {
+        this.totalsElements = totalsElements;
+    }
+
+    public long getLoadedElements() {
+        return loadedElements;
+    }
+
+    public void setLoadedElements(long loadedElements) {
+        this.loadedElements = loadedElements;
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
     }
 
     public enum LoadingStatus {

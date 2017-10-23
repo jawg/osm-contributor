@@ -61,7 +61,6 @@ import io.jawg.osmcontributor.model.events.PleaseLoadPoiForArpiEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForCreationEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForEditionEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiTypes;
-import io.jawg.osmcontributor.model.events.PleaseLoadPoisEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoisToUpdateEvent;
 import io.jawg.osmcontributor.model.events.PleaseRevertPoiEvent;
 import io.jawg.osmcontributor.model.events.PleaseRevertPoiNodeRefEvent;
@@ -156,11 +155,6 @@ public class PoiManager {
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseLoadPoiForCreationEvent(PleaseLoadPoiForCreationEvent event) {
         loadPoiForCreation(event);
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseLoadPoisEvent(PleaseLoadPoisEvent event) {
-        loadPois(event);
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -891,16 +885,6 @@ public class PoiManager {
         poi.applyChanges(defaultTags);
 
         bus.post(new PoiForEditionLoadedEvent(poi, suggestionsForTagsValue(poi.getType().getTags())));
-    }
-
-    /**
-     * Send a {@link PoisLoadedEvent} containing all the POIs
-     * in the Box of the {@link PleaseLoadPoisEvent}.
-     *
-     * @param event Event containing the box to load.
-     */
-    private void loadPois(PleaseLoadPoisEvent event) {
-        bus.post(new PoisLoadedEvent(event.getBox(), queryForAllInRect(event.getBox())));
     }
 
     /**

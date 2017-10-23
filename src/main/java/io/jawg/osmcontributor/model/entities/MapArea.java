@@ -22,7 +22,7 @@ package io.jawg.osmcontributor.model.entities;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import java.sql.Date;
+import org.joda.time.DateTime;
 
 import io.jawg.osmcontributor.utils.Box;
 
@@ -33,14 +33,14 @@ public class MapArea {
     //les ids de ces objs ? sois on calcul un id en fonction de la position, un peut a la mode des tuiles
 
 
-    public static final String TABLE_NAME = "MapArea";
+    public static final String TABLE_NAME = "AREA";
 
     public static final String ID = "ID";
     public static final String NORTH = "NORTH";
     public static final String SOUTH = "SOUTH";
     public static final String EAST = "EAST";
     public static final String WEAST = "WEAST";
-    public static final String DATE = "DATE";
+    public static final String UPDATE_DATE = "UPDATE_DATE";
 
 
     @DatabaseField(generatedId = true, columnName = ID)
@@ -58,8 +58,11 @@ public class MapArea {
     @DatabaseField(columnName = WEAST, canBeNull = false)
     private Double weast;
 
-    @DatabaseField(columnName = DATE, canBeNull = false)
-    private Date updatedDate;
+    @DatabaseField(columnName = UPDATE_DATE, canBeNull = false)
+    private DateTime updateDate;
+
+    public MapArea() {
+    }
 
     public MapArea(Long id, Double north, Double south, Double east, Double weast) {
         this.id = id;
@@ -109,18 +112,22 @@ public class MapArea {
         this.weast = weast;
     }
 
-    public Date getUpdatedDate() {
-        return updatedDate;
+    public DateTime getUpdateDate() {
+        return updateDate;
     }
 
-    public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
+    public void setUpdateDate(DateTime updateDate) {
+        this.updateDate = updateDate;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MapArea mapArea = (MapArea) o;
 
