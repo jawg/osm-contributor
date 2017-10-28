@@ -10,6 +10,7 @@ import rx.Observable;
 public class GetPois extends UseCase {
     private final PoiRepository poiRepository;
     private Box box;
+    private boolean refreshData;
 
     @Inject
     public GetPois(PoiThreadExecutor threadExecutor, PostExecutionThread postExecutionThread, PoiRepository poiRepository) {
@@ -19,11 +20,12 @@ public class GetPois extends UseCase {
 
     @Override
     protected Observable<PoiLoadingProgress> buildUseCaseObservable() {
-        return this.poiRepository.getPoiFromBox(box);
+        return this.poiRepository.getPoiFromBox(box, refreshData);
     }
 
-    public GetPois init(Box box) {
+    public GetPois init(Box box, boolean refreshData) {
         this.box = box;
+        this.refreshData = refreshData;
         return this;
     }
 }

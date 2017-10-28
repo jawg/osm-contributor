@@ -14,8 +14,8 @@ public class PoiLoadingProgress {
     private boolean dataNeedRefresh;
     private long totalsElements = 0L;
     private long loadedElements = 0L;
-    private long totalAreasToLoad = 0l;
-    private long totalAreasLoaded = 0l;
+    private long totalAreasToLoad = 0L;
+    private long totalAreasLoaded = 0L;
     private List<Poi> pois;
     private List<Note> notes;
 

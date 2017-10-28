@@ -37,7 +37,22 @@
     <RelativeLayout
         android:id="@+id/progressbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/progress_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Progress info"
+            />
+        <ImageView
+            android:id="@+id/close_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            />
+        </RelativeLayout>
 
     <TextView
         android:id="@+id/addressView"

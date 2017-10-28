@@ -193,6 +193,10 @@ public class MapFragmentPresenter {
     /*------------CODE-------------------------*/
     /*=========================================*/
     public void loadPoisIfNeeded() {
+        loadPoi(false);
+    }
+
+    private void loadPoi(boolean refreshData) {
         if (poiTypes == null) {
             Timber.v("PleaseLoadPoiTypes");
             eventBus.post(new PleaseLoadPoiTypes());
@@ -202,14 +206,14 @@ public class MapFragmentPresenter {
         LatLngBounds viewLatLngBounds = mapFragment.getViewLatLngBounds();
         if (viewLatLngBounds != null) {
             if (mapFragment.getZoomLevel() > BuildConfig.ZOOM_MARKER_MIN) {
-                if (shouldReload(viewLatLngBounds)) {
+                if (shouldReload(viewLatLngBounds) || refreshData) {
                     Timber.d("Reloading pois");
                     previousZoom = mapFragment.getZoomLevel();
                     triggerReloadPoiLatLngBounds = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.5);
                     LatLngBounds latLngToLoad = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.75);
                     getPoisAndNotes.unsubscribe();
                     //todo clean the loader add a stat pater
-                    getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad)).execute(new GetPoisSubscriber());
+                    getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad), refreshData).execute(new GetPoisSubscriber());
                 }
             }
         }
@@ -350,7 +354,12 @@ public class MapFragmentPresenter {
     }
 
     public void refreshAreaConfirmed() {
-        //todo refresh data
+        loadPoi(true);
+    }
+
+    public void endCurrentLoading() {
+        mapFragment.showProgressBar(false);
+        getPoisAndNotes.unsubscribe();
     }
 
 
@@ -385,9 +394,14 @@ public class MapFragmentPresenter {
                     impacteLoadedNotes(poiLoadingProgress.getNotes());
                     break;
                 case LOADING_FROM_SERVER:
-                    mapFragment.showProgressBar(true);
+                    mapFragment.displayProgress(String.format("Loading pois : %1$s / %2$s " +
+                            "\n Loading Area %3$s / %4$s ", poiLoadingProgress.getLoadedElements(),
+                            poiLoadingProgress.getTotalsElements(),
+                            poiLoadingProgress.getTotalAreasLoaded(),
+                            poiLoadingProgress.getTotalAreasToLoad()));
                     break;
                 case FINISH:
+                    mapFragment.showProgressBar(false);
                     break;
                 case OUT_DATED_DATA:
                     mapFragment.showNeedToRefreshData();

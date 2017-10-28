@@ -64,10 +64,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
+
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -82,6 +79,25 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.yarolegovich.lovelydialog.LovelyStandardDialog;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
@@ -160,17 +176,6 @@ import io.jawg.osmcontributor.utils.OsmAnswers;
 import io.jawg.osmcontributor.utils.StringUtils;
 import io.jawg.osmcontributor.utils.ways.Geocoder;
 import io.jawg.osmcontributor.utils.ways.LevelBar;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.inject.Inject;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import timber.log.Timber;
 
 public class MapFragment extends Fragment {
@@ -224,6 +229,8 @@ public class MapFragment extends Fragment {
   @BindView(R.id.poi_detail_wrapper) RelativeLayout poiDetailWrapper;
 
   @BindView(R.id.progressbar) RelativeLayout progressbarWrapper;
+
+  @BindView(R.id.progress_info) TextView progressTextView;
 
   @BindView(R.id.note_detail_wrapper) RelativeLayout noteDetailWrapper;
 
@@ -772,7 +779,11 @@ public class MapFragment extends Fragment {
    * @param show Whether we should show the progressBar.
    */
   public void showProgressBar(boolean show) {
-    progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+      progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+  }
+
+  public void displayProgress(String progress) {
+    progressTextView.setText(progress);
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN) public void onPleaseSwitchWayEditionModeEvent(PleaseSwitchWayEditionModeEvent event) {
@@ -938,6 +949,11 @@ public class MapFragment extends Fragment {
                         dialog.cancel();
                     }
                 }).show();
+    }
+
+
+    @OnClick(R.id.close_loading) public void closeLoading() {
+    presenter.endCurrentLoading();
     }
 
     /*-----------------------------------------------------------
