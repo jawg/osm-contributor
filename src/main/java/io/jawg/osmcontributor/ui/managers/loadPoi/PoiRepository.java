@@ -53,63 +53,71 @@ public class PoiRepository {
     }
 
 
-    public Observable<PoiLoadingProgress> getPoiFromBox(final Box box) {
+    public Observable<PoiLoadingProgress> getPoiFromBox(final Box box, final boolean refreshData) {
         return Observable.create(new Observable.OnSubscribe<PoiLoadingProgress>() {
             @Override
             public void call(Subscriber<? super PoiLoadingProgress> subscriber) {
                 List<MapArea> areasNeeded = computeMapAreaOfBox(box);
-                if (areasNeeded != null && !areasNeeded.isEmpty()) {
-                    getPois(subscriber, box, areasNeeded);
+                if (!areasNeeded.isEmpty()) {
+                    getPois(subscriber, box, areasNeeded, refreshData);
                 }
+                PoiLoadingProgress loadingProgress = new PoiLoadingProgress(FINISH);
+                subscriber.onNext(loadingProgress);
                 subscriber.onCompleted();
             }
         });
     }
 
-    private void getPois(Subscriber<? super PoiLoadingProgress> subscriber, Box box, List<MapArea> areasNeeded) {
+    private void getPois(Subscriber<? super PoiLoadingProgress> subscriber, Box box, List<MapArea> areasNeeded, boolean refreshData) {
+        handleAreas(subscriber, areasNeeded, refreshData);
+        lodPoisFromDB(subscriber, box);
+    }
 
+    private void handleAreas(Subscriber<? super PoiLoadingProgress> subscriber, List<MapArea> areasNeeded, boolean refreshData) {
         List<MapArea> localAreas = mapAreaDao.queryForIds(getIds(areasNeeded));
 
-        if (areasNeeded.size() != localAreas.size()) {
+        if (refreshData || areasNeeded.size() != localAreas.size()) {
             // some areas are not loaded in ou BD
             // we call the backend to received the data
             //we notify the subscriber that we have some loading to do
 
             PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
             loadingProgress.setLoadingStatus(LOADING_FROM_SERVER);
-            // todo add notion of progress
-            //handle network errors
+            loadingProgress.setTotalAreasToLoad(areasNeeded.size() - localAreas.size());
+            loadingProgress.setTotalAreasLoaded(0L);
             subscriber.onNext(loadingProgress);
 
-            loadMissingMapAreas(areasNeeded, localAreas, subscriber);
-
-            getPois(subscriber, box, areasNeeded);
-        } else {
-            //all the data is present in the BDD
-            // load in first the poi in the center of the box
-            boolean allLoaded = false;
-            int page = 0;
-            do {
-                List<Poi> pois = poiDao.queryForAllInRect(box, page * POI_PAGE, POI_PAGE);
-                allLoaded = pois.size() < POI_PAGE;
-                PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
-                loadingProgress.setLoadingStatus(allLoaded ? FINISH : POI_LOADING);
-                loadingProgress.setPois(pois);
-                subscriber.onNext(loadingProgress);
-            } while (!allLoaded);
-
+            loadMissingMapAreas(areasNeeded, localAreas, subscriber, refreshData);
         }
 
-        for (MapArea mapArea : localAreas) {
-            LocalDateTime lastUpate = new LocalDateTime(mapArea.getUpdateDate());
-            //we check if the data is outDated and ask for Update
-            boolean outDatedData = LocalDateTime.now().isAfter(lastUpate.plusMonths(1));
-            if (outDatedData) {
-                PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
-                loadingProgress.setLoadingStatus(OUT_DATED_DATA);
-                subscriber.onNext(loadingProgress);
+        if (!refreshData) {
+            // find outdated areas
+            for (MapArea mapArea : localAreas) {
+                LocalDateTime lastUpate = new LocalDateTime(mapArea.getUpdateDate());
+                //we check if the data is outDated and ask for Update
+                boolean outDatedData = LocalDateTime.now().isAfter(lastUpate.plusMonths(1));
+                if (outDatedData) {
+                    PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
+                    loadingProgress.setLoadingStatus(OUT_DATED_DATA);
+                    subscriber.onNext(loadingProgress);
+                }
             }
         }
+    }
+
+
+    private void lodPoisFromDB(Subscriber<? super PoiLoadingProgress> subscriber, Box box) {
+        // load in first the poi in the center of the box
+        boolean allLoaded;
+        int page = 0;
+        do {
+            List<Poi> pois = poiDao.queryForAllInRect(box, page * POI_PAGE, POI_PAGE);
+            allLoaded = pois.size() < POI_PAGE;
+            PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
+            loadingProgress.setLoadingStatus(allLoaded ? FINISH : POI_LOADING);
+            loadingProgress.setPois(pois);
+            subscriber.onNext(loadingProgress);
+        } while (!allLoaded);
     }
 
     private List<Long> getIds(List<MapArea> areasNeeded) {
@@ -120,11 +128,11 @@ public class PoiRepository {
         return ids;
     }
 
-    private void loadMissingMapAreas(List<MapArea> toLoadAreas, List<MapArea> loadedAreas, Subscriber<? super PoiLoadingProgress> subscriber) {
-        PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
+    private void loadMissingMapAreas(List<MapArea> toLoadAreas, List<MapArea> loadedAreas, Subscriber<? super PoiLoadingProgress> subscriber, boolean refreshData) {
+        PoiLoadingProgress loadingProgress = new PoiLoadingProgress(POI_LOADING);
 
         for (MapArea toLoadArea : toLoadAreas) {
-            if (!loadedAreas.contains(toLoadArea)) {
+            if (refreshData || !loadedAreas.contains(toLoadArea)) {
                 try {
                     List<Poi> poisInBox = backend.getPoisInBox(toLoadArea.getBox());
                     loadingProgress.setTotalsElements(poisInBox.size());
@@ -135,20 +143,20 @@ public class PoiRepository {
                         i++;
 
                         if (i % SAVE_POI_PAGE == 0) {
-                            loadingProgress.setLoadingStatus(POI_LOADING);
                             loadingProgress.setLoadedElements(i);
-                            //todo publish result
+                            subscriber.onNext(loadingProgress);
                         }
                     }
+
                     //publish poi loaded
                     toLoadArea.setUpdateDate(new DateTime(System.currentTimeMillis()));
+                    mapAreaDao.createOrUpdate(toLoadArea);
                     loadedAreas.add(toLoadArea);
                 } catch (NetworkException e) {
                     loadingProgress.setLoadingStatus(NETWORK_ERROR);
                     subscriber.onNext(loadingProgress);
                 }
             }
-            mapAreaDao.createOrUpdate(toLoadArea);
         }
     }
 

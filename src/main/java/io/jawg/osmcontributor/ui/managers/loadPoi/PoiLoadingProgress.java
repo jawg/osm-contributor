@@ -14,9 +14,18 @@ public class PoiLoadingProgress {
     private boolean dataNeedRefresh;
     private long totalsElements = 0L;
     private long loadedElements = 0L;
+    private long totalAreasToLoad = 0l;
+    private long totalAreasLoaded = 0l;
     private List<Poi> pois;
     private List<Note> notes;
 
+
+    public PoiLoadingProgress() {
+    }
+
+    public PoiLoadingProgress(LoadingStatus loadingStatus) {
+        this.loadingStatus = loadingStatus;
+    }
 
     public LoadingStatus getLoadingStatus() {
         return loadingStatus;
@@ -66,6 +75,23 @@ public class PoiLoadingProgress {
 
     public void setNotes(List<Note> notes) {
         this.notes = notes;
+    }
+
+
+    public long getTotalAreasToLoad() {
+        return totalAreasToLoad;
+    }
+
+    public void setTotalAreasToLoad(long totalAreasToLoad) {
+        this.totalAreasToLoad = totalAreasToLoad;
+    }
+
+    public long getTotalAreasLoaded() {
+        return totalAreasLoaded;
+    }
+
+    public void setTotalAreasLoaded(long totalAreasLoaded) {
+        this.totalAreasLoaded = totalAreasLoaded;
     }
 
     public enum LoadingStatus {
