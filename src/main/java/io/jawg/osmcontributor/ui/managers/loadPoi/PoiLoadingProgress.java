@@ -1,5 +1,6 @@
 package io.jawg.osmcontributor.ui.managers.loadPoi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.jawg.osmcontributor.model.entities.Note;
@@ -16,8 +17,8 @@ public class PoiLoadingProgress {
     private long loadedElements = 0L;
     private long totalAreasToLoad = 0L;
     private long totalAreasLoaded = 0L;
-    private List<Poi> pois;
-    private List<Note> notes;
+    private List<Poi> pois = new ArrayList<>();
+    private List<Note> notes = new ArrayList<>();
 
 
     public PoiLoadingProgress() {

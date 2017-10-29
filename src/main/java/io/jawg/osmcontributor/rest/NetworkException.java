@@ -1,8 +1,6 @@
 package io.jawg.osmcontributor.rest;
 
-import java.io.IOException;
-
-public class NetworkException extends IOException {
+public class NetworkException extends Exception {
 
     public NetworkException() {
         super("No network");

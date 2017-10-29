@@ -23,6 +23,8 @@ import com.squareup.okhttp.OkHttpClient;
 import org.greenrobot.eventbus.EventBus;
 import org.simpleframework.xml.core.Persister;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -92,10 +94,15 @@ public class SyncModule {
     @Provides
     OverpassRestClient getOverpassRestClient(Persister persister, AuthorisationInterceptor interceptor, ConfigManager configManager) {
 
+        final OkHttpClient client = new OkHttpClient();
+        client.setConnectTimeout(120, TimeUnit.SECONDS);
+
+
         return new RestAdapter.Builder()
                 .setEndpoint(configManager.getBaseOverpassApiUrl())
                 .setConverter(getXMLConverterWithDateTime(persister))
                 .setLogLevel(RestAdapter.LogLevel.HEADERS).setLog(new AndroidLog("-------------------->"))
+                .setClient(new OkClient(client))
                 .build()
                 .create(OverpassRestClient.class);
     }

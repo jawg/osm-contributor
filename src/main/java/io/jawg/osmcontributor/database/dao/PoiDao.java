@@ -37,8 +37,6 @@ import io.jawg.osmcontributor.database.helper.DatabaseHelper;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.utils.Box;
 
-import static android.R.attr.offset;
-
 /**
  * Dao for {@link io.jawg.osmcontributor.model.entities.Poi} objects.
  * Check {@link io.jawg.osmcontributor.ui.managers.PoiManager} for methods to save and delete POIs.
@@ -80,13 +78,10 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
      * @param box Bounds of the search in latitude and longitude coordinates.
      * @return The notes contained in the box.
      */
-    public List<Poi> queryForAllInRect(final Box box, final long offcet, final long limit) {
+    public List<Poi> queryForAllInRect(final Box box, final long offset, final long limit) {
         return DatabaseHelper.wrapException(new Callable<List<Poi>>() {
             @Override
             public List<Poi> call() throws Exception {
-
-//                List<SaleDO> salesDO = saleQuery.distinct().offset(offset).limit((long) Constants.SALES_PER_PAGE).query();
-
                 Double latCenter = box.getNorth() - box.getSouth();
                 Double lngCenter = box.getEast() - box.getWest();
 
@@ -98,8 +93,7 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
                         .and().lt(Poi.LONGITUDE, new SelectArg(box.getEast()))
                         .and().eq(Poi.OLD, false);
 
-
-                String rawSql = "Select ABS(" + latCenter + "-" + Poi.LATITUDE + ") + " + "ABS(" + lngCenter + "-" + Poi.LONGITUDE + ")";
+                String rawSql = " (SELECT (ABS(" + latCenter + " - " + Poi.LATITUDE + ") + " + "ABS(" + lngCenter + "-" + Poi.LONGITUDE + ")))";
                 poiLongQueryBuilder.distinct().offset(offset).limit(limit).orderByRaw(rawSql);
                 return poiLongQueryBuilder.query();
             }

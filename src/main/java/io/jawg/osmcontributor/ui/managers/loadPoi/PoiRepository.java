@@ -34,8 +34,9 @@ import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.Load
 @Singleton
 public class PoiRepository {
 
-    public static final BigDecimal GRANULARITY_LAT = new BigDecimal(1000);
-    public static final BigDecimal GRANULARITY_LNG = new BigDecimal(1000);
+    // the bigger the number the smaller will be the area
+    public static final BigDecimal GRANULARITY_LAT = new BigDecimal(100);
+    public static final BigDecimal GRANULARITY_LNG = new BigDecimal(100);
     public static final int POI_PAGE = 20;
     public static final int SAVE_POI_PAGE = 20;
     private final PoiDao poiDao;
@@ -117,6 +118,7 @@ public class PoiRepository {
             loadingProgress.setLoadingStatus(allLoaded ? FINISH : POI_LOADING);
             loadingProgress.setPois(pois);
             subscriber.onNext(loadingProgress);
+            page++;
         } while (!allLoaded);
     }
 
@@ -129,8 +131,9 @@ public class PoiRepository {
     }
 
     private void loadMissingMapAreas(List<MapArea> toLoadAreas, List<MapArea> loadedAreas, Subscriber<? super PoiLoadingProgress> subscriber, boolean refreshData) {
-        PoiLoadingProgress loadingProgress = new PoiLoadingProgress(POI_LOADING);
-
+        PoiLoadingProgress loadingProgress = new PoiLoadingProgress(LOADING_FROM_SERVER);
+        loadingProgress.setTotalAreasToLoad(toLoadAreas.size() - loadedAreas.size());
+        int loadedArea = 0;
         for (MapArea toLoadArea : toLoadAreas) {
             if (refreshData || !loadedAreas.contains(toLoadArea)) {
                 try {
@@ -152,9 +155,14 @@ public class PoiRepository {
                     toLoadArea.setUpdateDate(new DateTime(System.currentTimeMillis()));
                     mapAreaDao.createOrUpdate(toLoadArea);
                     loadedAreas.add(toLoadArea);
+
+                    loadingProgress.setTotalAreasLoaded(loadedArea++);
+                    subscriber.onNext(loadingProgress);
+
                 } catch (NetworkException e) {
                     loadingProgress.setLoadingStatus(NETWORK_ERROR);
                     subscriber.onNext(loadingProgress);
+                    return;
                 }
             }
         }
@@ -185,9 +193,9 @@ public class PoiRepository {
 
                 areas.add(new MapArea(id,
                         (southArea + latInc + 1) / GRANULARITY_LAT.doubleValue(),
-                        (westArea + lngInc) / GRANULARITY_LAT.doubleValue(),
                         (southArea + latInc) / GRANULARITY_LAT.doubleValue(),
-                        (westArea + lngInc + 1) / GRANULARITY_LAT.doubleValue()));
+                        (westArea + lngInc + 1) / GRANULARITY_LAT.doubleValue(),
+                        (westArea + lngInc) / GRANULARITY_LAT.doubleValue()));
             }
         }
 

@@ -19,7 +19,15 @@
 package io.jawg.osmcontributor.rest;
 
 import android.support.annotation.NonNull;
+
 import com.github.scribejava.core.model.Verb;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.database.PoiAssetLoader;
 import io.jawg.osmcontributor.database.preferences.LoginPreferences;
@@ -33,16 +41,11 @@ import io.jawg.osmcontributor.rest.dtos.osm.NodeDto;
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
 import io.jawg.osmcontributor.rest.dtos.osm.TagDto;
 import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
-import io.jawg.osmcontributor.rest.events.error.SyncDownloadRetrofitErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
 import io.jawg.osmcontributor.rest.mappers.PoiMapper;
 import io.jawg.osmcontributor.rest.utils.AuthenticationRequestInterceptor;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.Box;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.greenrobot.eventbus.EventBus;
 import retrofit.RetrofitError;
 import retrofit.mime.TypedString;
 import timber.log.Timber;
@@ -129,7 +132,7 @@ public class OsmBackend implements Backend {
   /**
    * {@inheritDoc}
    */
-  @Override @NonNull public List<Poi> getPoisInBox(final Box box) {
+  @Override @NonNull public List<Poi> getPoisInBox(final Box box) throws NetworkException {
     Timber.d("Requesting overpass for download");
 
     List<Poi> poiList = new ArrayList<>();
@@ -149,9 +152,14 @@ public class OsmBackend implements Backend {
             }
           }
         });
-        OsmDto osmDto = result.getResult();
-        poiList.addAll(convertPois(osmDto));
-        poiTypes.remove(entry.getKey());
+
+        if (result.isSuccess()) {
+          OsmDto osmDto = result.getResult();
+          poiList.addAll(convertPois(osmDto));
+          poiTypes.remove(entry.getKey());
+        } else {
+          throw new NetworkException();
+        }
       }
     }
 
@@ -163,16 +171,15 @@ public class OsmBackend implements Backend {
         }
       });
 
-      if (!result.isSuccess()) {
-        if (result.getRetrofitError() != null) {
-          Timber.e(result.getRetrofitError(), "Retrofit error, couldn't download from overpass");
-        }
-        bus.post(new SyncDownloadRetrofitErrorEvent());
-        return new ArrayList<>();
+      if (result.isSuccess()) {
+        OsmDto osmDto = result.getResult();
+        poiList.addAll(convertPois(osmDto));
+      } else {
+          if (result.getRetrofitError() != null) {
+            Timber.e(result.getRetrofitError(), "Retrofit error, couldn't download from overpass");
+          }
+          throw new NetworkException();
       }
-
-      OsmDto osmDto = result.getResult();
-      poiList.addAll(convertPois(osmDto));
     }
     return poiList;
   }

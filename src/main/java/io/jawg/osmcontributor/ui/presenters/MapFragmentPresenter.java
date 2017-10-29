@@ -77,6 +77,8 @@ public class MapFragmentPresenter {
 
     private MapFragment mapFragment;
 
+    private List<Long> ids;
+
     @Inject
     EventBus eventBus;
 
@@ -192,11 +194,15 @@ public class MapFragmentPresenter {
     /*=========================================*/
     /*------------CODE-------------------------*/
     /*=========================================*/
-    public void loadPoisIfNeeded() {
-        loadPoi(false);
+    public void loadPoisIfNeeded(boolean forceRefresh) {
+        loadPoi(false, forceRefresh);
     }
 
-    private void loadPoi(boolean refreshData) {
+    public void loadPoisIfNeeded() {
+        loadPoi(false, false);
+    }
+
+    private void loadPoi(boolean refreshData, boolean forceRefresh) {
         if (poiTypes == null) {
             Timber.v("PleaseLoadPoiTypes");
             eventBus.post(new PleaseLoadPoiTypes());
@@ -206,7 +212,7 @@ public class MapFragmentPresenter {
         LatLngBounds viewLatLngBounds = mapFragment.getViewLatLngBounds();
         if (viewLatLngBounds != null) {
             if (mapFragment.getZoomLevel() > BuildConfig.ZOOM_MARKER_MIN) {
-                if (shouldReload(viewLatLngBounds) || refreshData) {
+                if (shouldReload(viewLatLngBounds) || refreshData || forceRefresh) {
                     Timber.d("Reloading pois");
                     previousZoom = mapFragment.getZoomLevel();
                     triggerReloadPoiLatLngBounds = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.5);
@@ -220,7 +226,6 @@ public class MapFragmentPresenter {
     }
 
     public void downloadAreaPoisAndNotes() {
-        mapFragment.showProgressBar(true);
         eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromLatLngBounds(LatLngBoundsUtils.enlarge(mapFragment.getViewLatLngBounds(), 1.75))));
     }
 
@@ -256,9 +261,19 @@ public class MapFragmentPresenter {
         }
     }
 
+    private void startLoading() {
+        ids = new ArrayList<>();
+        mapFragment.showProgressBar(true);
+    }
+
+    private void loadingFinished() {
+        mapFragment.removeNoteMarkersNotIn(ids);
+        mapFragment.removePoiMarkersNotIn(ids);
+        mapFragment.showProgressBar(false);
+    }
+
     private void onLoaded(List<MapElement> mapElements, LocationMarkerView.MarkerType markerType) {
         LocationMarkerView markerSelected = mapFragment.getMarkerSelected();
-        List<Long> ids = new ArrayList<>(mapElements.size());
 
         for (MapElement mapElement : mapElements) {
             ids.add(mapElement.getId());
@@ -322,12 +337,6 @@ public class MapFragmentPresenter {
             }
         }
 
-        if (markerType == LocationMarkerView.MarkerType.NOTE) {
-            mapFragment.removeNoteMarkersNotIn(ids);
-        } else {
-            mapFragment.removePoiMarkersNotIn(ids);
-        }
-
         if ((mapFragment.getMapMode() == MapMode.DEFAULT || mapFragment.getMapMode() == MapMode.POI_CREATION)) {
             mapFragment.reselectMarker();
         }
@@ -354,7 +363,7 @@ public class MapFragmentPresenter {
     }
 
     public void refreshAreaConfirmed() {
-        loadPoi(true);
+        loadPoi(true, false);
     }
 
     public void endCurrentLoading() {
@@ -368,14 +377,18 @@ public class MapFragmentPresenter {
     /*=========================================*/
 
     private final class GetPoisSubscriber extends Subscriber<PoiLoadingProgress> {
+        boolean hasEncounterNetworkError = false;
+
         @Override
         public void onStart() {
             super.onStart();
+            startLoading();
         }
 
         @Override
         public void onCompleted() {
-            mapFragment.showProgressBar(false);
+            loadingFinished();
+            mapFragment.displayNetworkError(hasEncounterNetworkError);
         }
 
         @Override
@@ -395,7 +408,7 @@ public class MapFragmentPresenter {
                     break;
                 case LOADING_FROM_SERVER:
                     mapFragment.displayProgress(String.format("Loading pois : %1$s / %2$s " +
-                            "\n Loading Area %3$s / %4$s ", poiLoadingProgress.getLoadedElements(),
+                                    "\n Loading Area %3$s / %4$s ", poiLoadingProgress.getLoadedElements(),
                             poiLoadingProgress.getTotalsElements(),
                             poiLoadingProgress.getTotalAreasLoaded(),
                             poiLoadingProgress.getTotalAreasToLoad()));
@@ -407,6 +420,8 @@ public class MapFragmentPresenter {
                     mapFragment.showNeedToRefreshData();
                     break;
                 case NETWORK_ERROR:
+                    hasEncounterNetworkError = true;
+                    mapFragment.showProgressBar(false);
                     break;
             }
         }

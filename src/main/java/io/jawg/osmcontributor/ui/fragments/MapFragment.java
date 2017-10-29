@@ -236,6 +236,8 @@ public class MapFragment extends Fragment {
 
   @BindView(R.id.osm_copyright) TextView osmCopyrightTextView;
 
+  @BindView(R.id.network_banner) View banner;
+
   @Inject SharedPreferences sharedPreferences;
 
   @Inject ConfigManager configManager;
@@ -765,7 +767,6 @@ public class MapFragment extends Fragment {
     MapMode.MapModeProperties properties = mode.getProperties();
 
     confirm.setVisible(properties.isShowConfirmBtn());
-    downloadArea.setVisible(properties.isShowDownloadArea());
     filter.setVisible(FlavorUtils.hasFilter() && !properties.isLockDrawer());
     toggleBackButton(properties.isMenuBtn());
     getActivity().setTitle(properties.getTitle(getActivity()));
@@ -808,14 +809,6 @@ public class MapFragment extends Fragment {
   public void onDownloadZoneClick() {
     if (mapMode == MapMode.WAY_EDITION) {
       downloadAreaForEdition();
-    } else {
-      // If flavor Store, allow the download only if the zoom > 18
-      if (!FlavorUtils.isStore() || getZoomLevel() >= 16) {
-        presenter.downloadAreaPoisAndNotes();
-        Toast.makeText(getActivity(), R.string.download_in_progress, Toast.LENGTH_SHORT).show();
-      } else {
-        Toast.makeText(getActivity(), R.string.zoom_more, Toast.LENGTH_SHORT).show();
-      }
     }
   }
 
@@ -936,7 +929,7 @@ public class MapFragment extends Fragment {
 
     public void showNeedToRefreshData() {
         new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.load_poi_data_outdated_refresh_titel)
+                .setTitle(R.string.load_poi_data_outdated_refresh_title)
                 .setMessage(R.string.load_poi_data_outdated_refresh_content)
                 .setPositiveButton(R.string.load_poi_data_outdated_refresh_btn, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -952,8 +945,12 @@ public class MapFragment extends Fragment {
     }
 
 
-    @OnClick(R.id.close_loading) public void closeLoading() {
-    presenter.endCurrentLoading();
+    public void displayNetworkError(boolean display) {
+        banner.setVisibility(display ? View.VISIBLE : View.GONE);
+    }
+
+    @OnClick(R.id.network_banner) public void retryLoadPoi() {
+       presenter.loadPoisIfNeeded(true);
     }
 
     /*-----------------------------------------------------------

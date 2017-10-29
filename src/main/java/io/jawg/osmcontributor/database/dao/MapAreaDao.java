@@ -40,10 +40,10 @@ public class MapAreaDao extends RuntimeExceptionDao<MapArea, Long> {
         super(dao);
     }
 
-    public List<MapArea> queryForIds(List<Long> longs) {
+    public List<MapArea> queryForIds(List<Long> ids) {
         QueryBuilder<MapArea, Long> queryBuilder = queryBuilder();
         try {
-            return queryBuilder.where().in(MapArea.ID, longs).query();
+            return queryBuilder.where().in(MapArea.ID, ids).query();
         } catch (SQLException e) {
             e.printStackTrace();
             return new ArrayList<>();
