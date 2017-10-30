@@ -43,7 +43,7 @@ public class MapArea {
     public static final String UPDATE_DATE = "UPDATE_DATE";
 
 
-    @DatabaseField(columnName = ID, canBeNull = false)
+    @DatabaseField(columnName = ID, canBeNull = false, id = true)
     private Long id;
 
     @DatabaseField(columnName = NORTH, canBeNull = false)
