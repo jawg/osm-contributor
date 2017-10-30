@@ -103,7 +103,7 @@ public interface Backend {
      * @param box The bounds of the area.
      * @return The list of downloaded POIs.
      */
-    List<Poi> getPoisInBox(final Box box);
+    List<Poi> getPoisInBox(final Box box) throws NetworkException;
 
     /**
      * Download a Poi from the backend by its id.

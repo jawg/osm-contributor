@@ -22,8 +22,10 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -62,10 +64,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
+
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -80,6 +79,25 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.yarolegovich.lovelydialog.LovelyStandardDialog;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
@@ -158,62 +176,53 @@ import io.jawg.osmcontributor.utils.OsmAnswers;
 import io.jawg.osmcontributor.utils.StringUtils;
 import io.jawg.osmcontributor.utils.ways.Geocoder;
 import io.jawg.osmcontributor.utils.ways.LevelBar;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.inject.Inject;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import timber.log.Timber;
 
 public class MapFragment extends Fragment {
 
-  private static final String LOCATION = "location";
-  private static final String ZOOM_LEVEL = "zoom level";
-  private static final String LEVEL = "level";
-  private static final String MARKER_TYPE = "MARKER_TYPE";
-  public static final String CREATION_MODE = "CREATION_MODE";
-  public static final String POI_TYPE_ID = "POI_TYPE_ID";
-  public static final String SELECTED_MARKER_ID = "SELECTED_MARKER_ID";
-  public static final String HIDDEN_POI_TYPE = "HIDDEN_POI_TYPE";
-  private static final String DISPLAY_OPEN_NOTES = "DISPLAY_OPEN_NOTES";
-  private static final String DISPLAY_CLOSED_NOTES = "DISPLAY_CLOSED_NOTES";
+    private static final String LOCATION = "location";
+    private static final String ZOOM_LEVEL = "zoom level";
+    private static final String LEVEL = "level";
+    private static final String MARKER_TYPE = "MARKER_TYPE";
+    public static final String CREATION_MODE = "CREATION_MODE";
+    public static final String POI_TYPE_ID = "POI_TYPE_ID";
+    public static final String SELECTED_MARKER_ID = "SELECTED_MARKER_ID";
+    public static final String HIDDEN_POI_TYPE = "HIDDEN_POI_TYPE";
+    private static final String DISPLAY_OPEN_NOTES = "DISPLAY_OPEN_NOTES";
+    private static final String DISPLAY_CLOSED_NOTES = "DISPLAY_CLOSED_NOTES";
 
-  private LocationMarkerView markerSelected = null;
+    private LocationMarkerView markerSelected = null;
 
-  private WayMarker wayMarkerSelected = null;
+    private WayMarker wayMarkerSelected = null;
 
-  // when resuming app we use this id to re-select the good marker
-  private Long markerSelectedId = -1L;
-  private MapMode mapMode = MapMode.DEFAULT;
+    // when resuming app we use this id to re-select the good marker
+    private Long markerSelectedId = -1L;
+    private MapMode mapMode = MapMode.DEFAULT;
 
-  private boolean isMenuLoaded = false;
-  private boolean pleaseSwitchToPoiSelected = false;
+    private boolean isMenuLoaded = false;
+    private boolean pleaseSwitchToPoiSelected = false;
 
-  private Map<Long, LocationMarkerViewOptions<Poi>> markersPoi;
-  private Map<Long, LocationMarkerViewOptions<Note>> markersNotes;
-  private Map<Long, WayMarkerOptions> markersNodeRef;
+    private Map<Long, LocationMarkerViewOptions<Poi>> markersPoi;
+    private Map<Long, LocationMarkerViewOptions<Note>> markersNotes;
+    private Map<Long, WayMarkerOptions> markersNodeRef;
 
-  private int maxPoiType;
-  private PoiType poiTypeSelected;
-  private ButteryProgressBar progressBar;
-  private MapFragmentPresenter presenter;
-  private MapboxListener mapboxListener;
+    private int maxPoiType;
+    private PoiType poiTypeSelected;
+    private ButteryProgressBar progressBar;
+    private MapFragmentPresenter presenter;
+    private MapboxListener mapboxListener;
 
-  private MapboxMap mapboxMap;
+    private MapboxMap mapboxMap;
 
-  private Unbinder unbinder;
+    private Unbinder unbinder;
 
-  private Location lastLocation;
+    private Location lastLocation;
 
-  @Inject BitmapHandler bitmapHandler;
+    @Inject
+    BitmapHandler bitmapHandler;
 
-  @Inject EventBus eventBus;
+    @Inject
+    EventBus eventBus;
 
   @BindView(R.id.mapview) MapView mapView;
 
@@ -221,9 +230,13 @@ public class MapFragment extends Fragment {
 
   @BindView(R.id.progressbar) RelativeLayout progressbarWrapper;
 
+  @BindView(R.id.progress_info) TextView progressTextView;
+
   @BindView(R.id.note_detail_wrapper) RelativeLayout noteDetailWrapper;
 
   @BindView(R.id.osm_copyright) TextView osmCopyrightTextView;
+
+  @BindView(R.id.network_banner) View banner;
 
   @Inject SharedPreferences sharedPreferences;
 
@@ -435,14 +448,18 @@ public class MapFragment extends Fragment {
     }
   }
 
-  @Override public void onDestroy() {
-    super.onDestroy();
-    if (mapView != null) {
-      mapView.onDestroy();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mapView != null) {
+            mapView.onDestroy();
+        }
+        if (presenter != null) {
+            presenter.onDestroy();
+        }
+        // Clear bitmapHandler even if activity leaks.
+        bitmapHandler = null;
     }
-    // Clear bitmapHandler even if activity leaks.
-    bitmapHandler = null;
-  }
 
   @Override public void onDestroyView() {
     super.onDestroyView();
@@ -750,7 +767,6 @@ public class MapFragment extends Fragment {
     MapMode.MapModeProperties properties = mode.getProperties();
 
     confirm.setVisible(properties.isShowConfirmBtn());
-    downloadArea.setVisible(properties.isShowDownloadArea());
     filter.setVisible(FlavorUtils.hasFilter() && !properties.isLockDrawer());
     toggleBackButton(properties.isMenuBtn());
     getActivity().setTitle(properties.getTitle(getActivity()));
@@ -764,7 +780,11 @@ public class MapFragment extends Fragment {
    * @param show Whether we should show the progressBar.
    */
   public void showProgressBar(boolean show) {
-    progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+      progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+  }
+
+  public void displayProgress(String progress) {
+    progressTextView.setText(progress);
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN) public void onPleaseSwitchWayEditionModeEvent(PleaseSwitchWayEditionModeEvent event) {
@@ -789,14 +809,6 @@ public class MapFragment extends Fragment {
   public void onDownloadZoneClick() {
     if (mapMode == MapMode.WAY_EDITION) {
       downloadAreaForEdition();
-    } else {
-      // If flavor Store, allow the download only if the zoom > 18
-      if (!FlavorUtils.isStore() || getZoomLevel() >= 16) {
-        presenter.downloadAreaPoisAndNotes();
-        Toast.makeText(getActivity(), R.string.download_in_progress, Toast.LENGTH_SHORT).show();
-      } else {
-        Toast.makeText(getActivity(), R.string.zoom_more, Toast.LENGTH_SHORT).show();
-      }
     }
   }
 
@@ -913,6 +925,33 @@ public class MapFragment extends Fragment {
   public LocationMarkerViewOptions<Note> getNote(Long id) {
     return markersNotes.get(id);
   }
+
+
+    public void showNeedToRefreshData() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.load_poi_data_outdated_refresh_title)
+                .setMessage(R.string.load_poi_data_outdated_refresh_content)
+                .setPositiveButton(R.string.load_poi_data_outdated_refresh_btn, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        presenter.refreshAreaConfirmed();
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(R.string.load_poi_data_outdated_refresh_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                }).show();
+    }
+
+
+    public void displayNetworkError(boolean display) {
+        banner.setVisibility(display ? View.VISIBLE : View.GONE);
+    }
+
+    @OnClick(R.id.network_banner) public void retryLoadPoi() {
+       presenter.loadPoisIfNeeded(true);
+    }
 
     /*-----------------------------------------------------------
     * WAY EDITION

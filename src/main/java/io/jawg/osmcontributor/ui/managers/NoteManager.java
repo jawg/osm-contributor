@@ -20,6 +20,10 @@ package io.jawg.osmcontributor.ui.managers;
 
 import android.app.Application;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,31 +32,25 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import io.jawg.osmcontributor.utils.ConfigManager;
-import io.jawg.osmcontributor.database.helper.DatabaseHelper;
 import io.jawg.osmcontributor.database.dao.CommentDao;
 import io.jawg.osmcontributor.database.dao.NoteDao;
+import io.jawg.osmcontributor.database.helper.DatabaseHelper;
+import io.jawg.osmcontributor.model.entities.Comment;
+import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.events.NoteLoadedEvent;
 import io.jawg.osmcontributor.model.events.NoteSavedEvent;
 import io.jawg.osmcontributor.model.events.NotesArpiLoadedEvent;
-import io.jawg.osmcontributor.model.events.NotesLoadedEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadNoteEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadNoteForArpiEvent;
-import io.jawg.osmcontributor.model.events.PleaseLoadNotesEvent;
 import io.jawg.osmcontributor.model.events.ResetDatabaseEvent;
-import io.jawg.osmcontributor.model.entities.Comment;
-import io.jawg.osmcontributor.model.entities.Note;
+import io.jawg.osmcontributor.rest.events.SyncFinishUploadNote;
+import io.jawg.osmcontributor.rest.managers.SyncNoteManager;
 import io.jawg.osmcontributor.ui.activities.NoteActivity;
 import io.jawg.osmcontributor.ui.events.map.NewNoteCreatedEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseApplyNewComment;
 import io.jawg.osmcontributor.ui.events.note.ApplyNewCommentFailedEvent;
-import io.jawg.osmcontributor.rest.managers.SyncNoteManager;
-import io.jawg.osmcontributor.rest.events.SyncFinishUploadNote;
 import io.jawg.osmcontributor.utils.Box;
+import io.jawg.osmcontributor.utils.ConfigManager;
 import timber.log.Timber;
 
 import static io.jawg.osmcontributor.database.helper.DatabaseHelper.loadLazyForeignCollection;
@@ -94,11 +92,6 @@ public class NoteManager {
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseLoadNoteEvent(PleaseLoadNoteEvent event) {
         bus.post(new NoteLoadedEvent(queryForId(event.getNoteId())));
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseLoadNotesEvent(PleaseLoadNotesEvent event) {
-        loadNotes(event);
     }
 
 
@@ -324,19 +317,5 @@ public class NoteManager {
                 return true;
             }
         });
-    }
-
-    // *********************************
-    // ************ private ************
-    // *********************************
-
-    /**
-     * Send a {@link NotesLoadedEvent} containing all the Notes
-     * in the Box of the {@link PleaseLoadNotesEvent}.
-     *
-     * @param event Event containing the box to load.
-     */
-    private void loadNotes(PleaseLoadNotesEvent event) {
-        bus.post(new NotesLoadedEvent(event.getBox(), queryForAllInRect(event.getBox())));
     }
 }

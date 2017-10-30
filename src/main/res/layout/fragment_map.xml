@@ -33,11 +33,45 @@
         app:rotate_enabled="true"
         app:zoom_enabled="true" />
 
+    <RelativeLayout
+        android:id="@+id/network_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/common_google_signin_btn_text_dark_pressed"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/load_poi_network_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="5dp"
+            android:text="@string/load_poi_network_error"
+            android:textColor="@color/colorCreationDark" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/refresh"/>
+
+    </RelativeLayout>
+
 
     <RelativeLayout
         android:id="@+id/progressbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/network_banner"
+        android:background="@color/list_divider"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/progress_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Progress info" />
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/addressView"
@@ -230,15 +264,15 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:visibility="gone"
+            app:menu_colorNormal="@color/colorPrimaryDark"
+            app:menu_colorPressed="@color/colorPrimary"
+            app:menu_colorRipple="@color/colorPrimary"
             app:menu_icon="@drawable/add_white"
             app:menu_labels_colorNormal="@color/material_blue_500"
             app:menu_labels_colorPressed="@color/material_blue_grey_800"
             app:menu_labels_position="left"
             app:menu_labels_style="@style/menu_labels_style"
-            app:menu_openDirection="up"
-            app:menu_colorNormal="@color/colorPrimaryDark"
-            app:menu_colorPressed="@color/colorPrimary"
-            app:menu_colorRipple="@color/colorPrimary"/>
+            app:menu_openDirection="up" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/localisation"

@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -20,28 +20,26 @@ package io.jawg.osmcontributor.rest.managers;
 
 import android.app.Application;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.database.dao.PoiDao;
 import io.jawg.osmcontributor.database.dao.PoiTypeDao;
-import io.jawg.osmcontributor.model.events.PoiTypesLoaded;
-import io.jawg.osmcontributor.model.events.PoisAndNotesDownloadedEvent;
+import io.jawg.osmcontributor.database.events.DbInitializedEvent;
+import io.jawg.osmcontributor.database.events.InitDbEvent;
 import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiType;
+import io.jawg.osmcontributor.model.events.PoiTypesLoaded;
+import io.jawg.osmcontributor.model.events.PoisAndNotesDownloadedEvent;
 import io.jawg.osmcontributor.rest.Backend;
-import io.jawg.osmcontributor.ui.managers.LoginManager;
-import io.jawg.osmcontributor.ui.managers.NoteManager;
-import io.jawg.osmcontributor.database.events.DbInitializedEvent;
-import io.jawg.osmcontributor.database.events.InitDbEvent;
+import io.jawg.osmcontributor.rest.NetworkException;
 import io.jawg.osmcontributor.rest.events.PleaseUploadPoiChangesByIdsEvent;
 import io.jawg.osmcontributor.rest.events.SyncDownloadPoisAndNotesEvent;
 import io.jawg.osmcontributor.rest.events.SyncDownloadWayEvent;
@@ -50,6 +48,9 @@ import io.jawg.osmcontributor.rest.events.error.SyncConflictingNodeErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncNewNodeErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncUnauthorizedEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
+import io.jawg.osmcontributor.ui.managers.LoginManager;
+import io.jawg.osmcontributor.ui.managers.NoteManager;
+import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.Box;
 import io.jawg.osmcontributor.utils.FlavorUtils;
 import io.jawg.osmcontributor.utils.OsmAnswers;
@@ -185,12 +186,17 @@ public class SyncManager {
             syncDownloadPoiTypes();
         }
 
-        List<Poi> pois = backend.getPoisInBox(box);
-        if (pois.size() > 0) {
-            Timber.d("Updating %d nodes", pois.size());
-            poiManager.mergeFromOsmPois(pois, box);
-        } else {
-            Timber.d("No new node found in the area");
+        List<Poi> pois = null;
+        try {
+            pois = backend.getPoisInBox(box);
+            if (pois.size() > 0) {
+                Timber.d("Updating %d nodes", pois.size());
+                poiManager.mergeFromOsmPois(pois, box);
+            } else {
+                Timber.d("No new node found in the area");
+            }
+        } catch (NetworkException e) {
+            Timber.w("There was a network error, it was impossible to load pois of the box");
         }
     }
 
