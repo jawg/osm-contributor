@@ -780,7 +780,7 @@ public class MapFragment extends Fragment {
    * @param show Whether we should show the progressBar.
    */
   public void showProgressBar(boolean show) {
-      progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+    progressbarWrapper.setVisibility(show ? View.VISIBLE : View.GONE);
   }
 
   public void displayProgress(String progress) {
