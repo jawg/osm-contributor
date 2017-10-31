@@ -181,6 +181,8 @@ public class OsmBackend implements Backend {
           throw new NetworkException();
       }
     }
+
+    Timber.d("Requesting overpass for download finished");
     return poiList;
   }
 

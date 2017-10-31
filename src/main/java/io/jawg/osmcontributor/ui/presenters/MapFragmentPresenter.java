@@ -402,16 +402,14 @@ public class MapFragmentPresenter {
             switch (poiLoadingProgress.getLoadingStatus()) {
                 case POI_LOADING:
                     impacteLoadedPoi(poiLoadingProgress.getPois());
+                    updateProgress(poiLoadingProgress);
                     break;
                 case NOTE_LOADING:
                     impacteLoadedNotes(poiLoadingProgress.getNotes());
+                    updateProgress(poiLoadingProgress);
                     break;
                 case LOADING_FROM_SERVER:
-                    mapFragment.displayProgress(String.format("Loading pois : %1$s / %2$s " +
-                                    "\n Loading Area %3$s / %4$s ", poiLoadingProgress.getLoadedElements(),
-                            poiLoadingProgress.getTotalsElements(),
-                            poiLoadingProgress.getTotalAreasLoaded(),
-                            poiLoadingProgress.getTotalAreasToLoad()));
+                    updateProgress(poiLoadingProgress);
                     break;
                 case FINISH:
                     mapFragment.showProgressBar(false);
@@ -425,5 +423,13 @@ public class MapFragmentPresenter {
                     break;
             }
         }
+    }
+
+    private void updateProgress(PoiLoadingProgress poiLoadingProgress) {
+        mapFragment.displayProgress(String.format("Loading pois : %1$s / %2$s " +
+                        "\n Loading Area %3$s / %4$s ", poiLoadingProgress.getLoadedElements(),
+                poiLoadingProgress.getTotalsElements(),
+                poiLoadingProgress.getTotalAreasLoaded(),
+                poiLoadingProgress.getTotalAreasToLoad()));
     }
 }

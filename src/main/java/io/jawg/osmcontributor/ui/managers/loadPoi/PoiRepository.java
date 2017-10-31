@@ -20,6 +20,7 @@ import io.jawg.osmcontributor.rest.NetworkException;
 import io.jawg.osmcontributor.utils.Box;
 import rx.Observable;
 import rx.Subscriber;
+import timber.log.Timber;
 
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.FINISH;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.LOADING_FROM_SERVER;
@@ -35,10 +36,10 @@ import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.Load
 public class PoiRepository {
 
     // the bigger the number the smaller will be the area
-    public static final BigDecimal GRANULARITY_LAT = new BigDecimal(100);
-    public static final BigDecimal GRANULARITY_LNG = new BigDecimal(100);
-    public static final int POI_PAGE = 20;
-    public static final int SAVE_POI_PAGE = 20;
+    public static final BigDecimal GRANULARITY_LAT = new BigDecimal(200);
+    public static final BigDecimal GRANULARITY_LNG = new BigDecimal(200);
+    public static final int POI_PAGE = 50;
+    public static final int SAVE_POI_PAGE = 50;
     private final PoiDao poiDao;
     private final MapAreaDao mapAreaDao;
     private final Backend backend;
@@ -66,12 +67,14 @@ public class PoiRepository {
                 subscriber.onNext(loadingProgress);
                 subscriber.onCompleted();
             }
-        });
+        }).onBackpressureBuffer();
     }
 
     private void getPois(Subscriber<? super PoiLoadingProgress> subscriber, Box box, List<MapArea> areasNeeded, boolean refreshData) {
+        Timber.d("--------- Handling areas ---------");
         handleAreas(subscriber, areasNeeded, refreshData);
-        lodPoisFromDB(subscriber, box);
+        Timber.d("--------- loadPoisFromDB ---------");
+        loadPoisFromDB(subscriber, box);
     }
 
     private void handleAreas(Subscriber<? super PoiLoadingProgress> subscriber, List<MapArea> areasNeeded, boolean refreshData) {
@@ -107,7 +110,7 @@ public class PoiRepository {
     }
 
 
-    private void lodPoisFromDB(Subscriber<? super PoiLoadingProgress> subscriber, Box box) {
+    private void loadPoisFromDB(Subscriber<? super PoiLoadingProgress> subscriber, Box box) {
         // load in first the poi in the center of the box
         boolean allLoaded;
         int page = 0;
@@ -137,6 +140,7 @@ public class PoiRepository {
         for (MapArea toLoadArea : toLoadAreas) {
             if (refreshData || !loadedAreas.contains(toLoadArea)) {
                 try {
+                    Timber.d("Downloading Area : " + toLoadArea.getId());
                     List<Poi> poisInBox = backend.getPoisInBox(toLoadArea.getBox());
                     loadingProgress.setTotalsElements(poisInBox.size());
 
@@ -148,11 +152,14 @@ public class PoiRepository {
                         if (i % SAVE_POI_PAGE == 0) {
                             loadingProgress.setLoadedElements(i);
                             subscriber.onNext(loadingProgress);
+                            Timber.d("Saving Pois BDD : " + i);
                         }
                     }
 
                     //publish poi loaded
                     toLoadArea.setUpdateDate(new DateTime(System.currentTimeMillis()));
+
+                    Timber.d("Saving Area in BDD : " + toLoadArea.getId());
                     mapAreaDao.createOrUpdate(toLoadArea);
                     loadedAreas.add(toLoadArea);
 
@@ -160,6 +167,7 @@ public class PoiRepository {
                     subscriber.onNext(loadingProgress);
 
                 } catch (NetworkException e) {
+                    Timber.w("Network error wile saving areas ");
                     loadingProgress.setLoadingStatus(NETWORK_ERROR);
                     subscriber.onNext(loadingProgress);
                     return;
