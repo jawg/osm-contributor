@@ -33,46 +33,6 @@
         app:rotate_enabled="true"
         app:zoom_enabled="true" />
 
-    <RelativeLayout
-        android:id="@+id/network_banner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/common_google_signin_btn_text_dark_pressed"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/load_poi_network_error"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="5dp"
-            android:text="@string/load_poi_network_error"
-            android:textColor="@color/colorCreationDark" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/refresh"/>
-
-    </RelativeLayout>
-
-
-    <RelativeLayout
-        android:id="@+id/progressbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/network_banner"
-        android:background="@color/list_divider"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/progress_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Progress info" />
-
-    </RelativeLayout>
-
     <TextView
         android:id="@+id/addressView"
         android:layout_width="wrap_content"
@@ -89,6 +49,91 @@
         android:id="@+id/zoom_level"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:id="@+id/poi_load_banner_network"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/common_google_signin_btn_text_dark_pressed"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="5dp"
+            android:text="@string/load_poi_network_error"
+            android:textColor="@color/colorCreationDark" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/refresh" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/poi_load_banner_too_much_pois"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/poi_load_banner_network"
+        android:background="@color/common_google_signin_btn_text_dark_pressed"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/load_poi_error_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="5dp"
+            android:text="@string/load_poi_network_error"
+            android:textColor="@color/colorCreationDark" />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/progressbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/poi_load_banner_too_much_pois"
+        android:background="@color/common_google_signin_btn_text_dark_pressed"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:spb_color="@color/colorAccent"
+            app:spb_progressiveStart_activated="true"
+            app:spb_progressiveStart_speed="3"
+            app:spb_progressiveStop_speed="1"
+            app:spb_sections_count="4"
+            app:spb_stroke_separator_length="4dp"
+            app:spb_stroke_width="5dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/load_poi_area_message" />
+
+            <TextView
+                android:id="@+id/progress_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
 
     <View
         android:id="@+id/pin_anchor"

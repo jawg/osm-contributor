@@ -102,5 +102,6 @@ public class PoiLoadingProgress {
         FINISH,
         OUT_DATED_DATA,
         NETWORK_ERROR,
+        TOO_MANY_POIS
     }
 }

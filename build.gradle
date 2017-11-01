@@ -33,6 +33,7 @@ ext {
     robolectricVersion = '2.4'
     rxAndroidVersion = '1.0.1'
     rxJavaVersion = '1.0.14'
+    horizontalLoaderVersion = '1.1.0'
 }
 
 buildscript {
@@ -135,6 +136,7 @@ android {
             applicationId "io.jawg.osmcontributor"
             buildConfigField "String", "APP_NAME", '"OSM Contributor"'
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
+            buildConfigField "int", "MAX_POIS_ON_MAP", "200"
             buildConfigField "int", "DEFAULT_ZOOM", "16"
             buildConfigField "int", "ZOOM_VECTORIAL", "18"
             buildConfigField "int", "ZOOM_MAX_PROVIDER", "19"
@@ -160,6 +162,7 @@ android {
 
             buildConfigField "String", "APP_NAME", '"Jungle Bus"'
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
+            buildConfigField "int", "MAX_POIS_ON_MAP", "200"
             buildConfigField "int", "DEFAULT_ZOOM", "16"
             buildConfigField "int", "ZOOM_VECTORIAL", "18"
             buildConfigField "int", "ZOOM_MAX_PROVIDER", "19"
@@ -232,6 +235,7 @@ dependencies {
     compile "com.yarolegovich:lovely-dialog:$lovelyDialogVersion"
     compile "com.github.clans:fab:$clansFabVersion"
     compile "com.facebook.fresco:fresco:$frescoVersion"
+    compile "com.github.castorflex.smoothprogressbar:library:$horizontalLoaderVersion"
 
     // Flickr Helper
     compile "com.flickr4java:flickr4java:$flickr4javaVersion"

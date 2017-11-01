@@ -69,6 +69,8 @@ public class MapFragmentPresenter {
 
     private boolean forceRefreshNotes = false;
 
+    private boolean abortedTooManyPois = false;
+
     private List<PoiType> poiTypes = null;
 
     private Float previousZoom;
@@ -218,7 +220,6 @@ public class MapFragmentPresenter {
                     triggerReloadPoiLatLngBounds = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.5);
                     LatLngBounds latLngToLoad = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.75);
                     getPoisAndNotes.unsubscribe();
-                    //todo clean the loader add a stat pater
                     getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad), refreshData).execute(new GetPoisSubscriber());
                 }
             }
@@ -243,7 +244,7 @@ public class MapFragmentPresenter {
             return true;
         }
         return triggerReloadPoiLatLngBounds == null
-                || !triggerReloadPoiLatLngBounds.union(viewLatLngBounds).equals(triggerReloadPoiLatLngBounds);
+                || !triggerReloadPoiLatLngBounds.union(viewLatLngBounds).equals(triggerReloadPoiLatLngBounds) || abortedTooManyPois;
     }
 
     private void setIcon(LocationMarkerViewOptions markerOptions, Object relatedObject, boolean selected) {
@@ -377,7 +378,13 @@ public class MapFragmentPresenter {
     /*=========================================*/
 
     private final class GetPoisSubscriber extends Subscriber<PoiLoadingProgress> {
-        boolean hasEncounterNetworkError = false;
+        boolean hasEncounterNetworkError;
+        private Long poisCount;
+
+        public GetPoisSubscriber() {
+            abortedTooManyPois = false;
+            hasEncounterNetworkError = false;
+        }
 
         @Override
         public void onStart() {
@@ -389,6 +396,7 @@ public class MapFragmentPresenter {
         public void onCompleted() {
             loadingFinished();
             mapFragment.displayNetworkError(hasEncounterNetworkError);
+            mapFragment.displayTooManyPois(abortedTooManyPois, poisCount, BuildConfig.MAX_POIS_ON_MAP);
         }
 
         @Override
@@ -402,14 +410,14 @@ public class MapFragmentPresenter {
             switch (poiLoadingProgress.getLoadingStatus()) {
                 case POI_LOADING:
                     impacteLoadedPoi(poiLoadingProgress.getPois());
-                    updateProgress(poiLoadingProgress);
                     break;
                 case NOTE_LOADING:
                     impacteLoadedNotes(poiLoadingProgress.getNotes());
-                    updateProgress(poiLoadingProgress);
                     break;
                 case LOADING_FROM_SERVER:
-                    updateProgress(poiLoadingProgress);
+                    long loaded = poiLoadingProgress.getTotalAreasLoaded();
+                    long toLoad = poiLoadingProgress.getTotalAreasToLoad();
+                    mapFragment.displayAreaProgress(loaded + 1, toLoad);
                     break;
                 case FINISH:
                     mapFragment.showProgressBar(false);
@@ -421,15 +429,11 @@ public class MapFragmentPresenter {
                     hasEncounterNetworkError = true;
                     mapFragment.showProgressBar(false);
                     break;
+                case TOO_MANY_POIS:
+                    poisCount = poiLoadingProgress.getTotalsElements();
+                    abortedTooManyPois = true;
+                    break;
             }
         }
-    }
-
-    private void updateProgress(PoiLoadingProgress poiLoadingProgress) {
-        mapFragment.displayProgress(String.format("Loading pois : %1$s / %2$s " +
-                        "\n Loading Area %3$s / %4$s ", poiLoadingProgress.getLoadedElements(),
-                poiLoadingProgress.getTotalsElements(),
-                poiLoadingProgress.getTotalAreasLoaded(),
-                poiLoadingProgress.getTotalAreasToLoad()));
     }
 }

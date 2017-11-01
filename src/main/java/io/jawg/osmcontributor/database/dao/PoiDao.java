@@ -100,6 +100,23 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
         });
     }
 
+    public Long countForAllInRect(final Box box) {
+        return DatabaseHelper.wrapException(new Callable<Long>() {
+            @Override
+            public Long call() throws Exception {
+                QueryBuilder<Poi, Long> poiLongQueryBuilder = queryBuilder();
+                poiLongQueryBuilder
+                        .where().gt(Poi.LATITUDE, new SelectArg(box.getSouth()))
+                        .and().lt(Poi.LATITUDE, new SelectArg(box.getNorth()))
+                        .and().gt(Poi.LONGITUDE, new SelectArg(box.getWest()))
+                        .and().lt(Poi.LONGITUDE, new SelectArg(box.getEast()))
+                        .and().eq(Poi.OLD, false);
+
+                return poiLongQueryBuilder.countOf();
+            }
+        });
+    }
+
     /**
      * Query for all the new POIs, meaning all the POIs without a backend id.
      *

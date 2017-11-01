@@ -11,6 +11,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.database.dao.MapAreaDao;
 import io.jawg.osmcontributor.database.dao.PoiDao;
 import io.jawg.osmcontributor.model.entities.MapArea;
@@ -27,6 +28,7 @@ import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.Load
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.NETWORK_ERROR;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.OUT_DATED_DATA;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.POI_LOADING;
+import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.TOO_MANY_POIS;
 
 
 /**
@@ -109,16 +111,29 @@ public class PoiRepository {
         }
     }
 
-
     private void loadPoisFromDB(Subscriber<? super PoiLoadingProgress> subscriber, Box box) {
+
+        Long count = poiDao.countForAllInRect(box);
+
+        if (count > BuildConfig.MAX_POIS_ON_MAP) {
+            PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
+            loadingProgress.setLoadingStatus(TOO_MANY_POIS);
+            loadingProgress.setTotalsElements(count);
+            subscriber.onNext(loadingProgress);
+            Timber.d(" too many Pois to display %d", count);
+            return;
+        }
+
         // load in first the poi in the center of the box
         boolean allLoaded;
         int page = 0;
         do {
+            Timber.d(" Loading poi page %d", page);
             List<Poi> pois = poiDao.queryForAllInRect(box, page * POI_PAGE, POI_PAGE);
             allLoaded = pois.size() < POI_PAGE;
             PoiLoadingProgress loadingProgress = new PoiLoadingProgress();
             loadingProgress.setLoadingStatus(allLoaded ? FINISH : POI_LOADING);
+            loadingProgress.setTotalsElements(count);
             loadingProgress.setPois(pois);
             subscriber.onNext(loadingProgress);
             page++;
