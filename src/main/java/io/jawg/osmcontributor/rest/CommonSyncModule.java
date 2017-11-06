@@ -19,7 +19,6 @@
 package io.jawg.osmcontributor.rest;
 
 import com.google.gson.Gson;
-import com.squareup.okhttp.OkHttpClient;
 
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
@@ -32,6 +31,7 @@ import dagger.Module;
 import dagger.Provides;
 import io.jawg.osmcontributor.rest.mappers.JodaTimeDateTimeTransform;
 import io.jawg.osmcontributor.rest.utils.AuthenticationRequestInterceptor;
+import okhttp3.OkHttpClient;
 
 
 @Module
@@ -40,9 +40,7 @@ public class CommonSyncModule {
 
     @Provides
     OkHttpClient getOkHttpClient(AuthenticationRequestInterceptor interceptor) {
-        final OkHttpClient client = new OkHttpClient();
-        client.setAuthenticator(interceptor);
-        return client;
+        return new OkHttpClient().newBuilder().authenticator(interceptor).build();
     }
 
     @Provides

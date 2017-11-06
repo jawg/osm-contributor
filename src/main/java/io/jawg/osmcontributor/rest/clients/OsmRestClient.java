@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,17 +21,16 @@ package io.jawg.osmcontributor.rest.clients;
 import java.util.Map;
 
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
-import io.jawg.osmcontributor.rest.utils.BODY_DELETE;
-import retrofit.client.Response;
-import retrofit.http.Body;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.POST;
-import retrofit.http.PUT;
-import retrofit.http.Path;
-import retrofit.http.Query;
-import retrofit.http.QueryMap;
-
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.HTTP;
+import retrofit2.http.Header;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 /**
  * Rest interface for requests to OpenStreetMap.
@@ -43,16 +42,16 @@ public interface OsmRestClient {
      *
      * @return The list of permissions granted to the current API client. Empty if the client is not authorized.
      */
-    @GET("/permissions")
-    OsmDto getPermissions(@Header("Authorization") String auth);
+    @GET("permissions")
+    Call<OsmDto> getPermissions(@Header("Authorization") String auth);
 
     /**
      * Get the permissions granted to the current API connection.
      *
      * @return The list of permissions granted to the current API client. Empty if the client is not authorized.
      */
-    @GET("/permissions")
-    OsmDto getPermissions(@QueryMap Map<String, String> mapParams);
+    @GET("permissions")
+    Call<OsmDto> getPermissions(@QueryMap Map<String, String> mapParams);
 
     /**
      * Get a node from it's OSM id.
@@ -60,8 +59,8 @@ public interface OsmRestClient {
      * @param id The id of the node.
      * @return The node.
      */
-    @GET("/nodes")
-    OsmDto getNode(@Query("nodes") String id);
+    @GET("nodes")
+    Call<OsmDto> getNode(@Query("nodes") String id);
 
     /**
      * Get all the notes contained in the box.
@@ -69,8 +68,8 @@ public interface OsmRestClient {
      * @param box The limit in space for the request bbox=left,bottom,right,top.
      * @return A list of notes (all status) inside the box.
      */
-    @GET("/notes")
-    OsmDto getNotes(@Query("bbox") String box);
+    @GET("notes")
+    Call<OsmDto> getNotes(@Query("bbox") String box);
 
     /**
      * Get a way from it's OSM id.
@@ -78,8 +77,8 @@ public interface OsmRestClient {
      * @param id The id of the way.
      * @return The way.
      */
-    @GET("/ways")
-    OsmDto getWay(@Query("ways") long id);
+    @GET("ways")
+    Call<OsmDto> getWay(@Query("ways") long id);
 
     /**
      * Get a changeSet and it's discussion from it's id.
@@ -87,8 +86,8 @@ public interface OsmRestClient {
      * @param id The id of the changeSet.
      * @return The changeSet.
      */
-    @GET("/changeset/{id}?include_discussion=true")
-    OsmDto getChangeSet(@Path("id") String id);
+    @GET("changeset/{id}?include_discussion=true")
+    Call<OsmDto> getChangeSet(@Path("id") String id);
 
     /**
      * Create a ChangeSet.
@@ -98,8 +97,8 @@ public interface OsmRestClient {
      *               to the ChangeSetDto.
      * @return The id of the created ChangeSet.
      */
-    @PUT("/changeset/create")
-    String addChangeSet(@Header("Authorization") String auth, @Body OsmDto osmDto);
+    @PUT("changeset/create")
+    Call<String> addChangeSet(@Header("Authorization") String auth, @Body OsmDto osmDto);
 
     /**
      * Create a ChangeSet.
@@ -109,16 +108,17 @@ public interface OsmRestClient {
      *               to the ChangeSetDto.
      * @return The id of the created ChangeSet.
      */
-    @PUT("/changeset/create")
-    String addChangeSet(@Body OsmDto osmDto);
+    @PUT("changeset/create")
+    Call<String> addChangeSet(@Body OsmDto osmDto);
+
     /**
      * Close the changeSet.
      *
      * @param id Id of the changeSet to close.
      * @return The response of OSM (nothing, just a HTTP status code).
      */
-    @PUT("/changeset/{id}/close")
-    Response closeChangeSet(@Path("id") String id);
+    @PUT("changeset/{id}/close")
+    Call<?> closeChangeSet(@Path("id") String id);
 
     /**
      * Create a Node.
@@ -126,8 +126,8 @@ public interface OsmRestClient {
      * @param osmDto OsmDto containing a Node.
      * @return The id of the created Node.
      */
-    @PUT("/node/create")
-    String addNode(@Body OsmDto osmDto);
+    @PUT("node/create")
+    Call<String> addNode(@Body OsmDto osmDto);
 
     /**
      * Create a Note. Do not require to be an authenticated user.
@@ -138,8 +138,8 @@ public interface OsmRestClient {
      * @param bodyText Just because retrofit need a body for POST methods.
      * @return The note in a OsmDto.
      */
-    @POST("/notes")
-    OsmDto addNote(@Query("lat") Double lat, @Query("lon") Double lon, @Query("text") String text, @Body String bodyText);
+    @POST("notes")
+    Call<OsmDto> addNote(@Query("lat") Double lat, @Query("lon") Double lon, @Query("text") String text, @Body String bodyText);
 
     /**
      * Create a Comment. Do not require to be an authenticated user.
@@ -149,8 +149,8 @@ public interface OsmRestClient {
      * @param bodyText Just because retrofit need a body for POST methods.
      * @return The note with the new comment.
      */
-    @POST("/notes/{id}/comment")
-    OsmDto addComment(@Path("id") String id, @Query("text") String text, @Body String bodyText);
+    @POST("notes/{id}/comment")
+    Call<OsmDto> addComment(@Path("id") String id, @Query("text") String text, @Body String bodyText);
 
     /**
      * Close a note. Require to be an authenticated user.
@@ -160,8 +160,8 @@ public interface OsmRestClient {
      * @param bodyText Just because retrofit need a body for POST methods.
      * @return The note with the a new status closed.
      */
-    @POST("/notes/{id}/close")
-    OsmDto closeNote(@Path("id") String id, @Query("text") String text, @Body String bodyText);
+    @POST("notes/{id}/close")
+    Call<OsmDto> closeNote(@Path("id") String id, @Query("text") String text, @Body String bodyText);
 
     /**
      * Reopen a note. Require to be an authenticated user.
@@ -171,8 +171,8 @@ public interface OsmRestClient {
      * @param bodyText Just because retrofit need a body for POST methods.
      * @return The note with the a new status open.
      */
-    @POST("/notes/{id}/reopen")
-    OsmDto reopenNote(@Path("id") String id, @Query("text") String text, @Body String bodyText);
+    @POST("notes/{id}/reopen")
+    Call<OsmDto> reopenNote(@Path("id") String id, @Query("text") String text, @Body String bodyText);
 
     /**
      * Create a Way.
@@ -180,8 +180,8 @@ public interface OsmRestClient {
      * @param osmDto OsmDto containing a Way.
      * @return The id of the created Way.
      */
-    @PUT("/way/create")
-    String addWay(@Body OsmDto osmDto);
+    @PUT("way/create")
+    Call<String> addWay(@Body OsmDto osmDto);
 
     /**
      * Update a Node. Returns a 409 if the version doesn't match.
@@ -190,8 +190,8 @@ public interface OsmRestClient {
      * @param osmDto OsmDto containing a Node.
      * @return The version of the Node updated.
      */
-    @PUT("/node/{id}")
-    String updateNode(@Path("id") String id, @Body OsmDto osmDto);
+    @PUT("node/{id}")
+    Call<String> updateNode(@Path("id") String id, @Body OsmDto osmDto);
 
     /**
      * Update a Way. Returns a 409 if the version doesn't match.
@@ -200,8 +200,8 @@ public interface OsmRestClient {
      * @param osmDto OsmDto containing a Way.
      * @return The version of the Way updated.
      */
-    @PUT("/way/{id}")
-    String updateWay(@Path("id") String id, @Body OsmDto osmDto);
+    @PUT("way/{id}")
+    Call<String> updateWay(@Path("id") String id, @Body OsmDto osmDto);
 
     /**
      * Delete a Node.
@@ -213,8 +213,8 @@ public interface OsmRestClient {
      * @param osmDto OsmDto containing a Node.
      * @return The version of the Node deleted.
      */
-    @BODY_DELETE("/node/{id}")
-    String deleteNode(@Path("id") String id, @Body OsmDto osmDto);
+    @HTTP(method = "DELETE", path = "node/{id}", hasBody = true)
+    Call<String> deleteNode(@Path("id") String id, @Body OsmDto osmDto);
 
     /**
      * Delete a Way.
@@ -226,8 +226,8 @@ public interface OsmRestClient {
      * @param osmDto OsmDto containing a Way.
      * @return The version of the Way deleted.
      */
-    @BODY_DELETE("/way/{id}")
-    String deleteWay(@Path("id") String id, @Body OsmDto osmDto);
+    @HTTP(method = "DELETE", path = "way/{id}", hasBody = true)
+    Call<String> deleteWay(@Path("id") String id, @Body OsmDto osmDto);
 }
 
 

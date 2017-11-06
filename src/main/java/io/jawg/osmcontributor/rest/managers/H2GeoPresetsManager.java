@@ -18,13 +18,6 @@
  */
 package io.jawg.osmcontributor.rest.managers;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import io.jawg.osmcontributor.model.events.ResetTypeDatabaseEvent;
 import io.jawg.osmcontributor.rest.clients.H2GeoPresetsRestClient;
 import io.jawg.osmcontributor.rest.dtos.dma.H2GeoDto;
@@ -36,19 +29,23 @@ import io.jawg.osmcontributor.rest.events.error.PresetListDownloadErrorEvent;
 import io.jawg.osmcontributor.rest.mappers.H2GeoPresetsMapper;
 import io.jawg.osmcontributor.ui.events.presets.PleaseDownloadPresetEvent;
 import io.jawg.osmcontributor.ui.events.presets.PleaseDownloadPresetListEvent;
-import retrofit.RetrofitError;
+import java.io.IOException;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import retrofit2.Call;
+import retrofit2.Response;
 import timber.log.Timber;
 
-@Singleton
-public class H2GeoPresetsManager {
+@Singleton public class H2GeoPresetsManager {
 
   private final H2GeoPresetsRestClient presetsRestClient;
   private final EventBus bus;
   private final H2GeoPresetsMapper presetsMapper;
 
-  @Inject
-  public H2GeoPresetsManager(H2GeoPresetsRestClient presetsRestClient, EventBus bus,
-      H2GeoPresetsMapper presetsMapper) {
+  @Inject public H2GeoPresetsManager(H2GeoPresetsRestClient presetsRestClient, EventBus bus, H2GeoPresetsMapper presetsMapper) {
     this.presetsRestClient = presetsRestClient;
     this.bus = bus;
     this.presetsMapper = presetsMapper;
@@ -58,27 +55,28 @@ public class H2GeoPresetsManager {
   // ************ Events ************
   // ********************************
 
-  @Subscribe(threadMode = ThreadMode.ASYNC)
-  public void onPleaseDownloadPresetListEvent(PleaseDownloadPresetListEvent event) {
+  @Subscribe(threadMode = ThreadMode.ASYNC) public void onPleaseDownloadPresetListEvent(PleaseDownloadPresetListEvent event) {
     Timber.d("Requesting preset list download");
     try {
-      H2GeoPresetsDto presets = presetsRestClient.loadProfiles();
-      bus.post(new PresetListDownloadedEvent(presetsMapper.convertToH2GeoPresets(presets)));
-    } catch (RetrofitError error) {
+      Call<H2GeoPresetsDto> presets = presetsRestClient.loadProfiles();
+      Response<H2GeoPresetsDto> response = presets.execute();
+      bus.post(new PresetListDownloadedEvent(presetsMapper.convertToH2GeoPresets(response.body())));
+    } catch (IOException error) {
       Timber.e(error, "Retrofit error, couldn't download preset list");
       bus.post(new PresetListDownloadErrorEvent());
     }
   }
 
-  @Subscribe(threadMode = ThreadMode.ASYNC)
-  public void onPleaseDownloadPresetEvent(PleaseDownloadPresetEvent event) {
+  @Subscribe(threadMode = ThreadMode.ASYNC) public void onPleaseDownloadPresetEvent(PleaseDownloadPresetEvent event) {
     String filename = event.getFilename();
     Timber.d("Requesting preset '%s' download", filename);
     try {
-      H2GeoDto h2GeoDto = presetsRestClient.loadProfile(filename);
-      bus.post(new ResetTypeDatabaseEvent(h2GeoDto));
-      bus.post(new PresetDownloadedEvent(h2GeoDto));
-    } catch (RetrofitError error) {
+      Call<H2GeoDto> h2GeoDto = presetsRestClient.loadProfile(filename);
+      Response<H2GeoDto> response = h2GeoDto.execute();
+      H2GeoDto body = response.body();
+      bus.post(new ResetTypeDatabaseEvent(body));
+      bus.post(new PresetDownloadedEvent(body));
+    } catch (IOException error) {
       Timber.e(error, "Retrofit error, couldn't download preset '%s'", filename);
       bus.post(new PresetDownloadErrorEvent(filename));
     }
