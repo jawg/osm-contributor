@@ -16,9 +16,9 @@ ext {
     flickr4javaVersion = '2.16'
     mapboxVersion = '4.2.0'
     mapboxServicesVersion = '1.2.1'
-    retrofitVersion = '1.9.0'
+    retrofitVersion = '2.3.0'
     okhttpVersion = '2.3.0'
-    simplexmlRetrofitVersion = '1.1'
+    simplexmlRetrofitVersion = '2.3.0'
     simplexmlVersion = '2.7.1'
     licensesdialogVersion = '1.8.1'
     arpiglVersion = '0.3.3'
@@ -143,7 +143,7 @@ android {
             buildConfigField "String", "MAP_STYLE_URL", '"https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json"'
             buildConfigField "String", "MAP_STYLE", '"asset://mapnik.json"'
             buildConfigField "String", "BASE_OSM_URL", osmUrl()
-            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass.osm.rambler.ru/cgi/interpreter"'
+            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass.osm.rambler.ru/cgi/interpreter/"'
             buildConfigField "String", "FLICKR_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_key") + '"'
             buildConfigField "String", "FLICKR_API_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_secret") + '"'
             buildConfigField "String", "FLICKR_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token") + '"'
@@ -168,7 +168,7 @@ android {
             buildConfigField "String", "MAP_STYLE_URL", '"https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json"'
             buildConfigField "String", "MAP_STYLE", '"asset://mapnik.json"'
             buildConfigField "String", "BASE_OSM_URL", osmUrl()
-            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass.osm.rambler.ru/cgi/interpreter"'
+            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass.osm.rambler.ru/cgi/interpreter/"'
             buildConfigField "String", "FLICKR_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_key") + '"'
             buildConfigField "String", "FLICKR_API_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_secret") + '"'
             buildConfigField "String", "FLICKR_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token") + '"'
@@ -213,9 +213,10 @@ dependencies {
         compile "com.google.android.gms:play-services-analytics:$playServicesVersion"
     }
     // network
-    compile "com.squareup.retrofit:retrofit:$retrofitVersion"
+    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
     compile "com.squareup.okhttp:okhttp:$okhttpVersion"
-    compile "com.mobprofs:retrofit-simplexmlconverter:$simplexmlRetrofitVersion"
+    compile "com.squareup.retrofit2:converter-simplexml:$simplexmlRetrofitVersion"
+    compile "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
     compile "org.simpleframework:simple-xml:$simplexmlVersion"
 
     // UI libraries
@@ -265,7 +266,7 @@ dependencies {
 // The official API url is https://api.openstreetmap.org/api/0.6
 def osmUrl() {
     def osmUrl = project.getProperties().get("osmUrl")
-    return osmUrl != null ? '"' + osmUrl + '"' : '"https://www.openstreetmap.org/api/0.6"'
+    return osmUrl != null ? '"' + osmUrl + '"' : '"https://www.openstreetmap.org/api/0.6/"'
 }
 
 // Load the properties from the given file

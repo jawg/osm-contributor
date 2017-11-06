@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -20,26 +20,27 @@ package io.jawg.osmcontributor.rest.managers;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiNodeRef;
-import io.jawg.osmcontributor.ui.events.map.PleaseLoadEditWaysEvent;
-import io.jawg.osmcontributor.rest.mappers.PoiMapper;
+import io.jawg.osmcontributor.rest.OSMProxy;
+import io.jawg.osmcontributor.rest.clients.OsmRestClient;
+import io.jawg.osmcontributor.rest.clients.OverpassRestClient;
 import io.jawg.osmcontributor.rest.dtos.osm.NodeDto;
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
 import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
-import io.jawg.osmcontributor.rest.clients.OsmRestClient;
-import io.jawg.osmcontributor.rest.clients.OverpassRestClient;
-import io.jawg.osmcontributor.rest.OSMProxy;
+import io.jawg.osmcontributor.rest.mappers.PoiMapper;
+import io.jawg.osmcontributor.ui.events.map.PleaseLoadEditWaysEvent;
+import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.Box;
-import retrofit.RetrofitError;
-import retrofit.mime.TypedString;
+import retrofit2.Call;
+import retrofit2.Response;
 import timber.log.Timber;
 
 /**
@@ -92,26 +93,30 @@ public class OSMSyncWayManager implements SyncWayManager {
             @Override
             public Void proceed() {
                 String request = generateOverpassRequestForWay(box);
-                OsmDto osmDto = overpassRestClient.sendRequest(new TypedString(request));
+                Call<OsmDto> call = overpassRestClient.sendRequest(request);
 
-                List<WayDto> wayDtoList = osmDto.getWayDtoList();
-
-                if (wayDtoList != null && wayDtoList.size() > 0) {
-                    Timber.d(" %d ways have been downloaded", wayDtoList.size());
-                    List<Poi> poisFromOSM = poiMapper.convertDtosToPois(osmDto.getWayDtoList(), false);
-                    poiManager.mergeFromOsmPois(poisFromOSM, box);
-                    poiManager.deleteAllWaysExcept(poisFromOSM);
-                    bus.post(new PleaseLoadEditWaysEvent(true));
-                } else {
-                    Timber.d("No new ways found in the area");
+                try {
+                    Response<OsmDto> response = call.execute();
+                    if (response.isSuccessful()) {
+                        OsmDto osmDto = response.body();
+                        if (osmDto != null) {
+                            List<WayDto> wayDtoList = osmDto.getWayDtoList();
+                            if (wayDtoList != null && wayDtoList.size() > 0) {
+                                Timber.d(" %d ways have been downloaded", wayDtoList.size());
+                                List<Poi> poisFromOSM = poiMapper.convertDtosToPois(osmDto.getWayDtoList(), false);
+                                poiManager.mergeFromOsmPois(poisFromOSM, box);
+                                poiManager.deleteAllWaysExcept(poisFromOSM);
+                                bus.post(new PleaseLoadEditWaysEvent(true));
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    Timber.e(e, e.getMessage());
                 }
+                Timber.d("No new ways found in the area");
                 return null;
             }
         });
-
-        if (!result.isSuccess() && result.getRetrofitError() != null) {
-            Timber.e(result.getRetrofitError(), "Retrofit error while trying to download area");
-        }
     }
 
     /**
@@ -167,31 +172,21 @@ public class OSMSyncWayManager implements SyncWayManager {
         List<Poi> pois = new ArrayList<>();
 
         if (ids != null && !ids.isEmpty()) {
-            OSMProxy.Result<List<Poi>> result = osmProxy.proceed(new OSMProxy.NetworkAction<List<Poi>>() {
-                @Override
-                public List<Poi> proceed() {
-                    List<Poi> pois;
-                    OsmDto osmDtoRetrievedNode = osmRestClient.getNode(formatIdList(ids));
-                    if (osmDtoRetrievedNode != null) {
-                        List<NodeDto> nodeDtoList = osmDtoRetrievedNode.getNodeDtoList();
+            Call<OsmDto> callOsm = osmRestClient.getNode(formatIdList(ids));
+            try {
+                Response<OsmDto> response = callOsm.execute();
+                if (response.isSuccessful()) {
+                    OsmDto osmDto = response.body();
+                    if (osmDto != null) {
+                        List<NodeDto> nodeDtoList = osmDto.getNodeDtoList();
                         pois = poiMapper.convertDtosToPois(nodeDtoList, false);
-                    } else {
-                        pois = new ArrayList<>();
                     }
                     return pois;
                 }
-            });
-
-            if (result.isSuccess()) {
-                return result.getResult();
+            } catch (IOException e) {
+                Timber.e(e, e.getMessage());
             }
-
-            if (result.getRetrofitError() != null) {
-                RetrofitError e = result.getRetrofitError();
-                if (e.getResponse() != null && (e.getResponse().getStatus() == 404 || e.getResponse().getStatus() == 410)) {
-                    Timber.w("The poi with id %s couldn't be found on OSM", 1);
-                }
-            }
+            Timber.w("The poi with id %s couldn't be found on OSM", 1);
         }
         return pois;
     }

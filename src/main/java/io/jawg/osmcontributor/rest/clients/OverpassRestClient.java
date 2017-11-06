@@ -19,13 +19,11 @@
 package io.jawg.osmcontributor.rest.clients;
 
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
-import retrofit.http.Body;
-import retrofit.http.POST;
-import retrofit.mime.TypedString;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
 
 public interface OverpassRestClient {
 
-
-    @POST("/")
-    OsmDto sendRequest(@Body TypedString data);
+  @POST("/") Call<OsmDto> sendRequest(@Body String data);
 }

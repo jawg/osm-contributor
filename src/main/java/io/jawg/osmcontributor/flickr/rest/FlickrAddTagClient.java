@@ -18,14 +18,12 @@
  */
 package io.jawg.osmcontributor.flickr.rest;
 
-import retrofit.Callback;
-import retrofit.http.Body;
-import retrofit.http.Headers;
-import retrofit.http.POST;
-import retrofit.mime.TypedString;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
 
 public interface FlickrAddTagClient {
     @Headers({"Content-Type: application/x-www-form-urlencoded"})
-    @POST("/rest")
-    void addTags(@Body TypedString body, Callback<String> stringCallback);
+    @POST("/rest") Call<String> addTags(@Body String body);
 }

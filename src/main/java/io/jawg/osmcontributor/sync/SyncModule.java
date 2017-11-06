@@ -1,24 +1,22 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
 package io.jawg.osmcontributor.sync;
-
-import com.squareup.okhttp.OkHttpClient;
 
 import org.greenrobot.eventbus.EventBus;
 import org.simpleframework.xml.core.Persister;
@@ -41,14 +39,11 @@ import io.jawg.osmcontributor.rest.managers.SyncNoteManager;
 import io.jawg.osmcontributor.rest.managers.SyncWayManager;
 import io.jawg.osmcontributor.rest.mappers.NoteMapper;
 import io.jawg.osmcontributor.rest.mappers.PoiMapper;
-import io.jawg.osmcontributor.rest.utils.XMLMapper;
 import io.jawg.osmcontributor.ui.activities.AuthorisationInterceptor;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.ConfigManager;
-import retrofit.RestAdapter;
-import retrofit.android.AndroidLog;
-import retrofit.client.OkClient;
-
+import retrofit2.Retrofit;
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 
 @Module
@@ -62,15 +57,11 @@ public class SyncModule {
 
     @Singleton
     @Provides
-    RestAdapter getRestAdapter(Persister persister, OkHttpClient okHttpClient, ConfigManager configManager) {
-
-
-        return new RestAdapter.Builder()
-                .setEndpoint(configManager.getBasePoiApiUrl())
-                .setClient(new OkClient(okHttpClient))
-                .setConverter(getXMLConverterWithDateTime(persister))
-                .setLogLevel(RestAdapter.LogLevel.FULL)
-                .setLog(new AndroidLog("-------------------->"))
+    Retrofit getRestAdapter(Persister persister, okhttp3.OkHttpClient okHttpClient, ConfigManager configManager) {
+        return new Retrofit.Builder()
+                .baseUrl(configManager.getBasePoiApiUrl())
+                .client(okHttpClient)
+                .addConverterFactory(SimpleXmlConverterFactory.create(persister))
                 .build();
     }
 
@@ -85,22 +76,16 @@ public class SyncModule {
     }
 
     @Provides
-    OsmRestClient getOsmService(RestAdapter restAdapter) {
+    OsmRestClient getOsmService(Retrofit restAdapter) {
         return restAdapter.create(OsmRestClient.class);
     }
 
     @Provides
     OverpassRestClient getOverpassRestClient(Persister persister, AuthorisationInterceptor interceptor, ConfigManager configManager) {
-
-        return new RestAdapter.Builder()
-                .setEndpoint(configManager.getBaseOverpassApiUrl())
-                .setConverter(getXMLConverterWithDateTime(persister))
-                .setLogLevel(RestAdapter.LogLevel.HEADERS).setLog(new AndroidLog("-------------------->"))
+        return new Retrofit.Builder()
+                .baseUrl(configManager.getBaseOverpassApiUrl())
+                .addConverterFactory(SimpleXmlConverterFactory.create(persister))
                 .build()
                 .create(OverpassRestClient.class);
-    }
-
-    private XMLMapper getXMLConverterWithDateTime(Persister persister) {
-        return new XMLMapper(persister);
     }
 }
