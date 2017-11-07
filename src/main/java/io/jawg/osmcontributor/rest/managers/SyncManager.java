@@ -188,7 +188,7 @@ public class SyncManager {
 
         List<Poi> pois = null;
         try {
-            pois = backend.getPoisInBox(box);
+            pois = backend.getPoisInBox(box, null);
             if (pois.size() > 0) {
                 Timber.d("Updating %d nodes", pois.size());
                 poiManager.mergeFromOsmPois(pois, box);

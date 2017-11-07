@@ -18,6 +18,7 @@ import io.jawg.osmcontributor.model.entities.MapArea;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.rest.Backend;
 import io.jawg.osmcontributor.rest.NetworkException;
+import io.jawg.osmcontributor.rest.OsmBackend;
 import io.jawg.osmcontributor.utils.Box;
 import rx.Observable;
 import rx.Subscriber;
@@ -25,6 +26,7 @@ import timber.log.Timber;
 
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.FINISH;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.LOADING_FROM_SERVER;
+import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.MAPPING_POIS;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.NETWORK_ERROR;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.OUT_DATED_DATA;
 import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.POI_LOADING;
@@ -73,13 +75,20 @@ public class PoiRepository {
     }
 
     private void getPois(Subscriber<? super PoiLoadingProgress> subscriber, Box box, List<MapArea> areasNeeded, boolean refreshData) {
-        Timber.d("--------- Handling areas ---------");
-        handleAreas(subscriber, areasNeeded, refreshData);
-        Timber.d("--------- loadPoisFromDB ---------");
+        Timber.d("\n--------- Loading Pois already present in BDD ---------\n");
         loadPoisFromDB(subscriber, box);
+
+        Timber.d("\n--------- Handling areas ---------\n");
+        boolean newAreasLoaded = handleAreas(subscriber, areasNeeded, refreshData);
+
+        if (newAreasLoaded) {
+            Timber.d("\n--------- Loading pois from BDD the just have been refreshed  ---------\n");
+            loadPoisFromDB(subscriber, box);
+        }
     }
 
-    private void handleAreas(Subscriber<? super PoiLoadingProgress> subscriber, List<MapArea> areasNeeded, boolean refreshData) {
+    private boolean handleAreas(Subscriber<? super PoiLoadingProgress> subscriber, List<MapArea> areasNeeded, boolean refreshData) {
+        boolean newAreasLoaded = false;
         List<MapArea> localAreas = mapAreaDao.queryForIds(getIds(areasNeeded));
 
         if (refreshData || areasNeeded.size() != localAreas.size()) {
@@ -94,6 +103,7 @@ public class PoiRepository {
             subscriber.onNext(loadingProgress);
 
             loadMissingMapAreas(areasNeeded, localAreas, subscriber, refreshData);
+            newAreasLoaded = true;
         }
 
         if (!refreshData) {
@@ -109,6 +119,8 @@ public class PoiRepository {
                 }
             }
         }
+
+        return newAreasLoaded;
     }
 
     private void loadPoisFromDB(Subscriber<? super PoiLoadingProgress> subscriber, Box box) {
@@ -148,27 +160,48 @@ public class PoiRepository {
         return ids;
     }
 
-    private void loadMissingMapAreas(List<MapArea> toLoadAreas, List<MapArea> loadedAreas, Subscriber<? super PoiLoadingProgress> subscriber, boolean refreshData) {
+    private void loadMissingMapAreas(final List<MapArea> toLoadAreas, List<MapArea> loadedAreas, final Subscriber<? super PoiLoadingProgress> subscriber, boolean refreshData) {
         PoiLoadingProgress loadingProgress = new PoiLoadingProgress(LOADING_FROM_SERVER);
         loadingProgress.setTotalAreasToLoad(toLoadAreas.size() - loadedAreas.size());
         int loadedArea = 0;
         for (MapArea toLoadArea : toLoadAreas) {
             if (refreshData || !loadedAreas.contains(toLoadArea)) {
                 try {
+                    final int posFin = loadedArea;
                     Timber.d("Downloading Area : " + toLoadArea.getId());
-                    List<Poi> poisInBox = backend.getPoisInBox(toLoadArea.getBox());
+                    loadingProgress.setTotalAreasLoaded(loadedArea++);
+
+                    PoiLoadingProgress l = new PoiLoadingProgress();
+                    l.setLoadedElements(posFin);
+                    l.setTotalsElements(toLoadAreas.size());
+                    l.setLoadedElements(8);
+                    l.setTotalsElements(9);
+                    l.setLoadingStatus(MAPPING_POIS);
+                    subscriber.onNext(l);
+
+                    List<Poi> poisInBox = backend.getPoisInBox(toLoadArea.getBox(), new OsmBackend.FetchingProgress() {
+                        @Override
+                        public void downloadingFinished() {
+//empty
+                        }
+
+                        @Override
+                        public void mappgingPoi(int count, int totalCount) {
+                            PoiLoadingProgress l = new PoiLoadingProgress();
+                            l.setLoadedElements(posFin);
+                            l.setTotalsElements(toLoadAreas.size());
+                            l.setLoadedElements(count);
+                            l.setTotalsElements(totalCount);
+                            l.setLoadingStatus(MAPPING_POIS);
+                            subscriber.onNext(l);
+                        }
+                    });
                     loadingProgress.setTotalsElements(poisInBox.size());
 
                     int i = 0;
                     for (Poi poi : poisInBox) {
                         poiDao.createOrUpdate(poi);
-                        i++;
-
-                        if (i % SAVE_POI_PAGE == 0) {
-                            loadingProgress.setLoadedElements(i);
-                            subscriber.onNext(loadingProgress);
-                            Timber.d("Saving Pois BDD : " + i);
-                        }
+                        publisshProgress(subscriber, loadingProgress, i++);
                     }
 
                     //publish poi loaded
@@ -177,8 +210,6 @@ public class PoiRepository {
                     Timber.d("Saving Area in BDD : " + toLoadArea.getId());
                     mapAreaDao.createOrUpdate(toLoadArea);
                     loadedAreas.add(toLoadArea);
-
-                    loadingProgress.setTotalAreasLoaded(loadedArea++);
                     subscriber.onNext(loadingProgress);
 
                 } catch (NetworkException e) {
@@ -188,6 +219,14 @@ public class PoiRepository {
                     return;
                 }
             }
+        }
+    }
+
+    private void publisshProgress(Subscriber<? super PoiLoadingProgress> subscriber, PoiLoadingProgress loadingProgress, int i) {
+        if (i % SAVE_POI_PAGE == 0) {
+            loadingProgress.setLoadedElements(i);
+            subscriber.onNext(loadingProgress);
+            Timber.d("Saving Pois BDD : " + i);
         }
     }
 

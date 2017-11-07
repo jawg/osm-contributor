@@ -89,7 +89,7 @@ public class SyncModule {
     @Provides
     OverpassRestClient getOverpassRestClient(Persister persister, AuthorisationInterceptor interceptor, ConfigManager configManager) {
         HttpLoggingInterceptor interceptorLog = new HttpLoggingInterceptor();
-        interceptorLog.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        interceptorLog.setLevel(HttpLoggingInterceptor.Level.HEADERS);
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptorLog).readTimeout(30, TimeUnit.SECONDS)
                 .build();
 

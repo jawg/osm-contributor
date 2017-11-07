@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -31,6 +31,7 @@ import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
+import io.jawg.osmcontributor.rest.OsmBackend;
 import io.jawg.osmcontributor.rest.dtos.osm.NdDto;
 import io.jawg.osmcontributor.rest.dtos.osm.NodeDto;
 import io.jawg.osmcontributor.rest.dtos.osm.PoiDto;
@@ -48,23 +49,27 @@ public class PoiMapper {
         this.poiTagMapper = poiTagMapper;
     }
 
-    public Poi convertNodeDtoToPoi(PoiDto dto) {
+    public Poi convertNodeDtoToPoi(PoiDto dto, OsmBackend.FetchingProgress fetchingProgress) {
         if (dto != null) {
-            return convertDtosToPois(Collections.singletonList(dto)).get(0);
+            return convertDtosToPois(Collections.singletonList(dto), fetchingProgress).get(0);
         } else {
             return null;
         }
     }
 
-    public List<Poi> convertDtosToPois(List<? extends PoiDto> dtos) {
-        return convertDtosToPois(dtos, true);
+    public List<Poi> convertDtosToPois(List<? extends PoiDto> dtos, OsmBackend.FetchingProgress fetchingProgress) {
+        return convertDtosToPois(dtos, true, fetchingProgress);
     }
 
-    public List<Poi> convertDtosToPois(List<? extends PoiDto> dtos, boolean typeFiltering) {
+    public List<Poi> convertDtosToPois(List<? extends PoiDto> dtos, boolean typeFiltering, OsmBackend.FetchingProgress fetchingProgress) {
         List<Poi> result = new ArrayList<>();
         if (dtos != null) {
             List<PoiType> availableTypes = poiTypeDao.queryForAll();
+            int i = 0;
             for (PoiDto dto : dtos) {
+                if (fetchingProgress != null) {
+                    fetchingProgress.mappgingPoi(i, dtos.size());
+                }
                 PoiType type = findType(dto, availableTypes);
                 if (type == null && typeFiltering) {
                     continue; // poi not of an available type

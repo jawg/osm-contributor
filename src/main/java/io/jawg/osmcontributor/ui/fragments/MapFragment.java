@@ -811,8 +811,15 @@ public class MapFragment extends Fragment {
         progressbarWrapper.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    public void displayAreaProgress(long loaded, long toLoad) {
-        progressTextView.setText(getString(R.string.load_poi_area_progress, loaded, toLoad));
+    public void displayAreaProgress(long loaded, long toLoad, long loadedElements, long totalsElements) {
+        String stringArea = getString(R.string.load_poi_area_progress, loaded, toLoad);
+        String stringPois;
+        if (loadedElements > 0) {
+            stringPois = getString(R.string.load_poi_progress, loadedElements, totalsElements);
+        } else {
+            stringPois = getString(R.string.load_poi_calling_osm);
+        }
+        progressTextView.setText(stringArea + stringPois);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -2022,5 +2029,4 @@ public class MapFragment extends Fragment {
     public MapFragmentPresenter getPresenter() {
         return presenter;
     }
-
 }

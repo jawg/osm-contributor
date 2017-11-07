@@ -417,7 +417,7 @@ public class MapFragmentPresenter {
                 case LOADING_FROM_SERVER:
                     long loaded = poiLoadingProgress.getTotalAreasLoaded();
                     long toLoad = poiLoadingProgress.getTotalAreasToLoad();
-                    mapFragment.displayAreaProgress(loaded + 1, toLoad);
+                    mapFragment.displayAreaProgress(loaded + 1, toLoad, 0, 0);
                     break;
                 case FINISH:
                     mapFragment.showProgressBar(false);
@@ -432,6 +432,11 @@ public class MapFragmentPresenter {
                 case TOO_MANY_POIS:
                     poisCount = poiLoadingProgress.getTotalsElements();
                     abortedTooManyPois = true;
+                    break;
+                case MAPPING_POIS:
+                    long loadedAre = poiLoadingProgress.getTotalAreasLoaded();
+                    long toLoadArea = poiLoadingProgress.getTotalAreasToLoad();
+                    mapFragment.displayAreaProgress(loadedAre, toLoadArea, poiLoadingProgress.getLoadedElements(), poiLoadingProgress.getTotalsElements());
                     break;
             }
         }
