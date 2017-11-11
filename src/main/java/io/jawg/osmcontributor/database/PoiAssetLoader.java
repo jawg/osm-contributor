@@ -125,8 +125,8 @@ public class PoiAssetLoader {
     public List<Poi> loadPoisFromAssets() {
         try {
             OsmDto read = simple.read(OsmDto.class, application.getAssets().open("pois.osm"));
-            List<Poi> pois = poiMapper.convertDtosToPois(read.getNodeDtoList(), null);
-            pois.addAll(poiMapper.convertDtosToPois(read.getWayDtoList(), null));
+            List<Poi> pois = poiMapper.convertDtosToPois(read.getNodeDtoList());
+            pois.addAll(poiMapper.convertDtosToPois(read.getWayDtoList()));
             return pois;
         } catch (Exception e) {
             Timber.e(e, "Error while loading POIS from assets");

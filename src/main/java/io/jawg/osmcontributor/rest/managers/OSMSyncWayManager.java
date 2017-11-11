@@ -103,7 +103,7 @@ public class OSMSyncWayManager implements SyncWayManager {
                             List<WayDto> wayDtoList = osmDto.getWayDtoList();
                             if (wayDtoList != null && wayDtoList.size() > 0) {
                                 Timber.d(" %d ways have been downloaded", wayDtoList.size());
-                                List<Poi> poisFromOSM = poiMapper.convertDtosToPois(osmDto.getWayDtoList(), false, null);
+                                List<Poi> poisFromOSM = poiMapper.convertDtosToPois(osmDto.getWayDtoList(), false);
                                 poiManager.mergeFromOsmPois(poisFromOSM, box);
                                 poiManager.deleteAllWaysExcept(poisFromOSM);
                                 bus.post(new PleaseLoadEditWaysEvent(true));
@@ -179,7 +179,7 @@ public class OSMSyncWayManager implements SyncWayManager {
                     OsmDto osmDto = response.body();
                     if (osmDto != null) {
                         List<NodeDto> nodeDtoList = osmDto.getNodeDtoList();
-                        pois = poiMapper.convertDtosToPois(nodeDtoList, false, null);
+                        pois = poiMapper.convertDtosToPois(nodeDtoList, false);
                     }
                     return pois;
                 }

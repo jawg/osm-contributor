@@ -220,6 +220,7 @@ public class MapFragmentPresenter {
                     triggerReloadPoiLatLngBounds = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.5);
                     LatLngBounds latLngToLoad = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.75);
                     getPoisAndNotes.unsubscribe();
+                    Timber.e("nico : unsubscribe");
                     getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad), refreshData).execute(new GetPoisSubscriber());
                 }
             }
@@ -264,7 +265,6 @@ public class MapFragmentPresenter {
 
     private void startLoading() {
         ids = new ArrayList<>();
-        mapFragment.showProgressBar(true);
     }
 
     private void loadingFinished() {
@@ -407,6 +407,7 @@ public class MapFragmentPresenter {
 
         @Override
         public void onNext(PoiLoadingProgress poiLoadingProgress) {
+            Timber.w("------ view notified -----");
             switch (poiLoadingProgress.getLoadingStatus()) {
                 case POI_LOADING:
                     impacteLoadedPoi(poiLoadingProgress.getPois());
@@ -415,9 +416,7 @@ public class MapFragmentPresenter {
                     impacteLoadedNotes(poiLoadingProgress.getNotes());
                     break;
                 case LOADING_FROM_SERVER:
-                    long loaded = poiLoadingProgress.getTotalAreasLoaded();
-                    long toLoad = poiLoadingProgress.getTotalAreasToLoad();
-                    mapFragment.displayAreaProgress(loaded + 1, toLoad, 0, 0);
+                    displayProgress(poiLoadingProgress);
                     break;
                 case FINISH:
                     mapFragment.showProgressBar(false);
@@ -434,11 +433,18 @@ public class MapFragmentPresenter {
                     abortedTooManyPois = true;
                     break;
                 case MAPPING_POIS:
-                    long loadedAre = poiLoadingProgress.getTotalAreasLoaded();
-                    long toLoadArea = poiLoadingProgress.getTotalAreasToLoad();
-                    mapFragment.displayAreaProgress(loadedAre, toLoadArea, poiLoadingProgress.getLoadedElements(), poiLoadingProgress.getTotalsElements());
+                    displayProgress(poiLoadingProgress);
                     break;
             }
+        }
+
+        private void displayProgress(PoiLoadingProgress poiLoadingProgress) {
+            mapFragment.showProgressBar(true);
+            long loaded = poiLoadingProgress.getTotalAreasLoaded();
+            long toLoad = poiLoadingProgress.getTotalAreasToLoad();
+            long loadedElements = poiLoadingProgress.getLoadedElements();
+            long toLoadElements = poiLoadingProgress.getTotalsElements();
+            mapFragment.displayAreaProgress(loaded + 1, toLoad, loadedElements, toLoadElements);
         }
     }
 }

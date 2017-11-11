@@ -819,7 +819,9 @@ public class MapFragment extends Fragment {
         } else {
             stringPois = getString(R.string.load_poi_calling_osm);
         }
-        progressTextView.setText(stringArea + stringPois);
+        String text = stringArea + stringPois;
+        Timber.i("xxxxx  displaying result " + text);
+        progressTextView.setText(text);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

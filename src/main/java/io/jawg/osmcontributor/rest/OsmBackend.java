@@ -121,10 +121,20 @@ public class OsmBackend implements Backend {
      */
     @Override
     @NonNull
-    public List<Poi> getPoisInBox(final Box box, FetchingProgress fetchingProgress) throws NetworkException {
-        Timber.d("Requesting overpass for download");
+    public List<Poi> getPoisInBox(final Box box) throws NetworkException {
+        return poiMapper.convertPois(getPoisDtosInBox(box));
+    }
 
-        List<Poi> poiList = new ArrayList<>();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NonNull
+    public List<OsmDto> getPoisDtosInBox(final Box box) throws NetworkException {
+        Timber.d("Requesting overpass for download");
+        Timber.e("nico : loading box  " + box);
+
+        List<OsmDto> osmDtos = new ArrayList<>();
         final Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
         for (Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
             final PoiType poiTypeDto = entry.getValue();
@@ -153,7 +163,9 @@ public class OsmBackend implements Backend {
 
                 if (result != null) {
                     OsmDto osmDto = result.getResult();
-                    poiList.addAll(convertPois(osmDto, fetchingProgress));
+                    if (osmDto != null) {
+                        osmDtos.add(osmDto);
+                    }
                     poiTypes.remove(entry.getKey());
                 } else {
                     throw new NetworkException();
@@ -176,28 +188,14 @@ public class OsmBackend implements Backend {
             });
             if (result != null) {
                 OsmDto osmDto = result.getResult();
-                poiList.addAll(convertPois(osmDto, fetchingProgress));
+                if (osmDto != null) {
+                    osmDtos.add(osmDto);
+                }
             } else {
                 throw new NetworkException();
             }
         }
-        return poiList;
-    }
-
-    @NonNull
-    private List<Poi> convertPois(OsmDto osmDto, FetchingProgress fetchingProgress) {
-        if (fetchingProgress != null) {
-            fetchingProgress.downloadingFinished();
-        }
-        List<Poi> pois = poiMapper.convertDtosToPois(osmDto.getNodeDtoList(), fetchingProgress);
-        pois.addAll(poiMapper.convertDtosToPois(osmDto.getWayDtoList(), fetchingProgress));
-        return pois;
-    }
-
-    public interface FetchingProgress {
-        void downloadingFinished();
-
-        void mappgingPoi(int count, int totalCount);
+        return osmDtos;
     }
 
     /**
@@ -382,7 +380,7 @@ public class OsmBackend implements Backend {
                 if (osmDto != null) {
                     List<NodeDto> nodeDtoList = osmDto.getNodeDtoList();
                     if (nodeDtoList != null && nodeDtoList.size() > 0) {
-                        List<Poi> pois = poiMapper.convertDtosToPois(nodeDtoList, null);
+                        List<Poi> pois = poiMapper.convertDtosToPois(nodeDtoList);
                         if (pois.size() > 0) {
                             return pois.get(0);
                         }
