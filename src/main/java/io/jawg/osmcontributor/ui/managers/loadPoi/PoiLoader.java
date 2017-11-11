@@ -40,7 +40,7 @@ import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.Load
 public class PoiLoader {
     public static final int POI_PAGE = 50;
     public static final int SAVE_POI_PAGE = 100;
-    public static final int POI_PAGE_MAPPING = 10;
+    public static final int POI_PAGE_MAPPING = 5;
     private final PoiDao poiDao;
     private final MapAreaDao mapAreaDao;
     private final Backend backend;
@@ -142,6 +142,7 @@ public class PoiLoader {
             poiLoadingProgress.setTotalsElements(count);
             publishProgress();
             Timber.d(" too many Pois to display %d", count);
+            subscriber.onCompleted();
             return;
         }
 
@@ -162,7 +163,8 @@ public class PoiLoader {
                 try {
                     Timber.d("----- Downloading Area : " + toLoadArea.getId());
                     poiLoadingProgress.setTotalAreasLoaded(loadedArea++);
-
+                    poiLoadingProgress.setLoadedElements(0L);
+                    poiLoadingProgress.setTotalsElements(0L);
                     loadAndSavePoisFromBackend(toLoadArea);
 
                     //publish poi loaded

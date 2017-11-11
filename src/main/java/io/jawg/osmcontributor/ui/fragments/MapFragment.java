@@ -811,7 +811,6 @@ public class MapFragment extends Fragment {
             stringPois = getString(R.string.load_poi_calling_osm);
         }
         String text = stringArea + stringPois;
-        Timber.i("xxxxx  displaying result " + text);
         progressTextView.setText(text);
     }
 

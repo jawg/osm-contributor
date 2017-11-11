@@ -390,6 +390,7 @@ public class MapFragmentPresenter {
         public void onStart() {
             super.onStart();
             startLoading();
+            request(1);
         }
 
         @Override
@@ -407,7 +408,6 @@ public class MapFragmentPresenter {
 
         @Override
         public void onNext(PoiLoadingProgress poiLoadingProgress) {
-            Timber.w("------ view notified -----");
             switch (poiLoadingProgress.getLoadingStatus()) {
                 case POI_LOADING:
                     impacteLoadedPoi(poiLoadingProgress.getPois());
@@ -436,6 +436,7 @@ public class MapFragmentPresenter {
                     displayProgress(poiLoadingProgress);
                     break;
             }
+            request(1);
         }
 
         private void displayProgress(PoiLoadingProgress poiLoadingProgress) {
