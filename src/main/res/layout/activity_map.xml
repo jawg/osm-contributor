@@ -45,20 +45,6 @@
             android:layout_height="match_parent"
             android:layout_below="@id/toolbar"/>
 
-        <fragment
-            android:id="@+id/engine_fragment"
-            android:name="mobi.designmyapp.arpigl.ui.ArpiGlFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/toolbar"/>
-
-        <ImageView
-            android:id="@+id/AR_screenshot"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/toolbar"
-            android:src="@drawable/arpi_screenshot"
-            android:visibility="gone"/>
     </RelativeLayout>
 
 

@@ -45,10 +45,6 @@
             android:title="@string/edit_way"
             android:visible="false"/>
 
-        <item
-            android:id="@+id/arpi_view"
-            android:title="@string/title_3d_view"
-            android:visible="false"/>
 
         <item
             android:id="@+id/switch_style"

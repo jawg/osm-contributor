@@ -29,9 +29,20 @@ import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.yarolegovich.lovelydialog.LovelyStandardDialog;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.yarolegovich.lovelydialog.LovelyStandardDialog;
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.database.events.DbInitializedEvent;
@@ -46,15 +57,7 @@ import io.jawg.osmcontributor.ui.events.login.PleaseOpenLoginDialogEvent;
 import io.jawg.osmcontributor.ui.events.login.SplashScreenTimerFinishedEvent;
 import io.jawg.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;
 import io.jawg.osmcontributor.ui.events.login.ValidLoginEvent;
-import io.jawg.osmcontributor.ui.events.map.ArpiBitmapsPrecomputedEvent;
-import io.jawg.osmcontributor.ui.events.map.PrecomputeArpiBitmapsEvent;
 import io.jawg.osmcontributor.ui.utils.views.EventCountDownTimer;
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Inject;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import timber.log.Timber;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -118,7 +121,6 @@ public class SplashScreenActivity extends AppCompatActivity {
   private boolean shouldStartMapActivity() {
     return bus.getStickyEvent(DbInitializedEvent.class) != null
         && bus.getStickyEvent(SplashScreenTimerFinishedEvent.class) != null
-        && bus.getStickyEvent(ArpiBitmapsPrecomputedEvent.class) != null
         && bus.getStickyEvent(LoginInitializedEvent.class) != null;
   }
 
@@ -128,7 +130,6 @@ public class SplashScreenActivity extends AppCompatActivity {
   private void startMapActivity() {
     bus.removeStickyEvent(DbInitializedEvent.class);
     bus.removeStickyEvent(SplashScreenTimerFinishedEvent.class);
-    bus.removeStickyEvent(ArpiBitmapsPrecomputedEvent.class);
     bus.removeStickyEvent(LoginInitializedEvent.class);
     Intent intent = new Intent(this, MapActivity.class);
     startActivity(intent);
@@ -142,7 +143,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     bus.post(new InitCredentialsEvent());
     bus.post(new InitDbEvent());
-    bus.post(new PrecomputeArpiBitmapsEvent());
     bus.post(new CheckFirstConnectionEvent());
   }
 
@@ -162,11 +162,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
   @Subscribe(threadMode = ThreadMode.ASYNC) public void onSplashScreenTimerFinishedEvent(SplashScreenTimerFinishedEvent event) {
     Timber.d("Timer finished");
-    startMapActivityIfNeeded();
-  }
-
-  @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC) public void onArpiBitmapsPrecomputedEvent(ArpiBitmapsPrecomputedEvent event) {
-    Timber.d("Arpi bitmaps precomputed");
     startMapActivityIfNeeded();
   }
 

@@ -3,7 +3,6 @@ package io.jawg.osmcontributor.ui.managers.loadPoi.executors;
 import io.jawg.osmcontributor.ui.utils.BooleanHolder;
 import rx.Observable;
 import rx.Subscriber;
-import timber.log.Timber;
 
 public abstract class CancelableSubscriber<T> implements Observable.OnSubscribe<T> {
     protected volatile BooleanHolder mustBeKilled = new BooleanHolder(false);
@@ -24,7 +23,6 @@ public abstract class CancelableSubscriber<T> implements Observable.OnSubscribe<
     }
 
     public void kill() {
-        Timber.e("nico ask for kill");
         mustBeKilled.setValue(true);
     }
 }

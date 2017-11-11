@@ -21,7 +21,6 @@ package io.jawg.osmcontributor.ui.activities;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -34,8 +33,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -55,35 +52,23 @@ import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiTypes;
 import io.jawg.osmcontributor.ui.events.login.UpdateFirstConnectionEvent;
-import io.jawg.osmcontributor.ui.events.map.ChangeMapModeEvent;
 import io.jawg.osmcontributor.ui.events.map.ChangesInDB;
-import io.jawg.osmcontributor.ui.events.map.MapCenterValueEvent;
 import io.jawg.osmcontributor.ui.events.map.OnBackPressedMapEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseApplyNoteFilterEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseApplyPoiFilter;
 import io.jawg.osmcontributor.ui.events.map.PleaseChangeToolbarColor;
 import io.jawg.osmcontributor.ui.events.map.PleaseDisplayTutorialEvent;
-import io.jawg.osmcontributor.ui.events.map.PleaseGiveMeMapCenterEvent;
-import io.jawg.osmcontributor.ui.events.map.PleaseInitializeArpiEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseInitializeDrawer;
 import io.jawg.osmcontributor.ui.events.map.PleaseInitializeNoteDrawerEvent;
-import io.jawg.osmcontributor.ui.events.map.PleaseShowMeArpiglEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseSwitchMapStyleEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseSwitchWayEditionModeEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseTellIfDbChanges;
-import io.jawg.osmcontributor.ui.events.map.PleaseToggleArpiEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseToggleDrawer;
 import io.jawg.osmcontributor.ui.events.map.PleaseToggleDrawerLock;
-import io.jawg.osmcontributor.ui.utils.ArpiPoiProvider;
 import io.jawg.osmcontributor.ui.utils.BitmapHandler;
-import io.jawg.osmcontributor.ui.utils.MapMode;
 import io.jawg.osmcontributor.ui.utils.PoiTypeFilter;
 import io.jawg.osmcontributor.utils.ConfigManager;
 import io.jawg.osmcontributor.utils.FlavorUtils;
-import mobi.designmyapp.arpigl.engine.ArpiGlController;
-import mobi.designmyapp.arpigl.listener.PoiSelectionListener;
-import mobi.designmyapp.arpigl.provider.impl.NetworkTileProvider;
-import mobi.designmyapp.arpigl.ui.ArpiGlFragment;
 import timber.log.Timber;
 
 public class MapActivity extends AppCompatActivity {
@@ -103,9 +88,6 @@ public class MapActivity extends AppCompatActivity {
     @BindView(R.id.filter)
     NavigationView filterView;
 
-    @BindView(R.id.AR_screenshot)
-    ImageView arpiScreenshot;
-
     @Inject
     BitmapHandler bitmapHandler;
 
@@ -114,15 +96,6 @@ public class MapActivity extends AppCompatActivity {
 
     @Inject
     SharedPreferences sharedPreferences;
-
-    @Inject
-    ArpiPoiProvider poiProvider;
-
-    private ArpiGlController arpiController;
-
-    private ArpiGlFragment arpiGlFragment;
-
-    private NetworkTileProvider networkTileProvider;
 
     private List<PoiTypeFilter> filters = new ArrayList<>();
 
@@ -204,14 +177,6 @@ public class MapActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        // Get the arpi fragment.
-        arpiGlFragment = (ArpiGlFragment) getFragmentManager().findFragmentById(R.id.engine_fragment);
-        getFragmentManager().beginTransaction().hide(arpiGlFragment).commit();
-
-        if (sharedPreferences.getBoolean(getString(R.string.easter_egg), false)) {
-            navigationView.getMenu().findItem(R.id.arpi_view).setVisible(true);
-        }
     }
 
     private void initFilterDrawer() {
@@ -255,13 +220,11 @@ public class MapActivity extends AppCompatActivity {
             navigationView.getMenu().findItem(R.id.edit_way).setVisible(true);
             navigationView.getMenu().findItem(R.id.manage_poi_types).setVisible(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
         }
-        poiProvider.register();
     }
 
     @Override
     protected void onPause() {
         eventBus.unregister(this);
-        poiProvider.unregister();
         super.onPause();
     }
 
@@ -293,53 +256,6 @@ public class MapActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(filterView);
         } else {
             eventBus.post(new OnBackPressedMapEvent());
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPleaseInitializeArpiEvent(PleaseInitializeArpiEvent event) {
-        // Set engine into poi provider
-        poiProvider.setEngine(arpiGlFragment.getEngine());
-
-        // Create a controller to manage the arpi fragment
-        arpiController = new ArpiGlController(arpiGlFragment);
-        arpiController.setPoiSelectionListener(new PoiSelectionListener() {
-            @Override
-            public void onPoiSelected(String id) {
-                arpiController.setPoiColor(id, ArpiPoiProvider.SELECTED_COLOR);
-            }
-
-            @Override
-            public void onPoiDeselected(String id) {
-                switch (id.split(":")[0]) {
-                    case "POI":
-                        arpiController.setPoiColor(id, ArpiPoiProvider.POI_COLOR);
-                        break;
-                    case "NOTE":
-                        arpiController.setPoiColor(id, ArpiPoiProvider.NOTE_COLOR);
-                        break;
-                }
-            }
-        });
-
-        networkTileProvider = new NetworkTileProvider(configManager.getMapUrl()) {
-        };
-        // Add the OSM tile provider to the controller
-        arpiController.setTileProvider(networkTileProvider);
-        arpiController.addPoiProvider(poiProvider);
-        arpiController.setSkyBoxEnabled(true);
-        arpiController.setUserLocationEnabled(false);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPleaseShowMeArpiglEvent(PleaseShowMeArpiglEvent event) {
-        navigationView.getMenu().findItem(R.id.arpi_view).setVisible(true);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMapCenterValueEvent(MapCenterValueEvent event) {
-        if (arpiController != null) {
-            arpiController.setCameraPosition(event.getMapCenter().getLatitude(), event.getMapCenter().getLongitude());
         }
     }
 
@@ -508,9 +424,6 @@ public class MapActivity extends AppCompatActivity {
             case R.id.edit_way:
                 eventBus.post(new PleaseSwitchWayEditionModeEvent());
                 break;
-            case R.id.arpi_view:
-                toggleArpiGl();
-                break;
             case R.id.switch_style:
                 isSatelliteMode = !isSatelliteMode;
                 eventBus.post(new PleaseSwitchMapStyleEvent(isSatelliteMode));
@@ -592,35 +505,6 @@ public class MapActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChangesInDB(ChangesInDB event) {
         navigationView.getMenu().findItem(R.id.save_changes).setEnabled(event.hasChanges()).setChecked(event.hasChanges());
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPleaseToggleArpiEvent(PleaseToggleArpiEvent event) {
-        toggleArpiGl();
-    }
-
-    public void toggleArpiGl() {
-        PackageManager pm = getPackageManager();
-        // Switch to ArpiGl fragment if the sensors are present. IF they aren't, just display a screenshot of ArpiGl view
-        if (pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_GYROSCOPE) && pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
-            if (arpiGlFragment.isVisible()) {
-                getFragmentManager().beginTransaction().hide(arpiGlFragment).commit();
-                eventBus.post(new ChangeMapModeEvent(MapMode.DEFAULT));
-            } else {
-                getFragmentManager().beginTransaction().show(arpiGlFragment).commit();
-                eventBus.post(new PleaseGiveMeMapCenterEvent());
-                eventBus.post(new ChangeMapModeEvent(MapMode.ARPIGL));
-            }
-        } else {
-            if (arpiScreenshot.getVisibility() == View.GONE) {
-                arpiScreenshot.setVisibility(View.VISIBLE);
-                eventBus.post(new ChangeMapModeEvent(MapMode.ARPIGL));
-                Toast.makeText(this, R.string.arpi_not_supported, Toast.LENGTH_LONG).show();
-            } else {
-                arpiScreenshot.setVisibility(View.GONE);
-                eventBus.post(new ChangeMapModeEvent(MapMode.DEFAULT));
-            }
-        }
     }
 
     public NavigationView getNavigationView() {

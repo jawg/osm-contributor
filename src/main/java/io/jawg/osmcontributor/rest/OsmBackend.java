@@ -132,7 +132,6 @@ public class OsmBackend implements Backend {
     @NonNull
     public List<OsmDto> getPoisDtosInBox(final Box box) throws NetworkException {
         Timber.d("Requesting overpass for download");
-        Timber.e("nico : loading box  " + box);
 
         List<OsmDto> osmDtos = new ArrayList<>();
         final Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();

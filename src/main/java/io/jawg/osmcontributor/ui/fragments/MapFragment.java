@@ -109,7 +109,6 @@ import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
 import io.jawg.osmcontributor.model.entities.Way;
 import io.jawg.osmcontributor.model.events.PleaseDeletePoiEvent;
-import io.jawg.osmcontributor.model.events.PleaseRemoveArpiMarkerEvent;
 import io.jawg.osmcontributor.rest.events.SyncDownloadWayEvent;
 import io.jawg.osmcontributor.rest.events.SyncFinishUploadPoiEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncConflictingNodeErrorEvent;
@@ -143,15 +142,12 @@ import io.jawg.osmcontributor.ui.events.map.PleaseDeletePoiFromMapEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseDisplayTutorialEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseDuplicatePoiEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseGiveMeMapCenterEvent;
-import io.jawg.osmcontributor.ui.events.map.PleaseInitializeArpiEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseInitializeNoteDrawerEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseLoadEditWaysEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseLoadLastUsedPoiType;
 import io.jawg.osmcontributor.ui.events.map.PleaseOpenEditionEvent;
-import io.jawg.osmcontributor.ui.events.map.PleaseShowMeArpiglEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseSwitchMapStyleEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseSwitchWayEditionModeEvent;
-import io.jawg.osmcontributor.ui.events.map.PleaseToggleArpiEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseToggleDrawer;
 import io.jawg.osmcontributor.ui.events.map.PleaseToggleDrawerLock;
 import io.jawg.osmcontributor.ui.events.map.PoiNoTypeCreated;
@@ -352,7 +348,6 @@ public class MapFragment extends Fragment {
         }
 
         mapboxMap.setCameraPosition(cameraBuilder.build());
-        eventBus.post(new PleaseInitializeArpiEvent());
         presenter.setForceRefreshPoi();
         presenter.setForceRefreshNotes();
         presenter.loadPoisIfNeeded();
@@ -691,10 +686,6 @@ public class MapFragment extends Fragment {
                 imm.hideSoftInputFromWindow(mapView.getWindowToken(), 0);
                 break;
 
-            case ARPIGL:
-                switchMode(MapMode.DEFAULT);
-                eventBus.post(new PleaseToggleArpiEvent());
-                break;
             default:
                 getActivity().finish();
                 break;
@@ -925,7 +916,6 @@ public class MapFragment extends Fragment {
         if (marker != null) {
             mapboxMap.removeMarker(marker.getMarker());
             Object poi = marker.getMarker().getRelatedObject();
-            eventBus.post(new PleaseRemoveArpiMarkerEvent(poi));
         }
     }
 
@@ -1242,7 +1232,6 @@ public class MapFragment extends Fragment {
         addPoiFloatingMenu.setOnMenuButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                easterEgg();
                 addPoiFloatingMenu.toggle(true);
                 nextTuto(0);
             }
@@ -1580,30 +1569,6 @@ public class MapFragment extends Fragment {
     private void addWayMarker(WayMarkerOptions wayMarkerOptions) {
         mapboxMap.addMarker(wayMarkerOptions);
     }
-
-    /*-----------------------------------------------------------
-    * EASTER EGG
-    *---------------------------------------------------------*/ Long previousTime = System.currentTimeMillis();
-    int nbClick = 0;
-
-    private void easterEgg() {
-        Long time = System.currentTimeMillis();
-
-        if (time - previousTime < 500) {
-            if (++nbClick == 4) {
-                eventBus.post(new PleaseShowMeArpiglEvent());
-                eventBus.post(new PleaseToggleArpiEvent());
-                Toast.makeText(getActivity(), getString(R.string.easter_egg_activation), Toast.LENGTH_SHORT).show();
-                sharedPreferences.edit().putBoolean(getString(R.string.easter_egg), true).apply();
-                nbClick = 0;
-            }
-        } else {
-            nbClick = 0;
-        }
-
-        previousTime = time;
-    }
-
 
     /*-----------------------------------------------------------
     * SYNC

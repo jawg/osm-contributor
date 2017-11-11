@@ -21,7 +21,6 @@ ext {
     simplexmlRetrofitVersion = '2.3.0'
     simplexmlVersion = '2.7.1'
     licensesdialogVersion = '1.8.1'
-    arpiglVersion = '0.3.3'
     lovelyDialogVersion = '1.0.4'
     playServicesVersion = '9.2.0'
     multidexSupportVersion = '1.0.1'
@@ -251,7 +250,6 @@ dependencies {
         transitive = true
     }
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"
-    compile(name:"arpigl-release-$arpiglVersion", ext:"aar")
 
     compile "com.facebook.stetho:stetho:$stethoVersion"
 

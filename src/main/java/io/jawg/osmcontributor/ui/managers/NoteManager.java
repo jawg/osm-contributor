@@ -39,9 +39,7 @@ import io.jawg.osmcontributor.model.entities.Comment;
 import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.events.NoteLoadedEvent;
 import io.jawg.osmcontributor.model.events.NoteSavedEvent;
-import io.jawg.osmcontributor.model.events.NotesArpiLoadedEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadNoteEvent;
-import io.jawg.osmcontributor.model.events.PleaseLoadNoteForArpiEvent;
 import io.jawg.osmcontributor.model.events.ResetDatabaseEvent;
 import io.jawg.osmcontributor.rest.events.SyncFinishUploadNote;
 import io.jawg.osmcontributor.rest.managers.SyncNoteManager;
@@ -117,11 +115,6 @@ public class NoteManager {
         resetDatabase();
     }
 
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseLoadNoteForArpiEvent(PleaseLoadNoteForArpiEvent event) {
-        List<Note> notes = noteDao.queryForAllInRect(event.getBox());
-        bus.post(new NotesArpiLoadedEvent(notes));
-    }
 
     // ********************************
     // ************ public ************

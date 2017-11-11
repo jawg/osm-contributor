@@ -46,11 +46,6 @@
             android:visible="false"/>
 
         <item
-            android:id="@+id/arpi_view"
-            android:title="@string/title_3d_view"
-            android:visible="false"/>
-
-        <item
             android:id="@+id/switch_style"
             android:title="@string/switch_style_satellite"/>
 

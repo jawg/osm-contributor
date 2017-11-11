@@ -108,7 +108,6 @@ public class OsmTemplateApplication extends Application {
         bus.register(getOsmTemplateComponent().getTypeManager());
         bus.register(getOsmTemplateComponent().getPresetsManager());
         bus.register(getOsmTemplateComponent().getGeocoder());
-        bus.register(getOsmTemplateComponent().getArpiInitializer());
         bus.register(getOsmTemplateComponent().getEditVectorialWayManager());
 
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();

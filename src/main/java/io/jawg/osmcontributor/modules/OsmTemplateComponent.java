@@ -81,7 +81,6 @@ import io.jawg.osmcontributor.ui.managers.TypeManager;
 import io.jawg.osmcontributor.ui.managers.WaysManager;
 import io.jawg.osmcontributor.ui.presenters.MapFragmentPresenter;
 import io.jawg.osmcontributor.ui.presenters.TypeListActivityPresenter;
-import io.jawg.osmcontributor.utils.core.ArpiInitializer;
 import io.jawg.osmcontributor.utils.core.CoreModule;
 import io.jawg.osmcontributor.utils.ways.Geocoder;
 
@@ -182,8 +181,6 @@ public interface OsmTemplateComponent {
     WaysManager getEditVectorialWayManager();
 
     Geocoder getGeocoder();
-
-    ArpiInitializer getArpiInitializer();
 
     // Database
 

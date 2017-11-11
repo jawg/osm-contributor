@@ -145,18 +145,11 @@ public class PoiLoader {
             return;
         }
 
-        // load in first the poi in the center of the box
-        int page = 0;
-        List<Poi> pois;
-        do {
-            Timber.d(" Loading poi page %d", page);
-            pois = poiDao.queryForAllInRect(box, page * POI_PAGE, POI_PAGE);
-            poiLoadingProgress.setLoadingStatus(POI_LOADING);
-            poiLoadingProgress.setTotalsElements(count);
-            poiLoadingProgress.setPois(pois);
-            publishProgress();
-            page++;
-        } while (pois.size() == POI_PAGE);
+        List<Poi> pois = poiDao.queryForAllInRect(box);
+        poiLoadingProgress.setLoadingStatus(POI_LOADING);
+        poiLoadingProgress.setTotalsElements(count);
+        poiLoadingProgress.setPois(pois);
+        publishProgress();
     }
 
 
