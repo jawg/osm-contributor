@@ -268,8 +268,6 @@ public class MapFragmentPresenter {
     }
 
     private void loadingFinished() {
-        mapFragment.removeNoteMarkersNotIn(ids);
-        mapFragment.removePoiMarkersNotIn(ids);
         mapFragment.showProgressBar(false);
     }
 
@@ -411,15 +409,13 @@ public class MapFragmentPresenter {
             switch (poiLoadingProgress.getLoadingStatus()) {
                 case POI_LOADING:
                     impacteLoadedPoi(poiLoadingProgress.getPois());
+                    Timber.d("xxxx loaded " + poiLoadingProgress.getPois().size());
                     break;
                 case NOTE_LOADING:
                     impacteLoadedNotes(poiLoadingProgress.getNotes());
                     break;
                 case LOADING_FROM_SERVER:
                     displayProgress(poiLoadingProgress);
-                    break;
-                case FINISH:
-                    mapFragment.showProgressBar(false);
                     break;
                 case OUT_DATED_DATA:
                     mapFragment.showNeedToRefreshData();
@@ -434,6 +430,12 @@ public class MapFragmentPresenter {
                     break;
                 case MAPPING_POIS:
                     displayProgress(poiLoadingProgress);
+                    break;
+                case FINISH:
+                    mapFragment.removeNoteMarkersNotIn(ids);
+                    mapFragment.removePoiMarkersNotIn(ids);
+                    mapFragment.showProgressBar(false);
+                    Timber.d("xxxx finished " + ids.size());
                     break;
             }
             request(1);

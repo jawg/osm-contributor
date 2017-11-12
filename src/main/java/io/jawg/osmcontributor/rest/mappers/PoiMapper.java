@@ -198,6 +198,7 @@ public class PoiMapper {
         int tagsWithValues;
         int matchingTags;
         if (dto.getTagsDtoList() != null) {
+            typeLoop:
             for (PoiType type : availableTypes) {
                 tagsWithValues = 0;
                 matchingTags = 0;
@@ -208,6 +209,9 @@ public class PoiMapper {
                             if (tagDto.getKey().equals(poiTypeTag.getKey())) {
                                 if (tagDto.getValue().equals(poiTypeTag.getValue())) {
                                     matchingTags++;
+                                } else {
+                                    //one error it's not the good type
+                                    continue typeLoop;
                                 }
                             }
                         }

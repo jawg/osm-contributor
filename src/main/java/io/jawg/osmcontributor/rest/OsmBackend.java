@@ -68,6 +68,7 @@ public class OsmBackend implements Backend {
     PoiMapper poiMapper;
     EventBus bus;
     LoginPreferences loginPreferences;
+    Map<Long, PoiType> poiTypes = null;
 
     public OsmBackend(LoginPreferences loginPreferences, EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient,
                       OsmRestClient osmRestClient, PoiMapper poiMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
@@ -134,7 +135,11 @@ public class OsmBackend implements Backend {
         Timber.d("Requesting overpass for download");
 
         List<OsmDto> osmDtos = new ArrayList<>();
-        final Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
+
+        if (poiTypes == null || poiTypes.isEmpty()) {
+            poiTypes = poiManager.loadPoiTypes();
+        }
+
         for (Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
             final PoiType poiTypeDto = entry.getValue();
             if (poiTypeDto.getQuery() != null) {
@@ -209,9 +214,10 @@ public class OsmBackend implements Backend {
         StringBuilder cmplReq = new StringBuilder("(");
 
         if (poiTypes.size() > 15) {
+            List<String> types = poiManager.loadPoiTypeKeysWithDefaultValues();
             // we've got lots of pois, overpath will struggle with the finer request, download all the pois in the box
             for (String type : OBJECT_TYPES) {
-                for (String key : poiManager.loadPoiTypeKeysWithDefaultValues()) {
+                for (String key : types) {
                     cmplReq.append(type).append("[\"").append(key).append("\"]").append(box.osmFormat());
                 }
             }

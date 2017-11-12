@@ -80,6 +80,7 @@ public class PoiLoader {
         }
         poiLoadingProgress.setLoadingStatus(FINISH);
         publishProgress();
+        Timber.d(" finished pis ");
         subscriber.onCompleted();
 
     }
@@ -90,6 +91,7 @@ public class PoiLoader {
 
         Timber.d("\n--------- Handling areas ---------\n");
         boolean newAreasLoaded = handleAreas(areasNeeded);
+        Timber.d("\n--------- Done Handling areas ---------\n");
 
         if (newAreasLoaded) {
             Timber.d("\n--------- Loading pois from BDD the just have been refreshed  ---------\n");
@@ -151,6 +153,7 @@ public class PoiLoader {
         poiLoadingProgress.setTotalsElements(count);
         poiLoadingProgress.setPois(pois);
         publishProgress();
+        Timber.d(" loading pis " + pois.size() + "  " + poiLoadingProgress.getLoadingStatus());
     }
 
 
@@ -226,6 +229,16 @@ public class PoiLoader {
     }
 
     private void publishProgress() {
-        subscriber.onNext(poiLoadingProgress);
+        PoiLoadingProgress progress = new PoiLoadingProgress();
+        progress.setTotalsElements(poiLoadingProgress.getTotalsElements());
+        progress.setLoadedElements(poiLoadingProgress.getLoadedElements());
+        progress.setTotalAreasLoaded(poiLoadingProgress.getTotalAreasLoaded());
+        progress.setTotalAreasToLoad(poiLoadingProgress.getTotalAreasToLoad());
+        progress.setLoadingStatus(poiLoadingProgress.getLoadingStatus());
+        progress.setPois(poiLoadingProgress.getPois());
+        progress.setNotes(poiLoadingProgress.getNotes());
+        progress.setLoadingStatus(poiLoadingProgress.getLoadingStatus());
+        progress.setDataNeedRefresh(poiLoadingProgress.isDataNeedRefresh());
+        subscriber.onNext(progress);
     }
 }
