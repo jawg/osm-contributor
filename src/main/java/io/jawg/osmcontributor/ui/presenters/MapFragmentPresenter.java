@@ -217,8 +217,8 @@ public class MapFragmentPresenter {
                 if (shouldReload(viewLatLngBounds) || refreshData || forceRefresh) {
                     Timber.d("Reloading pois");
                     previousZoom = mapFragment.getZoomLevel();
-                    triggerReloadPoiLatLngBounds = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.5);
-                    LatLngBounds latLngToLoad = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.75);
+                    triggerReloadPoiLatLngBounds = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.2);
+                    LatLngBounds latLngToLoad = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.2);
                     getPoisAndNotes.unsubscribe();
                     Timber.e("nico : unsubscribe");
                     getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad), refreshData).execute(new GetPoisSubscriber());

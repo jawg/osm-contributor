@@ -11,6 +11,7 @@ import io.jawg.osmcontributor.database.dao.MapAreaDao;
 import io.jawg.osmcontributor.database.dao.PoiDao;
 import io.jawg.osmcontributor.database.dao.PoiTypeDao;
 import io.jawg.osmcontributor.model.entities.MapArea;
+import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.rest.Backend;
@@ -38,8 +39,7 @@ import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.Load
  * {@link PoiLoader} for retrieving poi data.
  */
 public class PoiLoader {
-    public static final int POI_PAGE = 50;
-    public static final int SAVE_POI_PAGE = 100;
+
     public static final int POI_PAGE_MAPPING = 5;
     private final PoiDao poiDao;
     private final MapAreaDao mapAreaDao;
@@ -49,12 +49,21 @@ public class PoiLoader {
     private boolean refreshData;
     private PoiMapper poiMapper;
     private BooleanHolder mustBeKilled;
-    PoiLoadingProgress poiLoadingProgress = new PoiLoadingProgress();
     List<PoiType> availableTypes;
     PoiTypeDao poiTypeDao;
-    Long loadedElements = 0L;
     List<OsmDto> osmDtos;
     List<PoiDto> nodeDtos = new ArrayList<>();
+
+    //progress
+    private PoiLoadingProgress.LoadingStatus loadingStatus;
+    private boolean dataNeedRefresh;
+    private long totalsElements = 0L;
+    private long loadedElements = 0L;
+    private long totalAreasToLoad = 0L;
+    private long totalAreasLoaded = 0L;
+    private List<Poi> pois = new ArrayList<>();
+    private List<Note> notes = new ArrayList<>();
+
 
     public PoiLoader(PoiDao poiDao, Backend backend, MapAreaDao mapAreaDao, Subscriber<? super PoiLoadingProgress> subscriber, BooleanHolder mustBeKilled, PoiMapper poiMapper, PoiTypeDao poiTypeDao) {
         this.backend = backend;
@@ -78,7 +87,7 @@ public class PoiLoader {
         if (!areasNeeded.isEmpty()) {
             getPois(areasNeeded);
         }
-        poiLoadingProgress.setLoadingStatus(FINISH);
+        loadingStatus = FINISH;
         publishProgress();
         Timber.d(" finished pis ");
         subscriber.onCompleted();
@@ -111,11 +120,11 @@ public class PoiLoader {
             // we call the backend to received the data
             //we notify the subscriber that we have some loading to do
 
-            poiLoadingProgress.setLoadingStatus(LOADING_FROM_SERVER);
-            poiLoadingProgress.setTotalAreasToLoad(areasNeeded.size() - localAreas.size());
-            poiLoadingProgress.setTotalAreasLoaded(0L);
-            poiLoadingProgress.setTotalsElements(0L);
-            poiLoadingProgress.setLoadedElements(0L);
+            loadingStatus = LOADING_FROM_SERVER;
+            totalAreasToLoad = areasNeeded.size() - localAreas.size();
+            totalAreasLoaded = 0L;
+            totalsElements = 0L;
+            loadedElements = 0L;
             publishProgress();
 
             loadMissingMapAreas(areasNeeded, localAreas);
@@ -129,7 +138,8 @@ public class PoiLoader {
                 //we check if the data is outDated and ask for Update
                 boolean outDatedData = LocalDateTime.now().isAfter(lastUpate.plusMonths(1));
                 if (outDatedData) {
-                    poiLoadingProgress.setLoadingStatus(OUT_DATED_DATA);
+                    loadingStatus = OUT_DATED_DATA;
+                    dataNeedRefresh = true;
                     publishProgress();
                 }
             }
@@ -143,34 +153,33 @@ public class PoiLoader {
         Long count = poiDao.countForAllInRect(box);
 
         if (count > BuildConfig.MAX_POIS_ON_MAP) {
-            poiLoadingProgress.setLoadingStatus(TOO_MANY_POIS);
-            poiLoadingProgress.setTotalsElements(count);
+            loadingStatus = TOO_MANY_POIS;
+            totalsElements = count;
             publishProgress();
             Timber.d(" too many Pois to display %d", count);
             return false;
         }
 
-        List<Poi> pois = poiDao.queryForAllInRect(box);
-        poiLoadingProgress.setLoadingStatus(POI_LOADING);
-        poiLoadingProgress.setTotalsElements(count);
-        poiLoadingProgress.setPois(pois);
+        pois.clear();
+        pois = poiDao.queryForAllInRect(box);
+        loadingStatus = POI_LOADING;
+        totalsElements = count;
         publishProgress();
-        Timber.d(" loading pis " + pois.size() + "  " + poiLoadingProgress.getLoadingStatus());
         return true;
     }
 
 
     private void loadMissingMapAreas(final List<MapArea> toLoadAreas, List<MapArea> loadedAreas) {
-        poiLoadingProgress.setTotalAreasToLoad(toLoadAreas.size() - loadedAreas.size());
+        totalAreasToLoad = toLoadAreas.size() - loadedAreas.size();
         int loadedArea = 0;
         for (MapArea toLoadArea : toLoadAreas) {
             killIfNeeded();
             if (refreshData || !loadedAreas.contains(toLoadArea)) {
                 try {
                     Timber.d("----- Downloading Area : " + toLoadArea.getId());
-                    poiLoadingProgress.setTotalAreasLoaded(loadedArea++);
-                    poiLoadingProgress.setLoadedElements(0L);
-                    poiLoadingProgress.setTotalsElements(0L);
+                    totalAreasLoaded = loadedArea++;
+                    loadedElements = 0L;
+                    totalsElements = 0L;
                     loadAndSavePoisFromBackend(toLoadArea);
 
                     //publish poi loaded
@@ -182,7 +191,7 @@ public class PoiLoader {
 
                 } catch (NetworkException e) {
                     Timber.w("Network error wile saving areas ");
-                    poiLoadingProgress.setLoadingStatus(NETWORK_ERROR);
+                    loadingStatus = NETWORK_ERROR;
                     publishProgress();
                     return;
                 }
@@ -191,7 +200,7 @@ public class PoiLoader {
     }
 
     private void loadAndSavePoisFromBackend(MapArea toLoadArea) {
-        poiLoadingProgress.setLoadingStatus(LOADING_FROM_SERVER);
+        loadingStatus = LOADING_FROM_SERVER;
         publishProgress();
         loadedElements = 0L;
         nodeDtos.clear();
@@ -206,8 +215,8 @@ public class PoiLoader {
 
         osmDtos.clear();
 
-        poiLoadingProgress.setLoadingStatus(MAPPING_POIS);
-        poiLoadingProgress.setTotalsElements(nodeDtos.size());
+        loadingStatus = MAPPING_POIS;
+        totalsElements = nodeDtos.size();
 
         int i = 0;
         for (PoiDto dto : nodeDtos) {
@@ -217,7 +226,7 @@ public class PoiLoader {
                 killIfNeeded();
                 Timber.d("----- Mapping and saving  POI : " + loadedElements);
                 loadedElements += i;
-                poiLoadingProgress.setLoadedElements(loadedElements);
+                loadedElements = loadedElements;
                 publishProgress();
                 i = 0;
             }
@@ -233,15 +242,15 @@ public class PoiLoader {
 
     private void publishProgress() {
         PoiLoadingProgress progress = new PoiLoadingProgress();
-        progress.setTotalsElements(poiLoadingProgress.getTotalsElements());
-        progress.setLoadedElements(poiLoadingProgress.getLoadedElements());
-        progress.setTotalAreasLoaded(poiLoadingProgress.getTotalAreasLoaded());
-        progress.setTotalAreasToLoad(poiLoadingProgress.getTotalAreasToLoad());
-        progress.setLoadingStatus(poiLoadingProgress.getLoadingStatus());
-        progress.setPois(poiLoadingProgress.getPois());
-        progress.setNotes(poiLoadingProgress.getNotes());
-        progress.setLoadingStatus(poiLoadingProgress.getLoadingStatus());
-        progress.setDataNeedRefresh(poiLoadingProgress.isDataNeedRefresh());
+        progress.setTotalsElements(totalsElements);
+        progress.setLoadedElements(loadedElements);
+        progress.setTotalAreasLoaded(totalAreasLoaded);
+        progress.setTotalAreasToLoad(totalAreasToLoad);
+        progress.setLoadingStatus(loadingStatus);
+        progress.setPois(pois);
+        progress.setNotes(notes);
+        progress.setLoadingStatus(loadingStatus);
+        progress.setDataNeedRefresh(dataNeedRefresh);
         subscriber.onNext(progress);
     }
 }

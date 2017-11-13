@@ -169,6 +169,8 @@ public class OsmBackend implements Backend {
                     OsmDto osmDto = result.getResult();
                     if (osmDto != null) {
                         osmDtos.add(osmDto);
+                    } else {
+                        throw new NetworkException();
                     }
                     poiTypes.remove(entry.getKey());
                 } else {
@@ -194,6 +196,8 @@ public class OsmBackend implements Backend {
                 OsmDto osmDto = result.getResult();
                 if (osmDto != null) {
                     osmDtos.add(osmDto);
+                } else {
+                    throw new NetworkException();
                 }
             } else {
                 throw new NetworkException();
