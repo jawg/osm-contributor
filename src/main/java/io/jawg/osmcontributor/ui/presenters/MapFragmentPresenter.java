@@ -222,7 +222,10 @@ public class MapFragmentPresenter {
                     getPoisAndNotes.unsubscribe();
                     Timber.e("nico : unsubscribe");
                     getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad), refreshData).execute(new GetPoisSubscriber());
+                    mapFragment.displayZoomTooLargeError(false);
                 }
+            } else {
+                cleanAllZoomTooLarge();
             }
         }
     }
@@ -365,9 +368,12 @@ public class MapFragmentPresenter {
         loadPoi(true, false);
     }
 
-    public void endCurrentLoading() {
+    public void cleanAllZoomTooLarge() {
         mapFragment.showProgressBar(false);
         getPoisAndNotes.unsubscribe();
+        mapFragment.displayNetworkError(false);
+        mapFragment.displayZoomTooLargeError(true);
+        mapFragment.displayTooManyPois(false, 0L, 0);
     }
 
 
@@ -409,7 +415,6 @@ public class MapFragmentPresenter {
             switch (poiLoadingProgress.getLoadingStatus()) {
                 case POI_LOADING:
                     impacteLoadedPoi(poiLoadingProgress.getPois());
-                    Timber.d("xxxx loaded " + poiLoadingProgress.getPois().size());
                     break;
                 case NOTE_LOADING:
                     impacteLoadedNotes(poiLoadingProgress.getNotes());
@@ -435,7 +440,6 @@ public class MapFragmentPresenter {
                     mapFragment.removeNoteMarkersNotIn(ids);
                     mapFragment.removePoiMarkersNotIn(ids);
                     mapFragment.showProgressBar(false);
-                    Timber.d("xxxx finished " + ids.size());
                     break;
             }
             request(1);

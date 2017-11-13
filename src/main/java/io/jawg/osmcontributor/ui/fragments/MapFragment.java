@@ -240,6 +240,9 @@ public class MapFragment extends Fragment {
     @BindView(R.id.poi_load_banner_network)
     View bannerNetworkError;
 
+    @BindView(R.id.poi_load_zoom_banner)
+    View bannerZoomTooLarge;
+
     @BindView(R.id.poi_load_banner_too_much_pois)
     View bannerTooManyPois;
 
@@ -975,6 +978,10 @@ public class MapFragment extends Fragment {
 
     public void displayNetworkError(boolean display) {
         bannerNetworkError.setVisibility(display ? View.VISIBLE : View.GONE);
+    }
+
+    public void displayZoomTooLargeError(boolean display) {
+        bannerZoomTooLarge.setVisibility(display ? View.VISIBLE : View.GONE);
     }
 
 

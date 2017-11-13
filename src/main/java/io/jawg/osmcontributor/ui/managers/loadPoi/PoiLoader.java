@@ -87,7 +87,10 @@ public class PoiLoader {
 
     private void getPois(List<MapArea> areasNeeded) {
         Timber.d("\n--------- Loading Pois already present in BDD ---------\n");
-        loadPoisFromDB();
+        boolean succeed = loadPoisFromDB();
+        if (!succeed) {
+            return;
+        }
 
         Timber.d("\n--------- Handling areas ---------\n");
         boolean newAreasLoaded = handleAreas(areasNeeded);
@@ -135,7 +138,7 @@ public class PoiLoader {
         return newAreasLoaded;
     }
 
-    private void loadPoisFromDB() {
+    private boolean loadPoisFromDB() {
 
         Long count = poiDao.countForAllInRect(box);
 
@@ -144,8 +147,7 @@ public class PoiLoader {
             poiLoadingProgress.setTotalsElements(count);
             publishProgress();
             Timber.d(" too many Pois to display %d", count);
-            subscriber.onCompleted();
-            return;
+            return false;
         }
 
         List<Poi> pois = poiDao.queryForAllInRect(box);
@@ -154,6 +156,7 @@ public class PoiLoader {
         poiLoadingProgress.setPois(pois);
         publishProgress();
         Timber.d(" loading pis " + pois.size() + "  " + poiLoadingProgress.getLoadingStatus());
+        return true;
     }
 
 
