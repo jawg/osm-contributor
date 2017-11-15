@@ -16,8 +16,10 @@ import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.rest.Backend;
 import io.jawg.osmcontributor.rest.NetworkException;
+import io.jawg.osmcontributor.rest.dtos.osm.NodeDto;
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
 import io.jawg.osmcontributor.rest.dtos.osm.PoiDto;
+import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
 import io.jawg.osmcontributor.rest.mappers.PoiMapper;
 import io.jawg.osmcontributor.ui.utils.BooleanHolder;
 import io.jawg.osmcontributor.utils.Box;
@@ -61,6 +63,7 @@ public class PoiLoader {
     private long loadedElements = 0L;
     private long totalAreasToLoad = 0L;
     private long totalAreasLoaded = 0L;
+    private LocalDateTime lastUpate;
     private List<Poi> pois = new ArrayList<>();
     private List<Note> notes = new ArrayList<>();
 
@@ -121,7 +124,7 @@ public class PoiLoader {
             //we notify the subscriber that we have some loading to do
 
             loadingStatus = LOADING_FROM_SERVER;
-            totalAreasToLoad = areasNeeded.size() - localAreas.size();
+            totalAreasToLoad = refreshData ? areasNeeded.size() : areasNeeded.size() - localAreas.size();
             totalAreasLoaded = 0L;
             totalsElements = 0L;
             loadedElements = 0L;
@@ -133,15 +136,20 @@ public class PoiLoader {
 
         if (!refreshData) {
             // find outdated areas
+            boolean outDatedData = false;
+            LocalDateTime lastUpate;
             for (MapArea mapArea : localAreas) {
-                LocalDateTime lastUpate = new LocalDateTime(mapArea.getUpdateDate());
+                lastUpate = new LocalDateTime(mapArea.getUpdateDate());
                 //we check if the data is outDated and ask for Update
-                boolean outDatedData = LocalDateTime.now().isAfter(lastUpate.plusMonths(1));
-                if (outDatedData) {
-                    loadingStatus = OUT_DATED_DATA;
-                    dataNeedRefresh = true;
-                    publishProgress();
+                if (LocalDateTime.now().isAfter(lastUpate.plusWeeks(1))) {
+                    outDatedData = true;
+                    this.lastUpate = lastUpate;
                 }
+            }
+            if (outDatedData) {
+                loadingStatus = OUT_DATED_DATA;
+                dataNeedRefresh = true;
+                publishProgress();
             }
         }
 
@@ -208,8 +216,14 @@ public class PoiLoader {
 
         for (OsmDto osmDto : osmDtos) {
             if (osmDto != null) {
-                nodeDtos.addAll(osmDto.getNodeDtoList());
-                nodeDtos.addAll(osmDto.getWayDtoList());
+                List<NodeDto> nodeDtoList = osmDto.getNodeDtoList();
+                if (nodeDtoList != null) {
+                    nodeDtos.addAll(nodeDtoList);
+                }
+                List<WayDto> wayDtoList = osmDto.getWayDtoList();
+                if (wayDtoList != null) {
+                    nodeDtos.addAll(wayDtoList);
+                }
             }
         }
 
@@ -251,6 +265,7 @@ public class PoiLoader {
         progress.setNotes(notes);
         progress.setLoadingStatus(loadingStatus);
         progress.setDataNeedRefresh(dataNeedRefresh);
+        progress.setLastUpdateDate(lastUpate);
         subscriber.onNext(progress);
     }
 }

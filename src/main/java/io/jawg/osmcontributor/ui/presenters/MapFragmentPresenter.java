@@ -42,7 +42,6 @@ import io.jawg.osmcontributor.model.events.PleaseLoadPoiTypes;
 import io.jawg.osmcontributor.model.events.PoiTypesLoaded;
 import io.jawg.osmcontributor.model.events.PoisAndNotesDownloadedEvent;
 import io.jawg.osmcontributor.model.events.RevertFinishedEvent;
-import io.jawg.osmcontributor.rest.events.SyncDownloadPoisAndNotesEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseChangeValuesDetailNoteFragmentEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseInitializeDrawer;
@@ -231,7 +230,7 @@ public class MapFragmentPresenter {
     }
 
     public void downloadAreaPoisAndNotes() {
-        eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromLatLngBounds(LatLngBoundsUtils.enlarge(mapFragment.getViewLatLngBounds(), 1.75))));
+        loadPoi(true, true);
     }
 
 
@@ -374,6 +373,11 @@ public class MapFragmentPresenter {
         mapFragment.displayNetworkError(false);
         mapFragment.displayZoomTooLargeError(true);
         mapFragment.displayTooManyPois(false, 0L, 0);
+        if (ids != null) {
+            ids.clear();
+        }
+        mapFragment.removeNoteMarkersNotIn(new ArrayList<Long>());
+        mapFragment.removePoiMarkersNotIn(new ArrayList<Long>());
     }
 
 
@@ -423,7 +427,7 @@ public class MapFragmentPresenter {
                     displayProgress(poiLoadingProgress);
                     break;
                 case OUT_DATED_DATA:
-                    mapFragment.showNeedToRefreshData();
+                    mapFragment.showNeedToRefreshData(poiLoadingProgress.getLastUpdateDate());
                     break;
                 case NETWORK_ERROR:
                     hasEncounterNetworkError = true;

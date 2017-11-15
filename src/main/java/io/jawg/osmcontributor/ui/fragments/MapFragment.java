@@ -84,6 +84,9 @@ import com.yarolegovich.lovelydialog.LovelyStandardDialog;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -841,6 +844,8 @@ public class MapFragment extends Fragment {
     public void onDownloadZoneClick() {
         if (mapMode == MapMode.WAY_EDITION) {
             downloadAreaForEdition();
+        } else {
+            presenter.downloadAreaPoisAndNotes();
         }
     }
 
@@ -958,10 +963,11 @@ public class MapFragment extends Fragment {
     }
 
 
-    public void showNeedToRefreshData() {
+    public void showNeedToRefreshData(LocalDateTime lastUpate) {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
         new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.load_poi_data_outdated_refresh_title)
-                .setMessage(R.string.load_poi_data_outdated_refresh_content)
+                .setMessage(getString(R.string.load_poi_data_outdated_refresh_content, formatter.print(lastUpate)))
                 .setPositiveButton(R.string.load_poi_data_outdated_refresh_btn, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         presenter.refreshAreaConfirmed();
