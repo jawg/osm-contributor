@@ -36,6 +36,7 @@ import io.jawg.osmcontributor.rest.dtos.osm.NodeDto;
 import io.jawg.osmcontributor.rest.dtos.osm.PoiDto;
 import io.jawg.osmcontributor.rest.dtos.osm.TagDto;
 import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
+import io.jawg.osmcontributor.utils.FlavorUtils;
 
 public class PoiMapper {
 
@@ -65,7 +66,12 @@ public class PoiMapper {
         if (dtos != null) {
             List<PoiType> availableTypes = poiTypeDao.queryForAll();
             for (PoiDto dto : dtos) {
-                PoiType type = findType(dto, availableTypes);
+                PoiType type;
+                if (FlavorUtils.isBus()) {
+                    type = availableTypes.get(0);
+                } else {
+                    type = findType(dto, availableTypes);
+                }
                 if (type == null && typeFiltering) {
                     continue; // poi not of an available type
                 }
