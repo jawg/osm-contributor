@@ -4,15 +4,22 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.database.dao.MapAreaDao;
 import io.jawg.osmcontributor.database.dao.PoiDao;
+import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
+import io.jawg.osmcontributor.database.dao.PoiTagDao;
 import io.jawg.osmcontributor.database.dao.PoiTypeDao;
+import io.jawg.osmcontributor.database.helper.DatabaseHelper;
 import io.jawg.osmcontributor.model.entities.MapArea;
 import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
+import io.jawg.osmcontributor.model.entities.PoiNodeRef;
+import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.rest.Backend;
 import io.jawg.osmcontributor.rest.NetworkException;
@@ -63,12 +70,17 @@ public class PoiLoader {
     private long loadedElements = 0L;
     private long totalAreasToLoad = 0L;
     private long totalAreasLoaded = 0L;
+    private PoiTagDao poiTagDao;
+    private PoiNodeRefDao poiNodeRefDao;
     private LocalDateTime lastUpate;
     private List<Poi> pois = new ArrayList<>();
     private List<Note> notes = new ArrayList<>();
+    private DatabaseHelper databaseHelper;
 
 
-    public PoiLoader(PoiDao poiDao, Backend backend, MapAreaDao mapAreaDao, Subscriber<? super PoiLoadingProgress> subscriber, BooleanHolder mustBeKilled, PoiMapper poiMapper, PoiTypeDao poiTypeDao) {
+    public PoiLoader(PoiDao poiDao, Backend backend, MapAreaDao mapAreaDao, Subscriber<? super PoiLoadingProgress> subscriber,
+                     BooleanHolder mustBeKilled, PoiMapper poiMapper, PoiTypeDao poiTypeDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao,
+                     DatabaseHelper databaseHelper) {
         this.backend = backend;
         this.poiDao = poiDao;
         this.mapAreaDao = mapAreaDao;
@@ -76,6 +88,9 @@ public class PoiLoader {
         this.mustBeKilled = mustBeKilled;
         this.poiMapper = poiMapper;
         this.poiTypeDao = poiTypeDao;
+        this.poiTagDao = poiTagDao;
+        this.poiNodeRefDao = poiNodeRefDao;
+        this.databaseHelper = databaseHelper;
     }
 
     public void init(final Box box, final boolean refreshData) {
@@ -184,6 +199,12 @@ public class PoiLoader {
             killIfNeeded();
             if (refreshData || !loadedAreas.contains(toLoadArea)) {
                 try {
+
+                    //todo clean data
+                    if (refreshData && loadedAreas.contains(toLoadArea)) {
+                        cleanArea(toLoadArea);
+                    }
+
                     Timber.d("----- Downloading Area : " + toLoadArea.getId());
                     totalAreasLoaded = loadedArea++;
                     loadedElements = 0L;
@@ -234,7 +255,7 @@ public class PoiLoader {
 
         int i = 0;
         for (PoiDto dto : nodeDtos) {
-            poiDao.createOrUpdate(poiMapper.convertDtoToPoi(false, availableTypes, dto));
+            savePoi(poiMapper.convertDtoToPoi(false, availableTypes, dto));
 
             if (i >= POI_PAGE_MAPPING) {
                 killIfNeeded();
@@ -246,6 +267,47 @@ public class PoiLoader {
             }
             i++;
         }
+    }
+
+    private Poi savePoi(Poi poi) {
+        poiDao.create(poi);
+
+        if (poi.getTags() != null) {
+            for (PoiTag poiTag : poi.getTags()) {
+                poiTag.setPoi(poi);
+                poiTagDao.create(poiTag);
+            }
+        }
+
+        if (poi.getNodeRefs() != null) {
+            for (PoiNodeRef poiNodeRef : poi.getNodeRefs()) {
+                poiNodeRef.setPoi(poi);
+                poiNodeRefDao.create(poiNodeRef);
+            }
+        }
+
+        return poi;
+    }
+
+    private void cleanArea(final MapArea area) {
+        databaseHelper.callInTransaction(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                List<Poi> pois = poiDao.queryForAllInRect(area.getBox());
+                Collection<PoiNodeRef> nodeRefs = new ArrayList<>();
+                Collection<PoiTag> tags = new ArrayList<>();
+
+                for (Poi poi : pois) {
+                    nodeRefs.addAll(poi.getNodeRefs());
+                    tags.addAll(poi.getTags());
+                }
+
+                poiNodeRefDao.delete(nodeRefs);
+                poiTagDao.delete(tags);
+                poiDao.delete(pois);
+                return null;
+            }
+        });
     }
 
     private void killIfNeeded() {
