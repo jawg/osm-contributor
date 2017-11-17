@@ -107,7 +107,7 @@ public class PoiLoader {
         }
         loadingStatus = FINISH;
         publishProgress();
-        Timber.d(" finished pis ");
+        Timber.d(" finished loading pois ");
         subscriber.onCompleted();
 
     }
@@ -193,23 +193,16 @@ public class PoiLoader {
 
 
     private void loadMissingMapAreas(final List<MapArea> toLoadAreas, List<MapArea> loadedAreas) {
-        totalAreasToLoad = toLoadAreas.size() - loadedAreas.size();
         int loadedArea = 0;
         for (MapArea toLoadArea : toLoadAreas) {
             killIfNeeded();
             if (refreshData || !loadedAreas.contains(toLoadArea)) {
                 try {
-
-                    //todo clean data
-                    if (refreshData && loadedAreas.contains(toLoadArea)) {
-                        cleanArea(toLoadArea);
-                    }
-
                     Timber.d("----- Downloading Area : " + toLoadArea.getId());
                     totalAreasLoaded = loadedArea++;
                     loadedElements = 0L;
                     totalsElements = 0L;
-                    loadAndSavePoisFromBackend(toLoadArea);
+                    loadAndSavePoisFromBackend(toLoadArea, refreshData && loadedAreas.contains(toLoadArea));
 
                     //publish poi loaded
                     toLoadArea.setUpdateDate(new DateTime(System.currentTimeMillis()));
@@ -228,7 +221,7 @@ public class PoiLoader {
         }
     }
 
-    private void loadAndSavePoisFromBackend(MapArea toLoadArea) {
+    private void loadAndSavePoisFromBackend(MapArea toLoadArea, boolean clean) {
         loadingStatus = LOADING_FROM_SERVER;
         publishProgress();
         loadedElements = 0L;
@@ -252,6 +245,10 @@ public class PoiLoader {
 
         loadingStatus = MAPPING_POIS;
         totalsElements = nodeDtos.size();
+
+        if (clean) {
+            cleanArea(toLoadArea);
+        }
 
         int i = 0;
         for (PoiDto dto : nodeDtos) {
@@ -289,25 +286,43 @@ public class PoiLoader {
         return poi;
     }
 
-    private void cleanArea(final MapArea area) {
+    private List<Long> cleanArea(final MapArea area) {
+        final List<Long> poisModified = new ArrayList<>();
         databaseHelper.callInTransaction(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
                 List<Poi> pois = poiDao.queryForAllInRect(area.getBox());
+                List<Poi> poisToDelete = new ArrayList<>();
                 Collection<PoiNodeRef> nodeRefs = new ArrayList<>();
                 Collection<PoiTag> tags = new ArrayList<>();
 
                 for (Poi poi : pois) {
-                    nodeRefs.addAll(poi.getNodeRefs());
-                    tags.addAll(poi.getTags());
+                    if ((!poi.getToDelete() && !poi.getUpdated() && !poi.getOld())) {
+                        nodeRefs.addAll(poi.getNodeRefs());
+                        tags.addAll(poi.getTags());
+                        poisToDelete.add(poi);
+                    } else {
+                        poisModified.add(poi.getId());
+                    }
+
+                    if (tags.size() > 50) {
+                        //avoid too many params in sql
+                        poiNodeRefDao.delete(nodeRefs);
+                        poiTagDao.delete(tags);
+                        poiDao.delete(poisToDelete);
+                        nodeRefs.clear();
+                        tags.clear();
+                        poisToDelete.clear();
+                    }
                 }
 
                 poiNodeRefDao.delete(nodeRefs);
                 poiTagDao.delete(tags);
-                poiDao.delete(pois);
+                poiDao.delete(poisToDelete);
                 return null;
             }
         });
+        return poisModified;
     }
 
     private void killIfNeeded() {

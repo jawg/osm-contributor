@@ -214,12 +214,11 @@ public class MapFragmentPresenter {
         if (viewLatLngBounds != null) {
             if (mapFragment.getZoomLevel() > BuildConfig.ZOOM_MARKER_MIN) {
                 if (shouldReload(viewLatLngBounds) || refreshData || forceRefresh) {
-                    Timber.d("Reloading pois");
                     previousZoom = mapFragment.getZoomLevel();
                     triggerReloadPoiLatLngBounds = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.2);
                     LatLngBounds latLngToLoad = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.2);
                     getPoisAndNotes.unsubscribe();
-                    Timber.e("nico : unsubscribe");
+                    Timber.e("Unsubscribe current loading");
                     getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad), refreshData).execute(new GetPoisSubscriber());
                     mapFragment.displayZoomTooLargeError(false);
                 }
