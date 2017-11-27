@@ -57,7 +57,6 @@ import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
 import io.jawg.osmcontributor.model.events.DatabaseResetFinishedEvent;
-import io.jawg.osmcontributor.model.events.PleaseLoadPoiForArpiEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForCreationEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForEditionEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiTypes;
@@ -66,7 +65,6 @@ import io.jawg.osmcontributor.model.events.PleaseRevertPoiEvent;
 import io.jawg.osmcontributor.model.events.PleaseRevertPoiNodeRefEvent;
 import io.jawg.osmcontributor.model.events.PoiForEditionLoadedEvent;
 import io.jawg.osmcontributor.model.events.PoiTypesLoaded;
-import io.jawg.osmcontributor.model.events.PoisArpiLoadedEvent;
 import io.jawg.osmcontributor.model.events.PoisToUpdateLoadedEvent;
 import io.jawg.osmcontributor.model.events.ResetDatabaseEvent;
 import io.jawg.osmcontributor.model.events.ResetTypeDatabaseEvent;
@@ -220,12 +218,6 @@ public class PoiManager {
     public void onPleaseRevertPoiNodeRefEvent(PleaseRevertPoiNodeRefEvent event) {
         PoiNodeRef poiNodeRef = revertPoiNodeRef(event.getIdToRevert());
         bus.post(new RevertFinishedEvent(poiNodeRef, LocationMarkerView.MarkerType.NODE_REF));
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseLoadPoiForArpiEvent(PleaseLoadPoiForArpiEvent event) {
-        List<Poi> pois = poiDao.queryForAllInRect(event.getBox());
-        bus.post(new PoisArpiLoadedEvent(pois));
     }
 
 

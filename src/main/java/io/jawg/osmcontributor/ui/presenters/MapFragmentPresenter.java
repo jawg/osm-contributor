@@ -220,6 +220,7 @@ public class MapFragmentPresenter {
                     triggerReloadPoiLatLngBounds = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.5);
                     LatLngBounds latLngToLoad = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.75);
                     getPoisAndNotes.unsubscribe();
+                    Timber.e("nico : unsubscribe");
                     getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad), refreshData).execute(new GetPoisSubscriber());
                 }
             }
@@ -264,12 +265,9 @@ public class MapFragmentPresenter {
 
     private void startLoading() {
         ids = new ArrayList<>();
-        mapFragment.showProgressBar(true);
     }
 
     private void loadingFinished() {
-        mapFragment.removeNoteMarkersNotIn(ids);
-        mapFragment.removePoiMarkersNotIn(ids);
         mapFragment.showProgressBar(false);
     }
 
@@ -390,6 +388,7 @@ public class MapFragmentPresenter {
         public void onStart() {
             super.onStart();
             startLoading();
+            request(1);
         }
 
         @Override
@@ -410,17 +409,13 @@ public class MapFragmentPresenter {
             switch (poiLoadingProgress.getLoadingStatus()) {
                 case POI_LOADING:
                     impacteLoadedPoi(poiLoadingProgress.getPois());
+                    Timber.d("xxxx loaded " + poiLoadingProgress.getPois().size());
                     break;
                 case NOTE_LOADING:
                     impacteLoadedNotes(poiLoadingProgress.getNotes());
                     break;
                 case LOADING_FROM_SERVER:
-                    long loaded = poiLoadingProgress.getTotalAreasLoaded();
-                    long toLoad = poiLoadingProgress.getTotalAreasToLoad();
-                    mapFragment.displayAreaProgress(loaded + 1, toLoad);
-                    break;
-                case FINISH:
-                    mapFragment.showProgressBar(false);
+                    displayProgress(poiLoadingProgress);
                     break;
                 case OUT_DATED_DATA:
                     mapFragment.showNeedToRefreshData();
@@ -433,7 +428,26 @@ public class MapFragmentPresenter {
                     poisCount = poiLoadingProgress.getTotalsElements();
                     abortedTooManyPois = true;
                     break;
+                case MAPPING_POIS:
+                    displayProgress(poiLoadingProgress);
+                    break;
+                case FINISH:
+                    mapFragment.removeNoteMarkersNotIn(ids);
+                    mapFragment.removePoiMarkersNotIn(ids);
+                    mapFragment.showProgressBar(false);
+                    Timber.d("xxxx finished " + ids.size());
+                    break;
             }
+            request(1);
+        }
+
+        private void displayProgress(PoiLoadingProgress poiLoadingProgress) {
+            mapFragment.showProgressBar(true);
+            long loaded = poiLoadingProgress.getTotalAreasLoaded();
+            long toLoad = poiLoadingProgress.getTotalAreasToLoad();
+            long loadedElements = poiLoadingProgress.getLoadedElements();
+            long toLoadElements = poiLoadingProgress.getTotalsElements();
+            mapFragment.displayAreaProgress(loaded + 1, toLoad, loadedElements, toLoadElements);
         }
     }
 }

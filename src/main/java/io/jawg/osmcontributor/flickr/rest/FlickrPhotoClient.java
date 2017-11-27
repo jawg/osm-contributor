@@ -19,13 +19,11 @@
 package io.jawg.osmcontributor.flickr.rest;
 
 import java.util.Map;
-
-import retrofit.Callback;
-import retrofit.http.GET;
-import retrofit.http.QueryMap;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.QueryMap;
 
 public interface FlickrPhotoClient {
 
-    @GET("/rest")
-    void setProperties(@QueryMap Map<String, String> params, Callback<String> callback);
+  @GET("/rest") Call<String> setProperties(@QueryMap Map<String, String> params);
 }

@@ -19,26 +19,23 @@
 package io.jawg.osmcontributor.flickr.rest;
 
 import java.util.Map;
-
-import retrofit.Callback;
-import retrofit.http.GET;
-import retrofit.http.QueryMap;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.QueryMap;
 
 public interface FlickrOauthClient {
 
-    /**
-     * First step when trying to authenticate an user. Get an oauth_token to begin the process.
-     * @param params request params
-     * @param response response
-     */
-    @GET("/request_token")
-    void requestToken(@QueryMap Map<String, String> params, Callback<String> response);
+  /**
+   * First step when trying to authenticate an user. Get an oauth_token to begin the process.
+   *
+   * @param params request params
+   */
+  @GET("/request_token") Call<String> requestToken(@QueryMap Map<String, String> params);
 
-    /**
-     * Last step when trying to authenticate an user. Get final token to use Flickr API.
-     * @param params request params
-     * @param response response
-     */
-    @GET("/access_token")
-    void accessToken(@QueryMap Map<String, String> params, Callback<String> response);
+  /**
+   * Last step when trying to authenticate an user. Get final token to use Flickr API.
+   *
+   * @param params request params
+   */
+  @GET("/access_token") Call<String> accessToken(@QueryMap Map<String, String> params);
 }

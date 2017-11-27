@@ -20,24 +20,23 @@ package io.jawg.osmcontributor.rest.clients;
 
 import io.jawg.osmcontributor.rest.dtos.dma.H2GeoDto;
 import io.jawg.osmcontributor.rest.dtos.dma.H2GeoPresetsDto;
-import retrofit.http.GET;
-import retrofit.http.Path;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public interface H2GeoPresetsRestClient {
 
-    /**
-     * Load the list of available profiles.
-     *
-     * @return A wrapper of H2Geo presets descriptor DTO.
-     */
-    @GET("/presets.json")
-    H2GeoPresetsDto loadProfiles();
+  /**
+   * Load the list of available profiles.
+   *
+   * @return A wrapper of H2Geo presets descriptor DTO.
+   */
+  @GET("presets.json") Call<H2GeoPresetsDto> loadProfiles();
 
-    /**
-     * Load a specified profile.
-     *
-     * @param filename Name of the profile file to load.
-     */
-    @GET("/{profile}")
-    H2GeoDto loadProfile(@Path("profile") String filename);
+  /**
+   * Load a specified profile.
+   *
+   * @param filename Name of the profile file to load.
+   */
+  @GET("{profile}") Call<H2GeoDto> loadProfile(@Path("profile") String filename);
 }

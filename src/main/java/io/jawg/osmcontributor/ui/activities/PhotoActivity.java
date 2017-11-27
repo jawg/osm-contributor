@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -88,11 +88,13 @@ import io.jawg.osmcontributor.ui.adapters.ImageAdapter;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyPoiChanges;
 import io.jawg.osmcontributor.utils.ConfigManager;
 import io.jawg.osmcontributor.utils.edition.PoiChanges;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import retrofit.mime.TypedFile;
-import retrofit.mime.TypedString;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import timber.log.Timber;
 
 import static org.apache.http.protocol.HTTP.UTF_8;
 
@@ -115,9 +117,9 @@ public class PhotoActivity extends AppCompatActivity {
 
     private static final String PARAM_OAUTH_PREFIX = "oauth_";
 
-    private static final String FLICKR_API_SERVICES = "https://api.flickr.com/services/rest";
+    private static final String FLICKR_API_SERVICES = "https://api.flickr.com/services/rest/";
 
-    private static final String FLICKR_API_UPLOAD = "https://up.flickr.com/services/upload";
+    private static final String FLICKR_API_UPLOAD = "https://up.flickr.com/services/upload/";
 
     private static final String FLICKR_DEFAULT_TAG = "openstreetmap";
 
@@ -278,7 +280,8 @@ public class PhotoActivity extends AppCompatActivity {
         lastVisiblePos = gridPhotos.getFirstVisiblePosition();
         gridPhotos.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) { }
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
@@ -361,8 +364,10 @@ public class PhotoActivity extends AppCompatActivity {
     /*=========================================*/
     /*---------------EVENTS--------------------*/
     /*=========================================*/
+
     /**
      * Event called when GetFlickrPhotos AsyncTask is done.
+     *
      * @param photosFoundEvent event with photos found
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -401,16 +406,20 @@ public class PhotoActivity extends AppCompatActivity {
         if (flickrUploadClient == null) {
             flickrUploadClient = FlickrUploadUtils.getRestAdapter(oAuthRequest.getParams()).create(FlickrUploadClient.class);
         }
-        TypedFile typedFile = new TypedFile("multipart/form-data", photoFile);
-        flickrUploadClient.upload(typedFile, new Callback<String>() {
+        RequestBody requestFile =
+                RequestBody.create(
+                        MediaType.parse(getContentResolver().getType(Uri.fromFile(photoFile))), photoFile
+                );
+        flickrUploadClient.upload(MultipartBody.Part.createFormData("photo", photoFile.getName(), requestFile)).enqueue(new Callback<String>() {
             @Override
-            public void success(String s, Response response) {
-                onUploadFinishedEvent(ResponseConverter.convertImageId(s));
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    onUploadFinishedEvent(ResponseConverter.convertImageId(response.body()));
+                }
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                Log.e(TAG, error.getBody().toString());
+            public void onFailure(Call<String> call, Throwable t) {
                 if (nbTry < MAX_RETRY_UPLOAD) {
                     nbTry++;
                     uploadPhoto();
@@ -435,17 +444,20 @@ public class PhotoActivity extends AppCompatActivity {
         oauthRequest.initParam(OAuthParams.getOAuthParams()
                 .put(OAuthParams.OAUTH_TOKEN, configManager.getFlickrToken())
                 .put("method", "flickr.photos.getInfo")
-                .put("photo_id", photoId).toMap());
+                .put("photo_id", photoId)
+                .toMap());
         oauthRequest.signRequest(Verb.GET);
-        flickrPhotoClient.setProperties(oauthRequest.getParams(), new Callback<String>() {
+        flickrPhotoClient.setProperties(oauthRequest.getParams()).enqueue(new Callback<String>() {
             @Override
-            public void success(String s, Response response) {
-                defineImageOnPoi(ResponseConverter.convertImageUrl(s));
-                setPhotoLocation(photoId);
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    defineImageOnPoi(ResponseConverter.convertImageUrl(response.body()));
+                    setPhotoLocation(photoId);
+                }
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Call<String> call, Throwable t) {
                 Toast.makeText(PhotoActivity.this, R.string.flickr_communication_failure, Toast.LENGTH_LONG).show();
                 progressDialog.dismiss();
             }
@@ -465,20 +477,23 @@ public class PhotoActivity extends AppCompatActivity {
                 .put("method", "flickr.photos.geo.setLocation")
                 .put("photo_id", photoId)
                 .put("lat", String.valueOf(latitude))
-                .put("lon", String.valueOf(longitude)).toMap());
+                .put("lon", String.valueOf(longitude))
+                .toMap());
         oauthRequest.signRequest(Verb.GET);
-        flickrPhotoClient.setProperties(oauthRequest.getParams(), new Callback<String>() {
+        flickrPhotoClient.setProperties(oauthRequest.getParams()).enqueue(new Callback<String>() {
             @Override
-            public void success(String s, Response response) {
-                try {
-                    setPhotoTag(photoId);
-                } catch (UnsupportedEncodingException e) {
-                    failure(null);
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        setPhotoTag(photoId);
+                    } catch (UnsupportedEncodingException e) {
+                        onFailure(call, new RuntimeException(e));
+                    }
                 }
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Call<String> call, Throwable t) {
                 Toast.makeText(PhotoActivity.this, R.string.picture_sent_failure, Toast.LENGTH_LONG).show();
                 progressDialog.dismiss();
             }
@@ -514,7 +529,8 @@ public class PhotoActivity extends AppCompatActivity {
                 .put(OAuthParams.OAUTH_TOKEN, oauthRequest.getOAuthToken())
                 .put("method", FLICKR_METHOD_ADDTAGS)
                 .put("photo_id", photoId)
-                .put("tags", flickrOsmTag).toMap());
+                .put("tags", flickrOsmTag)
+                .toMap());
 
         oauthRequest.signRequest(Verb.POST);
 
@@ -528,50 +544,50 @@ public class PhotoActivity extends AppCompatActivity {
 
         flickrAddTagClient = FlickrPhotoUtils.getAdapter(oauthParams).create(FlickrAddTagClient.class);
 
-        flickrAddTagClient.addTags(
-                new TypedString(
-                        new StringBuilder("method=")
-                                .append(FLICKR_METHOD_ADDTAGS)
-                                .append("&photo_id=")
-                                .append(photoId)
-                                .append("&tags=")
-                                .append(flickrOsmTag)
-                                .toString()
-                ),
-                new Callback<String>() {
-                    @Override
-                    public void success(String s, Response response) {
-                        Log.d(TAG, s);
+        flickrAddTagClient.addTags(new StringBuilder("method=").append(FLICKR_METHOD_ADDTAGS)
+                .append("&photo_id=")
+                .append(photoId)
+                .append("&tags=")
+                .append(flickrOsmTag)
+                .toString()).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    String responseAsString = response.body();
+                    Log.d(TAG, responseAsString);
 
-                        progressDialog.dismiss();
-                        photoFile.delete();
-                        Toast.makeText(PhotoActivity.this, R.string.picture_sent_success, Toast.LENGTH_LONG).show();
-                        if (ImageAdapter.getPhotoUrlsCachedThumbs(poiId) == null || ImageAdapter.getPhotoUrlsCachedThumbs(poiId).isEmpty()) {
-                            finish();
-                        }
+                    progressDialog.dismiss();
+                    photoFile.delete();
+                    Toast.makeText(PhotoActivity.this, R.string.picture_sent_success, Toast.LENGTH_LONG).show();
+                    if (ImageAdapter.getPhotoUrlsCachedThumbs(poiId) == null || ImageAdapter.getPhotoUrlsCachedThumbs(poiId).isEmpty()) {
+                        finish();
                     }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        if (nbTry < MAX_RETRY_UPLOAD) {
-                            nbTry++;
-                            try {
-                                setPhotoTag(photoId);
-                            } catch (UnsupportedEncodingException e) {
-                                failure(null);
-                            }
-                        } else {
-                            nbTry = 0;
-                            Toast.makeText(PhotoActivity.this, R.string.poi_association_failure, Toast.LENGTH_LONG).show();
-                            progressDialog.dismiss();
-                        }
-                    }
+                } else {
+                    onFailure(call, new Exception());
                 }
-        );
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                if (nbTry < MAX_RETRY_UPLOAD) {
+                    nbTry++;
+                    try {
+                        setPhotoTag(photoId);
+                    } catch (UnsupportedEncodingException e) {
+                        Timber.e(e, e.getMessage());
+                    }
+                } else {
+                    nbTry = 0;
+                    Toast.makeText(PhotoActivity.this, R.string.poi_association_failure, Toast.LENGTH_LONG).show();
+                    progressDialog.dismiss();
+                }
+            }
+        });
     }
 
     /**
      * Associate the newly uploaded flickr picture to the current Poi
+     *
      * @param imageUrl The complete URL to access this picture
      */
     private void defineImageOnPoi(String imageUrl) {
@@ -580,9 +596,7 @@ public class PhotoActivity extends AppCompatActivity {
             Map<String, String> currentPoiTagsMap = new HashMap<String, String>(currentPoi.getTagsMap());
 
             if (currentPoiTagsMap.containsKey(OSM_FLICKR_TAG)) {
-                StringBuilder newFlickrTag = new StringBuilder(currentPoiTagsMap.get(OSM_FLICKR_TAG).trim())
-                        .append(";")
-                        .append(imageUrl);
+                StringBuilder newFlickrTag = new StringBuilder(currentPoiTagsMap.get(OSM_FLICKR_TAG).trim()).append(";").append(imageUrl);
                 currentPoiTagsMap.put(OSM_FLICKR_TAG, newFlickrTag.toString());
             } else {
                 currentPoiTagsMap.put(OSM_FLICKR_TAG, imageUrl);
@@ -599,6 +613,7 @@ public class PhotoActivity extends AppCompatActivity {
     /*=========================================*/
     /*-----------FOR ANDROID 6.0---------------*/
     /*=========================================*/
+
     /**
      * This method must be called if the android version is 6.0 or higher.
      * Check if the app has ACCESS_LOCATION (COARSE and FINE) and WRITE_EXTERNAL_STORAGE.
@@ -613,7 +628,7 @@ public class PhotoActivity extends AppCompatActivity {
 
             // If the user have already allow permission, launch map activity, else, ask the user to allow permission
             if (hasEnabledCameraPerm == PackageManager.PERMISSION_DENIED) {
-                requestPermissions(new String[] {Manifest.permission.CAMERA}, ALLOW_CAMERA_PERMISSION);
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, ALLOW_CAMERA_PERMISSION);
             } else {
                 takePicture();
             }
@@ -623,8 +638,8 @@ public class PhotoActivity extends AppCompatActivity {
     /**
      * This method is a callback. Check the user's answer after requesting permission.
      *
-     * @param requestCode app request code (here, we only handle ALLOW_PERMISSION
-     * @param permissions permissions requested (here, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, WRITE_EXTERNAL_STORAGE)
+     * @param requestCode  app request code (here, we only handle ALLOW_PERMISSION
+     * @param permissions  permissions requested (here, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, WRITE_EXTERNAL_STORAGE)
      * @param grantResults user's decision
      */
     @Override
@@ -647,12 +662,11 @@ public class PhotoActivity extends AppCompatActivity {
      * the app can not work.
      */
     private void permissionNotEnabled() {
-        new LovelyStandardDialog(this)
-                .setTopColorRes(R.color.colorPrimaryDark)
+        new LovelyStandardDialog(this).setTopColorRes(R.color.colorPrimaryDark)
                 .setIcon(R.mipmap.icon)
                 .setTitle(R.string.permissions_title)
                 .setMessage(R.string.permissions_information)
-                .setPositiveButton(android.R.string.ok, null).show();
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
-
 }

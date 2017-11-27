@@ -98,11 +98,11 @@
     <string name="switch_style_default">Default view</string>
     <string name="zoom_more">You need to zoom more in order to download Pois</string>
     <string name="search_poitype_hint">Search a Poi type</string>
-    <string name="title_3d_view">3D view</string>
-    <string name="arpi_not_supported">Your device do not support the 3D view</string>
     <string name="load_poi_network_error">The network is unreachable, it is impossible to load all POIS. (Click to retry)</string>
     <string name="load_poi_too_many_pois">There is too many Pois to display (%1$d Pois the max is %2$d). Please zoom a bit more.</string>
     <string name="load_poi_area_progress">Loading Areas %1$d / %2$d</string>
+    <string name="load_poi_progress">\n Loading Pois %1$d / %2$d</string>
+    <string name="load_poi_calling_osm">\n waiting for Overpass to answered</string>
     <string name="load_poi_area_message">Calling OSM to fetch Pois, it may take a while.</string>
 
 
@@ -151,7 +151,6 @@
     <string name="shared_prefs_expert_mode" translatable="false">SHARED_PREFS_EXPERT</string>
     <string name="shared_prefs_h2geo_version" translatable="false">SHARED_PREFS_H2GEO_VERSION</string>
     <string name="shared_prefs_h2geo_date" translatable="false">SHARED_PREFS_H2GEO_DATE</string>
-    <string name="easter_egg" translatable="false">EASTER_EGG</string>
     <string name="shared_prefs_h2geo_title" translatable="false">H2Geo</string>
     <string name="shared_prefs_login_title" translatable="false">Connection</string>
     <string name="shared_prefs_server" translatable="false">OSM Server</string>
