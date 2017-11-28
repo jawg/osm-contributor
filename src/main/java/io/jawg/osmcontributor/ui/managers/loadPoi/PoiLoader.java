@@ -17,6 +17,7 @@ import io.jawg.osmcontributor.rest.Backend;
 import io.jawg.osmcontributor.rest.NetworkException;
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
 import io.jawg.osmcontributor.rest.dtos.osm.PoiDto;
+import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
 import io.jawg.osmcontributor.rest.mappers.PoiMapper;
 import io.jawg.osmcontributor.ui.utils.BooleanHolder;
 import io.jawg.osmcontributor.utils.Box;
@@ -197,7 +198,10 @@ public class PoiLoader {
         for (OsmDto osmDto : osmDtos) {
             if (osmDto != null) {
                 nodeDtos.addAll(osmDto.getNodeDtoList());
-                nodeDtos.addAll(osmDto.getWayDtoList());
+                List<WayDto> wayDtoList = osmDto.getWayDtoList();
+                if (wayDtoList != null) {
+                    nodeDtos.addAll(wayDtoList);
+                }
             }
         }
 

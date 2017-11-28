@@ -426,7 +426,7 @@ public class PoiManager {
         }
         poiTypeDao.refresh(poi.getType());
         poi.setTags(loadLazyForeignCollection(poi.getTags()));
-        poi.getType().setTags(loadLazyForeignCollection(poi.getType().getTags()));
+        poi.getType().setTags(poi.getType().getTags());
         return poi;
     }
 

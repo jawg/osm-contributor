@@ -5,12 +5,13 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.model.entities.MapArea;
 import io.jawg.osmcontributor.utils.Box;
 
 public class AreasUtils {
-    public static final BigDecimal GRANULARITY_LAT = new BigDecimal(200);
-    public static final BigDecimal GRANULARITY_LNG = new BigDecimal(200);
+    public static final BigDecimal GRANULARITY_LAT = new BigDecimal(BuildConfig.GRANULARITY_AREA);
+    public static final BigDecimal GRANULARITY_LNG = new BigDecimal(BuildConfig.GRANULARITY_AREA);
 
     private AreasUtils() {
         //emtpty
