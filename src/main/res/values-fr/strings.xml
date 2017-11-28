@@ -41,6 +41,8 @@
   <string name="add_tag">Ajouter un tag</string>
   <string name="tag_key">Clé</string>
   <string name="tag_value">Valeur</string>
+  <!--Edit Poi-->
+  <string name="bus_shelter_name">Type d\'arrêt de bus</string>
   <!--Map-->
   <string name="no_poi_name">Ce poi n\'a pas de nom</string>
   <string name="edit_position">Changer la position</string>

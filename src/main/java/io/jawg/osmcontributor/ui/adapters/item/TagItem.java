@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,11 +21,13 @@ package io.jawg.osmcontributor.ui.adapters.item;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class TagItem implements Parcelable {
 
+    private Map<String, String> osmValues = new HashMap<>();
     private String key;
     private String value;
     private boolean mandatory;
@@ -43,7 +45,8 @@ public class TagItem implements Parcelable {
         CONSTANT,           // Use when tag value can't be modified (ex: type amenity)
         NUMBER,                 // Use when tag value is a number (ex: height, floors)
         TEXT,                    // Use by default
-        TIME
+        TIME,
+        SHELTER
     }
 
     private TagItem(TagItemBuilder builder) {
@@ -92,6 +95,14 @@ public class TagItem implements Parcelable {
 
     public String getValue() {
         return value;
+    }
+
+    public void addOsmKeyVAlue(String key, String value) {
+        osmValues.put(key, value);
+    }
+
+    public Map<String, String> getOsmValues() {
+        return osmValues;
     }
 
     public void setValue(String value) {
@@ -187,6 +198,7 @@ public class TagItem implements Parcelable {
         private String value;
         private boolean mandatory;
         private Map<String, String> values = new LinkedHashMap<>();
+        private Map<String, String> osmValues = new HashMap<>();
         private Type type;
         private boolean isConform;
         private boolean show;
@@ -218,6 +230,12 @@ public class TagItem implements Parcelable {
 
         public TagItemBuilder show(boolean show) {
             this.show = show;
+            return this;
+        }
+
+
+        public TagItemBuilder addOsmKeyVAlue(String key, String value) {
+            osmValues.put(key, value);
             return this;
         }
 

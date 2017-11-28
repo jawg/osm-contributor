@@ -50,7 +50,8 @@
     <string name="tag_key">Key</string>
     <string name="tag_value">Value</string>
     <string name="undefined">undefined</string>
-
+    <!--Edit Poi-->
+    <string name="bus_shelter_name">Kind of bus stop</string>
     <!-- Map -->
     <string name="no_poi_name">This POI doesn\'t have a name</string>
     <string name="edit_position">Change position</string>
