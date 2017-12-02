@@ -112,29 +112,30 @@ public class SplashScreenActivity extends AppCompatActivity {
     /*=========================================*/
     /*------------PRIVATE CODE-----------------*/
     /*=========================================*/
+    /**
+     * Check whether all the initialization finished response events are there and we should start MapActivity.
+     *
+     * @return Whether we should start MapActivity.
+     */
+    private boolean shouldStartMapActivity() {
+        return bus.getStickyEvent(DbInitializedEvent.class) != null
+               && bus.getStickyEvent(SplashScreenTimerFinishedEvent.class) != null
+        &&
+                bus.getStickyEvent(LoginInitializedEvent.class) != null;
+    }
 
-  /**
-   * Check whether all the initialization finished response events are there and we should start MapActivity.
-   *
-   * @return Whether we should start MapActivity.
-   */
-  private boolean shouldStartMapActivity() {
-    return bus.getStickyEvent(DbInitializedEvent.class) != null
-        && bus.getStickyEvent(SplashScreenTimerFinishedEvent.class) != null
-        && bus.getStickyEvent(LoginInitializedEvent.class) != null;
-  }
+    /**
+     * Remove all the initialization finished sticky events and start the MapActivity.
+     */
+    private void startMapActivity() {
+        bus.removeStickyEvent(DbInitializedEvent.class);
+        bus.removeStickyEvent(SplashScreenTimerFinishedEvent.class);
 
-  /**
-   * Remove all the initialization finished sticky events and start the MapActivity.
-   */
-  private void startMapActivity() {
-    bus.removeStickyEvent(DbInitializedEvent.class);
-    bus.removeStickyEvent(SplashScreenTimerFinishedEvent.class);
-    bus.removeStickyEvent(LoginInitializedEvent.class);
-    Intent intent = new Intent(this, MapActivity.class);
-    startActivity(intent);
-    finish();
-  }
+        bus.removeStickyEvent(LoginInitializedEvent.class);
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
   private void initEvent() {
     EventCountDownTimer timer = new EventCountDownTimer(3000, 3000, bus);

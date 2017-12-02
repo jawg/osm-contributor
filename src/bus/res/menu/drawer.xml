@@ -45,7 +45,6 @@
             android:title="@string/edit_way"
             android:visible="false"/>
 
-
         <item
             android:id="@+id/switch_style"
             android:title="@string/switch_style_satellite"

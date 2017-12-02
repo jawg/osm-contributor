@@ -90,7 +90,6 @@
   <string name="zoom_more">Vous devez zoomer plus pour pouvoir télécharger les données</string>
   <string name="search_poitype_hint">Chercher un type de Poi</string>
   <string name="title_3d_view">Vue 3D</string>
-  <string name="arpi_not_supported">Votre appareil ne supporte pas la vue 3D</string>
   <!--Strings related to login-->
   <string name="prompt_login">Identifiant</string>
   <string name="prompt_password">Mot de passe</string>

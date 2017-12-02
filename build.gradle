@@ -104,9 +104,6 @@ android {
         versionCode 30
         versionName appVersion
         multiDexEnabled true
-        ndk {
-            abiFilters "armeabi-v7a"
-        }
         vectorDrawables.useSupportLibrary = true
     }
 

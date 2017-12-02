@@ -21,12 +21,6 @@
 -->
 <notices>
     <notice>
-        <name>ArpiGL</name>
-        <url>https://github.com/e-biz/arpi-gl</url>
-        <copyright>Copyright 2015 eBusiness Information</copyright>
-        <license>GNU General Public License 3.0</license>
-    </notice>
-    <notice>
         <name>Butter Knife</name>
         <url>http://jakewharton.github.io/butterknife/</url>
         <copyright>Copyright 2013 Jake Wharton</copyright>
