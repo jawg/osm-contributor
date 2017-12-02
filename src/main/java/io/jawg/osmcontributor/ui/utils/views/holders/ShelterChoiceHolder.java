@@ -24,18 +24,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import org.greenrobot.eventbus.EventBus;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.jawg.osmcontributor.R;
-import io.jawg.osmcontributor.ui.events.edition.PleaseApplyTagChange;
+import io.jawg.osmcontributor.ui.adapters.item.ShelterType;
 
 public class ShelterChoiceHolder extends RecyclerView.ViewHolder {
     public View poiTagLayout;
-
-    private EventBus eventBus;
+    private SelectionListener selectionListener;
 
     @BindView(R.id.shelter)
     ImageView shelterImg;
@@ -48,11 +45,11 @@ public class ShelterChoiceHolder extends RecyclerView.ViewHolder {
     LinearLayout content;
 
 
-    public ShelterChoiceHolder(View v) {
+    public ShelterChoiceHolder(View v, SelectionListener selectionListener) {
         super(v);
-        poiTagLayout = v;
+        this.poiTagLayout = v;
+        this.selectionListener = selectionListener;
         ButterKnife.bind(this, v);
-        eventBus = EventBus.getDefault();
     }
 
     public LinearLayout getContent() {
@@ -77,25 +74,31 @@ public class ShelterChoiceHolder extends RecyclerView.ViewHolder {
 
     @OnClick(R.id.shelter)
     public void onShelterClick(View v) {
-        itemSelected("shelter");
+        itemSelected(ShelterType.SHELTER);
     }
 
     @OnClick(R.id.none)
     public void onNoneClick(View v) {
-        itemSelected("none");
+        itemSelected(ShelterType.NONE);
     }
 
     @OnClick(R.id.pole)
     public void onPoleClick(View v) {
-        itemSelected("pole");
+        itemSelected(ShelterType.POLE);
     }
 
-    private void itemSelected(String shelterType) {
+    private void itemSelected(ShelterType shelterType) {
         // Apply change
-        noneImg.setImageDrawable(itemView.getContext().getResources().getDrawable(shelterType.equals("none") ? R.drawable.no_shelter_on : R.drawable.no_shelter_off));
-        poleImg.setImageDrawable(itemView.getContext().getResources().getDrawable(shelterType.equals("pole") ? R.drawable.pole_shelter_on : R.drawable.pole_shelter_off));
-        shelterImg.setImageDrawable(itemView.getContext().getResources().getDrawable(shelterType.equals("shelter") ? R.drawable.has_shelter_on : R.drawable.has_shelter_off));
+        noneImg.setImageDrawable(itemView.getContext().getResources().getDrawable(shelterType.equals(ShelterType.NONE) ? R.drawable.no_shelter_on : R.drawable.no_shelter_off));
+        poleImg.setImageDrawable(itemView.getContext().getResources().getDrawable(shelterType.equals(ShelterType.POLE) ? R.drawable.pole_shelter_on : R.drawable.pole_shelter_off));
+        shelterImg.setImageDrawable(itemView.getContext().getResources().getDrawable(shelterType.equals(ShelterType.SHELTER) ? R.drawable.has_shelter_on : R.drawable.has_shelter_off));
 
-        eventBus.post(new PleaseApplyTagChange("shelter", shelterType));
+        if (selectionListener != null) {
+            selectionListener.shelterSelected(shelterType);
+        }
+    }
+
+    public interface SelectionListener {
+        void shelterSelected(ShelterType shelterType);
     }
 }

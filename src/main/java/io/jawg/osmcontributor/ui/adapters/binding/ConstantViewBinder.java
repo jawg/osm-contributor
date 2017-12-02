@@ -6,8 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.lang.ref.WeakReference;
-
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
@@ -20,11 +18,8 @@ import io.jawg.osmcontributor.ui.utils.views.holders.TagItemConstantViewHolder;
 
 public class ConstantViewBinder implements TagViewBinder<TagItemConstantViewHolder> {
 
-    private WeakReference<Activity> activity;
-
     public ConstantViewBinder(Activity activity) {
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
-        this.activity = new WeakReference<>(activity);
     }
 
     @Override

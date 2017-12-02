@@ -11,6 +11,8 @@ import java.lang.ref.WeakReference;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
+import io.jawg.osmcontributor.ui.adapters.item.ShelterTagItem;
+import io.jawg.osmcontributor.ui.adapters.item.ShelterType;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.utils.views.holders.ShelterChoiceHolder;
 
@@ -33,14 +35,15 @@ public class ShelterChoiceViewBinder extends CheckedTagViewBinder<ShelterChoiceH
         this.content = holder.getContent();
         this.tagItem = tagItem;
 
+        ShelterType shelterType = ((ShelterTagItem) tagItem).getShelterType();
         // if Tag is show=false, hide it
         if (!tagItem.isShow()) {
             ((RelativeLayout) holder.getContent().getParent()).setVisibility(View.GONE);
         }
 
-        holder.getNoneImg().setImageDrawable(activity.get().getResources().getDrawable(tagItem.getValue().equals("none") ? R.drawable.no_shelter_on : R.drawable.no_shelter_off));
-        holder.getPoleImg().setImageDrawable(activity.get().getResources().getDrawable(tagItem.getValue().equals("pole") ? R.drawable.pole_shelter_on : R.drawable.pole_shelter_off));
-        holder.getShelterImg().setImageDrawable(activity.get().getResources().getDrawable(tagItem.getValue().equals("shelter") ? R.drawable.has_shelter_on : R.drawable.has_shelter_off));
+        holder.getNoneImg().setImageDrawable(activity.get().getResources().getDrawable(shelterType.equals(ShelterType.NONE) ? R.drawable.no_shelter_on : R.drawable.no_shelter_off));
+        holder.getPoleImg().setImageDrawable(activity.get().getResources().getDrawable(shelterType.equals(ShelterType.POLE) ? R.drawable.pole_shelter_on : R.drawable.pole_shelter_off));
+        holder.getShelterImg().setImageDrawable(activity.get().getResources().getDrawable(shelterType.equals(ShelterType.SHELTER) ? R.drawable.has_shelter_on : R.drawable.has_shelter_off));
 
         // run validation process
         showValidation();
@@ -49,7 +52,15 @@ public class ShelterChoiceViewBinder extends CheckedTagViewBinder<ShelterChoiceH
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         View booleanChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_shelter, parent, false);
-        return new ShelterChoiceHolder(booleanChoiceLayout);
+        return new ShelterChoiceHolder(booleanChoiceLayout, new ShelterChoiceHolder.SelectionListener() {
+            @Override
+            public void shelterSelected(ShelterType shelterType) {
+                if (tagItem instanceof ShelterTagItem) {
+                    ((ShelterTagItem) tagItem).setShelterType(shelterType);
+                }
+            }
+        }
+        );
     }
 
     @Override

@@ -18,23 +18,20 @@
  */
 package io.jawg.osmcontributor.ui.adapters.item;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class TagItem implements Parcelable {
+public abstract class TagItem {
 
-    private Map<String, String> osmValues = new HashMap<>();
-    private String key;
-    private String value;
-    private boolean mandatory;
-    private Map<String, String> values = new LinkedHashMap<>();
-    private Type type;
-    private boolean isConform;
-    private boolean show;
+    protected String key;
+    protected String value;
+    protected String oldValue;
+    protected boolean mandatory;
+    protected Map<String, String> values = new LinkedHashMap<>();
+    protected Type type;
+    protected boolean isConform;
+    protected boolean show;
 
     /**
      * Use the best UI widget based on the tag name and possible values.
@@ -47,34 +44,6 @@ public class TagItem implements Parcelable {
         TEXT,                    // Use by default
         TIME,
         SHELTER
-    }
-
-    private TagItem(TagItemBuilder builder) {
-        this.key = builder.key;
-        this.value = builder.value;
-        this.values = builder.values;
-        this.mandatory = builder.mandatory;
-        this.type = builder.type;
-        this.isConform = builder.isConform;
-        this.show = builder.show;
-    }
-
-    public TagItem(Parcel in) {
-        this.key = in.readString();
-        this.value = in.readString();
-        this.mandatory = in.readByte() != 0;
-        try {
-            this.type = Type.valueOf(in.readString());
-        } catch (IllegalArgumentException x) {
-            this.type = null;
-        }
-
-        final int size = in.readInt();
-
-        for (int i = 0; i < size; i++) {
-            final String value = in.readString();
-            this.values.put(value, value);
-        }
     }
 
     public Map<String, String> getValues() {
@@ -95,14 +64,6 @@ public class TagItem implements Parcelable {
 
     public String getValue() {
         return value;
-    }
-
-    public void addOsmKeyVAlue(String key, String value) {
-        osmValues.put(key, value);
-    }
-
-    public Map<String, String> getOsmValues() {
-        return osmValues;
     }
 
     public void setValue(String value) {
@@ -137,40 +98,32 @@ public class TagItem implements Parcelable {
         this.show = show;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public Type getType() {
+        return type;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(key);
-        dest.writeString(value);
-        dest.writeByte((byte) (mandatory ? 1 : 0));
-        dest.writeString((type == null) ? "" : type.toString());
-
-        if (values != null) {
-            dest.writeInt(values.size());
-            for (String autocomplete : values.values()) {
-                dest.writeString(autocomplete);
-            }
-        } else {
-            dest.writeInt(0);
-        }
+    public void setType(Type type) {
+        this.type = type;
     }
 
+    public String getOldValue() {
+        return oldValue;
+    }
 
-    public static final Parcelable.Creator<TagItem> CREATOR = new Parcelable.Creator<TagItem>() {
-        @Override
-        public TagItem createFromParcel(Parcel source) {
-            return new TagItem(source);
-        }
+    public void setOldValue(String oldValue) {
+        this.oldValue = oldValue;
+    }
 
-        @Override
-        public TagItem[] newArray(int size) {
-            return new TagItem[size];
+    public boolean hasChanged() {
+        if (value == null && oldValue == null) {
+            return true;
         }
-    };
+        if (value == null) {
+            return false;
+        }
+        return value.compareTo(oldValue) != 0;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -192,10 +145,22 @@ public class TagItem implements Parcelable {
         return key != null ? key.hashCode() : 0;
     }
 
+    protected TagItem(TagItemBuilder builder) {
+        this.key = builder.key;
+        this.value = builder.value;
+        this.values = builder.values;
+        this.mandatory = builder.mandatory;
+        this.type = builder.type;
+        this.isConform = builder.isConform;
+        this.show = builder.show;
+        this.oldValue = builder.oldValue;
+    }
 
-    public static class TagItemBuilder {
+
+    public abstract static class TagItemBuilder<T extends TagItem> {
         private String key;
         private String value;
+        private String oldValue;
         private boolean mandatory;
         private Map<String, String> values = new LinkedHashMap<>();
         private Map<String, String> osmValues = new HashMap<>();
@@ -206,6 +171,17 @@ public class TagItem implements Parcelable {
         public TagItemBuilder(String key, String value) {
             this.key = key;
             this.value = value;
+            this.oldValue = value;
+        }
+
+        public TagItemBuilder value(String value) {
+            this.value = value;
+            return this;
+        }
+
+        public TagItemBuilder oldValue(String oldValue) {
+            this.oldValue = oldValue;
+            return this;
         }
 
         public TagItemBuilder mandatory(boolean mandatory) {
@@ -234,13 +210,14 @@ public class TagItem implements Parcelable {
         }
 
 
-        public TagItemBuilder addOsmKeyVAlue(String key, String value) {
+        public TagItemBuilder addOsmKeyValue(String key, String value) {
             osmValues.put(key, value);
             return this;
         }
 
-        public TagItem build() {
-            return new TagItem(this);
-        }
+        public abstract T build();
     }
+
+
+    public abstract Map<String, String> getOsmValues();
 }
