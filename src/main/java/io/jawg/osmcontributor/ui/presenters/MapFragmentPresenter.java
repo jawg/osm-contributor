@@ -223,6 +223,7 @@ public class MapFragmentPresenter {
                     mapFragment.displayZoomTooLargeError(false);
                 }
             } else {
+                forceRefreshPoi = true;
                 cleanAllZoomTooLarge();
             }
         }
@@ -405,6 +406,9 @@ public class MapFragmentPresenter {
             loadingFinished();
             mapFragment.displayNetworkError(hasEncounterNetworkError);
             mapFragment.displayTooManyPois(abortedTooManyPois, poisCount, BuildConfig.MAX_POIS_ON_MAP);
+            if (abortedTooManyPois || hasEncounterNetworkError) {
+                forceRefreshPoi = true;
+            }
         }
 
         @Override

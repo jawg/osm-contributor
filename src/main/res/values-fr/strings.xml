@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!--
+<?xml version='1.0' encoding='UTF-8'?><!--
 
     Copyright (C) 2016 eBusiness Information
 
@@ -20,251 +19,259 @@
 
 -->
 <resources>
-  <string name="title_activity_edit_poi">Edition de poi</string>
-  <string name="location_not_found">Impossible de trouver votre position</string>
-  <string name="undefined">non défini</string>
-  <!--EDITION-->
-  <string name="addValueDialogTitle">Modifier la valeur de : \"%1$s\"</string>
-  <string name="addValueDialogAdd">Modifier</string>
-  <string name="addValueDialogCancel">Annuler</string>
-  <string name="uncompleted_fields">Certains champs ne sont pas remplis</string>
-  <string name="not_any_changes">Aucun champs n\'a été modifié</string>
-  <string name="quit_edition_title">Quitter l\'édition</string>
-  <string name="quit_edition_message">Etes-vous sûr de vouloir abandonner vos modifications?</string>
-  <string name="quit_edition_positive_btn">Oui</string>
-  <string name="quit_edition_negative_btn">Annuler</string>
-  <string name="no_values_yet">Pas encore de valeur</string>
-  <string name="creation_title">Création</string>
-  <string name="edition_title">Edition</string>
-  <string name="required">Obligatoire</string>
-  <string name="optional">Facultatif</string>
-  <string name="add_tag">Ajouter un tag</string>
-  <string name="tag_key">Clé</string>
-  <string name="tag_value">Valeur</string>
+    <string name="title_activity_edit_poi">Edition de poi</string>
+    <string name="location_not_found">Impossible de trouver votre position</string>
+    <string name="undefined">non défini</string>
+    <!--EDITION-->
+    <string name="addValueDialogTitle">Modifier la valeur de : \"%1$s\"</string>
+    <string name="addValueDialogAdd">Modifier</string>
+    <string name="addValueDialogCancel">Annuler</string>
+    <string name="uncompleted_fields">Certains champs ne sont pas remplis</string>
+    <string name="not_any_changes">Aucun champs n\'a été modifié</string>
+    <string name="quit_edition_title">Quitter l\'édition</string>
+    <string name="quit_edition_message">Etes-vous sûr de vouloir abandonner vos modifications?</string>
+    <string name="quit_edition_positive_btn">Oui</string>
+    <string name="quit_edition_negative_btn">Annuler</string>
+    <string name="no_values_yet">Pas encore de valeur</string>
+    <string name="creation_title">Création</string>
+    <string name="edition_title">Edition</string>
+    <string name="required">Obligatoire</string>
+    <string name="optional">Facultatif</string>
+    <string name="add_tag">Ajouter un tag</string>
+    <string name="tag_key">Clé</string>
+    <string name="tag_value">Valeur</string>
     <!--Edit Poi-->
     <string name="bus_shelter_name">Type d\'arrêt de bus</string>
     <!--Map-->
-  <string name="no_poi_name">Ce poi n\'a pas de nom</string>
-  <string name="edit_position">Changer la position</string>
-  <string name="edit_poi">Editer le poi</string>
-  <string name="duplicate_poi">Dupliquer</string>
-  <plurals name="update_done">
-    <item quantity="one">%1$s point mis à jour dans OpenStreetMap</item>
-    <item quantity="other">%1$s points mis à jour dans OpenStreetMap</item>
-  </plurals>
-  <plurals name="delete_done">
-    <item quantity="one">%1$s point supprimé dans OpenStreetMap</item>
-    <item quantity="other">%1$s points supprimés dans OpenStreetMap</item>
-  </plurals>
-  <plurals name="noderef_moved">
-    <item quantity="one">%1$s point mis à jour dans OpenStreetMap, merci de synchroniser la carte dans quelques minutes pour voir vos changements.</item>
-    <item quantity="other">%1$s points mis à jour dans OpenStreetMap, merci de synchroniser la carte dans quelques minutes pour voir vos changements.</item>
-  </plurals>
-  <plurals name="add_done">
-    <item quantity="one">%1$s point ajouté dans OpenStreetMap.</item>
-    <item quantity="other">%1$s points ajoutés dans OpenStreetMap.</item>
-  </plurals>
-  <string name="couldnt_connect_retrofit">Echec de l\'ajout/mise à jour. Veuillez vérifier vos identifiants OSM.</string>
-  <string name="couldnt_create_node">Une erreur s\'est produite durant la création, vos modifications ont été annulées.</string>
-  <string name="couldnt_update_node">Une erreur s\'est produite durant la mise à jour, vos modifications ont été annulées.</string>
-  <string name="couldnt_download_retrofit">Impossible de récupérer les POIs. Vérifiez votre connexion.</string>
-  <string name="couldnt_upload_retrofit">Impossible d\'uploader vos POIs. Vérifiez votre connexion.</string>
-  <string name="edit_poi_position">Modification de position</string>
-  <string name="edit_way_title">Edition de chemins</string>
-  <string name="edit_noderef_position_title">Edition de position</string>
-  <string name="poi_creation">Création de poi</string>
-  <string name="note_creation">Création de note</string>
-  <string name="delete_poi">Supprimer le poi</string>
-  <string name="add_poi">Ajouter un Poi</string>
-  <string name="delete_poi_title">Suppression de poi</string>
-  <string name="delete_poi_confirm_message">Voulez-vous vraiment supprimer ce poi?</string>
-  <string name="delete_poi_positive_btn">Supprimer</string>
-  <string name="delete_poi_negative_btn">Annuler</string>
-  <string name="point_modification_forbidden">Cette version ne permet pas la modification de points</string>
-  <string name="licenses_title">Licences</string>
-  <string name="zoom_to_edit">Cette zone est trop grande. Veuillez zoomer plus.</string>
-  <string name="download_in_progress">Tous les pois et notes de la zone affichée sont en cours de rechargement</string>
-  <string name="switch_style_satellite">Vue Satellite</string>
-  <string name="switch_style_mapnik">Style Mapnik</string>
-  <string name="switch_style_default">Réinitialiser la vue</string>
-  <string name="zoom_more">Vous devez zoomer plus pour pouvoir télécharger les données</string>
-  <string name="search_poitype_hint">Chercher un type de Poi</string>
-  <string name="title_3d_view">Vue 3D</string>
-  <!--Strings related to login-->
-  <string name="prompt_login">Identifiant</string>
-  <string name="prompt_password">Mot de passe</string>
-  <string name="splash_screen_message">Initialisation en cours…</string>
-  <!--Preferences-->
-  <string name="title_activity_my_preferences">Paramètres</string>
-  <string name="summary_login">Veuillez saisir votre identifiant OSM</string>
-  <string name="summary_password">Veuillez saisir votre mot de passe</string>
-  <string name="error_login">Impossible de se connecter avec ces identifiants. Etes-vous sûr d\'avoir les droits d\'édition?</string>
-  <string name="error_first_login">Impossible de se connecter avec ces identifiants.</string>
-  <string name="valid_login">Connexion réussie</string>
-  <string name="reset_title">Réinitialiser la base de données</string>
-  <string name="reset_summary">Supprime tous les Pois de la base de données</string>
-  <string name="reset_type_title">Réinitialiser les types de poi</string>
-  <string name="reset_type_summary">Réinitialise les types de poi et supprime tous les pois de la base de données</string>
-  <string name="expert_mode_summary">Vous permet de gérer les types de pois</string>
-  <string name="expert_mode_title">Mode expert</string>
-  <string name="reset_dialog_message">Etes-vous sûr de vouloir réinitialiser la base de données? Tous vos changements non sauvegardés seront perdus.</string>
-  <string name="reset_dialog_positive_button">Oui</string>
-  <string name="reset_dialog_negative_button">Annuler</string>
-  <string name="reset_success">La base de données a été réinitialisée avec succès</string>
-  <string name="reset_failure">Une erreur est survenue durant la réinitialisation</string>
-  <string name="expert_mode_dialog">Vous entrez dans le mode expert. Vous allez pouvoir créer, éditer et supprimer les types de poi ainsi qu\'éditer entièrement les Pois.</string>
-  <string name="ok">OK</string>
-  <!--Shared preferences-->
-  <string name="shared_prefs_google_connection">Avec Gmail</string>
-  <!--Login-->
-  <string name="login_google_error">Vous ne pouvez pas vous connecter avec votre compte Google.\n
+    <string name="no_poi_name">Ce poi n\'a pas de nom</string>
+    <string name="edit_position">Changer la position</string>
+    <string name="edit_poi">Editer le poi</string>
+    <string name="duplicate_poi">Dupliquer</string>
+    <plurals name="update_done">
+        <item quantity="one">%1$s point mis à jour dans OpenStreetMap</item>
+        <item quantity="other">%1$s points mis à jour dans OpenStreetMap</item>
+    </plurals>
+    <plurals name="delete_done">
+        <item quantity="one">%1$s point supprimé dans OpenStreetMap</item>
+        <item quantity="other">%1$s points supprimés dans OpenStreetMap</item>
+    </plurals>
+    <plurals name="noderef_moved">
+        <item quantity="one">%1$s point mis à jour dans OpenStreetMap, merci de synchroniser la carte dans quelques minutes pour voir vos changements.</item>
+        <item quantity="other">%1$s points mis à jour dans OpenStreetMap, merci de synchroniser la carte dans quelques minutes pour voir vos changements.</item>
+    </plurals>
+    <plurals name="add_done">
+        <item quantity="one">%1$s point ajouté dans OpenStreetMap.</item>
+        <item quantity="other">%1$s points ajoutés dans OpenStreetMap.</item>
+    </plurals>
+    <string name="couldnt_connect_retrofit">Echec de l\'ajout/mise à jour. Veuillez vérifier vos identifiants OSM.</string>
+    <string name="couldnt_create_node">Une erreur s\'est produite durant la création, vos modifications ont été annulées.</string>
+    <string name="couldnt_update_node">Une erreur s\'est produite durant la mise à jour, vos modifications ont été annulées.</string>
+    <string name="couldnt_download_retrofit">Impossible de récupérer les POIs. Vérifiez votre connexion.</string>
+    <string name="couldnt_upload_retrofit">Impossible d\'uploader vos POIs. Vérifiez votre connexion.</string>
+    <string name="edit_poi_position">Modification de position</string>
+    <string name="edit_way_title">Edition de chemins</string>
+    <string name="edit_noderef_position_title">Edition de position</string>
+    <string name="poi_creation">Création de poi</string>
+    <string name="note_creation">Création de note</string>
+    <string name="delete_poi">Supprimer le poi</string>
+    <string name="add_poi">Ajouter un Poi</string>
+    <string name="delete_poi_title">Suppression de poi</string>
+    <string name="delete_poi_confirm_message">Voulez-vous vraiment supprimer ce poi?</string>
+    <string name="delete_poi_positive_btn">Supprimer</string>
+    <string name="delete_poi_negative_btn">Annuler</string>
+    <string name="point_modification_forbidden">Cette version ne permet pas la modification de points</string>
+    <string name="licenses_title">Licences</string>
+    <string name="zoom_to_edit">Cette zone est trop grande. Veuillez zoomer plus.</string>
+    <string name="download_in_progress">Tous les pois et notes de la zone affichée sont en cours de rechargement</string>
+    <string name="switch_style_satellite">Vue Satellite</string>
+    <string name="switch_style_mapnik">Style Mapnik</string>
+    <string name="switch_style_default">Réinitialiser la vue</string>
+    <string name="zoom_more">Vous devez zoomer plus pour pouvoir télécharger les données</string>
+    <string name="search_poitype_hint">Chercher un type de Poi</string>
+    <string name="title_3d_view">Vue 3D</string>
+    <!--Strings related to login-->
+    <string name="prompt_login">Identifiant</string>
+    <string name="prompt_password">Mot de passe</string>
+    <string name="splash_screen_message">Initialisation en cours…</string>
+    <string name="load_poi_zoom_banner">Veuillez zoomer sur la zone ou vous souhaitez contributer.</string>
+    <string name="load_poi_network_error">Un problème réseau est survenu, il est impossible de charger les POIS. (Cliquez pour réessayer)</string>
+    <string name="load_poi_too_many_pois">Il y a trop de POIS à afficher (%1$d Pois, max : %2$d). Veuillez zoomer.</string>
+    <string name="load_poi_area_progress">Chargement de la zone %1$d / %2$d</string>
+    <string name="load_poi_progress">\n Chargement des Pois %1$d / %2$d</string>
+    <string name="load_poi_calling_osm">\n En attente des données d\'Overpass</string>
+    <string name="load_poi_area_message">Chargement des données depuis OSM, l\'opération peux prendre queleques minutes.</string>
+
+    <!--Preferences-->
+    <string name="title_activity_my_preferences">Paramètres</string>
+    <string name="summary_login">Veuillez saisir votre identifiant OSM</string>
+    <string name="summary_password">Veuillez saisir votre mot de passe</string>
+    <string name="error_login">Impossible de se connecter avec ces identifiants. Etes-vous sûr d\'avoir les droits d\'édition?</string>
+    <string name="error_first_login">Impossible de se connecter avec ces identifiants.</string>
+    <string name="valid_login">Connexion réussie</string>
+    <string name="reset_title">Réinitialiser la base de données</string>
+    <string name="reset_summary">Supprime tous les Pois de la base de données</string>
+    <string name="reset_type_title">Réinitialiser les types de poi</string>
+    <string name="reset_type_summary">Réinitialise les types de poi et supprime tous les pois de la base de données</string>
+    <string name="expert_mode_summary">Vous permet de gérer les types de pois</string>
+    <string name="expert_mode_title">Mode expert</string>
+    <string name="reset_dialog_message">Etes-vous sûr de vouloir réinitialiser la base de données? Tous vos changements non sauvegardés seront perdus.</string>
+    <string name="reset_dialog_positive_button">Oui</string>
+    <string name="reset_dialog_negative_button">Annuler</string>
+    <string name="reset_success">La base de données a été réinitialisée avec succès</string>
+    <string name="reset_failure">Une erreur est survenue durant la réinitialisation</string>
+    <string name="expert_mode_dialog">Vous entrez dans le mode expert. Vous allez pouvoir créer, éditer et supprimer les types de poi ainsi qu\'éditer entièrement les Pois.</string>
+    <string name="ok">OK</string>
+    <!--Shared preferences-->
+    <string name="shared_prefs_google_connection">Avec Gmail</string>
+    <!--Login-->
+    <string name="login_google_error">Vous ne pouvez pas vous connecter avec votre compte Google.\n
         Cependant, vous pouvez vous connecter avec en utilisant votre nom d’utilisateur et votre mot de passe.\n\n
         Si vous souhaitez vous connecter avec votre compte Google, associez le compte avec votre ID dans vos préférences utilisateur.</string>
-  <string name="login_title">Connexion</string>
-  <!--Tuto-->
-  <string name="tuto_text_press_create">Cliquez ici pour ajouter un nouveau point</string>
-  <string name="tuto_text_choose_type">Choisissez le type du Poi que vous souhaitez ajouter</string>
-  <string name="tuto_text_confirm_position_creation">Cliquez pour confirmer la position, tout retour annulera votre création.</string>
-  <string name="tuto_text_confirm_creation">Cliquez pour finaliser la création ou l\'édition.</string>
-  <string name="replay_tuto">Rejouer le tutoriel</string>
-  <string name="replay_tuto_info">Le tutoriel sera affiché à nouveau</string>
-  <string name="tuto_text_synchronized">Les icônes gris n\'ont pas encore été envoyés au server</string>
-  <string name="tuto_text_clic_to_synchronized">Vous pouvez décider d\'envoyer vos changements à tout moment depuis ce menu</string>
-  <string name="tuto_text_cancel_sync">Vous pouvez annuler un ou plusieurs changements ici</string>
-  <string name="tuto_text_comment">Avant de sauver, merci de commenter les changements effectués</string>
-  <string name="tuto_text_confirm_sync">Vous pouvez valider et envoyer vos changements</string>
-  <!--note-->
-  <string name="Note">Note</string>
-  <string name="comment_text_hint">Entrez un commentaire</string>
-  <string name="comment_label">Commentaire</string>
-  <string name="action_label">Action</string>
-  <string name="quit_note_title">Quitter l\'édition de commentaires</string>
-  <string name="quit_note_message">Etes-vous sûr de vouloir abandonner vos modifications?</string>
-  <string name="quit_note_positive_btn">Oui</string>
-  <string name="quit_note_negative_btn">annuler</string>
-  <string name="comment_text_cant_be_null">Veuillez saisir un commentaire</string>
-  <string name="comment_synchronizing">Veuillez attendre que la synchronisation soit finie.</string>
-  <string name="save_note">Envoyer</string>
-  <string name="synchronizing">Synchronisation en cours…</string>
-  <string name="note_already_closed">La note est déjà fermé</string>
-  <string name="title_activity_note">Note</string>
-  <string name="note">Note</string>
-  <string name="title_note">Note (%s)</string>
-  <string name="title_creation_note">Note</string>
-  <string name="create_note">Créer</string>
-  <string name="cancel">Annuler</string>
-  <string name="note_spinner_element">Note</string>
-  <string name="failed_apply_comment">Echec lors de l\'ajout du commentaire, vérifiez votre connexion et vos identifiants</string>
-  <!--Filter drawer-->
-  <string name="filters">Filtres</string>
-  <string name="filter_notes">Notes</string>
-  <string name="filter_note_open">Ouverte</string>
-  <string name="filter_note_closed">Fermée</string>
-  <string name="filter_pois">POIs</string>
-  <string name="filter_poi_all">Tous</string>
-  <!--Profile-->
-  <string name="profile_load">Charger un profil</string>
-  <string name="profile_refresh_error">Une erreur s\'est produite pendant le rafraichissement des profils</string>
-  <!--Saving-->
-  <string name="save_now">Sauvegarder…</string>
-  <string name="title_activity_upload">Sauvegarde des modifications</string>
-  <string name="couldnt_save_connectivity">Impossible d\'envoyer vos modifications. Vérifiez votre connexion</string>
-  <string name="saving">Sauvegarde en cours…</string>
-  <!--Update-->
-  <string name="update_title">Ajouter un commentaire à vos modifications:</string>
-  <string name="need_a_comment">Le commentaire ne peut pas être vide</string>
-  <string name="nothing_to_update">Vous n\'avez rien à mettre à jour</string>
-  <string name="nothing_selected">Vous n\' avez rien selectionné</string>
-  <string name="created">Créé</string>
-  <string name="deleted">Supprimé</string>
-  <string name="updated">Modifié</string>
-  <string name="undefined_button_text">non renseigné</string>
-  <!--About-->
-  <string name="title_activity_about">A propos de nous</string>
-  <string name="about_title">A propos</string>
-  <!--edit way-->
-  <string name="edit_way">Editer les chemins</string>
-  <!--POI types/tags-->
-  <string name="manage_poi_types">Gérer les types de Poi</string>
-  <string name="manage_poi_tags">Gérer les tags de Poi</string>
-  <plurals name="tag_number">
-    <item quantity="one">1 tag</item>
-    <item quantity="other">%1$s tags</item>
-  </plurals>
-  <string name="new_poi_type">Nouveau type</string>
-  <string name="edit_poi_name">Editer le nom du type</string>
-  <string name="new_poi_tag">Nouveau tag</string>
-  <string name="edit_poi_type">Les types ne peuvent pas être modifiés</string>
-  <string name="edit_poi_tag">Modifier le tag</string>
-  <string name="poi_type_name_hint">nom</string>
-  <string name="poi_tag_key_hint">clé</string>
-  <string name="poi_tag_value_hint">valeur</string>
-  <string name="poi_tag_mandatory">Obligatoire</string>
-  <string name="poi_tag_days">Jours</string>
-  <string name="poi_tag_months">Mois</string>
-  <string name="poi_tag_hours">Horaires d\'ouverture</string>
-  <string name="hours">Heures</string>
-  <string name="day_monday_letter">L</string>
-  <string name="day_tuesday_letter">Ma</string>
-  <string name="day_wednesday_letter">Me</string>
-  <string name="day_thursday_letter">J</string>
-  <string name="day_friday_letter">V</string>
-  <string name="day_saturday_letter">S</string>
-  <string name="day_sunday_letter">D</string>
-  <!--Snackbar-->
-  <string name="item_removed">\"%1$s\" a été supprimé</string>
-  <string name="undo">Annuler</string>
-  <!--Upload-->
-  <string name="position">Position :</string>
-  <string name="changed">Modifiée</string>
-  <string name="revert">Annuler</string>
-  <string name="revert_snack_bar">Suppression des modifications</string>
-  <string name="undo_snack_bar">Annuler</string>
-  <string name="node_ref_title">Point</string>
-  <!--Easter Egg-->
-  <string name="easter_egg_activation">La 3D activé tu as!</string>
-  <!--Android 6.0 dialog messages-->
-  <string name="permissions_title">Permissions nécessaires</string>
-  <string name="permissions_information">L\'accès à la localisation et en écriture au téléphone sont nécessaires pour gérer la carte et la base de données. Nous ne récupérons aucunes données personnelles sur votre téléphone. En refusant ces deux permissions, l\'application ne peut fonctionner correctement.</string>
-  <string name="permissions_information_gps">Vous avez refusé l\'accès au GPS. Vous allez être redirigé vers les paramètres de l\'application</string>
+    <string name="login_title">Connexion</string>
+    <!--Tuto-->
+    <string name="tuto_text_press_create">Cliquez ici pour ajouter un nouveau point</string>
+    <string name="tuto_text_choose_type">Choisissez le type du Poi que vous souhaitez ajouter</string>
+    <string name="tuto_text_confirm_position_creation">Cliquez pour confirmer la position, tout retour annulera votre création.</string>
+    <string name="tuto_text_confirm_creation">Cliquez pour finaliser la création ou l\'édition.</string>
+    <string name="replay_tuto">Rejouer le tutoriel</string>
+    <string name="replay_tuto_info">Le tutoriel sera affiché à nouveau</string>
+    <string name="tuto_text_synchronized">Les icônes gris n\'ont pas encore été envoyés au server</string>
+    <string name="tuto_text_clic_to_synchronized">Vous pouvez décider d\'envoyer vos changements à tout moment depuis ce menu</string>
+    <string name="tuto_text_cancel_sync">Vous pouvez annuler un ou plusieurs changements ici</string>
+    <string name="tuto_text_comment">Avant de sauver, merci de commenter les changements effectués</string>
+    <string name="tuto_text_confirm_sync">Vous pouvez valider et envoyer vos changements</string>
+    <!--note-->
+    <string name="Note">Note</string>
+    <string name="comment_text_hint">Entrez un commentaire</string>
+    <string name="comment_label">Commentaire</string>
+    <string name="action_label">Action</string>
+    <string name="quit_note_title">Quitter l\'édition de commentaires</string>
+    <string name="quit_note_message">Etes-vous sûr de vouloir abandonner vos modifications?</string>
+    <string name="quit_note_positive_btn">Oui</string>
+    <string name="quit_note_negative_btn">annuler</string>
+    <string name="comment_text_cant_be_null">Veuillez saisir un commentaire</string>
+    <string name="comment_synchronizing">Veuillez attendre que la synchronisation soit finie.</string>
+    <string name="save_note">Envoyer</string>
+    <string name="synchronizing">Synchronisation en cours…</string>
+    <string name="note_already_closed">La note est déjà fermé</string>
+    <string name="title_activity_note">Note</string>
+    <string name="note">Note</string>
+    <string name="title_note">Note (%s)</string>
+    <string name="title_creation_note">Note</string>
+    <string name="create_note">Créer</string>
+    <string name="cancel">Annuler</string>
+    <string name="note_spinner_element">Note</string>
+    <string name="failed_apply_comment">Echec lors de l\'ajout du commentaire, vérifiez votre connexion et vos identifiants</string>
+    <!--Filter drawer-->
+    <string name="filters">Filtres</string>
+    <string name="filter_notes">Notes</string>
+    <string name="filter_note_open">Ouverte</string>
+    <string name="filter_note_closed">Fermée</string>
+    <string name="filter_pois">POIs</string>
+    <string name="filter_poi_all">Tous</string>
+    <!--Profile-->
+    <string name="profile_load">Charger un profil</string>
+    <string name="profile_refresh_error">Une erreur s\'est produite pendant le rafraichissement des profils</string>
+    <!--Saving-->
+    <string name="save_now">Sauvegarder…</string>
+    <string name="title_activity_upload">Sauvegarde des modifications</string>
+    <string name="couldnt_save_connectivity">Impossible d\'envoyer vos modifications. Vérifiez votre connexion</string>
+    <string name="saving">Sauvegarde en cours…</string>
+    <!--Update-->
+    <string name="update_title">Ajouter un commentaire à vos modifications:</string>
+    <string name="need_a_comment">Le commentaire ne peut pas être vide</string>
+    <string name="nothing_to_update">Vous n\'avez rien à mettre à jour</string>
+    <string name="nothing_selected">Vous n\' avez rien selectionné</string>
+    <string name="created">Créé</string>
+    <string name="deleted">Supprimé</string>
+    <string name="updated">Modifié</string>
+    <string name="undefined_button_text">non renseigné</string>Calling OSM to fetch Pois,
+    <!--About-->
+    <string name="title_activity_about">A propos de nous</string>
+    <string name="about_title">A propos</string>
+    <!--edit way-->
+    <string name="edit_way">Editer les chemins</string>
+    <!--POI types/tags-->
+    <string name="manage_poi_types">Gérer les types de Poi</string>
+    <string name="manage_poi_tags">Gérer les tags de Poi</string>
+    <plurals name="tag_number">
+        <item quantity="one">1 tag</item>
+        <item quantity="other">%1$s tags</item>
+    </plurals>
+    <string name="new_poi_type">Nouveau type</string>
+    <string name="edit_poi_name">Editer le nom du type</string>
+    <string name="new_poi_tag">Nouveau tag</string>
+    <string name="edit_poi_type">Les types ne peuvent pas être modifiés</string>
+    <string name="edit_poi_tag">Modifier le tag</string>
+    <string name="poi_type_name_hint">nom</string>
+    <string name="poi_tag_key_hint">clé</string>
+    <string name="poi_tag_value_hint">valeur</string>
+    <string name="poi_tag_mandatory">Obligatoire</string>
+    <string name="poi_tag_days">Jours</string>
+    <string name="poi_tag_months">Mois</string>
+    <string name="poi_tag_hours">Horaires d\'ouverture</string>
+    <string name="hours">Heures</string>
+    <string name="day_monday_letter">L</string>
+    <string name="day_tuesday_letter">Ma</string>
+    <string name="day_wednesday_letter">Me</string>
+    <string name="day_thursday_letter">J</string>
+    <string name="day_friday_letter">V</string>
+    <string name="day_saturday_letter">S</string>
+    <string name="day_sunday_letter">D</string>
+    <!--Snackbar-->
+    <string name="item_removed">\"%1$s\" a été supprimé</string>
+    <string name="undo">Annuler</string>
+    <!--Upload-->
+    <string name="position">Position :</string>
+    <string name="changed">Modifiée</string>
+    <string name="revert">Annuler</string>
+    <string name="revert_snack_bar">Suppression des modifications</string>
+    <string name="undo_snack_bar">Annuler</string>
+    <string name="node_ref_title">Point</string>
+    <!--Easter Egg-->
+    <string name="easter_egg_activation">La 3D activé tu as!</string>
+    <!--Android 6.0 dialog messages-->
+    <string name="permissions_title">Permissions nécessaires</string>
+    <string name="permissions_information">L\'accès à la localisation et en écriture au téléphone sont nécessaires pour gérer la carte et la base de données. Nous ne récupérons aucunes données personnelles sur votre téléphone. En refusant ces deux permissions, l\'application ne peut fonctionner correctement.</string>
+    <string name="permissions_information_gps">Vous avez refusé l\'accès au GPS. Vous allez être redirigé vers les paramètres de l\'application</string>
 
-  <string name="redirection_title">Le GPS est désactivé</string>
-  <string name="enable_gps">Vous allez être redirigé vers la page des paramètres de l\'appareil pour activer le GPS
+    <string name="redirection_title">Le GPS est désactivé</string>
+    <string name="enable_gps">Vous allez être redirigé vers la page des paramètres de l\'appareil pour activer le GPS
     </string>
 
-  <!-- Pictures -->
-  <string name="picture_sent_failure">Erreur lors de l\'envoi de la photo, réessayer</string>
-  <string name="flickr_communication_failure">La communication avec Flickr a échoué, réessayer</string>
-  <string name="picture_sent_success">Votre photo a été envoyée. Elle s\'affichera dans quelques minutes</string>
-  <string name="poi_association_failure">Erreur lors de l\'association au POI</string>
+    <!-- Pictures -->
+    <string name="picture_sent_failure">Erreur lors de l\'envoi de la photo, réessayer</string>
+    <string name="flickr_communication_failure">La communication avec Flickr a échoué, réessayer</string>
+    <string name="picture_sent_success">Votre photo a été envoyée. Elle s\'affichera dans quelques minutes</string>
+    <string name="poi_association_failure">Erreur lors de l\'association au POI</string>
 
-  <string name="malformated_tag">La valeur de ce tag ne respecte pas les conventions OpenStreetMap</string>
-  <string name="malformated_value">Valeur actuelle :</string>
-  <string name="flickr_title">Compte Flickr requis</string>
-  <string name="flickr_need">Vous devez avoir un compte Yahoo (Flickr) pour poster une photo</string>
-  <string name="upload_message">Envoi en cours</string>
-  <string name="login_using">Se connecter avec</string>
-  <string name="login_verb">Connecter</string>
-  <string name="login_later">Plus tard</string>
-  <string name="google">Google</string>
-  <string name="empty_fields">Champs incomplets!</string>
-  <string name="notification_download_title">Télécharger</string>
-  <string name="download_offline_area_title">Charger des régions hors-ligne</string>
-  <string name="download_offline_area_message">Ce preset contient des régions visualisables en mode hors-ligne.\nCela requiert un téléchargement de ces régions au préalable.\n
+    <string name="malformated_tag">La valeur de ce tag ne respecte pas les conventions OpenStreetMap</string>
+    <string name="malformated_value">Valeur actuelle :</string>
+    <string name="flickr_title">Compte Flickr requis</string>
+    <string name="flickr_need">Vous devez avoir un compte Yahoo (Flickr) pour poster une photo</string>
+    <string name="upload_message">Envoi en cours</string>
+    <string name="login_using">Se connecter avec</string>
+    <string name="login_verb">Connecter</string>
+    <string name="login_later">Plus tard</string>
+    <string name="google">Google</string>
+    <string name="empty_fields">Champs incomplets!</string>
+    <string name="notification_download_title">Télécharger</string>
+    <string name="download_offline_area_title">Charger des régions hors-ligne</string>
+    <string name="download_offline_area_message">Ce preset contient des régions visualisables en mode hors-ligne.\nCela requiert un téléchargement de ces régions au préalable.\n
 Il est conseillé d\'avoir une connexion Wifi pendant le téléchargement.\n\nVoulez-vous lancer le téléchargement?</string>
-  <string name="download_offline_area_more_later">Charger plus tard</string>
-  <string name="offline_regions">Régions hors-ligne</string>
-  <string name="no_photos">Ce POI n\'a pas de photos</string>
-  <string name="offline_regions_empty_list">Vous n\'avez pas chargé de région hors-ligne. Vous pouvez cliquer sur le bouton pour en ajouter.</string>
-  <string name="delete">Supprimer</string>
-  <string name="rename">Renommer</string>
-  <string name="download">Charger</string>
-  <string name="offline_regions_deleted">La région a bien été supprimée</string>
-  <string name="enter_region_name">Entrer le nom de la région</string>
-  <string name="region_name_error">15 caractères maximum</string>
-  <string name="region_to_large">Région trop large. Merci de sélectionner une zone plus petite.</string>
-  <string name="offline_step3">Cliquer ici pour charger la zone</string>
-  <string name="offline_step2">Zoomez pour sélectionner une zone</string>
-  <string name="offline_step1">Cliquer pour sélectionner une région</string>
-  <string name="offline_step4">Vos régions apparaitront ici.</string>
+    <string name="download_offline_area_more_later">Charger plus tard</string>
+    <string name="offline_regions">Régions hors-ligne</string>
+    <string name="no_photos">Ce POI n\'a pas de photos</string>
+    <string name="offline_regions_empty_list">Vous n\'avez pas chargé de région hors-ligne. Vous pouvez cliquer sur le bouton pour en ajouter.</string>
+    <string name="delete">Supprimer</string>
+    <string name="rename">Renommer</string>
+    <string name="download">Charger</string>
+    <string name="offline_regions_deleted">La région a bien été supprimée</string>
+    <string name="enter_region_name">Entrer le nom de la région</string>
+    <string name="region_name_error">15 caractères maximum</string>
+    <string name="region_to_large">Région trop large. Merci de sélectionner une zone plus petite.</string>
+    <string name="offline_step3">Cliquer ici pour charger la zone</string>
+    <string name="offline_step2">Zoomez pour sélectionner une zone</string>
+    <string name="offline_step1">Cliquer pour sélectionner une région</string>
+    <string name="offline_step4">Vos régions apparaitront ici.</string>
 </resources>
