@@ -1,5 +1,7 @@
 package io.jawg.osmcontributor.ui.managers.loadPoi;
 
+import org.joda.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,7 @@ public class PoiLoadingProgress {
     private long totalAreasLoaded = 0L;
     private List<Poi> pois = new ArrayList<>();
     private List<Note> notes = new ArrayList<>();
+    private LocalDateTime lastUpdateDate;
 
 
     public PoiLoadingProgress() {
@@ -93,6 +96,14 @@ public class PoiLoadingProgress {
 
     public void setTotalAreasLoaded(long totalAreasLoaded) {
         this.totalAreasLoaded = totalAreasLoaded;
+    }
+
+    public LocalDateTime getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
     }
 
     public enum LoadingStatus {

@@ -4,17 +4,26 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.database.dao.MapAreaDao;
 import io.jawg.osmcontributor.database.dao.PoiDao;
+import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
+import io.jawg.osmcontributor.database.dao.PoiTagDao;
 import io.jawg.osmcontributor.database.dao.PoiTypeDao;
+import io.jawg.osmcontributor.database.helper.DatabaseHelper;
 import io.jawg.osmcontributor.model.entities.MapArea;
+import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
+import io.jawg.osmcontributor.model.entities.PoiNodeRef;
+import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.rest.Backend;
 import io.jawg.osmcontributor.rest.NetworkException;
+import io.jawg.osmcontributor.rest.dtos.osm.NodeDto;
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
 import io.jawg.osmcontributor.rest.dtos.osm.PoiDto;
 import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
@@ -39,8 +48,7 @@ import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.Load
  * {@link PoiLoader} for retrieving poi data.
  */
 public class PoiLoader {
-    public static final int POI_PAGE = 50;
-    public static final int SAVE_POI_PAGE = 100;
+
     public static final int POI_PAGE_MAPPING = 5;
     private final PoiDao poiDao;
     private final MapAreaDao mapAreaDao;
@@ -50,14 +58,29 @@ public class PoiLoader {
     private boolean refreshData;
     private PoiMapper poiMapper;
     private BooleanHolder mustBeKilled;
-    PoiLoadingProgress poiLoadingProgress = new PoiLoadingProgress();
     List<PoiType> availableTypes;
     PoiTypeDao poiTypeDao;
-    Long loadedElements = 0L;
     List<OsmDto> osmDtos;
     List<PoiDto> nodeDtos = new ArrayList<>();
 
-    public PoiLoader(PoiDao poiDao, Backend backend, MapAreaDao mapAreaDao, Subscriber<? super PoiLoadingProgress> subscriber, BooleanHolder mustBeKilled, PoiMapper poiMapper, PoiTypeDao poiTypeDao) {
+    //progress
+    private PoiLoadingProgress.LoadingStatus loadingStatus;
+    private boolean dataNeedRefresh;
+    private long totalsElements = 0L;
+    private long loadedElements = 0L;
+    private long totalAreasToLoad = 0L;
+    private long totalAreasLoaded = 0L;
+    private PoiTagDao poiTagDao;
+    private PoiNodeRefDao poiNodeRefDao;
+    private LocalDateTime lastUpate;
+    private List<Poi> pois = new ArrayList<>();
+    private List<Note> notes = new ArrayList<>();
+    private DatabaseHelper databaseHelper;
+
+
+    public PoiLoader(PoiDao poiDao, Backend backend, MapAreaDao mapAreaDao, Subscriber<? super PoiLoadingProgress> subscriber,
+                     BooleanHolder mustBeKilled, PoiMapper poiMapper, PoiTypeDao poiTypeDao, PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao,
+                     DatabaseHelper databaseHelper) {
         this.backend = backend;
         this.poiDao = poiDao;
         this.mapAreaDao = mapAreaDao;
@@ -65,6 +88,9 @@ public class PoiLoader {
         this.mustBeKilled = mustBeKilled;
         this.poiMapper = poiMapper;
         this.poiTypeDao = poiTypeDao;
+        this.poiTagDao = poiTagDao;
+        this.poiNodeRefDao = poiNodeRefDao;
+        this.databaseHelper = databaseHelper;
     }
 
     public void init(final Box box, final boolean refreshData) {
@@ -79,16 +105,19 @@ public class PoiLoader {
         if (!areasNeeded.isEmpty()) {
             getPois(areasNeeded);
         }
-        poiLoadingProgress.setLoadingStatus(FINISH);
+        loadingStatus = FINISH;
         publishProgress();
-        Timber.d(" finished pis ");
+        Timber.d(" finished loading pois ");
         subscriber.onCompleted();
 
     }
 
     private void getPois(List<MapArea> areasNeeded) {
         Timber.d("\n--------- Loading Pois already present in BDD ---------\n");
-        loadPoisFromDB();
+        boolean succeed = loadPoisFromDB();
+        if (!succeed) {
+            return;
+        }
 
         Timber.d("\n--------- Handling areas ---------\n");
         boolean newAreasLoaded = handleAreas(areasNeeded);
@@ -109,11 +138,11 @@ public class PoiLoader {
             // we call the backend to received the data
             //we notify the subscriber that we have some loading to do
 
-            poiLoadingProgress.setLoadingStatus(LOADING_FROM_SERVER);
-            poiLoadingProgress.setTotalAreasToLoad(areasNeeded.size() - localAreas.size());
-            poiLoadingProgress.setTotalAreasLoaded(0L);
-            poiLoadingProgress.setTotalsElements(0L);
-            poiLoadingProgress.setLoadedElements(0L);
+            loadingStatus = LOADING_FROM_SERVER;
+            totalAreasToLoad = refreshData ? areasNeeded.size() : areasNeeded.size() - localAreas.size();
+            totalAreasLoaded = 0L;
+            totalsElements = 0L;
+            loadedElements = 0L;
             publishProgress();
 
             loadMissingMapAreas(areasNeeded, localAreas);
@@ -122,54 +151,58 @@ public class PoiLoader {
 
         if (!refreshData) {
             // find outdated areas
+            boolean outDatedData = false;
+            LocalDateTime lastUpate;
             for (MapArea mapArea : localAreas) {
-                LocalDateTime lastUpate = new LocalDateTime(mapArea.getUpdateDate());
+                lastUpate = new LocalDateTime(mapArea.getUpdateDate());
                 //we check if the data is outDated and ask for Update
-                boolean outDatedData = LocalDateTime.now().isAfter(lastUpate.plusMonths(1));
-                if (outDatedData) {
-                    poiLoadingProgress.setLoadingStatus(OUT_DATED_DATA);
-                    publishProgress();
+                if (LocalDateTime.now().isAfter(lastUpate.plusWeeks(1))) {
+                    outDatedData = true;
+                    this.lastUpate = lastUpate;
                 }
+            }
+            if (outDatedData) {
+                loadingStatus = OUT_DATED_DATA;
+                dataNeedRefresh = true;
+                publishProgress();
             }
         }
 
         return newAreasLoaded;
     }
 
-    private void loadPoisFromDB() {
+    private boolean loadPoisFromDB() {
 
         Long count = poiDao.countForAllInRect(box);
 
         if (count > BuildConfig.MAX_POIS_ON_MAP) {
-            poiLoadingProgress.setLoadingStatus(TOO_MANY_POIS);
-            poiLoadingProgress.setTotalsElements(count);
+            loadingStatus = TOO_MANY_POIS;
+            totalsElements = count;
             publishProgress();
             Timber.d(" too many Pois to display %d", count);
-            subscriber.onCompleted();
-            return;
+            return false;
         }
 
-        List<Poi> pois = poiDao.queryForAllInRect(box);
-        poiLoadingProgress.setLoadingStatus(POI_LOADING);
-        poiLoadingProgress.setTotalsElements(count);
-        poiLoadingProgress.setPois(pois);
+        pois.clear();
+        pois = poiDao.queryForAllInRect(box);
+        loadingStatus = POI_LOADING;
+        totalsElements = count;
         publishProgress();
-        Timber.d(" loading pis " + pois.size() + "  " + poiLoadingProgress.getLoadingStatus());
+        return true;
     }
 
 
     private void loadMissingMapAreas(final List<MapArea> toLoadAreas, List<MapArea> loadedAreas) {
-        poiLoadingProgress.setTotalAreasToLoad(toLoadAreas.size() - loadedAreas.size());
         int loadedArea = 0;
         for (MapArea toLoadArea : toLoadAreas) {
             killIfNeeded();
             if (refreshData || !loadedAreas.contains(toLoadArea)) {
                 try {
                     Timber.d("----- Downloading Area : " + toLoadArea.getId());
-                    poiLoadingProgress.setTotalAreasLoaded(loadedArea++);
-                    poiLoadingProgress.setLoadedElements(0L);
-                    poiLoadingProgress.setTotalsElements(0L);
-                    loadAndSavePoisFromBackend(toLoadArea);
+                    totalAreasLoaded = loadedArea++;
+                    loadedElements = 0L;
+                    totalsElements = 0L;
+                    loadAndSavePoisFromBackend(toLoadArea, refreshData && loadedAreas.contains(toLoadArea));
 
                     //publish poi loaded
                     toLoadArea.setUpdateDate(new DateTime(System.currentTimeMillis()));
@@ -180,7 +213,7 @@ public class PoiLoader {
 
                 } catch (NetworkException e) {
                     Timber.w("Network error wile saving areas ");
-                    poiLoadingProgress.setLoadingStatus(NETWORK_ERROR);
+                    loadingStatus = NETWORK_ERROR;
                     publishProgress();
                     return;
                 }
@@ -188,8 +221,8 @@ public class PoiLoader {
         }
     }
 
-    private void loadAndSavePoisFromBackend(MapArea toLoadArea) {
-        poiLoadingProgress.setLoadingStatus(LOADING_FROM_SERVER);
+    private void loadAndSavePoisFromBackend(MapArea toLoadArea, boolean clean) {
+        loadingStatus = LOADING_FROM_SERVER;
         publishProgress();
         loadedElements = 0L;
         nodeDtos.clear();
@@ -197,7 +230,10 @@ public class PoiLoader {
 
         for (OsmDto osmDto : osmDtos) {
             if (osmDto != null) {
-                nodeDtos.addAll(osmDto.getNodeDtoList());
+                List<NodeDto> nodeDtoList = osmDto.getNodeDtoList();
+                if (nodeDtoList != null) {
+                    nodeDtos.addAll(nodeDtoList);
+                }
                 List<WayDto> wayDtoList = osmDto.getWayDtoList();
                 if (wayDtoList != null) {
                     nodeDtos.addAll(wayDtoList);
@@ -207,23 +243,86 @@ public class PoiLoader {
 
         osmDtos.clear();
 
-        poiLoadingProgress.setLoadingStatus(MAPPING_POIS);
-        poiLoadingProgress.setTotalsElements(nodeDtos.size());
+        loadingStatus = MAPPING_POIS;
+        totalsElements = nodeDtos.size();
+
+        if (clean) {
+            cleanArea(toLoadArea);
+        }
 
         int i = 0;
         for (PoiDto dto : nodeDtos) {
-            poiDao.createOrUpdate(poiMapper.convertDtoToPoi(false, availableTypes, dto));
+            savePoi(poiMapper.convertDtoToPoi(false, availableTypes, dto));
 
             if (i >= POI_PAGE_MAPPING) {
                 killIfNeeded();
                 Timber.d("----- Mapping and saving  POI : " + loadedElements);
                 loadedElements += i;
-                poiLoadingProgress.setLoadedElements(loadedElements);
+                loadedElements = loadedElements;
                 publishProgress();
                 i = 0;
             }
             i++;
         }
+    }
+
+    private Poi savePoi(Poi poi) {
+        poiDao.create(poi);
+
+        if (poi.getTags() != null) {
+            for (PoiTag poiTag : poi.getTags()) {
+                poiTag.setPoi(poi);
+                poiTagDao.create(poiTag);
+            }
+        }
+
+        if (poi.getNodeRefs() != null) {
+            for (PoiNodeRef poiNodeRef : poi.getNodeRefs()) {
+                poiNodeRef.setPoi(poi);
+                poiNodeRefDao.create(poiNodeRef);
+            }
+        }
+
+        return poi;
+    }
+
+    private List<Long> cleanArea(final MapArea area) {
+        final List<Long> poisModified = new ArrayList<>();
+        databaseHelper.callInTransaction(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                List<Poi> pois = poiDao.queryForAllInRect(area.getBox());
+                List<Poi> poisToDelete = new ArrayList<>();
+                Collection<PoiNodeRef> nodeRefs = new ArrayList<>();
+                Collection<PoiTag> tags = new ArrayList<>();
+
+                for (Poi poi : pois) {
+                    if ((!poi.getToDelete() && !poi.getUpdated() && !poi.getOld())) {
+                        nodeRefs.addAll(poi.getNodeRefs());
+                        tags.addAll(poi.getTags());
+                        poisToDelete.add(poi);
+                    } else {
+                        poisModified.add(poi.getId());
+                    }
+
+                    if (tags.size() > 50) {
+                        //avoid too many params in sql
+                        poiNodeRefDao.delete(nodeRefs);
+                        poiTagDao.delete(tags);
+                        poiDao.delete(poisToDelete);
+                        nodeRefs.clear();
+                        tags.clear();
+                        poisToDelete.clear();
+                    }
+                }
+
+                poiNodeRefDao.delete(nodeRefs);
+                poiTagDao.delete(tags);
+                poiDao.delete(poisToDelete);
+                return null;
+            }
+        });
+        return poisModified;
     }
 
     private void killIfNeeded() {
@@ -234,15 +333,16 @@ public class PoiLoader {
 
     private void publishProgress() {
         PoiLoadingProgress progress = new PoiLoadingProgress();
-        progress.setTotalsElements(poiLoadingProgress.getTotalsElements());
-        progress.setLoadedElements(poiLoadingProgress.getLoadedElements());
-        progress.setTotalAreasLoaded(poiLoadingProgress.getTotalAreasLoaded());
-        progress.setTotalAreasToLoad(poiLoadingProgress.getTotalAreasToLoad());
-        progress.setLoadingStatus(poiLoadingProgress.getLoadingStatus());
-        progress.setPois(poiLoadingProgress.getPois());
-        progress.setNotes(poiLoadingProgress.getNotes());
-        progress.setLoadingStatus(poiLoadingProgress.getLoadingStatus());
-        progress.setDataNeedRefresh(poiLoadingProgress.isDataNeedRefresh());
+        progress.setTotalsElements(totalsElements);
+        progress.setLoadedElements(loadedElements);
+        progress.setTotalAreasLoaded(totalAreasLoaded);
+        progress.setTotalAreasToLoad(totalAreasToLoad);
+        progress.setLoadingStatus(loadingStatus);
+        progress.setPois(pois);
+        progress.setNotes(notes);
+        progress.setLoadingStatus(loadingStatus);
+        progress.setDataNeedRefresh(dataNeedRefresh);
+        progress.setLastUpdateDate(lastUpate);
         subscriber.onNext(progress);
     }
 }

@@ -42,7 +42,6 @@ import io.jawg.osmcontributor.model.events.PleaseLoadPoiTypes;
 import io.jawg.osmcontributor.model.events.PoiTypesLoaded;
 import io.jawg.osmcontributor.model.events.PoisAndNotesDownloadedEvent;
 import io.jawg.osmcontributor.model.events.RevertFinishedEvent;
-import io.jawg.osmcontributor.rest.events.SyncDownloadPoisAndNotesEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseChangeValuesDetailNoteFragmentEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseInitializeDrawer;
@@ -215,20 +214,22 @@ public class MapFragmentPresenter {
         if (viewLatLngBounds != null) {
             if (mapFragment.getZoomLevel() > BuildConfig.ZOOM_MARKER_MIN) {
                 if (shouldReload(viewLatLngBounds) || refreshData || forceRefresh) {
-                    Timber.d("Reloading pois");
                     previousZoom = mapFragment.getZoomLevel();
-                    triggerReloadPoiLatLngBounds = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.5);
-                    LatLngBounds latLngToLoad = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.75);
+                    triggerReloadPoiLatLngBounds = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.2);
+                    LatLngBounds latLngToLoad = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.2);
                     getPoisAndNotes.unsubscribe();
-                    Timber.e("nico : unsubscribe");
+                    Timber.e("Unsubscribe current loading");
                     getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad), refreshData).execute(new GetPoisSubscriber());
+                    mapFragment.displayZoomTooLargeError(false);
                 }
+            } else {
+                cleanAllZoomTooLarge();
             }
         }
     }
 
     public void downloadAreaPoisAndNotes() {
-        eventBus.post(new SyncDownloadPoisAndNotesEvent(Box.convertFromLatLngBounds(LatLngBoundsUtils.enlarge(mapFragment.getViewLatLngBounds(), 1.75))));
+        loadPoi(true, true);
     }
 
 
@@ -365,9 +366,17 @@ public class MapFragmentPresenter {
         loadPoi(true, false);
     }
 
-    public void endCurrentLoading() {
+    public void cleanAllZoomTooLarge() {
         mapFragment.showProgressBar(false);
         getPoisAndNotes.unsubscribe();
+        mapFragment.displayNetworkError(false);
+        mapFragment.displayZoomTooLargeError(true);
+        mapFragment.displayTooManyPois(false, 0L, 0);
+        if (ids != null) {
+            ids.clear();
+        }
+        mapFragment.removeNoteMarkersNotIn(new ArrayList<Long>());
+        mapFragment.removePoiMarkersNotIn(new ArrayList<Long>());
     }
 
 
@@ -409,7 +418,6 @@ public class MapFragmentPresenter {
             switch (poiLoadingProgress.getLoadingStatus()) {
                 case POI_LOADING:
                     impacteLoadedPoi(poiLoadingProgress.getPois());
-                    Timber.d("xxxx loaded " + poiLoadingProgress.getPois().size());
                     break;
                 case NOTE_LOADING:
                     impacteLoadedNotes(poiLoadingProgress.getNotes());
@@ -418,7 +426,7 @@ public class MapFragmentPresenter {
                     displayProgress(poiLoadingProgress);
                     break;
                 case OUT_DATED_DATA:
-                    mapFragment.showNeedToRefreshData();
+                    mapFragment.showNeedToRefreshData(poiLoadingProgress.getLastUpdateDate());
                     break;
                 case NETWORK_ERROR:
                     hasEncounterNetworkError = true;
@@ -435,7 +443,6 @@ public class MapFragmentPresenter {
                     mapFragment.removeNoteMarkersNotIn(ids);
                     mapFragment.removePoiMarkersNotIn(ids);
                     mapFragment.showProgressBar(false);
-                    Timber.d("xxxx finished " + ids.size());
                     break;
             }
             request(1);

@@ -10,8 +10,8 @@ import io.jawg.osmcontributor.model.entities.MapArea;
 import io.jawg.osmcontributor.utils.Box;
 
 public class AreasUtils {
-    public static final BigDecimal GRANULARITY_LAT = new BigDecimal(BuildConfig.GRANULARITY_AREA);
-    public static final BigDecimal GRANULARITY_LNG = new BigDecimal(BuildConfig.GRANULARITY_AREA);
+    public static final BigDecimal GRANULARITY_LAT = new BigDecimal(BuildConfig.MAP_AREA_FACTOR);
+    public static final BigDecimal GRANULARITY_LNG = new BigDecimal(BuildConfig.MAP_AREA_FACTOR);
 
     private AreasUtils() {
         //emtpty

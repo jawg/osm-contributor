@@ -38,14 +38,11 @@ import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
 import io.jawg.osmcontributor.rest.dtos.osm.PoiDto;
 import io.jawg.osmcontributor.rest.dtos.osm.TagDto;
 import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
-import timber.log.Timber;
 
 public class PoiMapper {
 
     PoiTypeDao poiTypeDao;
     PoiTagMapper poiTagMapper;
-    List<PoiNodeRef> nodeRefs = new ArrayList<>();
-    List<PoiTag> tags = new ArrayList<>();
 
     @Inject
     public PoiMapper(PoiTypeDao poiTypeDao, PoiTagMapper poiTagMapper) {
@@ -84,7 +81,6 @@ public class PoiMapper {
 
     public List<Poi> convertDtosToPois(List<? extends PoiDto> dtos, boolean typeFiltering) {
         List<Poi> result = new ArrayList<>();
-        Timber.e("nico : start");
         if (dtos != null) {
             List<PoiType> availableTypes = poiTypeDao.queryForAll();
             for (PoiDto dto : dtos) {
@@ -94,12 +90,14 @@ public class PoiMapper {
                 }
             }
         }
-        Timber.e("nico : mapping finished");
 
         return result;
     }
 
     public Poi convertDtoToPoi(boolean typeFiltering, List<PoiType> availableTypes, PoiDto dto) {
+        List<PoiNodeRef> nodeRefs = new ArrayList<>();
+        List<PoiTag> tags = new ArrayList<>();
+
         PoiType type = findType(dto, availableTypes);
         if (type == null && typeFiltering) {
             return null;
@@ -114,7 +112,6 @@ public class PoiMapper {
         poi.setUpdateDate(dto.getTimestamp());
         poi.setWay(dto.isWay());
 
-        tags.clear();
         for (TagDto tagDto : dto.getTagsDtoList()) {
             PoiTag tag = new PoiTag();
             tag.setPoi(poi);
@@ -130,7 +127,6 @@ public class PoiMapper {
         }
         poi.setTags(tags);
 
-        nodeRefs.clear();
         int counter = 0;
         for (NdDto ndDto : dto.getNdDtoList()) {
             PoiNodeRef nodeRef = new PoiNodeRef();

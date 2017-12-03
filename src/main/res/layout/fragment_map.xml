@@ -54,8 +54,7 @@
         android:id="@+id/poi_load_banner_network"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/common_google_signin_btn_text_dark_pressed"
-        android:visibility="gone">
+        android:background="@color/common_google_signin_btn_text_dark_pressed">
 
         <TextView
             android:layout_width="wrap_content"
@@ -69,6 +68,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/refresh" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/poi_load_zoom_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/common_google_signin_btn_text_dark_pressed"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="5dp"
+            android:text="@string/load_poi_zoom_banner"
+            android:textColor="@color/colorPrimaryDark" />
 
     </RelativeLayout>
 
@@ -117,8 +133,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:orientation="vertical"
             android:gravity="center_horizontal"
+            android:orientation="vertical"
             android:padding="4dp">
 
             <TextView
@@ -127,10 +143,10 @@
                 android:text="@string/load_poi_area_message" />
 
             <TextView
-                android:gravity="center"
                 android:id="@+id/progress_info"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:gravity="center" />
         </LinearLayout>
 
     </LinearLayout>
