@@ -15,6 +15,7 @@ import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 
 import static io.jawg.osmcontributor.ui.adapters.TagsAutocompleteUtils.getPossibleValuesAsList;
 import static io.jawg.osmcontributor.ui.adapters.TagsAutocompleteUtils.removeDuplicate;
+import static io.jawg.osmcontributor.ui.adapters.item.TagItem.Type.CONSTANT;
 import static io.jawg.osmcontributor.ui.adapters.item.TagItem.Type.SHELTER;
 import static io.jawg.osmcontributor.ui.adapters.item.TagItem.Type.TEXT;
 
@@ -108,7 +109,7 @@ public class TagMapper {
                 .type(type)
                 .isConform(valueFormatted != null || type == TagItem.Type.NUMBER)
                 // Display the tags of the poi that are not in the PoiType
-                .show(expertMode || poiTypeTag.getShow() != null ? poiTypeTag.getShow() : true)
+                .show(expertMode || ((poiTypeTag.getShow() != null ? poiTypeTag.getShow() : true) && type != CONSTANT))
                 .build();
 
         // Add into the list

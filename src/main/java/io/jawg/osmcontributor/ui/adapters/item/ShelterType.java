@@ -33,7 +33,6 @@ public enum ShelterType {
 
     public static ShelterType getTypeFromMap(Collection<PoiTypeTag> tags) {
         Boolean unofficial = null;
-        Boolean platform = null;
         Boolean shelter = null;
 
         for (PoiTypeTag tag : tags) {
@@ -43,8 +42,6 @@ public enum ShelterType {
             }
             if (tag.getKey().equals("official_status")) {
                 unofficial = value.compareToIgnoreCase("unofficial") == 0;
-            } else if (tag.getKey().equals("public_transport")) {
-                platform = value.compareToIgnoreCase("platform") == 0;
             } else if (tag.getKey().equals("shelter")) {
                 shelter = value.compareToIgnoreCase("yes") == 0;
             }
@@ -53,7 +50,7 @@ public enum ShelterType {
 
         if (unofficial != null && unofficial) {
             return NONE;
-        } else if (platform != null && platform && shelter != null) {
+        } else if (shelter != null) {
             return shelter ? SHELTER : POLE;
         }
         return UNDEFINED;
