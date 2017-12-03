@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.jawg.osmcontributor.model.entities.PoiTypeTag;
+import io.jawg.osmcontributor.model.entities.PoiTag;
 
 public enum ShelterType {
     POLE("", "platform", "no"), SHELTER("", "platform", "yes"), NONE("unofficial", "", ""), UNDEFINED("", "", "");
@@ -31,11 +31,11 @@ public enum ShelterType {
         return map;
     }
 
-    public static ShelterType getTypeFromMap(Collection<PoiTypeTag> tags) {
+    public static ShelterType getTypeFromValues(Collection<PoiTag> tags) {
         Boolean unofficial = null;
         Boolean shelter = null;
 
-        for (PoiTypeTag tag : tags) {
+        for (PoiTag tag : tags) {
             String value = tag.getValue();
             if (value == null) {
                 value = "";

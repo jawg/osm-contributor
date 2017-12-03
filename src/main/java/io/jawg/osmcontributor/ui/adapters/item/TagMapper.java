@@ -26,6 +26,7 @@ public class TagMapper {
     private int nbMandatory = 0;
     private Collection<PoiTypeTag> tagToMap;
     private List<TagItem> mappedTags;
+    private List<TagItem> constantTags;
 
     private TagMapper(Poi poi, Map<String, List<String>> tagValueSuggestionsMap, boolean expertMode) {
         this.poi = poi;
@@ -33,11 +34,13 @@ public class TagMapper {
         this.expertMode = expertMode;
         tagToMap = poi.getType().getTags();
         mappedTags = new ArrayList<>();
+        constantTags = new ArrayList<>();
     }
 
     public static List<TagItem> getTagItems(Poi poi, Map<String, List<String>> tagValueSuggestionsMap, boolean expertMode) {
         TagMapper tagMapper = new TagMapper(poi, tagValueSuggestionsMap, expertMode);
         tagMapper.mapAllTags();
+        tagMapper.mappedTags.addAll(tagMapper.constantTags);
         return tagMapper.mappedTags;
     }
 
@@ -80,7 +83,7 @@ public class TagMapper {
                     // Display the tags of the poi that are not in the PoiType
                     .show(true)
                     .build();
-            if (!mappedTags.contains(tagItem)) {
+            if (!mappedTags.contains(tagItem) && !constantTags.contains(tagItem)) {
                 mappedTags.add(getPosition(false), tagItem);
             }
         }
@@ -98,10 +101,11 @@ public class TagMapper {
                 tagValueSuggestionsMap.get(key));
         // Parse value if needed
         String value = poi.getTagsMap().get(key);
-        TagItem.Type type = mapType(key, updatable);
+        TagItem.Type type = mapType(key, updatable, poiTypeTag.getTagType());
 
         String valueFormatted = ParserManager.getValue(value, type);
 
+        boolean display = (poiTypeTag.getShow() != null ? poiTypeTag.getShow() : true) && type != CONSTANT;
         TagItem tagItem = new SingleTagItem.SingleTagItemBuilder(key, value)
                 // Display tags as mandatory if they are mandatory and we are not in expert mode
                 .mandatory(!expertMode && poiTypeTag.getMandatory())
@@ -109,16 +113,24 @@ public class TagMapper {
                 .type(type)
                 .isConform(valueFormatted != null || type == TagItem.Type.NUMBER)
                 // Display the tags of the poi that are not in the PoiType
-                .show(expertMode || ((poiTypeTag.getShow() != null ? poiTypeTag.getShow() : true) && type != CONSTANT))
+                .show(expertMode || display)
                 .build();
 
         // Add into the list
-        mappedTags.add(getPosition(tagItem.mandatory), tagItem);
+        if (!mappedTags.contains(tagItem) && !constantTags.contains(tagItem)) {
+            if (display) {
+                mappedTags.add(getPosition(tagItem.mandatory), tagItem);
+            } else {
+                constantTags.add(constantTags.size(), tagItem);
+            }
+        }
     }
 
     @NonNull
-    private TagItem.Type mapType(String key, boolean updatable) {
-        TagItem.Type type = TEXT;
+    private TagItem.Type mapType(String key, boolean updatable, TagItem.Type type) {
+        if (type == null) {
+            type = TEXT;
+        }
         type = key.equals("collection_times") ? TagItem.Type.TIME : type;
         type = key.equals("opening_hours") || key.contains("hours") ? TagItem.Type.OPENING_HOURS : type;
 
@@ -132,12 +144,13 @@ public class TagMapper {
             Collection<PoiTypeTag> unusedTags = new ArrayList<>();
 
             TagItem.TagItemBuilder tagItemBuilder = new ShelterTagItem.ShelterTagItemBuilder("shelter", "none")
-                    .shelterType(ShelterType.getTypeFromMap(tagToMap))
+                    .shelterType(ShelterType.getTypeFromValues(poi.getTags()))
                     .mandatory(true)
                     .type(SHELTER)
                     .isConform(true)
                     .show(true);
 
+            //remove all tags from the type so they aren't display
             for (PoiTypeTag tag : tagToMap) {
                 if (!ShelterType.handleTag(tag.getKey())) {
                     unusedTags.add(tag);
