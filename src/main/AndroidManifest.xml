@@ -61,6 +61,7 @@
             android:label="@string/name" />
         <activity
             android:name=".ui.activities.EditPoiActivity"
+            android:windowSoftInputMode="stateHidden"
             android:label="@string/title_activity_edit_poi" />
         <activity
             android:name=".ui.activities.PickValueActivity"
