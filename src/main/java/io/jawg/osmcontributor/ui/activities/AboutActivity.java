@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -35,6 +35,8 @@ import de.psdev.licensesdialog.LicensesDialog;
 import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.R;
 
+import static io.jawg.osmcontributor.utils.FlavorUtils.isBus;
+
 public class AboutActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
@@ -55,6 +57,9 @@ public class AboutActivity extends AppCompatActivity {
     @BindView(R.id.version_text)
     TextView version;
 
+    @BindView(R.id.thanks)
+    TextView thanks;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +78,10 @@ public class AboutActivity extends AppCompatActivity {
         editBy.setText(Html.fromHtml(getString(R.string.splash_screen_edited_by)));
         poweredBy.setText(Html.fromHtml(getString(R.string.splash_screen_powered_by)));
         version.setText(getString(R.string.version_format, BuildConfig.VERSION_NAME));
+
+        if (isBus()) {
+            thanks.setText(R.string.thanks);
+        }
     }
 
     @Override
