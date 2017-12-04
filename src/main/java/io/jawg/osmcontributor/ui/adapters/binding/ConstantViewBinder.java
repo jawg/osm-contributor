@@ -26,7 +26,7 @@ public class ConstantViewBinder implements TagViewBinder<TagItemConstantViewHold
 
     @Override
     public void onBindViewHolder(TagItemConstantViewHolder holder, TagItem tagItem) {
-        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), holder.getContent().getContext()));
         holder.getTextViewValue().setText(tagItem.getValue());
         if (!tagItem.isShow()) {
             ((RelativeLayout) holder.getContent().getParent()).setVisibility(View.GONE);

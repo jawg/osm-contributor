@@ -44,7 +44,7 @@
             android:layout_marginBottom="5dp"
             android:textColor="@android:color/holo_blue_dark"
             android:textSize="20sp"
-            android:text="@string/bus_shelter_name"
+            android:text="@string/tag_poi_shelter"
             app:typeface="Roboto-Light.ttf" />
 
         <LinearLayout

@@ -41,7 +41,7 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
         this.tagItem = tagItem;
 
         // Set key text view
-        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), holder.getContent().getContext()));
 
         // if Tag is show=false, hide it
         if (!tagItem.isShow()) {

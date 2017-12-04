@@ -36,7 +36,7 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
         this.tagItem = tagItem;
 
         // Set values input
-        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), activity.get()));
         holder.getTextViewValue().setText(tagItem.getValue());
         holder.getTextInputLayout().setHint(tagItem.getKey());
 

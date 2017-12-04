@@ -41,7 +41,13 @@
     <string name="tag_key">Clé</string>
     <string name="tag_value">Valeur</string>
     <!--Edit Poi-->
-    <string name="bus_shelter_name">Type d\'arrêt de bus</string>
+    <!--Edit Poi-->
+    <string name="tag_poi_name">Nom</string>
+    <string name="tag_poi_shelter">Abris-bus</string>
+    <string name="tag_poi_wheelchair">Accès fauteuil roulant</string>
+    <string name="tag_poi_bench">Banc</string>
+    <string name="tag_poi_rout_ref">Ligne desservie</string>
+    <string name="bus_shelter_note">Informations complémentaires</string>
     <!--Map-->
     <string name="no_poi_name">Ce poi n\'a pas de nom</string>
     <string name="edit_position">Changer la position</string>
@@ -185,7 +191,7 @@
     <string name="created">Créé</string>
     <string name="deleted">Supprimé</string>
     <string name="updated">Modifié</string>
-    <string name="undefined_button_text">non renseigné</string>Calling OSM to fetch Pois,
+    <string name="undefined_button_text">Inconnu</string>
     <!--About-->
     <string name="title_activity_about">A propos de nous</string>
     <string name="about_title">A propos</string>

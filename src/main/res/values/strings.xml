@@ -51,7 +51,12 @@
     <string name="tag_value">Value</string>
     <string name="undefined">undefined</string>
     <!--Edit Poi-->
-    <string name="bus_shelter_name">Kind of bus stop</string>
+    <string name="tag_poi_name">Name</string>
+    <string name="tag_poi_shelter">Shelter</string>
+    <string name="tag_poi_wheelchair">Wheelchair access</string>
+    <string name="tag_poi_bench">Bench</string>
+    <string name="tag_poi_rout_ref">Bus route served</string>
+    <string name="bus_shelter_note">Extra information</string>
     <!-- Map -->
     <string name="no_poi_name">This POI doesn\'t have a name</string>
     <string name="edit_position">Change position</string>
@@ -272,7 +277,7 @@
     <string name="day_friday_letter">F</string>
     <string name="day_saturday_letter">S</string>
     <string name="day_sunday_letter">S</string>
-    <string name="undefined_button_text">undefined</string>
+    <string name="undefined_button_text">Unknown</string>
 
     <!-- Snackbar -->
     <string name="item_removed">\"%1$s\" was removed</string>
