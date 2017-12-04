@@ -57,18 +57,14 @@ import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
 import io.jawg.osmcontributor.model.events.DatabaseResetFinishedEvent;
-import io.jawg.osmcontributor.model.events.PleaseLoadPoiForArpiEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForCreationEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForEditionEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiTypes;
-import io.jawg.osmcontributor.model.events.PleaseLoadPoisEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoisToUpdateEvent;
 import io.jawg.osmcontributor.model.events.PleaseRevertPoiEvent;
 import io.jawg.osmcontributor.model.events.PleaseRevertPoiNodeRefEvent;
 import io.jawg.osmcontributor.model.events.PoiForEditionLoadedEvent;
 import io.jawg.osmcontributor.model.events.PoiTypesLoaded;
-import io.jawg.osmcontributor.model.events.PoisArpiLoadedEvent;
-import io.jawg.osmcontributor.model.events.PoisLoadedEvent;
 import io.jawg.osmcontributor.model.events.PoisToUpdateLoadedEvent;
 import io.jawg.osmcontributor.model.events.ResetDatabaseEvent;
 import io.jawg.osmcontributor.model.events.ResetTypeDatabaseEvent;
@@ -160,11 +156,6 @@ public class PoiManager {
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseLoadPoisEvent(PleaseLoadPoisEvent event) {
-        loadPois(event);
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseTellIfDbChanges(PleaseTellIfDbChanges event) {
         bus.post(new ChangesInDB(poiDao.countForAllChanges() > 0 || poiNodeRefDao.countAllToUpdate() > 0));
     }
@@ -227,12 +218,6 @@ public class PoiManager {
     public void onPleaseRevertPoiNodeRefEvent(PleaseRevertPoiNodeRefEvent event) {
         PoiNodeRef poiNodeRef = revertPoiNodeRef(event.getIdToRevert());
         bus.post(new RevertFinishedEvent(poiNodeRef, LocationMarkerView.MarkerType.NODE_REF));
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseLoadPoiForArpiEvent(PleaseLoadPoiForArpiEvent event) {
-        List<Poi> pois = poiDao.queryForAllInRect(event.getBox());
-        bus.post(new PoisArpiLoadedEvent(pois));
     }
 
 
@@ -441,7 +426,6 @@ public class PoiManager {
         }
         poiTypeDao.refresh(poi.getType());
         poi.setTags(loadLazyForeignCollection(poi.getTags()));
-        poi.getType().setTags(loadLazyForeignCollection(poi.getType().getTags()));
         return poi;
     }
 
@@ -892,16 +876,6 @@ public class PoiManager {
         poi.applyChanges(defaultTags);
 
         bus.post(new PoiForEditionLoadedEvent(poi, suggestionsForTagsValue(poi.getType().getTags())));
-    }
-
-    /**
-     * Send a {@link PoisLoadedEvent} containing all the POIs
-     * in the Box of the {@link PleaseLoadPoisEvent}.
-     *
-     * @param event Event containing the box to load.
-     */
-    private void loadPois(PleaseLoadPoisEvent event) {
-        bus.post(new PoisLoadedEvent(event.getBox(), queryForAllInRect(event.getBox())));
     }
 
     /**

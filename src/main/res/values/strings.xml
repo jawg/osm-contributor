@@ -24,6 +24,12 @@
     <string name="title_activity_edit_poi">EditPoiActivity</string>
     <string name="location_not_found">Couldn\'t find your location</string>
 
+    <!--MAP FRAGMENT POPUP-->
+    <string name="load_poi_data_outdated_refresh_btn">Refresh</string>
+    <string name="load_poi_data_outdated_refresh_cancel">Cancel</string>
+    <string name="load_poi_data_outdated_refresh_title">Data outdated</string>
+    <string name="load_poi_data_outdated_refresh_content">The data of this area is outdated, the last sync was the %s. Do you want to refresh this data ?</string>
+
     <!-- EDITION -->
     <string name="addValueDialogTitle">Change value for: \"%1$s\"</string>
     <string name="addValueDialogAdd">Change</string>
@@ -44,7 +50,13 @@
     <string name="tag_key">Key</string>
     <string name="tag_value">Value</string>
     <string name="undefined">undefined</string>
-
+    <!--Edit Poi-->
+    <string name="tag_poi_name">Name</string>
+    <string name="tag_poi_shelter">Shelter</string>
+    <string name="tag_poi_wheelchair">Wheelchair access</string>
+    <string name="tag_poi_bench">Bench</string>
+    <string name="tag_poi_rout_ref">Bus route served</string>
+    <string name="bus_shelter_note">Extra information</string>
     <!-- Map -->
     <string name="no_poi_name">This POI doesn\'t have a name</string>
     <string name="edit_position">Change position</string>
@@ -92,8 +104,13 @@
     <string name="switch_style_default">Default view</string>
     <string name="zoom_more">You need to zoom more in order to download Pois</string>
     <string name="search_poitype_hint">Search a Poi type</string>
-    <string name="title_3d_view">3D view</string>
-    <string name="arpi_not_supported">Your device do not support the 3D view</string>
+    <string name="load_poi_zoom_banner">Please zoom to the area you want to contribute.</string>
+    <string name="load_poi_network_error">The network is unreachable, it is impossible to load all POIS. (Click to retry)</string>
+    <string name="load_poi_too_many_pois">There is too many Pois to display (%1$d Pois the max is %2$d). Please zoom a bit more.</string>
+    <string name="load_poi_area_progress">Loading Areas %1$d / %2$d</string>
+    <string name="load_poi_progress">\n Loading Pois %1$d / %2$d</string>
+    <string name="load_poi_calling_osm">\n waiting for Overpass to answered</string>
+    <string name="load_poi_area_message">Calling OSM to fetch Pois, it may take a while.</string>
 
 
     <!-- Strings related to login -->
@@ -141,7 +158,6 @@
     <string name="shared_prefs_expert_mode" translatable="false">SHARED_PREFS_EXPERT</string>
     <string name="shared_prefs_h2geo_version" translatable="false">SHARED_PREFS_H2GEO_VERSION</string>
     <string name="shared_prefs_h2geo_date" translatable="false">SHARED_PREFS_H2GEO_DATE</string>
-    <string name="easter_egg" translatable="false">EASTER_EGG</string>
     <string name="shared_prefs_h2geo_title" translatable="false">H2Geo</string>
     <string name="shared_prefs_login_title" translatable="false">Connection</string>
     <string name="shared_prefs_server" translatable="false">OSM Server</string>
@@ -261,7 +277,7 @@
     <string name="day_friday_letter">F</string>
     <string name="day_saturday_letter">S</string>
     <string name="day_sunday_letter">S</string>
-    <string name="undefined_button_text">undefined</string>
+    <string name="undefined_button_text">Unknown</string>
 
     <!-- Snackbar -->
     <string name="item_removed">\"%1$s\" was removed</string>
@@ -326,4 +342,5 @@
     <string name="offline_step2">Zoom to select a zone</string>
     <string name="offline_step1">Click to select a region</string>
     <string name="offline_step4">Your areas will appear here</string>
+    <string name="thanks">Thanks !</string>
 </resources>

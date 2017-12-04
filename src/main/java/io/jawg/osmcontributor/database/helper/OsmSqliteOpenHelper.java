@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -37,6 +37,7 @@ import io.jawg.osmcontributor.model.entities.Action;
 import io.jawg.osmcontributor.model.entities.Comment;
 import io.jawg.osmcontributor.model.entities.Condition;
 import io.jawg.osmcontributor.model.entities.Constraint;
+import io.jawg.osmcontributor.model.entities.MapArea;
 import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiNodeRef;
@@ -49,7 +50,7 @@ import timber.log.Timber;
 public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DATABASE_NAME = "osm-db" + BuildConfig.APPLICATION_ID + ".sqlite";
-    public static final int CURRENT_VERSION = 12;
+    public static final int CURRENT_VERSION = 13;
 
     private Context context;
 
@@ -72,6 +73,7 @@ public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, PoiNodeRef.class);
             TableUtils.createTable(connectionSource, Note.class);
             TableUtils.createTable(connectionSource, Comment.class);
+            TableUtils.createTable(connectionSource, MapArea.class);
         } catch (SQLException e) {
             Timber.e(e, "Error while creating tables");
         }

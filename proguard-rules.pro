@@ -121,10 +121,6 @@
 -dontwarn org.joda.convert.FromString
 
 ####################################################################################################
-## ArpiGl
--keepclassmembers class mobi.designmyapp.arpigl.** { *; }
-
-####################################################################################################
 
 -keep class com.facebook.imagepipeline.gif.** { *; }
 -keep class com.facebook.imagepipeline.webp.** { *; }

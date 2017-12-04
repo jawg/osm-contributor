@@ -50,72 +50,64 @@ import io.jawg.osmcontributor.database.events.InitDbEvent;
 import io.jawg.osmcontributor.model.events.InitCredentialsEvent;
 import io.jawg.osmcontributor.rest.events.GoogleAuthenticatedEvent;
 import io.jawg.osmcontributor.ui.dialogs.LoginDialogFragment;
-import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
 import io.jawg.osmcontributor.ui.events.login.CheckFirstConnectionEvent;
+import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
 import io.jawg.osmcontributor.ui.events.login.LoginInitializedEvent;
 import io.jawg.osmcontributor.ui.events.login.PleaseOpenLoginDialogEvent;
 import io.jawg.osmcontributor.ui.events.login.SplashScreenTimerFinishedEvent;
 import io.jawg.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;
 import io.jawg.osmcontributor.ui.events.login.ValidLoginEvent;
-import io.jawg.osmcontributor.ui.events.map.ArpiBitmapsPrecomputedEvent;
-import io.jawg.osmcontributor.ui.events.map.PrecomputeArpiBitmapsEvent;
 import io.jawg.osmcontributor.ui.utils.views.EventCountDownTimer;
 import timber.log.Timber;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
-    /*=========================================*/
-    /*------------ATTRIBUTES-------------------*/
-    /*=========================================*/
-    /**
-     * For Android 6.0 and higher, we have to request dangerous permissions like
-     * ACCESS_FINE_LOCATION or WRITE_EXTERNAL_STORAGE at runtime. This static variable
-     * is used to get the user response in callback.
-     */
-    private static final int ALLOW_PERMISSIONS = 100;
+  /*=========================================*/
+  /*------------ATTRIBUTES-------------------*/
+  /*=========================================*/
+  /**
+   * For Android 6.0 and higher, we have to request dangerous permissions like
+   * ACCESS_FINE_LOCATION or WRITE_EXTERNAL_STORAGE at runtime. This static variable
+   * is used to get the user response in callback.
+   */
+  private static final int ALLOW_PERMISSIONS = 100;
 
-    @Inject
-    EventBus bus;
+  @Inject EventBus bus;
 
-    @BindView(R.id.edited_by)
-    TextView editBy;
+  @BindView(R.id.edited_by) TextView editBy;
 
-    @BindView(R.id.powered_by)
-    TextView poweredBy;
+  @BindView(R.id.powered_by) TextView poweredBy;
 
-    @BindView(R.id.mapsquare)
-    TextView mapsquare;
+  @BindView(R.id.mapsquare) TextView mapsquare;
 
-    private LoginDialogFragment loginDialogFragment;
+  private LoginDialogFragment loginDialogFragment;
 
-    /*=========================================*/
-    /*------------CODE-------------------------*/
-    /*=========================================*/
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash_screen);
+  /*=========================================*/
+  /*------------CODE-------------------------*/
+  /*=========================================*/
+  @Override public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_splash_screen);
 
-        ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
-        ButterKnife.bind(this);
-        bus.register(this);
+    ((OsmTemplateApplication) getApplication()).getOsmTemplateComponent().inject(this);
+    ButterKnife.bind(this);
+    bus.register(this);
 
-        mapsquare.setText(Html.fromHtml(getString(R.string.mapsquare)));
-        editBy.setText(Html.fromHtml(getString(R.string.splash_screen_edited_by)));
-        poweredBy.setText(Html.fromHtml(getString(R.string.splash_screen_powered_by)));
+    mapsquare.setText(Html.fromHtml(getString(R.string.mapsquare)));
+    editBy.setText(Html.fromHtml(getString(R.string.splash_screen_edited_by)));
+    poweredBy.setText(Html.fromHtml(getString(R.string.splash_screen_powered_by)));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissionIfNeeded();
-        } else {
-            initEvent();
-        }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      requestPermissionIfNeeded();
+    } else {
+      initEvent();
     }
+  }
 
-    @Override
-    protected void onDestroy() {
-        bus.unregister(this);
-        super.onDestroy();
-    }
+  @Override protected void onDestroy() {
+    bus.unregister(this);
+    super.onDestroy();
+  }
 
     /*=========================================*/
     /*------------PRIVATE CODE-----------------*/
@@ -126,9 +118,9 @@ public class SplashScreenActivity extends AppCompatActivity {
      * @return Whether we should start MapActivity.
      */
     private boolean shouldStartMapActivity() {
-        return bus.getStickyEvent(DbInitializedEvent.class) != null &&
-                bus.getStickyEvent(SplashScreenTimerFinishedEvent.class) != null &&
-                bus.getStickyEvent(ArpiBitmapsPrecomputedEvent.class) != null &&
+        return bus.getStickyEvent(DbInitializedEvent.class) != null
+               && bus.getStickyEvent(SplashScreenTimerFinishedEvent.class) != null
+        &&
                 bus.getStickyEvent(LoginInitializedEvent.class) != null;
     }
 
@@ -138,175 +130,159 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void startMapActivity() {
         bus.removeStickyEvent(DbInitializedEvent.class);
         bus.removeStickyEvent(SplashScreenTimerFinishedEvent.class);
-        bus.removeStickyEvent(ArpiBitmapsPrecomputedEvent.class);
+
         bus.removeStickyEvent(LoginInitializedEvent.class);
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
         finish();
     }
 
-    private void initEvent() {
-        EventCountDownTimer timer = new EventCountDownTimer(3000, 3000, bus);
-        timer.setStickyEvent(new SplashScreenTimerFinishedEvent());
-        timer.start();
+  private void initEvent() {
+    EventCountDownTimer timer = new EventCountDownTimer(3000, 3000, bus);
+    timer.setStickyEvent(new SplashScreenTimerFinishedEvent());
+    timer.start();
 
-        bus.post(new InitCredentialsEvent());
-        bus.post(new InitDbEvent());
-        bus.post(new PrecomputeArpiBitmapsEvent());
-        bus.post(new CheckFirstConnectionEvent());
+    bus.post(new InitCredentialsEvent());
+    bus.post(new InitDbEvent());
+    bus.post(new CheckFirstConnectionEvent());
+  }
+
+  private void startMapActivityIfNeeded() {
+    if (shouldStartMapActivity()) {
+      startMapActivity();
     }
+  }
 
-    private void startMapActivityIfNeeded() {
-        if (shouldStartMapActivity()) {
-            startMapActivity();
-        }
-    }
-
-    /*=========================================*/
+  /*=========================================*/
     /*----------------EVENTS-------------------*/
     /*=========================================*/
-    @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC)
-    public void onDbInitializedEvent(DbInitializedEvent event) {
-        Timber.d("Database initialized");
-        startMapActivityIfNeeded();
-    }
+  @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC) public void onDbInitializedEvent(DbInitializedEvent event) {
+    Timber.d("Database initialized");
+    startMapActivityIfNeeded();
+  }
 
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onSplashScreenTimerFinishedEvent(SplashScreenTimerFinishedEvent event) {
-        Timber.d("Timer finished");
-        startMapActivityIfNeeded();
-    }
+  @Subscribe(threadMode = ThreadMode.ASYNC) public void onSplashScreenTimerFinishedEvent(SplashScreenTimerFinishedEvent event) {
+    Timber.d("Timer finished");
+    startMapActivityIfNeeded();
+  }
 
-    @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC)
-    public void onArpiBitmapsPrecomputedEvent(ArpiBitmapsPrecomputedEvent event) {
-        Timber.d("Arpi bitmaps precomputed");
-        startMapActivityIfNeeded();
-    }
+  @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC) public void onLoginInitializedEvent(LoginInitializedEvent event) {
+    startMapActivityIfNeeded();
+  }
 
-    @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC)
-    public void onLoginInitializedEvent(LoginInitializedEvent event) {
-        startMapActivityIfNeeded();
-    }
+  @Subscribe(threadMode = ThreadMode.MAIN) public void onPleaseOpenLoginDialogEvent(PleaseOpenLoginDialogEvent event) {
+    loginDialogFragment = LoginDialogFragment.newInstance(bus);
+    loginDialogFragment.show(getFragmentManager(), LoginDialogFragment.class.getSimpleName());
+  }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPleaseOpenLoginDialogEvent(PleaseOpenLoginDialogEvent event) {
-        loginDialogFragment = LoginDialogFragment.newInstance(bus);
-        loginDialogFragment.show(getFragmentManager(), LoginDialogFragment.class.getSimpleName());
+  @Subscribe(threadMode = ThreadMode.MAIN) public void onGoogleAuthenticatedEvent(GoogleAuthenticatedEvent event) {
+    if (event.isSuccessful()) {
+      bus.post(new UpdateGoogleCredentialsEvent(event.getToken(), event.getTokenSecret(), event.getConsumer(), event.getConsumerSecret()));
+    } else {
+      Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_SHORT).show();
     }
+    loginDialogFragment.dismiss();
+  }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGoogleAuthenticatedEvent(GoogleAuthenticatedEvent event) {
-        if (event.isSuccessful()) {
-            bus.post(new UpdateGoogleCredentialsEvent(event.getToken(), event.getTokenSecret(), event.getConsumer(), event.getConsumerSecret()));
-        } else {
-            Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_SHORT).show();
-        }
-        loginDialogFragment.dismiss();
-    }
+  @Subscribe(threadMode = ThreadMode.MAIN) public void onValidLoginEvent(ValidLoginEvent event) {
+    Toast.makeText(getApplicationContext(), R.string.valid_login, Toast.LENGTH_SHORT).show();
+    loginDialogFragment.dismiss();
+  }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onValidLoginEvent(ValidLoginEvent event) {
-        Toast.makeText(getApplicationContext(), R.string.valid_login, Toast.LENGTH_SHORT).show();
-        loginDialogFragment.dismiss();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onErrorLoginEvent(ErrorLoginEvent event) {
-        Toast.makeText(getApplicationContext(), R.string.error_first_login, Toast.LENGTH_SHORT).show();
-        loginDialogFragment.resetLoginFields();
-    }
+  @Subscribe(threadMode = ThreadMode.MAIN) public void onErrorLoginEvent(ErrorLoginEvent event) {
+    Toast.makeText(getApplicationContext(), R.string.error_first_login, Toast.LENGTH_SHORT).show();
+    loginDialogFragment.resetLoginFields();
+  }
 
     /*=========================================*/
     /*-----------FOR ANDROID 6.0---------------*/
     /*=========================================*/
-    /**
-     * This method must be called if the android version is 6.0 or higher.
-     * Check if the app has ACCESS_LOCATION (COARSE and FINE) and WRITE_EXTERNAL_STORAGE.
-     * If the app doesn't have both permission, a request is prompted to the user.
-     * For more informations about permission in Android 6.0, please refer to
-     * https://developer.android.com/training/permissions/requesting.html?hl=Fr#explain
-     */
-    private void requestPermissionIfNeeded() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Check if permission are enable by the user. Dangerous permissions requested are :
-            int hasEnableCoarseLocationPerm = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
-            int hasEnableFineLocationPerm = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
-            int hasEnableExternalWritePerm = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-            // Add to list permission to be requested.
-            List<String> permissionToRequest = new ArrayList<>();
-            if (hasEnableCoarseLocationPerm == PackageManager.PERMISSION_DENIED) {
-                permissionToRequest.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-            }
-            if (hasEnableFineLocationPerm == PackageManager.PERMISSION_DENIED) {
-                permissionToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION);
-            }
-            if (hasEnableExternalWritePerm == PackageManager.PERMISSION_DENIED) {
-                permissionToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            }
+  /**
+   * This method must be called if the android version is 6.0 or higher.
+   * Check if the app has ACCESS_LOCATION (COARSE and FINE) and WRITE_EXTERNAL_STORAGE.
+   * If the app doesn't have both permission, a request is prompted to the user.
+   * For more informations about permission in Android 6.0, please refer to
+   * https://developer.android.com/training/permissions/requesting.html?hl=Fr#explain
+   */
+  private void requestPermissionIfNeeded() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      // Check if permission are enable by the user. Dangerous permissions requested are :
+      int hasEnableCoarseLocationPerm = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+      int hasEnableFineLocationPerm = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+      int hasEnableExternalWritePerm = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-            // If the user have already allow permission, launch map activity, else, ask the user to allow permission
-            if (!permissionToRequest.isEmpty()) {
-                requestPermissions(permissionToRequest.toArray(new String[permissionToRequest.size()]), ALLOW_PERMISSIONS);
-            } else {
-                initEvent();
-            }
+      // Add to list permission to be requested.
+      List<String> permissionToRequest = new ArrayList<>();
+      if (hasEnableCoarseLocationPerm == PackageManager.PERMISSION_DENIED) {
+        permissionToRequest.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+      }
+      if (hasEnableFineLocationPerm == PackageManager.PERMISSION_DENIED) {
+        permissionToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION);
+      }
+      if (hasEnableExternalWritePerm == PackageManager.PERMISSION_DENIED) {
+        permissionToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+      }
+
+      // If the user have already allow permission, launch map activity, else, ask the user to allow permission
+      if (!permissionToRequest.isEmpty()) {
+        requestPermissions(permissionToRequest.toArray(new String[permissionToRequest.size()]), ALLOW_PERMISSIONS);
+      } else {
+        initEvent();
+      }
+    }
+  }
+
+  /**
+   * This method is a callback. Check the user's answer after requesting permission.
+   *
+   * @param requestCode app request code (here, we only handle ALLOW_PERMISSION
+   * @param permissions permissions requested (here, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, WRITE_EXTERNAL_STORAGE)
+   * @param grantResults user's decision
+   */
+  @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    // If request is cancelled, the result arrays are empty.
+    if (requestCode == ALLOW_PERMISSIONS && grantResults.length > 0) {
+      List<String> permissionsNotAllowed = new ArrayList<>();
+      // For each permission, check if is granted
+      for (int i = 0; i < permissions.length; i++) {
+        if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+          permissionsNotAllowed.add(permissions[i]);
         }
-    }
+      }
 
-    /**
-     * This method is a callback. Check the user's answer after requesting permission.
-     *
-     * @param requestCode app request code (here, we only handle ALLOW_PERMISSION
-     * @param permissions permissions requested (here, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, WRITE_EXTERNAL_STORAGE)
-     * @param grantResults user's decision
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        // If request is cancelled, the result arrays are empty.
-        if (requestCode == ALLOW_PERMISSIONS && grantResults.length > 0) {
-            List<String> permissionsNotAllowed = new ArrayList<>();
-            // For each permission, check if is granted
-            for (int i = 0; i < permissions.length; i++) {
-                if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                    permissionsNotAllowed.add(permissions[i]);
-                }
-            }
-
-            if (permissionsNotAllowed.isEmpty()) {
-                initEvent();
-            } else {
-                permissionNotEnabled();
-            }
-        } else {
-            permissionNotEnabled();
-        }
+      if (permissionsNotAllowed.isEmpty()) {
+        initEvent();
+      } else {
+        permissionNotEnabled();
+      }
+    } else {
+      permissionNotEnabled();
     }
+  }
 
-    /**
-     * This method is called is a permission (or all permissions) are declined by the user.
-     * If permissions are refused, we indicate why we request permissions and that, whitout it,
-     * the app can not work.
-     */
-    private void permissionNotEnabled() {
-        new LovelyStandardDialog(this)
-                .setTopColorRes(R.color.colorPrimaryDark)
-                .setIcon(R.mipmap.icon)
-                .setTitle(R.string.permissions_title)
-                .setMessage(R.string.permissions_information)
-                .setPositiveButton(android.R.string.ok, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        requestPermissionIfNeeded();
-                    }
-                }).show();
-    }
+  /**
+   * This method is called is a permission (or all permissions) are declined by the user.
+   * If permissions are refused, we indicate why we request permissions and that, whitout it,
+   * the app can not work.
+   */
+  private void permissionNotEnabled() {
+    new LovelyStandardDialog(this).setTopColorRes(R.color.colorPrimaryDark)
+        .setIcon(R.mipmap.icon)
+        .setTitle(R.string.permissions_title)
+        .setMessage(R.string.permissions_information)
+        .setPositiveButton(android.R.string.ok, new View.OnClickListener() {
+          @Override public void onClick(View v) {
+            requestPermissionIfNeeded();
+          }
+        })
+        .show();
+  }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (loginDialogFragment != null) {
-            loginDialogFragment.onActivityResult(requestCode, resultCode, data);
-        }
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (loginDialogFragment != null) {
+      loginDialogFragment.onActivityResult(requestCode, resultCode, data);
     }
+  }
 }

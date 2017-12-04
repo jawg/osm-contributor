@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -46,7 +46,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -137,9 +136,6 @@ public class EditPoiFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            tagItemList = savedInstanceState.getParcelableArrayList(CHANGES_KEY);
-        }
     }
 
     @Override
@@ -315,7 +311,6 @@ public class EditPoiFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
-        savedState.putParcelableArrayList(CHANGES_KEY, new ArrayList<>(tagsAdapter.getTagItemList()));
     }
 
     /*=========================================*/
@@ -344,7 +339,6 @@ public class EditPoiFragment extends Fragment {
                 tagItemList,
                 getActivity(),
                 event.getValuesMap(),
-                configManager,
                 sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
         recyclerView.setAdapter(tagsAdapter);
     }

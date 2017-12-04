@@ -1,24 +1,22 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
 package io.jawg.osmcontributor.flickr.util;
-
-import com.squareup.okhttp.OkHttpClient;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,34 +25,34 @@ import java.util.Map;
 
 import javax.net.ssl.SSLSocketFactory;
 
-import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.flickr.oauth.NoSSLv3SocketFactory;
-import io.jawg.osmcontributor.rest.utils.StringConverter;
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.android.AndroidLog;
-import retrofit.client.OkClient;
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class FlickrUploadUtils {
 
-    public static RestAdapter adapter;
+    public static Retrofit adapter;
 
-    public static RestAdapter getRestAdapter(final Map<String, String> oAuthParams) {
+    public static Retrofit getRestAdapter(final Map<String, String> oAuthParams) {
         if (adapter == null) {
-            OkHttpClient okHttpClient = new OkHttpClient();
             try {
                 SSLSocketFactory NoSSLv3Factory = new NoSSLv3SocketFactory(new URL("https://up.flickr.com/services"));
-                okHttpClient.setSslSocketFactory(NoSSLv3Factory);
-                adapter = new RestAdapter.Builder()
-                        .setConverter(new StringConverter())
-                        .setEndpoint("https://up.flickr.com/services")
-                        .setClient(new OkClient(okHttpClient)).setRequestInterceptor(new RequestInterceptor() {
+                adapter = new Retrofit.Builder()
+                        .addConverterFactory(ScalarsConverterFactory.create())
+                        .baseUrl("https://up.flickr.com/services/")
+                        .client(new okhttp3.OkHttpClient().newBuilder().sslSocketFactory(NoSSLv3Factory).addInterceptor(new Interceptor() {
                             @Override
-                            public void intercept(RequestFacade request) {
-                                request.addHeader("Authorization", FlickrSecurityUtils.getAuthorizationHeader(oAuthParams));
+                            public Response intercept(Chain chain) throws IOException {
+                                Request request = chain.request();
+                                Request newRequest = request.newBuilder()
+                                        .addHeader("Authorization", FlickrSecurityUtils.getAuthorizationHeader(oAuthParams))
+                                        .build();
+                                return chain.proceed(newRequest);
                             }
-                        })
-                        .setLogLevel((BuildConfig.DEBUG) ? RestAdapter.LogLevel.HEADERS_AND_ARGS : RestAdapter.LogLevel.BASIC).setLog(new AndroidLog("---------------------->"))
+                        }).build())
                         .build();
             } catch (MalformedURLException e) {
 

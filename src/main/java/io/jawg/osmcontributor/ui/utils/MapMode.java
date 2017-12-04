@@ -80,9 +80,6 @@ public enum MapMode {
             .zoomOutLimited()
             .lockDrawer()),
 
-    ARPIGL(new MapModeProperties("ArpiGl view")
-            .lockDrawer()),
-
     DEFAULT(new MapModeProperties("Default mode")
             .showAddPoiFab()
             .showDownloadArea()

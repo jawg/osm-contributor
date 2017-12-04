@@ -1,25 +1,34 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
 package io.jawg.osmcontributor.rest;
 
 import android.support.annotation.NonNull;
+
 import com.github.scribejava.core.model.Verb;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.database.PoiAssetLoader;
 import io.jawg.osmcontributor.database.preferences.LoginPreferences;
@@ -33,18 +42,13 @@ import io.jawg.osmcontributor.rest.dtos.osm.NodeDto;
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
 import io.jawg.osmcontributor.rest.dtos.osm.TagDto;
 import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
-import io.jawg.osmcontributor.rest.events.error.SyncDownloadRetrofitErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
 import io.jawg.osmcontributor.rest.mappers.PoiMapper;
 import io.jawg.osmcontributor.rest.utils.AuthenticationRequestInterceptor;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.Box;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.greenrobot.eventbus.EventBus;
-import retrofit.RetrofitError;
-import retrofit.mime.TypedString;
+import retrofit2.Call;
+import retrofit2.Response;
 import timber.log.Timber;
 
 import static java.util.Collections.singletonList;
@@ -54,343 +58,355 @@ import static java.util.Collections.singletonList;
  */
 public class OsmBackend implements Backend {
 
-  PoiManager poiManager;
+    public static final String[] OBJECT_TYPES = new String[]{"node", "way"};
+    private static final String BBOX = "({{bbox}});";
+    PoiManager poiManager;
+    PoiAssetLoader poiAssetLoader;
+    OSMProxy osmProxy;
+    OverpassRestClient overpassRestClient;
+    OsmRestClient osmRestClient;
+    PoiMapper poiMapper;
+    EventBus bus;
+    LoginPreferences loginPreferences;
+    Map<Long, PoiType> poiTypes = null;
 
-  PoiAssetLoader poiAssetLoader;
+    public OsmBackend(LoginPreferences loginPreferences, EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient,
+                      OsmRestClient osmRestClient, PoiMapper poiMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
+        this.loginPreferences = loginPreferences;
+        this.bus = bus;
+        this.osmProxy = osmProxy;
+        this.overpassRestClient = overpassRestClient;
+        this.osmRestClient = osmRestClient;
+        this.poiMapper = poiMapper;
+        this.poiManager = poiManager;
+        this.poiAssetLoader = poiAssetLoader;
+    }
 
-  OSMProxy osmProxy;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String initializeTransaction(String comment) {
+        final OsmDto osmDto = new OsmDto();
+        ChangeSetDto changeSetDto = new ChangeSetDto();
+        List<TagDto> tagDtos = new ArrayList<>();
 
-  OverpassRestClient overpassRestClient;
+        osmDto.setChangeSetDto(changeSetDto);
+        tagDtos.add(new TagDto(comment, "comment"));
+        tagDtos.add(new TagDto(BuildConfig.APP_NAME + " " + BuildConfig.VERSION_NAME, "created_by"));
+        changeSetDto.setTagDtoList(tagDtos);
 
-  OsmRestClient osmRestClient;
-
-  PoiMapper poiMapper;
-
-  EventBus bus;
-
-  LoginPreferences loginPreferences;
-
-  private static final String BBOX = "({{bbox}});";
-
-  public static final String[] OBJECT_TYPES = new String[] { "node", "way" };
-
-  public OsmBackend(LoginPreferences loginPreferences, EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient,
-      OsmRestClient osmRestClient, PoiMapper poiMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
-    this.loginPreferences = loginPreferences;
-    this.bus = bus;
-    this.osmProxy = osmProxy;
-    this.overpassRestClient = overpassRestClient;
-    this.osmRestClient = osmRestClient;
-    this.poiMapper = poiMapper;
-    this.poiManager = poiManager;
-    this.poiAssetLoader = poiAssetLoader;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override public String initializeTransaction(String comment) {
-    final OsmDto osmDto = new OsmDto();
-    ChangeSetDto changeSetDto = new ChangeSetDto();
-    List<TagDto> tagDtos = new ArrayList<>();
-
-    osmDto.setChangeSetDto(changeSetDto);
-    tagDtos.add(new TagDto(comment, "comment"));
-    tagDtos.add(new TagDto(BuildConfig.APP_NAME + " " + BuildConfig.VERSION_NAME, "created_by"));
-    changeSetDto.setTagDtoList(tagDtos);
-
-    OSMProxy.Result<String> result = osmProxy.proceed(new OSMProxy.NetworkAction<String>() {
-      @Override public String proceed() {
-
-        String changeSetId;
+        Call<String> callChangeSet;
         if (loginPreferences.retrieveOAuthParams() != null) {
-          changeSetId = osmRestClient.addChangeSet(
-              AuthenticationRequestInterceptor.getOAuthRequest(loginPreferences, BuildConfig.BASE_OSM_URL + "changeset/create", Verb.PUT)
-                  .getOAuthHeader(), osmDto);
+            callChangeSet = osmRestClient.addChangeSet(
+                    AuthenticationRequestInterceptor.getOAuthRequest(loginPreferences, BuildConfig.BASE_OSM_URL + "changeset/create", Verb.PUT)
+                            .getOAuthHeader(), osmDto);
         } else {
-          changeSetId = osmRestClient.addChangeSet(osmDto);
+            callChangeSet = osmRestClient.addChangeSet(osmDto);
         }
-        Timber.d("Retrieved changeSet Id: %s", changeSetId);
-        return changeSetId;
-      }
-    });
 
-    if (result.isSuccess()) {
-      return result.getResult();
-    } else if (result.getRetrofitError() != null) {
-      RetrofitError retrofitError = result.getRetrofitError();
-      Timber.e(retrofitError, "Retrofit error, couldn't create Changeset!");
-      bus.post(new SyncUploadRetrofitErrorEvent(-1L));
+        try {
+            Response<String> response = callChangeSet.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+        } catch (IOException e) {
+            Timber.e("Retrofit error, couldn't create Changeset!");
+        }
+        bus.post(new SyncUploadRetrofitErrorEvent(-1L));
+        return null;
     }
 
-    return null;
-  }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NonNull
+    public List<Poi> getPoisInBox(final Box box) throws NetworkException {
+        return poiMapper.convertPois(getPoisDtosInBox(box));
+    }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override @NonNull public List<Poi> getPoisInBox(final Box box) {
-    Timber.d("Requesting overpass for download");
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NonNull
+    public List<OsmDto> getPoisDtosInBox(final Box box) throws NetworkException {
+        Timber.d("Requesting overpass for download");
 
-    List<Poi> poiList = new ArrayList<>();
-    final Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
-    for (Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
-      final PoiType poiTypeDto = entry.getValue();
-      if (poiTypeDto.getQuery() != null) {
-        OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
-          @Override public OsmDto proceed() {
-            // if it is a customize overpass request which contain ({{bbox}})
-            // replace it by the coordinates of the current position
-            if (poiTypeDto.getQuery().contains(BBOX)) {
-              String format = poiTypeDto.getQuery().replace(BBOX, box.osmFormat());
-              return overpassRestClient.sendRequest(new TypedString(format));
+        List<OsmDto> osmDtos = new ArrayList<>();
+
+        if (poiTypes == null || poiTypes.isEmpty()) {
+            poiTypes = poiManager.loadPoiTypes();
+        }
+
+        for (Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
+            final PoiType poiTypeDto = entry.getValue();
+            if (poiTypeDto.getQuery() != null) {
+                OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
+                    @Override
+                    public OsmDto proceed() {
+                        // if it is a customize overpass request which contain ({{bbox}})
+                        // replace it by the coordinates of the current position
+                        if (poiTypeDto.getQuery().contains(BBOX)) {
+                            String format = poiTypeDto.getQuery().replace(BBOX, box.osmFormat());
+                            try {
+                                return overpassRestClient.sendRequest(format).execute().body();
+                            } catch (IOException e) {
+                                return null;
+                            }
+                        } else {
+                            try {
+                                return overpassRestClient.sendRequest(poiTypeDto.getQuery()).execute().body();
+                            } catch (IOException e) {
+                                return null;
+                            }
+                        }
+                    }
+                });
+
+                if (result != null) {
+                    OsmDto osmDto = result.getResult();
+                    if (osmDto != null) {
+                        osmDtos.add(osmDto);
+                    } else {
+                        throw new NetworkException();
+                    }
+                    poiTypes.remove(entry.getKey());
+                } else {
+                    throw new NetworkException();
+                }
+            }
+        }
+
+        if (!poiTypes.isEmpty()) {
+            OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
+                @Override
+                public OsmDto proceed() {
+                    String request = generateOverpassRequest(box, poiTypes);
+                    try {
+                        return overpassRestClient.sendRequest(request).execute().body();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }
+            });
+            if (result != null) {
+                OsmDto osmDto = result.getResult();
+                if (osmDto != null) {
+                    osmDtos.add(osmDto);
+                } else {
+                    throw new NetworkException();
+                }
             } else {
-              return overpassRestClient.sendRequest(new TypedString(poiTypeDto.getQuery()));
+                throw new NetworkException();
             }
-          }
-        });
-        if (!result.isSuccess()) {
-          if (result.getRetrofitError() != null) {
-            Timber.e(result.getRetrofitError(), "Retrofit error, couldn't download from overpass");
-          }
-          bus.post(new SyncDownloadRetrofitErrorEvent());
-          return new ArrayList<>();
         }
-        OsmDto osmDto = result.getResult();
-        poiList.addAll(convertPois(osmDto));
-        poiTypes.remove(entry.getKey());
-      }
+        return osmDtos;
     }
 
-    if (!poiTypes.isEmpty()) {
-      OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
-        @Override public OsmDto proceed() {
-          String request = generateOverpassRequest(box, poiTypes);
-          return overpassRestClient.sendRequest(new TypedString(request));
-        }
-      });
+    /**
+     * Generate a String corresponding to an Overpass request
+     * which will call all the POI given by the map.
+     *
+     * @param box      The coordinates of each direction of the map
+     * @param poiTypes Map of poiTypes depending the preset loaded
+     * @return A String of the request.
+     */
+    private String generateOverpassRequest(Box box, Map<Long, PoiType> poiTypes) {
+        StringBuilder cmplReq = new StringBuilder("(");
 
-      if (!result.isSuccess()) {
-        if (result.getRetrofitError() != null) {
-          Timber.e(result.getRetrofitError(), "Retrofit error, couldn't download from overpass");
-        }
-        bus.post(new SyncDownloadRetrofitErrorEvent());
-        return new ArrayList<>();
-      }
-
-      OsmDto osmDto = result.getResult();
-      poiList.addAll(convertPois(osmDto));
-    }
-    return poiList;
-  }
-
-  @NonNull private List<Poi> convertPois(OsmDto osmDto) {
-    List<Poi> pois = poiMapper.convertDtosToPois(osmDto.getNodeDtoList());
-    pois.addAll(poiMapper.convertDtosToPois(osmDto.getWayDtoList()));
-    return pois;
-  }
-
-  /**
-   * Generate a String corresponding to an Overpass request
-   * which will call all the POI given by the map.
-   *
-   * @param box The coordinates of each direction of the map
-   * @param poiTypes Map of poiTypes depending the preset loaded
-   * @return A String of the request.
-   */
-  private String generateOverpassRequest(Box box, Map<Long, PoiType> poiTypes) {
-    StringBuilder cmplReq = new StringBuilder("(");
-
-    if (poiTypes.size() > 15) {
-      // we've got lots of pois, overpath will struggle with the finer request, download all the pois in the box
-      for (String type : OBJECT_TYPES) {
-        for (String key : poiManager.loadPoiTypeKeysWithDefaultValues()) {
-          cmplReq.append(type).append("[\"").append(key).append("\"]").append(box.osmFormat());
-        }
-      }
-    } else {
-      // Download all the pois in the box who are of one of the PoiType contained in the database
-      for (String type : OBJECT_TYPES) {
-        // For each poiTypes, add the corresponding part to the request
-        for (PoiType poiTypeDto : poiTypes.values()) {
-          // Check for tags who have a value and add a ["key"~"value"] string to the request
-          boolean valid = false;
-          for (PoiTypeTag poiTypeTag : poiTypeDto.getTags()) {
-            if (poiTypeTag.getValue() != null) {
-              if (!valid) {
-                cmplReq.append(type);
-              }
-              valid = true;
-              cmplReq.append("[\"").append(poiTypeTag.getKey()).append("\"~\"").append(poiTypeTag.getValue()).append("\"]");
+        if (poiTypes.size() > 15) {
+            List<String> types = poiManager.loadPoiTypeKeysWithDefaultValues();
+            // we've got lots of pois, overpath will struggle with the finer request, download all the pois in the box
+            for (String type : OBJECT_TYPES) {
+                for (String key : types) {
+                    cmplReq.append(type).append("[\"").append(key).append("\"]").append(box.osmFormat());
+                }
             }
-          }
-          // If there was at least one tag with a value, add the box coordinates to the request
-          if (valid) {
-            cmplReq.append(box.osmFormat());
-          }
-        }
-      }
-    }
-
-    cmplReq.append(");out meta center;");
-    return cmplReq.toString();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override public CreationResult addPoi(final Poi poi, String transactionId) {
-    final OsmDto osmDto = new OsmDto();
-
-    if (poi.getWay()) {
-      WayDto nodeDto = poiMapper.convertPoiToWayDto(poi, transactionId);
-      osmDto.setWayDtoList(singletonList(nodeDto));
-    } else {
-      NodeDto nodeDto = poiMapper.convertPoiToNodeDto(poi, transactionId);
-      osmDto.setNodeDtoList(singletonList(nodeDto));
-    }
-
-    OSMProxy.Result<String> result = osmProxy.proceed(new OSMProxy.NetworkAction<String>() {
-      @Override public String proceed() {
-        String nodeId;
-        if (poi.getWay()) {
-          nodeId = osmRestClient.addWay(osmDto);
-          Timber.d("Created way with id: %s", nodeId);
         } else {
-          nodeId = osmRestClient.addNode(osmDto);
-          Timber.d("Created node with id: %s", nodeId);
+            // Download all the pois in the box who are of one of the PoiType contained in the database
+            for (String type : OBJECT_TYPES) {
+                // For each poiTypes, add the corresponding part to the request
+                for (PoiType poiTypeDto : poiTypes.values()) {
+                    // Check for tags who have a value and add a ["key"~"value"] string to the request
+                    boolean valid = false;
+                    for (PoiTypeTag poiTypeTag : poiTypeDto.getTags()) {
+                        if (poiTypeTag.getValue() != null) {
+                            if (!valid) {
+                                cmplReq.append(type);
+                            }
+                            valid = true;
+                            cmplReq.append("[\"").append(poiTypeTag.getKey()).append("\"~\"").append(poiTypeTag.getValue()).append("\"]");
+                        }
+                    }
+                    // If there was at least one tag with a value, add the box coordinates to the request
+                    if (valid) {
+                        cmplReq.append(box.osmFormat());
+                    }
+                }
+            }
         }
-        return nodeId;
-      }
-    });
 
-    if (result.isSuccess()) {
-      return new CreationResult(ModificationStatus.SUCCESS, result.getResult());
-    }
-    Timber.e(result.getRetrofitError(), "Couldn't add node %s", poi);
-    return new CreationResult(ModificationStatus.FAILURE_UNKNOWN, null);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override public UpdateResult updatePoi(final Poi poi, String transactionId) {
-    final OsmDto osmDto = new OsmDto();
-
-    if (poi.getWay()) {
-      WayDto nodeDto = poiMapper.convertPoiToWayDto(poi, transactionId);
-      osmDto.setWayDtoList(singletonList(nodeDto));
-    } else {
-      NodeDto nodeDto = poiMapper.convertPoiToNodeDto(poi, transactionId);
-      osmDto.setNodeDtoList(singletonList(nodeDto));
+        cmplReq.append(");out meta center;");
+        return cmplReq.toString();
     }
 
-    OSMProxy.Result<String> result = osmProxy.proceed(new OSMProxy.NetworkAction<String>() {
-      @Override public String proceed() {
-        String version;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CreationResult addPoi(final Poi poi, String transactionId) {
+        final OsmDto osmDto = new OsmDto();
+
         if (poi.getWay()) {
-          version = osmRestClient.updateWay(poi.getBackendId(), osmDto);
-          Timber.d("Updated way with new version: %s", version);
+            WayDto nodeDto = poiMapper.convertPoiToWayDto(poi, transactionId);
+            osmDto.setWayDtoList(singletonList(nodeDto));
         } else {
-          version = osmRestClient.updateNode(poi.getBackendId(), osmDto);
-          Timber.d("Updated node with new version: %s", version);
+            NodeDto nodeDto = poiMapper.convertPoiToNodeDto(poi, transactionId);
+            osmDto.setNodeDtoList(singletonList(nodeDto));
         }
-        return version;
-      }
-    });
 
-    if (result.isSuccess()) {
-      return new UpdateResult(ModificationStatus.SUCCESS, result.getResult());
+        Call<String> getCall;
+        if (poi.getWay()) {
+            getCall = osmRestClient.addWay(osmDto);
+        } else {
+            getCall = osmRestClient.addNode(osmDto);
+        }
+
+        try {
+            Response<String> response = getCall.execute();
+            if (response.isSuccessful()) {
+                return new CreationResult(ModificationStatus.SUCCESS, response.body());
+            }
+        } catch (IOException e) {
+            Timber.e(e, e.getMessage());
+        }
+        return new CreationResult(ModificationStatus.FAILURE_UNKNOWN, null);
     }
 
-    if (result.getRetrofitError() != null) {
-      RetrofitError e = result.getRetrofitError();
-      if (e.getResponse() != null && e.getResponse().getStatus() == 400) {
-        Timber.e(e, "Couldn't update node, conflicting version");
-        return new UpdateResult(ModificationStatus.FAILURE_CONFLICT, null);
-      } else if (e.getResponse() != null && e.getResponse().getStatus() == 404) {
-        Timber.e(e, "Couldn't update node, no existing node found with the id " + poi.getId());
-        return new UpdateResult(ModificationStatus.FAILURE_NOT_EXISTING, null);
-      } else {
-        Timber.e(e, "Couldn't update node");
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UpdateResult updatePoi(final Poi poi, String transactionId) {
+        final OsmDto osmDto = new OsmDto();
+
+        if (poi.getWay()) {
+            WayDto nodeDto = poiMapper.convertPoiToWayDto(poi, transactionId);
+            osmDto.setWayDtoList(singletonList(nodeDto));
+        } else {
+            NodeDto nodeDto = poiMapper.convertPoiToNodeDto(poi, transactionId);
+            osmDto.setNodeDtoList(singletonList(nodeDto));
+        }
+
+        Call<String> versionCall;
+        if (poi.getWay()) {
+            versionCall = osmRestClient.updateWay(poi.getBackendId(), osmDto);
+        } else {
+            versionCall = osmRestClient.updateNode(poi.getBackendId(), osmDto);
+        }
+
+        try {
+            Response<String> response = versionCall.execute();
+            if (response.isSuccessful()) {
+                return new UpdateResult(ModificationStatus.SUCCESS, response.body());
+            } else {
+                if (response.code() == 400) {
+                    Timber.e("Couldn't update node, conflicting version");
+                    return new UpdateResult(ModificationStatus.FAILURE_CONFLICT, null);
+                } else if (response.code() == 404) {
+                    Timber.e("Couldn't update node, no existing node found with the id " + poi.getId());
+                    return new UpdateResult(ModificationStatus.FAILURE_NOT_EXISTING, null);
+                } else {
+                    Timber.e("Couldn't update node");
+                    return new UpdateResult(ModificationStatus.FAILURE_UNKNOWN, null);
+                }
+            }
+        } catch (IOException e) {
+            Timber.e(e, e.getMessage());
+        }
         return new UpdateResult(ModificationStatus.FAILURE_UNKNOWN, null);
-      }
-    }
-    return new UpdateResult(ModificationStatus.FAILURE_UNKNOWN, null);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override public ModificationStatus deletePoi(final Poi poi, String transactionId) {
-    final OsmDto osmDto = new OsmDto();
-
-    if (poi.getWay()) {
-      WayDto nodeDto = poiMapper.convertPoiToWayDto(poi, transactionId);
-      osmDto.setWayDtoList(singletonList(nodeDto));
-    } else {
-      NodeDto nodeDto = poiMapper.convertPoiToNodeDto(poi, transactionId);
-      osmDto.setNodeDtoList(singletonList(nodeDto));
     }
 
-    OSMProxy.Result<Void> result = osmProxy.proceed(new OSMProxy.NetworkAction<Void>() {
-      @Override public Void proceed() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ModificationStatus deletePoi(final Poi poi, String transactionId) {
+        final OsmDto osmDto = new OsmDto();
+
         if (poi.getWay()) {
-          osmRestClient.deleteWay(poi.getBackendId(), osmDto);
-          Timber.d("Deleted way %s", poi.getBackendId());
+            WayDto nodeDto = poiMapper.convertPoiToWayDto(poi, transactionId);
+            osmDto.setWayDtoList(singletonList(nodeDto));
         } else {
-          osmRestClient.deleteNode(poi.getBackendId(), osmDto);
-          Timber.d("Deleted node %s", poi.getBackendId());
+            NodeDto nodeDto = poiMapper.convertPoiToNodeDto(poi, transactionId);
+            osmDto.setNodeDtoList(singletonList(nodeDto));
+        }
+
+        Call<String> deleteCall;
+        if (poi.getWay()) {
+            deleteCall = osmRestClient.deleteWay(poi.getBackendId(), osmDto);
+            Timber.d("Deleted way %s", poi.getBackendId());
+        } else {
+            deleteCall = osmRestClient.deleteNode(poi.getBackendId(), osmDto);
+            Timber.d("Deleted node %s", poi.getBackendId());
         }
         poiManager.deletePoi(poi);
-        return null;
-      }
-    });
 
-    if (result.isSuccess()) {
-      return ModificationStatus.SUCCESS;
+        try {
+            Response<String> response = deleteCall.execute();
+            if (response.isSuccessful()) {
+                return ModificationStatus.SUCCESS;
+            } else {
+                if (response.code() == 400) {
+                    return ModificationStatus.FAILURE_CONFLICT;
+                } else if (response.code() == 404) {
+                    //the point doesn't exist
+                    return ModificationStatus.FAILURE_NOT_EXISTING;
+                } else if (response.code() == 410) {
+                    //the poi was already deleted
+                    return ModificationStatus.FAILURE_NOT_EXISTING;
+                }
+            }
+        } catch (IOException e) {
+            Timber.e(e, e.getMessage());
+        }
+        return ModificationStatus.FAILURE_UNKNOWN;
     }
 
-    RetrofitError retrofitError = result.getRetrofitError();
-    if (retrofitError != null) {
-      if (retrofitError.getResponse() != null && retrofitError.getResponse().getStatus() == 400) {
-        return ModificationStatus.FAILURE_CONFLICT;
-      } else if (retrofitError.getResponse() != null && retrofitError.getResponse().getStatus() == 404) {
-        //the point doesn't exist
-        return ModificationStatus.FAILURE_NOT_EXISTING;
-      } else if (retrofitError.getResponse() != null && retrofitError.getResponse().getStatus() == 410) {
-        //the poi was already deleted
-        return ModificationStatus.FAILURE_NOT_EXISTING;
-      }
-    }
-    return ModificationStatus.FAILURE_UNKNOWN;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override public Poi getPoiById(final String backendId) {
-    OSMProxy.Result<Poi> result = osmProxy.proceed(new OSMProxy.NetworkAction<Poi>() {
-      @Override public Poi proceed() {
-        OsmDto osmDtoRetrievedNode = osmRestClient.getNode(backendId);
-        List<NodeDto> nodeDtoList = osmDtoRetrievedNode.getNodeDtoList();
-        if (nodeDtoList != null && nodeDtoList.size() > 0) {
-          List<Poi> pois = poiMapper.convertDtosToPois(nodeDtoList);
-          if (pois.size() > 0) {
-            return pois.get(0);
-          }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Poi getPoiById(final String backendId) {
+        Call<OsmDto> osmDtoRetrievedNode = osmRestClient.getNode(backendId);
+        try {
+            Response<OsmDto> response = osmDtoRetrievedNode.execute();
+            if (response.isSuccessful()) {
+                OsmDto osmDto = response.body();
+                if (osmDto != null) {
+                    List<NodeDto> nodeDtoList = osmDto.getNodeDtoList();
+                    if (nodeDtoList != null && nodeDtoList.size() > 0) {
+                        List<Poi> pois = poiMapper.convertDtosToPois(nodeDtoList);
+                        if (pois.size() > 0) {
+                            return pois.get(0);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            Timber.e(e, e.getMessage());
         }
         return null;
-      }
-    });
+    }
 
-    return result.getResult();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override public List<PoiType> getPoiTypes() {
-    return poiAssetLoader.loadPoiTypesByDefault();
-  }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PoiType> getPoiTypes() {
+        return poiAssetLoader.loadPoiTypesByDefault();
+    }
 }

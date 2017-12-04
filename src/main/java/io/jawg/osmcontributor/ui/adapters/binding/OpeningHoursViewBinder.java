@@ -48,7 +48,7 @@ public class OpeningHoursViewBinder extends CheckedTagViewBinder<TagItemOpeningT
         this.content = holder.getContent();
         this.tagItem = tagItem;
 
-        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), holder.getContent().getContext()));
 
         OpeningTime openingTime = null;
         try {

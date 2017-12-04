@@ -5,8 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.lang.ref.WeakReference;
+import android.widget.RelativeLayout;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
@@ -14,17 +13,10 @@ import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagItemConstantViewHolder;
 
-/**
- * Created by capaldi on 05/07/17.
- */
-
 public class ConstantViewBinder implements TagViewBinder<TagItemConstantViewHolder> {
-
-    private WeakReference<Activity> activity;
 
     public ConstantViewBinder(Activity activity) {
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
-        this.activity = new WeakReference<>(activity);
     }
 
     @Override
@@ -34,8 +26,11 @@ public class ConstantViewBinder implements TagViewBinder<TagItemConstantViewHold
 
     @Override
     public void onBindViewHolder(TagItemConstantViewHolder holder, TagItem tagItem) {
-        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), holder.getContent().getContext()));
         holder.getTextViewValue().setText(tagItem.getValue());
+        if (!tagItem.isShow()) {
+            ((RelativeLayout) holder.getContent().getParent()).setVisibility(View.GONE);
+        }
     }
 
     @Override

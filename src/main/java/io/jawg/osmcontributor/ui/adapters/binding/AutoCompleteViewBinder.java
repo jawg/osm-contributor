@@ -9,29 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.lang.ref.WeakReference;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
-import io.jawg.osmcontributor.ui.events.edition.PleaseApplyTagChange;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHolder;
-
-/**
- * Created by capaldi on 05/07/17.
- */
 
 public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoCompleteViewHolder> {
 
-    private WeakReference<EventBus> eventBus;
-
-    public AutoCompleteViewBinder(Activity activity, EventBus eventBus) {
+    public AutoCompleteViewBinder(Activity activity) {
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
         this.activity = new WeakReference<>(activity);
-        this.eventBus = new WeakReference<>(eventBus);
     }
 
     @Override
@@ -40,13 +30,13 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
     }
 
     @Override
-    public void onBindViewHolder(final TagItemAutoCompleteViewHolder holder, TagItem tagItem) {
+    public void onBindViewHolder(final TagItemAutoCompleteViewHolder holder, final TagItem tagItem) {
         // Save holder
         this.content = holder.getContent();
         this.tagItem = tagItem;
 
         // Set values input
-        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey()));
+        holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), activity.get()));
         holder.getTextViewValue().setText(tagItem.getValue());
         holder.getTextInputLayout().setHint(tagItem.getKey());
 
@@ -68,7 +58,7 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (i1 != i2) {
-                    eventBus.get().post(new PleaseApplyTagChange(holder.getTextViewKey().getText().toString(), charSequence.toString()));
+                    tagItem.setValue(charSequence.toString());
                 }
             }
 

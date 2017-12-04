@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 
     Copyright (C) 2016 eBusiness Information
 
@@ -19,8 +18,7 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -34,7 +32,7 @@
 
         <include
             android:id="@+id/toolbar"
-            layout="@layout/toolbar_layout"/>
+            layout="@layout/toolbar_layout" />
 
         <TextView
             android:id="@+id/title"
@@ -46,7 +44,7 @@
             android:shadowRadius="2"
             android:text="@string/template_name"
             android:textColor="@color/colorPrimary"
-            android:textSize="40sp"/>
+            android:textSize="40sp" />
 
         <TextView
             android:id="@+id/mapsquare"
@@ -54,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/title"
             android:layout_centerHorizontal="true"
-            android:textSize="24sp"/>
+            android:textSize="24sp" />
 
         <ImageView
             android:id="@+id/splash_image"
@@ -63,7 +61,7 @@
             android:layout_below="@+id/mapsquare"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:src="@drawable/splash"/>
+            android:src="@drawable/splash" />
 
         <TextView
             android:id="@+id/contribute_to"
@@ -76,7 +74,7 @@
             android:drawablePadding="5dp"
             android:drawableRight="@drawable/logo_osm"
             android:gravity="center"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/edited_by"
@@ -89,7 +87,7 @@
             android:drawablePadding="5dp"
             android:drawableRight="@drawable/logo_ebusiness"
             android:gravity="center"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/powered_by"
@@ -101,7 +99,7 @@
             android:drawablePadding="5dp"
             android:drawableRight="@drawable/logo_dma"
             android:gravity="center"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/licenses_button"
@@ -111,7 +109,18 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginTop="10dp"
-            android:text="@string/licenses_title"/>
+            android:text="@string/licenses_title" />
+
+
+        <TextView
+            android:id="@+id/thanks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/licenses_button"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:gravity="center"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/version_text"
@@ -119,9 +128,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/licenses_button"
-            android:layout_marginRight="10dp"
+            android:layout_below="@+id/thanks"
+            android:layout_marginBottom="5dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="5dp"/>
+            android:layout_marginRight="10dp" />
     </RelativeLayout>
 </ScrollView>

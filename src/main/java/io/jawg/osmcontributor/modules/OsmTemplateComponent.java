@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -34,9 +34,9 @@ import io.jawg.osmcontributor.database.helper.OsmSqliteOpenHelper;
 import io.jawg.osmcontributor.flickr.oauth.FlickrOAuth;
 import io.jawg.osmcontributor.login.LoginModule;
 import io.jawg.osmcontributor.rest.CommonSyncModule;
-import io.jawg.osmcontributor.rest.security.GoogleOAuthManager;
 import io.jawg.osmcontributor.rest.managers.H2GeoPresetsManager;
 import io.jawg.osmcontributor.rest.managers.SyncManager;
+import io.jawg.osmcontributor.rest.security.GoogleOAuthManager;
 import io.jawg.osmcontributor.service.CancelButtonReceiver;
 import io.jawg.osmcontributor.service.OfflineRegionDownloadService;
 import io.jawg.osmcontributor.service.OfflineRegionModule;
@@ -60,6 +60,7 @@ import io.jawg.osmcontributor.ui.adapters.binding.AutoCompleteViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.ConstantViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.OpeningHoursViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.RadioChoiceViewBinder;
+import io.jawg.osmcontributor.ui.adapters.binding.ShelterChoiceViewBinder;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningMonthValueParser;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.jawg.osmcontributor.ui.dialogs.AddValueDialogFragment;
@@ -81,7 +82,6 @@ import io.jawg.osmcontributor.ui.managers.TypeManager;
 import io.jawg.osmcontributor.ui.managers.WaysManager;
 import io.jawg.osmcontributor.ui.presenters.MapFragmentPresenter;
 import io.jawg.osmcontributor.ui.presenters.TypeListActivityPresenter;
-import io.jawg.osmcontributor.utils.core.ArpiInitializer;
 import io.jawg.osmcontributor.utils.core.CoreModule;
 import io.jawg.osmcontributor.utils.ways.Geocoder;
 
@@ -105,6 +105,8 @@ public interface OsmTemplateComponent {
     void inject(OpeningHoursViewBinder b);
 
     void inject(AutoCompleteViewBinder b);
+
+    void inject(ShelterChoiceViewBinder b);
 
     void inject(ConstantViewBinder b);
 
@@ -182,8 +184,6 @@ public interface OsmTemplateComponent {
     WaysManager getEditVectorialWayManager();
 
     Geocoder getGeocoder();
-
-    ArpiInitializer getArpiInitializer();
 
     // Database
 

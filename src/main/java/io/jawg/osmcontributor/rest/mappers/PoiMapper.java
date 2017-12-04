@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -31,8 +31,10 @@ import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
+import io.jawg.osmcontributor.rest.NetworkException;
 import io.jawg.osmcontributor.rest.dtos.osm.NdDto;
 import io.jawg.osmcontributor.rest.dtos.osm.NodeDto;
+import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
 import io.jawg.osmcontributor.rest.dtos.osm.PoiDto;
 import io.jawg.osmcontributor.rest.dtos.osm.TagDto;
 import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
@@ -47,6 +49,23 @@ public class PoiMapper {
     public PoiMapper(PoiTypeDao poiTypeDao, PoiTagMapper poiTagMapper) {
         this.poiTypeDao = poiTypeDao;
         this.poiTagMapper = poiTagMapper;
+    }
+
+    public List<Poi> convertPois(OsmDto osmDto) {
+        if (osmDto != null) {
+            throw new NetworkException();
+        }
+        List<Poi> pois = convertDtosToPois(osmDto.getNodeDtoList());
+        pois.addAll(convertDtosToPois(osmDto.getWayDtoList()));
+        return pois;
+    }
+
+    public List<Poi> convertPois(List<OsmDto> osmDtos) {
+        List<Poi> pois = new ArrayList<>();
+        for (OsmDto osmDto : osmDtos) {
+            pois.addAll(convertPois(osmDto));
+        }
+        return pois;
     }
 
     public Poi convertNodeDtoToPoi(PoiDto dto) {
@@ -66,57 +85,67 @@ public class PoiMapper {
         if (dtos != null) {
             List<PoiType> availableTypes = poiTypeDao.queryForAll();
             for (PoiDto dto : dtos) {
-                PoiType type;
+                Poi poi = convertDtoToPoi(typeFiltering, availableTypes, dto);
+                if (poi != null) {
+                    result.add(poi);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public Poi convertDtoToPoi(boolean typeFiltering, List<PoiType> availableTypes, PoiDto dto) {
+        List<PoiNodeRef> nodeRefs = new ArrayList<>();
+        List<PoiTag> tags = new ArrayList<>();
+
+        PoiType type;
                 if (FlavorUtils.isBus()) {
                     type = availableTypes.get(0);
                 } else {
                     type = findType(dto, availableTypes);
                 }
-                if (type == null && typeFiltering) {
-                    continue; // poi not of an available type
-                }
-                Poi poi = new Poi();
-                poi.setType(type);
-                poi.setLatitude(dto.getLat());
-                poi.setLongitude(dto.getLon());
-                poi.setBackendId(dto.getId());
-                poi.setVersion(String.valueOf(dto.getVersion()));
-                poi.setUpdated(false);
-                poi.setUpdateDate(dto.getTimestamp());
-                poi.setWay(dto.isWay());
-                List<PoiTag> tags = new ArrayList<>(dto.getTagsDtoList().size());
-                for (TagDto tagDto : dto.getTagsDtoList()) {
-                    PoiTag tag = new PoiTag();
-                    tag.setPoi(poi);
-                    tag.setKey(tagDto.getKey());
-                    tag.setValue(tagDto.getValue());
-                    tags.add(tag);
-                    if (tag.getKey().equals("name")) {
-                        poi.setName(tag.getValue());
-                    }
-                    if (tag.getKey().equals("level")) {
-                        poi.setLevel(tag.getValue());
-                    }
-                }
-                poi.setTags(tags);
+        if (type == null && typeFiltering) {
+            return null;
+        }
+        Poi poi = new Poi();
+        poi.setType(type);
+        poi.setLatitude(dto.getLat());
+        poi.setLongitude(dto.getLon());
+        poi.setBackendId(dto.getId());
+        poi.setVersion(String.valueOf(dto.getVersion()));
+        poi.setUpdated(false);
+        poi.setUpdateDate(dto.getTimestamp());
+        poi.setWay(dto.isWay());
 
-                List<PoiNodeRef> nodeRefs = new ArrayList<>();
-                int counter = 0;
-                for (NdDto ndDto : dto.getNdDtoList()) {
-                    PoiNodeRef nodeRef = new PoiNodeRef();
-                    nodeRef.setPoi(poi);
-                    nodeRef.setNodeBackendId(ndDto.getRef());
-                    nodeRef.setOrdinal(counter++);
-                    nodeRef.setLatitude(ndDto.getLat());
-                    nodeRef.setLongitude(ndDto.getLon());
-                    nodeRef.setUpdated(false);
-                    nodeRefs.add(nodeRef);
-                }
-                poi.setNodeRefs(nodeRefs);
-                result.add(poi);
+        for (TagDto tagDto : dto.getTagsDtoList()) {
+            PoiTag tag = new PoiTag();
+            tag.setPoi(poi);
+            tag.setKey(tagDto.getKey());
+            tag.setValue(tagDto.getValue());
+            tags.add(tag);
+            if (tag.getKey().equals("name")) {
+                poi.setName(tag.getValue());
+            }
+            if (tag.getKey().equals("level")) {
+                poi.setLevel(tag.getValue());
             }
         }
-        return result;
+        poi.setTags(tags);
+
+        int counter = 0;
+        for (NdDto ndDto : dto.getNdDtoList()) {
+            PoiNodeRef nodeRef = new PoiNodeRef();
+            nodeRef.setPoi(poi);
+            nodeRef.setNodeBackendId(ndDto.getRef());
+            nodeRef.setOrdinal(counter++);
+            nodeRef.setLatitude(ndDto.getLat());
+            nodeRef.setLongitude(ndDto.getLon());
+            nodeRef.setUpdated(false);
+            nodeRefs.add(nodeRef);
+        }
+        poi.setNodeRefs(nodeRefs);
+        return poi;
     }
 
     public List<NodeDto> convertPoisToNodeDtos(List<Poi> pois, String changeSetId) {
@@ -168,10 +197,13 @@ public class PoiMapper {
     }
 
     private PoiType findType(PoiDto dto, List<PoiType> availableTypes) {
+        int tagsWithValues;
+        int matchingTags;
         if (dto.getTagsDtoList() != null) {
+            typeLoop:
             for (PoiType type : availableTypes) {
-                int tagsWithValues = 0;
-                int matchingTags = 0;
+                tagsWithValues = 0;
+                matchingTags = 0;
                 for (PoiTypeTag poiTypeTag : type.getTags()) {
                     if (poiTypeTag.getValue() != null) {
                         tagsWithValues++;
@@ -179,6 +211,9 @@ public class PoiMapper {
                             if (tagDto.getKey().equals(poiTypeTag.getKey())) {
                                 if (tagDto.getValue().equals(poiTypeTag.getValue())) {
                                     matchingTags++;
+                                } else {
+                                    //one error it's not the good type
+                                    continue typeLoop;
                                 }
                             }
                         }

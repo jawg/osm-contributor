@@ -4,10 +4,6 @@ package io.jawg.osmcontributor.ui.activities;
 import android.util.Base64;
 
 import com.github.scribejava.core.model.Verb;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,6 +13,9 @@ import javax.inject.Inject;
 import io.jawg.osmcontributor.database.preferences.LoginPreferences;
 import io.jawg.osmcontributor.rest.security.OAuthParams;
 import io.jawg.osmcontributor.rest.security.OAuthRequest;
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
 import timber.log.Timber;
 
 
@@ -37,13 +36,14 @@ public class AuthorisationInterceptor implements Interceptor {
     public AuthorisationInterceptor(LoginPreferences loginPreferences) {
         this.loginPreferences = loginPreferences;
     }
+
     @Override
     public Response intercept(Chain chain) throws IOException {
         Map<String, String> oAuthParams = loginPreferences.retrieveOAuthParams();
 
         if (oAuthParams != null) {
             Request originalRequest = chain.request();
-            String requestUrl = originalRequest.urlString();
+            String requestUrl = originalRequest.url().toString();
 
             OAuthRequest oAuthRequest = new OAuthRequest(oAuthParams.get(CONSUMER_PARAM), oAuthParams.get(CONSUMER_SECRET_PARAM));
             oAuthRequest.initParam(OAuthParams.getOAuthParams().put(TOKEN_PARAM, oAuthParams.get(TOKEN_PARAM)).toMap());

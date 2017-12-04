@@ -1,24 +1,28 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
 package io.jawg.osmcontributor.ui.managers;
 
 import android.app.Application;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,31 +32,23 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import io.jawg.osmcontributor.utils.ConfigManager;
-import io.jawg.osmcontributor.database.helper.DatabaseHelper;
 import io.jawg.osmcontributor.database.dao.CommentDao;
 import io.jawg.osmcontributor.database.dao.NoteDao;
-import io.jawg.osmcontributor.model.events.NoteLoadedEvent;
-import io.jawg.osmcontributor.model.events.NoteSavedEvent;
-import io.jawg.osmcontributor.model.events.NotesArpiLoadedEvent;
-import io.jawg.osmcontributor.model.events.NotesLoadedEvent;
-import io.jawg.osmcontributor.model.events.PleaseLoadNoteEvent;
-import io.jawg.osmcontributor.model.events.PleaseLoadNoteForArpiEvent;
-import io.jawg.osmcontributor.model.events.PleaseLoadNotesEvent;
-import io.jawg.osmcontributor.model.events.ResetDatabaseEvent;
+import io.jawg.osmcontributor.database.helper.DatabaseHelper;
 import io.jawg.osmcontributor.model.entities.Comment;
 import io.jawg.osmcontributor.model.entities.Note;
+import io.jawg.osmcontributor.model.events.NoteLoadedEvent;
+import io.jawg.osmcontributor.model.events.NoteSavedEvent;
+import io.jawg.osmcontributor.model.events.PleaseLoadNoteEvent;
+import io.jawg.osmcontributor.model.events.ResetDatabaseEvent;
+import io.jawg.osmcontributor.rest.events.SyncFinishUploadNote;
+import io.jawg.osmcontributor.rest.managers.SyncNoteManager;
 import io.jawg.osmcontributor.ui.activities.NoteActivity;
 import io.jawg.osmcontributor.ui.events.map.NewNoteCreatedEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseApplyNewComment;
 import io.jawg.osmcontributor.ui.events.note.ApplyNewCommentFailedEvent;
-import io.jawg.osmcontributor.rest.managers.SyncNoteManager;
-import io.jawg.osmcontributor.rest.events.SyncFinishUploadNote;
 import io.jawg.osmcontributor.utils.Box;
+import io.jawg.osmcontributor.utils.ConfigManager;
 import timber.log.Timber;
 
 import static io.jawg.osmcontributor.database.helper.DatabaseHelper.loadLazyForeignCollection;
@@ -96,11 +92,6 @@ public class NoteManager {
         bus.post(new NoteLoadedEvent(queryForId(event.getNoteId())));
     }
 
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseLoadNotesEvent(PleaseLoadNotesEvent event) {
-        loadNotes(event);
-    }
-
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseApplyNewComment(PleaseApplyNewComment event) {
@@ -124,11 +115,6 @@ public class NoteManager {
         resetDatabase();
     }
 
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseLoadNoteForArpiEvent(PleaseLoadNoteForArpiEvent event) {
-        List<Note> notes = noteDao.queryForAllInRect(event.getBox());
-        bus.post(new NotesArpiLoadedEvent(notes));
-    }
 
     // ********************************
     // ************ public ************
@@ -324,19 +310,5 @@ public class NoteManager {
                 return true;
             }
         });
-    }
-
-    // *********************************
-    // ************ private ************
-    // *********************************
-
-    /**
-     * Send a {@link NotesLoadedEvent} containing all the Notes
-     * in the Box of the {@link PleaseLoadNotesEvent}.
-     *
-     * @param event Event containing the box to load.
-     */
-    private void loadNotes(PleaseLoadNotesEvent event) {
-        bus.post(new NotesLoadedEvent(event.getBox(), queryForAllInRect(event.getBox())));
     }
 }

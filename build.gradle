@@ -16,12 +16,11 @@ ext {
     flickr4javaVersion = '2.16'
     mapboxVersion = '4.2.0'
     mapboxServicesVersion = '1.2.1'
-    retrofitVersion = '1.9.0'
+    retrofitVersion = '2.3.0'
     okhttpVersion = '2.3.0'
-    simplexmlRetrofitVersion = '1.1'
+    simplexmlRetrofitVersion = '2.3.0'
     simplexmlVersion = '2.7.1'
     licensesdialogVersion = '1.8.1'
-    arpiglVersion = '0.3.3'
     lovelyDialogVersion = '1.0.4'
     playServicesVersion = '9.2.0'
     multidexSupportVersion = '1.0.1'
@@ -31,6 +30,9 @@ ext {
     sqliteJdbcVersion = '3.8.10.1'
     mockitoVersion = '1.10.19'
     robolectricVersion = '2.4'
+    rxAndroidVersion = '1.0.1'
+    rxJavaVersion = '1.0.14'
+    horizontalLoaderVersion = '1.1.0'
 }
 
 buildscript {
@@ -102,9 +104,6 @@ android {
         versionCode 30
         versionName appVersion
         multiDexEnabled true
-        ndk {
-            abiFilters "armeabi-v7a"
-        }
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -133,17 +132,19 @@ android {
             applicationId "io.jawg.osmcontributor"
             buildConfigField "String", "APP_NAME", '"OSM Contributor"'
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
+            buildConfigField "int", "MAX_POIS_ON_MAP", "200"
+            buildConfigField "int", "MAP_AREA_FACTOR", "200"
             buildConfigField "int", "DEFAULT_ZOOM", "16"
             buildConfigField "int", "ZOOM_VECTORIAL", "18"
             buildConfigField "int", "ZOOM_MAX_PROVIDER", "19"
             buildConfigField "boolean", "WITH_FILTER", "true"
-            buildConfigField "float", "ZOOM_MARKER_MIN", "12.5f"
+            buildConfigField "float", "ZOOM_MARKER_MIN", "17f"
             buildConfigField "float", "ZOOM_MAX", "21.99f"
             buildConfigField "String", "MAP_URL", '"http://tile.openstreetmap.org/{z}/{x}/{y}.png"'
             buildConfigField "String", "MAP_STYLE_URL", '"https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json"'
             buildConfigField "String", "MAP_STYLE", '"asset://mapnik.json"'
             buildConfigField "String", "BASE_OSM_URL", osmUrl()
-            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass.osm.rambler.ru/cgi/interpreter"'
+            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass.osm.rambler.ru/cgi/interpreter/"'
             buildConfigField "String", "FLICKR_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_key") + '"'
             buildConfigField "String", "FLICKR_API_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_secret") + '"'
             buildConfigField "String", "FLICKR_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token") + '"'
@@ -153,22 +154,24 @@ android {
 
         bus {
             applicationId "io.jawg.osmcontributor.bus"
-            versionName "1.2.4"
-            versionCode 7
+            versionName "1.2.6"
+            versionCode 9
 
             buildConfigField "String", "APP_NAME", '"Jungle Bus"'
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
+            buildConfigField "int", "MAX_POIS_ON_MAP", "300"
+            buildConfigField "int", "MAP_AREA_FACTOR", "60"
             buildConfigField "int", "DEFAULT_ZOOM", "16"
             buildConfigField "int", "ZOOM_VECTORIAL", "18"
             buildConfigField "int", "ZOOM_MAX_PROVIDER", "19"
-            buildConfigField "float", "ZOOM_MARKER_MIN", "12.5f"
+            buildConfigField "float", "ZOOM_MARKER_MIN", "14.5f"
             buildConfigField "float", "ZOOM_MAX", "21.99f"
             buildConfigField "boolean", "WITH_FILTER", "false"
             buildConfigField "String", "MAP_URL", '"http://tile.openstreetmap.org/{z}/{x}/{y}.png"'
             buildConfigField "String", "MAP_STYLE_URL", '"https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json"'
             buildConfigField "String", "MAP_STYLE", '"asset://mapnik.json"'
             buildConfigField "String", "BASE_OSM_URL", osmUrl()
-            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass.osm.rambler.ru/cgi/interpreter"'
+            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass.osm.rambler.ru/cgi/interpreter/"'
             buildConfigField "String", "FLICKR_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_key") + '"'
             buildConfigField "String", "FLICKR_API_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_secret") + '"'
             buildConfigField "String", "FLICKR_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token") + '"'
@@ -199,6 +202,10 @@ dependencies {
     // Required for part of the generated code
     provided "org.glassfish:javax.annotation:$javaxAnnotationVersion"
 
+    //RX
+    compile "io.reactivex:rxjava:$rxJavaVersion"
+    compile "io.reactivex:rxandroid:$rxAndroidVersion"
+
     // Core
     compile "com.jakewharton:butterknife:$butterknifeVersion"
     apt "com.jakewharton:butterknife-compiler:$butterknifeVersion"
@@ -213,9 +220,11 @@ dependencies {
         compile "com.google.android.gms:play-services-analytics:$playServicesVersion"
     }
     // network
-    compile "com.squareup.retrofit:retrofit:$retrofitVersion"
+    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
     compile "com.squareup.okhttp:okhttp:$okhttpVersion"
-    compile "com.mobprofs:retrofit-simplexmlconverter:$simplexmlRetrofitVersion"
+    compile "com.squareup.retrofit2:converter-simplexml:$simplexmlRetrofitVersion"
+    compile "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
+    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
     compile "org.simpleframework:simple-xml:$simplexmlVersion"
 
     // UI libraries
@@ -226,6 +235,7 @@ dependencies {
     compile "com.yarolegovich:lovely-dialog:$lovelyDialogVersion"
     compile "com.github.clans:fab:$clansFabVersion"
     compile "com.facebook.fresco:fresco:$frescoVersion"
+    compile "com.github.castorflex.smoothprogressbar:library:$horizontalLoaderVersion"
 
     // Flickr Helper
     compile "com.flickr4java:flickr4java:$flickr4javaVersion"
@@ -239,7 +249,6 @@ dependencies {
         transitive = true
     }
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"
-    compile(name:"arpigl-release-$arpiglVersion", ext:"aar")
 
     compile "com.facebook.stetho:stetho:$stethoVersion"
 
@@ -265,7 +274,7 @@ dependencies {
 // The official API url is https://api.openstreetmap.org/api/0.6
 def osmUrl() {
     def osmUrl = project.getProperties().get("osmUrl")
-    return osmUrl != null ? '"' + osmUrl + '"' : '"https://www.openstreetmap.org/api/0.6"'
+    return osmUrl != null ? '"' + osmUrl + '"' : '"https://www.openstreetmap.org/api/"'
 }
 
 // Load the properties from the given file

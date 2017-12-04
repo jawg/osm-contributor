@@ -34,6 +34,7 @@ import io.jawg.osmcontributor.model.entities.Action;
 import io.jawg.osmcontributor.model.entities.Comment;
 import io.jawg.osmcontributor.model.entities.Condition;
 import io.jawg.osmcontributor.model.entities.Constraint;
+import io.jawg.osmcontributor.model.entities.MapArea;
 import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiNodeRef;
@@ -108,6 +109,11 @@ public class DatabaseModule {
     @Provides
     Dao<Action, Long> getActionDao(OsmSqliteOpenHelper helper) {
         return createDao(helper, Action.class);
+    }
+
+    @Provides
+    Dao<MapArea, Long> getMapAreaDao(OsmSqliteOpenHelper helper) {
+        return createDao(helper, MapArea.class);
     }
 
     /**

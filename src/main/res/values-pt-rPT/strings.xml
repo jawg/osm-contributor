@@ -87,7 +87,7 @@
     <string name="zoom_more">Tem de aproximar mais para descarregar POIs</string>
     <string name="search_poitype_hint">Procurar tipo de POI</string>
     <string name="title_3d_view">Vista 3D</string>
-    <string name="arpi_not_supported">O seu dispositivo não suporta vista 3D</string>
+
     <!--Strings related to login-->
     <string name="prompt_login">Nome de utilizador</string>
     <string name="prompt_password">Palavra-chave</string>
