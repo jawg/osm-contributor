@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -24,8 +24,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.io.File;
@@ -48,7 +48,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * This test generates two sqlite database files : one updated all the way from v1 and one brand new. These files are then checked for differences
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = "src/main/AndroidManifest.xml", emulateSdk = 18, application = TestApplication.class)
+@Config(manifest = "src/main/AndroidManifest.xml", sdk = 18, application = TestApplication.class)
 public class DatabaseUpgradeTest {
 
 
@@ -66,13 +66,12 @@ public class DatabaseUpgradeTest {
         updatedDbFile = new File(baseDir, "updated.sqlite");
         FileUtils.copyFile(baseOldBd, updatedDbFile);
         Timber.plant(new SysoTree());
-
     }
 
     @Test
     public void upgrade() throws Exception {
         System.out.println(new File(".").getAbsolutePath());
-        OsmSqliteOpenHelper openHelper = new OsmSqliteOpenHelper(Robolectric.application);
+        OsmSqliteOpenHelper openHelper = new OsmSqliteOpenHelper(RuntimeEnvironment.application);
 
         SQLiteDatabase newDb = SQLiteDatabase.openOrCreateDatabase(newDbFile, null);
         openHelper.onCreate(newDb);

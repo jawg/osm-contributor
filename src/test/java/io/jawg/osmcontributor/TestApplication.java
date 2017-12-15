@@ -18,10 +18,12 @@
  */
 package io.jawg.osmcontributor;
 
+import android.app.Application;
+
 /**
  * Use this application when testing, it disables all that is normally done in the on create
  */
-public class TestApplication extends OsmTemplateApplication {
+public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();

@@ -399,14 +399,17 @@ public class PoiManager {
                     poiTypeTagDao.createOrUpdate(poiTypeTag);
                 }
                 // Save the Constraints
-                for (Constraint constraint : poiType.getConstraints()) {
-                    // Create (or get from the DB if exists) the constraint's source/condition/action
-                    sourceDao.createIfNotExist(constraint.getSource());
-                    conditionDao.createIfNotExist(constraint.getCondition());
-                    actionDao.createIfNotExist(constraint.getAction());
-                    constraint.setPoiType(poiType);
-                    // Save the constraint the to DB
-                    constraintDao.createOrUpdate(constraint);
+                Collection<Constraint> constraints = poiType.getConstraints();
+                if (constraints != null) {
+                    for (Constraint constraint : constraints) {
+                        // Create (or get from the DB if exists) the constraint's source/condition/action
+                        sourceDao.createIfNotExist(constraint.getSource());
+                        conditionDao.createIfNotExist(constraint.getCondition());
+                        actionDao.createIfNotExist(constraint.getAction());
+                        constraint.setPoiType(poiType);
+                        // Save the constraint the to DB
+                        constraintDao.createOrUpdate(constraint);
+                    }
                 }
                 return poiType;
             }

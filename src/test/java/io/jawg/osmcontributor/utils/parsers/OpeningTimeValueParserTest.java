@@ -23,7 +23,7 @@ import junit.framework.Assert;
 import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +46,7 @@ public class OpeningTimeValueParserTest {
     @Before
     public void before() {
         parser = DaggerOsmTemplateComponent.builder()
-                .osmTemplateModule(new OsmTemplateModule(Robolectric.application)).build().getOpeningTimeParser();
+                .osmTemplateModule(new OsmTemplateModule(RuntimeEnvironment.application)).build().getOpeningTimeParser();
     }
 
     @Test

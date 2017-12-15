@@ -23,7 +23,7 @@ import junit.framework.Assert;
 import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 
 import io.jawg.osmcontributor.model.utils.OpeningHours;
 import io.jawg.osmcontributor.model.utils.OpeningMonth;
@@ -41,7 +41,7 @@ public class OpeningMonthValueParserTest {
     @Before
     public void before() {
         parser = DaggerOsmTemplateComponent.builder()
-                .osmTemplateModule(new OsmTemplateModule(Robolectric.application)).build().getOpeningMonthParser();
+                .osmTemplateModule(new OsmTemplateModule(RuntimeEnvironment.application)).build().getOpeningMonthParser();
     }
 
     @Test

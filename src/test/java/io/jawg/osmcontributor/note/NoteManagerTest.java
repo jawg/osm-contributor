@@ -26,17 +26,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.jawg.osmcontributor.model.entities.Comment;
+import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.modules.DaggerOsmTemplateComponent;
 import io.jawg.osmcontributor.modules.OsmTemplateComponent;
 import io.jawg.osmcontributor.modules.OsmTemplateModule;
-import io.jawg.osmcontributor.model.entities.Comment;
-import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.ui.managers.NoteManager;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -50,7 +50,7 @@ public class NoteManagerTest {
     @Before
     public void before() {
         component = DaggerOsmTemplateComponent.builder()
-                .osmTemplateModule(new OsmTemplateModule(Robolectric.application)).build();
+                .osmTemplateModule(new OsmTemplateModule(RuntimeEnvironment.application)).build();
     }
 
     @After
