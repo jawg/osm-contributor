@@ -20,8 +20,6 @@ package io.jawg.osmcontributor.rest.dtos.dma;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.joda.time.DateTime;
-
 import java.util.Map;
 
 public class H2GeoPresetsDto {
@@ -30,7 +28,7 @@ public class H2GeoPresetsDto {
     private int revision;
 
     @SerializedName("lastUpdate")
-    private DateTime lastUpdate;
+    private String lastUpdate;
 
     @SerializedName("presets")
     private Map<String, H2GeoPresetsItemDto> presets;
@@ -43,11 +41,11 @@ public class H2GeoPresetsDto {
         this.revision = revision;
     }
 
-    public DateTime getLastUpdate() {
+    public String getLastUpdate() {
         return lastUpdate;
     }
 
-    public void setLastUpdate(DateTime lastUpdate) {
+    public void setLastUpdate(String lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 

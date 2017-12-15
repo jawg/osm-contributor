@@ -136,9 +136,7 @@ public class OsmBackend implements Backend {
 
         List<OsmDto> osmDtos = new ArrayList<>();
 
-        if (poiTypes == null || poiTypes.isEmpty()) {
-            poiTypes = poiManager.loadPoiTypes();
-        }
+        poiTypes = poiManager.loadPoiTypes();
 
         for (Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
             final PoiType poiTypeDto = entry.getValue();
