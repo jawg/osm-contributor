@@ -1,5 +1,5 @@
 ext {
-    appVersion = "3.0.11"
+    appVersion = "3.0.12"
     androidSupportVersion = '25.1.0'
     playServicesVersion = '7.8.0'
     daggerVersion = '2.0'
@@ -101,7 +101,7 @@ android {
         applicationId "io.jawg.osmcontributor"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 30
+        versionCode 31
         versionName appVersion
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
@@ -154,8 +154,6 @@ android {
 
         bus {
             applicationId "io.jawg.osmcontributor.bus"
-            versionName "1.2.6"
-            versionCode 9
 
             buildConfigField "String", "APP_NAME", '"Jungle Bus"'
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
