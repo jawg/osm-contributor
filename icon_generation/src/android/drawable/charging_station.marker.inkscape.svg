@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg2"
+   viewBox="0 0 580.50007 580"
+   height="580"
+   width="580.50006"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="charging_station.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1301"
+     inkscape:window-height="744"
+     id="namedview7"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="0.52678572"
+     inkscape:cx="20.596788"
+     inkscape:cy="34.894615"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <metadata
+     id="metadata8">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs6" />
+  <rect
+     style="visibility:hidden;fill:none;stroke:none"
+     id="canvas"
+     y="566"
+     x="0"
+     height="14"
+     width="14" />
+  <path
+     style="fill:#000000;fill-opacity:1;stroke:none"
+     id="charging-station"
+     d="M 81.624081,29.314 C 34.056519,29.314 0,63.012107 0,114.03476 L 0,580 l 285.68429,0 0,-333.5888 c 0,0 35.71053,-5.29507 35.71053,37.06545 l 0,169.44179 c 0,84.72104 76.10212,90.01621 86.7256,90.01621 11.24991,0 86.72558,-5.29388 86.72558,-90.01621 l 0,-169.44179 c 0,0 56.62906,0.73626 56.11654,-125.75759 l -30.60901,0 0,-84.72103 c 0,-24.025239 -30.60902,-23.880203 -30.60902,-1.322682 l 0,84.720852 -40.81208,0 0,-84.720852 c 0,-23.136279 -30.60903,-23.09467 -30.60903,0 l 0,84.720852 -30.60901,0 c 0.51102,126.50509 56.11655,127.08147 56.11655,127.08147 l 0,169.44188 c 0,37.02974 -31.30837,37.06535 -35.71052,37.06535 -4.40214,0 -35.71054,-1.81334 -35.71054,-37.06535 l 0,-169.44188 c 0,-54.2599 -45.91355,-90.01594 -86.72559,-90.01594 l 0,-79.42586 c 0,-51.784011 -33.32285,-84.720855 -81.62407,-84.720855 z m 39.536669,84.72076 112.2331,0 -70.14569,112.96132 84.17483,0 -154.320521,225.92236 -28.058279,0 56.11656,-169.44179 -70.145699,0 z"
+     inkscape:connector-curvature="0" />
+</svg>
