@@ -117,13 +117,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            buildConfigField "String", "BASE_OSM_URL", '"https://www.openstreetmap.org/api/0.6/"'
+            buildConfigField "String", "BASE_OSM_URL", '"https://master.apis.dev.openstreetmap.org/api/0.6/"'
         }
 
         debug {
             versionNameSuffix ".debug-3"
-            buildConfigField "String", "BASE_OSM_URL", '"https://www.openstreetmap.org/api/0.6/"'
-            //buildConfigField "String", "BASE_OSM_URL", '"https://master.apis.dev.openstreetmap.org/api/0.6/"'
+            buildConfigField "String", "BASE_OSM_URL", '"https://master.apis.dev.openstreetmap.org/api/0.6/"'
         }
     }
 
