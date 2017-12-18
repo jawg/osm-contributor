@@ -52,7 +52,7 @@
     <string name="undefined">undefined</string>
     <!--Edit Poi-->
     <string name="tag_poi_name">Name</string>
-    <string name="tag_poi_shelter">Shelter</string>
+    <string name="tag_poi_shelter">Facilities</string>
     <string name="tag_poi_wheelchair">Wheelchair access</string>
     <string name="tag_poi_bench">Bench</string>
     <string name="tag_poi_rout_ref">Bus route served</string>
@@ -104,14 +104,13 @@
     <string name="switch_style_default">Default view</string>
     <string name="zoom_more">You need to zoom more in order to download Pois</string>
     <string name="search_poitype_hint">Search a Poi type</string>
-    <string name="load_poi_zoom_banner">Please zoom to the area you want to contribute.</string>
+    <string name="load_poi_zoom_banner">Please zoom in to see editable places.</string>
     <string name="load_poi_network_error">The network is unreachable, it is impossible to load all POIS. (Click to retry)</string>
     <string name="load_poi_too_many_pois">There is too many Pois to display (%1$d Pois the max is %2$d). Please zoom a bit more.</string>
     <string name="load_poi_area_progress">Loading Areas %1$d / %2$d</string>
     <string name="load_poi_progress">\n Loading Pois %1$d / %2$d</string>
     <string name="load_poi_calling_osm">\n waiting for Overpass to answered</string>
-    <string name="load_poi_area_message">Calling OSM to fetch Pois, it may take a while.</string>
-
+    <string name="load_poi_area_message">Loading in progress, don\’t move!.</string>
 
     <!-- Strings related to login -->
     <string name="prompt_login">Login</string>

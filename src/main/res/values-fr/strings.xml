@@ -43,7 +43,7 @@
     <!--Edit Poi-->
     <!--Edit Poi-->
     <string name="tag_poi_name">Nom</string>
-    <string name="tag_poi_shelter">Abris-bus</string>
+    <string name="tag_poi_shelter">Aménagements</string>
     <string name="tag_poi_wheelchair">Accès fauteuil roulant</string>
     <string name="tag_poi_bench">Banc</string>
     <string name="tag_poi_rout_ref">Ligne desservie</string>
@@ -99,13 +99,14 @@
     <string name="prompt_login">Identifiant</string>
     <string name="prompt_password">Mot de passe</string>
     <string name="splash_screen_message">Initialisation en cours…</string>
-    <string name="load_poi_zoom_banner">Veuillez zoomer sur la zone ou vous souhaitez contributer.</string>
+    <string name="load_poi_zoom_banner">Zoomez pour voir des lieux à modifier.</string>
     <string name="load_poi_network_error">Un problème réseau est survenu, il est impossible de charger les POIS. (Cliquez pour réessayer)</string>
     <string name="load_poi_too_many_pois">Il y a trop de POIS à afficher (%1$d Pois, max : %2$d). Veuillez zoomer.</string>
     <string name="load_poi_area_progress">Chargement de la zone %1$d / %2$d</string>
     <string name="load_poi_progress">\n Chargement des Pois %1$d / %2$d</string>
     <string name="load_poi_calling_osm">\n En attente des données d\'Overpass</string>
-    <string name="load_poi_area_message">Chargement des données depuis OSM, l\'opération peux prendre queleques minutes.</string>
+    <string name="load_poi_area_message">Chargement en cours, ne bougez pas !</string>
+
 
     <!--Preferences-->
     <string name="title_activity_my_preferences">Paramètres</string>
