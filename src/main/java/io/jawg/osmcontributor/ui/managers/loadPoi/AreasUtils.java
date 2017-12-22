@@ -26,14 +26,14 @@ public class AreasUtils {
         BigDecimal east = new BigDecimal(box.getEast());
         BigDecimal south = new BigDecimal(box.getSouth());
 
-        long northArea = north.multiply(GRANULARITY_LAT).setScale(0, RoundingMode.HALF_UP).longValue();
-        long westArea = west.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.HALF_DOWN).longValue();
-        long southArea = south.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.HALF_DOWN).longValue();
-        long eastArea = east.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.HALF_UP).longValue();
+        long northArea = north.multiply(GRANULARITY_LAT).setScale(0, RoundingMode.UP).longValue();
+        long westArea = west.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.DOWN).longValue();
+        long southArea = south.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.DOWN).longValue();
+        long eastArea = east.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.UP).longValue();
 
         //we get the long up the area is rounded up for north and down for south
-        for (int latInc = 0; latInc <= northArea - southArea; latInc++) {
-            for (int lngInc = 0; lngInc <= eastArea - westArea; lngInc++) {
+        for (int latInc = 0; latInc <= northArea - southArea - 1; latInc++) {
+            for (int lngInc = 0; lngInc <= eastArea - westArea - 1; lngInc++) {
                 long idLat = southArea + latInc;
                 long idLng = westArea + lngInc;
 
