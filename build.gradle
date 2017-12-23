@@ -17,7 +17,7 @@ ext {
     mapboxVersion = '4.2.0'
     mapboxServicesVersion = '1.2.1'
     retrofitVersion = '2.3.0'
-    okhttpVersion = '2.3.0'
+    okhttpVersion = '3.9.1'
     simplexmlRetrofitVersion = '2.3.0'
     simplexmlVersion = '2.7.1'
     licensesdialogVersion = '1.8.1'
@@ -218,7 +218,7 @@ dependencies {
     }
     // network
     compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    compile "com.squareup.okhttp:okhttp:$okhttpVersion"
+    compile "com.squareup.okhttp3:okhttp:$okhttpVersion"
     compile "com.squareup.retrofit2:converter-simplexml:$simplexmlRetrofitVersion"
     compile "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
     compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
@@ -272,7 +272,7 @@ dependencies {
 // The official API url is https://api.openstreetmap.org/api/0.6
 def osmUrl() {
     def osmUrl = project.getProperties().get("osmUrl")
-    return osmUrl != null ? '"' + osmUrl + '"' : '"https://www.openstreetmap.org/api/"'
+    return osmUrl != null ? '"' + osmUrl + '"' : '"https://www.openstreetmap.org/api/0.6/"'
 }
 
 // Load the properties from the given file

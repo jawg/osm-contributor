@@ -47,7 +47,6 @@ import io.jawg.osmcontributor.ui.activities.AuthorisationInterceptor;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.ConfigManager;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
@@ -88,10 +87,7 @@ public class SyncModule {
 
     @Provides
     OverpassRestClient getOverpassRestClient(Persister persister, AuthorisationInterceptor interceptor, ConfigManager configManager) {
-        HttpLoggingInterceptor interceptorLog = new HttpLoggingInterceptor();
-        interceptorLog.setLevel(HttpLoggingInterceptor.Level.BASIC);
-
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptorLog).readTimeout(30, TimeUnit.SECONDS)
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).readTimeout(30, TimeUnit.SECONDS)
                 .build();
 
         return new Retrofit.Builder()
