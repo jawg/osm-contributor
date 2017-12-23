@@ -119,7 +119,14 @@ public class TagMapper {
         // Add into the list
         if (!mappedTags.contains(tagItem) && !constantTags.contains(tagItem)) {
             if (display) {
-                mappedTags.add(getPosition(tagItem.mandatory), tagItem);
+                int position;
+                if (tagItem.getKey().equals("name")) {
+                    position = 0;
+                    nbMandatory++;
+                } else {
+                    position = getPosition(tagItem.mandatory);
+                }
+                mappedTags.add(position, tagItem);
             } else {
                 constantTags.add(constantTags.size(), tagItem);
             }
