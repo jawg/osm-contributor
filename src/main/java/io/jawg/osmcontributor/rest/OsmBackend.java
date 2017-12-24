@@ -47,6 +47,7 @@ import io.jawg.osmcontributor.rest.mappers.PoiMapper;
 import io.jawg.osmcontributor.rest.utils.AuthenticationRequestInterceptor;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.Box;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import timber.log.Timber;
@@ -96,7 +97,7 @@ public class OsmBackend implements Backend {
         tagDtos.add(new TagDto(BuildConfig.APP_NAME + " " + BuildConfig.VERSION_NAME, "created_by"));
         changeSetDto.setTagDtoList(tagDtos);
 
-        Call<String> callChangeSet;
+        Call<ResponseBody> callChangeSet;
         if (loginPreferences.retrieveOAuthParams() != null) {
             callChangeSet = osmRestClient.addChangeSet(
                     AuthenticationRequestInterceptor.getOAuthRequest(loginPreferences, BuildConfig.BASE_OSM_URL + "changeset/create", Verb.PUT)
@@ -106,9 +107,9 @@ public class OsmBackend implements Backend {
         }
 
         try {
-            Response<String> response = callChangeSet.execute();
-            if (response.isSuccessful()) {
-                return response.body();
+            Response<ResponseBody> response = callChangeSet.execute();
+            if (response.isSuccessful() && response.body() != null) {
+                return response.body().string();
             }
         } catch (IOException e) {
             Timber.e("Retrofit error, couldn't create Changeset!");
@@ -266,7 +267,7 @@ public class OsmBackend implements Backend {
             osmDto.setNodeDtoList(singletonList(nodeDto));
         }
 
-        Call<String> getCall;
+        Call<ResponseBody> getCall;
         if (poi.getWay()) {
             getCall = osmRestClient.addWay(osmDto);
         } else {
@@ -274,9 +275,9 @@ public class OsmBackend implements Backend {
         }
 
         try {
-            Response<String> response = getCall.execute();
+            Response<ResponseBody> response = getCall.execute();
             if (response.isSuccessful()) {
-                return new CreationResult(ModificationStatus.SUCCESS, response.body());
+                return new CreationResult(ModificationStatus.SUCCESS, response.body().string());
             }
         } catch (IOException e) {
             Timber.e(e, e.getMessage());
@@ -299,7 +300,7 @@ public class OsmBackend implements Backend {
             osmDto.setNodeDtoList(singletonList(nodeDto));
         }
 
-        Call<String> versionCall;
+        Call<ResponseBody> versionCall;
         if (poi.getWay()) {
             versionCall = osmRestClient.updateWay(poi.getBackendId(), osmDto);
         } else {
@@ -307,9 +308,9 @@ public class OsmBackend implements Backend {
         }
 
         try {
-            Response<String> response = versionCall.execute();
+            Response<ResponseBody> response = versionCall.execute();
             if (response.isSuccessful()) {
-                return new UpdateResult(ModificationStatus.SUCCESS, response.body());
+                return new UpdateResult(ModificationStatus.SUCCESS, response.body().string());
             } else {
                 if (response.code() == 400) {
                     Timber.e("Couldn't update node, conflicting version");
@@ -343,7 +344,7 @@ public class OsmBackend implements Backend {
             osmDto.setNodeDtoList(singletonList(nodeDto));
         }
 
-        Call<String> deleteCall;
+        Call<ResponseBody> deleteCall;
         if (poi.getWay()) {
             deleteCall = osmRestClient.deleteWay(poi.getBackendId(), osmDto);
             Timber.d("Deleted way %s", poi.getBackendId());
@@ -354,7 +355,7 @@ public class OsmBackend implements Backend {
         poiManager.deletePoi(poi);
 
         try {
-            Response<String> response = deleteCall.execute();
+            Response<ResponseBody> response = deleteCall.execute();
             if (response.isSuccessful()) {
                 return ModificationStatus.SUCCESS;
             } else {

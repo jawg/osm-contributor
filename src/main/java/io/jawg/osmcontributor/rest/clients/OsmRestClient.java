@@ -21,6 +21,7 @@ package io.jawg.osmcontributor.rest.clients;
 import java.util.Map;
 
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -98,7 +99,7 @@ public interface OsmRestClient {
      * @return The id of the created ChangeSet.
      */
     @PUT("changeset/create")
-    Call<String> addChangeSet(@Header("Authorization") String auth, @Body OsmDto osmDto);
+    Call<ResponseBody> addChangeSet(@Header("Authorization") String auth, @Body OsmDto osmDto);
 
     /**
      * Create a ChangeSet.
@@ -109,7 +110,7 @@ public interface OsmRestClient {
      * @return The id of the created ChangeSet.
      */
     @PUT("changeset/create")
-    Call<String> addChangeSet(@Body OsmDto osmDto);
+    Call<ResponseBody> addChangeSet(@Body OsmDto osmDto);
 
     /**
      * Close the changeSet.
@@ -127,7 +128,7 @@ public interface OsmRestClient {
      * @return The id of the created Node.
      */
     @PUT("node/create")
-    Call<String> addNode(@Body OsmDto osmDto);
+    Call<ResponseBody> addNode(@Body OsmDto osmDto);
 
     /**
      * Create a Note. Do not require to be an authenticated user.
@@ -181,7 +182,7 @@ public interface OsmRestClient {
      * @return The id of the created Way.
      */
     @PUT("way/create")
-    Call<String> addWay(@Body OsmDto osmDto);
+    Call<ResponseBody> addWay(@Body OsmDto osmDto);
 
     /**
      * Update a Node. Returns a 409 if the version doesn't match.
@@ -191,7 +192,7 @@ public interface OsmRestClient {
      * @return The version of the Node updated.
      */
     @PUT("node/{id}")
-    Call<String> updateNode(@Path("id") String id, @Body OsmDto osmDto);
+    Call<ResponseBody> updateNode(@Path("id") String id, @Body OsmDto osmDto);
 
     /**
      * Update a Way. Returns a 409 if the version doesn't match.
@@ -201,7 +202,7 @@ public interface OsmRestClient {
      * @return The version of the Way updated.
      */
     @PUT("way/{id}")
-    Call<String> updateWay(@Path("id") String id, @Body OsmDto osmDto);
+    Call<ResponseBody> updateWay(@Path("id") String id, @Body OsmDto osmDto);
 
     /**
      * Delete a Node.
@@ -214,7 +215,7 @@ public interface OsmRestClient {
      * @return The version of the Node deleted.
      */
     @HTTP(method = "DELETE", path = "node/{id}", hasBody = true)
-    Call<String> deleteNode(@Path("id") String id, @Body OsmDto osmDto);
+    Call<ResponseBody> deleteNode(@Path("id") String id, @Body OsmDto osmDto);
 
     /**
      * Delete a Way.
@@ -227,7 +228,7 @@ public interface OsmRestClient {
      * @return The version of the Way deleted.
      */
     @HTTP(method = "DELETE", path = "way/{id}", hasBody = true)
-    Call<String> deleteWay(@Path("id") String id, @Body OsmDto osmDto);
+    Call<ResponseBody> deleteWay(@Path("id") String id, @Body OsmDto osmDto);
 }
 
 

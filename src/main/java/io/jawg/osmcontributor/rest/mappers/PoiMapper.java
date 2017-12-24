@@ -20,7 +20,6 @@ package io.jawg.osmcontributor.rest.mappers;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -68,14 +67,6 @@ public class PoiMapper {
         return pois;
     }
 
-    public Poi convertNodeDtoToPoi(PoiDto dto) {
-        if (dto != null) {
-            return convertDtosToPois(Collections.singletonList(dto)).get(0);
-        } else {
-            return null;
-        }
-    }
-
     public List<Poi> convertDtosToPois(List<? extends PoiDto> dtos) {
         return convertDtosToPois(dtos, true);
     }
@@ -100,11 +91,11 @@ public class PoiMapper {
         List<PoiTag> tags = new ArrayList<>();
 
         PoiType type;
-                if (FlavorUtils.isBus()) {
-                    type = availableTypes.get(0);
-                } else {
-                    type = findType(dto, availableTypes);
-                }
+        if (FlavorUtils.isBus()) {
+            type = availableTypes.get(0);
+        } else {
+            type = findType(dto, availableTypes);
+        }
         if (type == null && typeFiltering) {
             return null;
         }
@@ -148,14 +139,6 @@ public class PoiMapper {
         return poi;
     }
 
-    public List<NodeDto> convertPoisToNodeDtos(List<Poi> pois, String changeSetId) {
-        List<NodeDto> result = new ArrayList<>();
-        for (Poi poi : pois) {
-            result.add(convertPoiToNodeDto(poi, changeSetId));
-        }
-
-        return result;
-    }
 
     /**
      * @param poi         the poi to convert

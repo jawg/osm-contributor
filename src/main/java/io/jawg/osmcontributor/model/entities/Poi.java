@@ -81,10 +81,10 @@ public class Poi implements Cloneable, MapElement {
     @DatabaseField(generatedId = true, columnName = ID)
     private Long id;
 
-    @DatabaseField(columnName = LONGITUDE, canBeNull = false)
+    @DatabaseField(columnName = LONGITUDE, canBeNull = false, index = true)
     private Double longitude;
 
-    @DatabaseField(columnName = LATITUDE, canBeNull = false)
+    @DatabaseField(columnName = LATITUDE, canBeNull = false, index = true)
     private Double latitude;
 
     @DatabaseField(columnName = NAME)

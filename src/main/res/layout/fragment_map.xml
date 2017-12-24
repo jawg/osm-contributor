@@ -311,12 +311,10 @@
         android:id="@+id/floating_btn_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginRight="@dimen/fab_margin">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        >
 
         <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/add_poi_few_values"
@@ -333,8 +331,9 @@
             app:menu_labels_colorNormal="@color/material_blue_500"
             app:menu_labels_colorPressed="@color/material_blue_grey_800"
             app:menu_labels_position="left"
+            app:menu_openDirection="up"
             app:menu_labels_style="@style/menu_labels_style"
-            app:menu_openDirection="up" />
+            />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/localisation"
@@ -346,6 +345,7 @@
             android:src="@drawable/gps"
             app:fab_colorNormal="@color/floating_ab_normal"
             app:fab_colorPressed="@color/floating_ab_pressed"
-            app:fab_colorRipple="@color/floating_ab_ripple" />
+            app:fab_colorRipple="@color/floating_ab_ripple"
+            />
     </RelativeLayout>
 </RelativeLayout>

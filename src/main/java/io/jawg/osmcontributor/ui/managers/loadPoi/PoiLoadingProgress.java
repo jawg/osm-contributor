@@ -17,8 +17,6 @@ public class PoiLoadingProgress {
     private boolean dataNeedRefresh;
     private long totalsElements = 0L;
     private long loadedElements = 0L;
-    private long totalAreasToLoad = 0L;
-    private long totalAreasLoaded = 0L;
     private List<Poi> pois = new ArrayList<>();
     private List<Note> notes = new ArrayList<>();
     private LocalDateTime lastUpdateDate;
@@ -81,23 +79,6 @@ public class PoiLoadingProgress {
         this.notes = notes;
     }
 
-
-    public long getTotalAreasToLoad() {
-        return totalAreasToLoad;
-    }
-
-    public void setTotalAreasToLoad(long totalAreasToLoad) {
-        this.totalAreasToLoad = totalAreasToLoad;
-    }
-
-    public long getTotalAreasLoaded() {
-        return totalAreasLoaded;
-    }
-
-    public void setTotalAreasLoaded(long totalAreasLoaded) {
-        this.totalAreasLoaded = totalAreasLoaded;
-    }
-
     public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }
@@ -112,8 +93,7 @@ public class PoiLoadingProgress {
         LOADING_FROM_SERVER,
         FINISH,
         OUT_DATED_DATA,
-        NETWORK_ERROR,
-        TOO_MANY_POIS,
-        MAPPING_POIS
+        MAPPING_POIS,
+        AREA_NEEDED
     }
 }

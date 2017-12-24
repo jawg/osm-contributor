@@ -42,12 +42,15 @@ import io.jawg.osmcontributor.model.events.PleaseLoadPoiTypes;
 import io.jawg.osmcontributor.model.events.PoiTypesLoaded;
 import io.jawg.osmcontributor.model.events.PoisAndNotesDownloadedEvent;
 import io.jawg.osmcontributor.model.events.RevertFinishedEvent;
+import io.jawg.osmcontributor.rest.NetworkException;
 import io.jawg.osmcontributor.ui.events.map.PleaseChangeValuesDetailNoteFragmentEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseInitializeDrawer;
 import io.jawg.osmcontributor.ui.fragments.MapFragment;
 import io.jawg.osmcontributor.ui.managers.loadPoi.GetPois;
+import io.jawg.osmcontributor.ui.managers.loadPoi.KillByRequestException;
 import io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress;
+import io.jawg.osmcontributor.ui.managers.loadPoi.exception.TooManyPois;
 import io.jawg.osmcontributor.ui.utils.LatLngBoundsUtils;
 import io.jawg.osmcontributor.ui.utils.MapMode;
 import io.jawg.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
@@ -388,6 +391,8 @@ public class MapFragmentPresenter {
     private final class GetPoisSubscriber extends Subscriber<PoiLoadingProgress> {
         boolean hasEncounterNetworkError;
         private Long poisCount;
+        long loadedElements = 0L;
+        long toLoadElements = 0L;
 
         public GetPoisSubscriber() {
             abortedTooManyPois = false;
@@ -414,7 +419,18 @@ public class MapFragmentPresenter {
         @Override
         public void onError(Throwable e) {
             mapFragment.showProgressBar(false);
-            Timber.e(e, "Error while loading Pois");
+            if ((e instanceof NetworkException)) {
+                hasEncounterNetworkError = true;
+                onCompleted();
+            } else if (e instanceof TooManyPois) {
+                poisCount = ((TooManyPois) e).getCount();
+                abortedTooManyPois = true;
+                onCompleted();
+            } else if (!(e instanceof KillByRequestException)) {
+                Timber.e(e, "Error while loading Pois");
+            } else {
+                Timber.e("request killed");
+            }
         }
 
         @Override
@@ -432,14 +448,6 @@ public class MapFragmentPresenter {
                 case OUT_DATED_DATA:
                     mapFragment.showNeedToRefreshData(poiLoadingProgress.getLastUpdateDate());
                     break;
-                case NETWORK_ERROR:
-                    hasEncounterNetworkError = true;
-                    mapFragment.showProgressBar(false);
-                    break;
-                case TOO_MANY_POIS:
-                    poisCount = poiLoadingProgress.getTotalsElements();
-                    abortedTooManyPois = true;
-                    break;
                 case MAPPING_POIS:
                     displayProgress(poiLoadingProgress);
                     break;
@@ -454,11 +462,9 @@ public class MapFragmentPresenter {
 
         private void displayProgress(PoiLoadingProgress poiLoadingProgress) {
             mapFragment.showProgressBar(true);
-            long loaded = poiLoadingProgress.getTotalAreasLoaded();
-            long toLoad = poiLoadingProgress.getTotalAreasToLoad();
-            long loadedElements = poiLoadingProgress.getLoadedElements();
-            long toLoadElements = poiLoadingProgress.getTotalsElements();
-            mapFragment.displayAreaProgress(loaded + 1, toLoad, loadedElements, toLoadElements);
+            loadedElements += poiLoadingProgress.getLoadedElements();
+            toLoadElements += poiLoadingProgress.getTotalsElements();
+            mapFragment.displayAreaProgress(loadedElements, toLoadElements);
         }
     }
 }

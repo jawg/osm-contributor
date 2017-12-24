@@ -169,7 +169,10 @@ public class PoiManager {
         List<PoiUpdateWrapper> allPois = new ArrayList<>();
 
         for (Poi p : updatedPois) {
-            allPois.add(new PoiUpdateWrapper(true, p, poiDao.queryForId(p.getOldPoiId()), null, PoiUpdateWrapper.PoiAction.UPDATE));
+            Long oldPoiId = p.getOldPoiId();
+            if (oldPoiId != null) {
+                allPois.add(new PoiUpdateWrapper(true, p, poiDao.queryForId(oldPoiId), null, PoiUpdateWrapper.PoiAction.UPDATE));
+            }
         }
         for (Poi p : newPois) {
             allPois.add(new PoiUpdateWrapper(true, p, null, null, PoiUpdateWrapper.PoiAction.CREATE));
