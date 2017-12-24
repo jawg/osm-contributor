@@ -107,9 +107,8 @@
     <string name="load_poi_zoom_banner">Please zoom in to see editable places.</string>
     <string name="load_poi_network_error">The network is unreachable, it is impossible to load all POIS. (Click to retry)</string>
     <string name="load_poi_too_many_pois">There is too many Pois to display (%1$d Pois the max is %2$d). Please zoom a bit more.</string>
-    <string name="load_poi_area_progress">Loading Areas %1$d / %2$d</string>
-    <string name="load_poi_progress">\n Loading Pois %1$d / %2$d</string>
-    <string name="load_poi_calling_osm">\n waiting for Overpass to answered</string>
+    <string name="load_poi_progress">Loading Pois %1$d / %2$d</string>
+    <string name="load_poi_calling_osm">waiting for Overpass to answered</string>
     <string name="load_poi_area_message">Loading in progress, don\’t move!.</string>
 
     <!-- Strings related to login -->

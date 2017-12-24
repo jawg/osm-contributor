@@ -5,11 +5,26 @@ import javax.inject.Singleton;
 
 
 @Singleton
-public class PoiThreadExecutor extends SingleThreadExecutor {
-    private static final String THREAD_NAME = "poi_";
+public class PoiThreadExecutor implements ThreadExecutor {
+
+    private PoiThreadPoolExecutor threadPoolExecutor;
 
     @Inject
     public PoiThreadExecutor() {
-        super(THREAD_NAME);
+        this.threadPoolExecutor = new PoiThreadPoolExecutor();
+    }
+
+    @Override
+    public void execute(Runnable runnable) {
+        if (runnable == null) {
+            throw new IllegalArgumentException("Runnable to execute cannot be null");
+        }
+        this.threadPoolExecutor.execute(runnable);
+    }
+
+    public void clearQueue() {
+        if (threadPoolExecutor != null) {
+            threadPoolExecutor.getQueue().clear();
+        }
     }
 }

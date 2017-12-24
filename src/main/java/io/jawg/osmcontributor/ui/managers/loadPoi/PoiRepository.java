@@ -3,18 +3,24 @@ package io.jawg.osmcontributor.ui.managers.loadPoi;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.database.dao.MapAreaDao;
 import io.jawg.osmcontributor.database.dao.PoiDao;
 import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
 import io.jawg.osmcontributor.database.dao.PoiTagDao;
 import io.jawg.osmcontributor.database.dao.PoiTypeDao;
 import io.jawg.osmcontributor.database.helper.DatabaseHelper;
+import io.jawg.osmcontributor.model.entities.MapArea;
 import io.jawg.osmcontributor.rest.Backend;
 import io.jawg.osmcontributor.rest.mappers.PoiMapper;
+import io.jawg.osmcontributor.ui.managers.loadPoi.exception.TooManyPois;
 import io.jawg.osmcontributor.ui.managers.loadPoi.executors.CancelableObservable;
 import io.jawg.osmcontributor.ui.managers.loadPoi.executors.CancelableSubscriber;
 import io.jawg.osmcontributor.utils.Box;
+import rx.Observable;
 import rx.Subscriber;
+
+import static io.jawg.osmcontributor.ui.managers.loadPoi.PoiLoadingProgress.LoadingStatus.POI_LOADING;
 
 
 /**
@@ -46,16 +52,44 @@ public class PoiRepository {
         this.databaseHelper = databaseHelper;
     }
 
-
-    public CancelableObservable<PoiLoadingProgress> getPoiFromBox(final Box box, final boolean refreshData) {
+    public CancelableObservable<PoiLoadingProgress> getPoiFromArea(final MapArea mapArea, final boolean refreshData) {
         CancelableSubscriber cancelableSubscriber = new CancelableSubscriber<PoiLoadingProgress>() {
             @Override
             public void cancelableCall(Subscriber<? super PoiLoadingProgress> subscriber) {
                 PoiLoader poiLoader = new PoiLoader(poiDao, backend, mapAreaDao, subscriber, mustBeKilled, poiMapper, poiTypeDao, poiTagDao, poiNodeRefDao, databaseHelper);
-                poiLoader.init(box, refreshData);
-                poiLoader.getPoiFromBox();
+                poiLoader.init(refreshData, mapArea);
+                poiLoader.getPoiFromBox(mapArea);
             }
         };
         return new CancelableObservable<PoiLoadingProgress>(cancelableSubscriber);
+    }
+
+    public Observable<PoiLoadingProgress> verifyCount(final Box box) {
+        return Observable.create(new Observable.OnSubscribe<PoiLoadingProgress>() {
+            @Override
+            public void call(Subscriber<? super PoiLoadingProgress> subscriber) {
+                Long count = poiDao.countForAllInRect(box);
+                if (count > BuildConfig.MAX_POIS_ON_MAP) {
+                    TooManyPois tooManyPois = new TooManyPois();
+                    tooManyPois.setCount(count);
+                    throw tooManyPois;
+                }
+                subscriber.onCompleted();
+            }
+        });
+
+    }
+
+    public Observable<PoiLoadingProgress> getPoisFromDB(final Box box) {
+        return Observable.create(new Observable.OnSubscribe<PoiLoadingProgress>() {
+            @Override
+            public void call(Subscriber<? super PoiLoadingProgress> subscriber) {
+                PoiLoadingProgress poiLoadingProgress = new PoiLoadingProgress(POI_LOADING);
+                poiLoadingProgress.setPois(poiDao.queryForAllInRect(box));
+                subscriber.onNext(poiLoadingProgress);
+                subscriber.onCompleted();
+            }
+        });
+
     }
 }

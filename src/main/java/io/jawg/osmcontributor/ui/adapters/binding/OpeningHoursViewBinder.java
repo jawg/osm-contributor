@@ -39,7 +39,7 @@ public class OpeningHoursViewBinder extends CheckedTagViewBinder<TagItemOpeningT
 
     @Override
     public boolean supports(TagItem.Type type) {
-        return TagItem.Type.OPENING_HOURS.equals(type);
+        return TagItem.Type.OPENING_HOURS.equals(type) || TagItem.Type.TIME.equals(type);
     }
 
     @Override

@@ -102,9 +102,8 @@
     <string name="load_poi_zoom_banner">Zoomez pour voir des lieux à modifier.</string>
     <string name="load_poi_network_error">Un problème réseau est survenu, il est impossible de charger les POIS. (Cliquez pour réessayer)</string>
     <string name="load_poi_too_many_pois">Il y a trop de POIS à afficher (%1$d Pois, max : %2$d). Veuillez zoomer.</string>
-    <string name="load_poi_area_progress">Chargement de la zone %1$d / %2$d</string>
     <string name="load_poi_progress">\n Chargement des Pois %1$d / %2$d</string>
-    <string name="load_poi_calling_osm">\n En attente des données d\'Overpass</string>
+    <string name="load_poi_calling_osm">En attente des données d\'Overpass</string>
     <string name="load_poi_area_message">Chargement en cours, ne bougez pas !</string>
 
 

@@ -121,6 +121,9 @@ public abstract class TagItem {
         if (value == null) {
             return false;
         }
+        if (oldValue == null) {
+            return false;
+        }
         return value.compareTo(oldValue) != 0;
     }
 
