@@ -353,16 +353,16 @@ public class MapFragment extends Fragment {
             cameraBuilder.target((LatLng) savedInstanceState.getParcelable(LOCATION)).zoom(savedInstanceState.getFloat(ZOOM_LEVEL));
         }
 
-    mapboxMap.setCameraPosition(cameraBuilder.build());
+        mapboxMap.setCameraPosition(cameraBuilder.build());
 
-    presenter.setForceRefreshPoi();
-    presenter.setForceRefreshNotes();
-    presenter.loadPoisIfNeeded();
-    eventBus.post(new PleaseInitializeNoteDrawerEvent(displayOpenNotes, displayClosedNotes));
-    if (poiTypePickerAdapter != null) {
-      poiTypePickerAdapter.setExpertMode(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
-    }
-    mapboxListener.listen(mapboxMap, mapView);
+        presenter.setForceRefreshPoi();
+        presenter.setForceRefreshNotes();
+        presenter.loadPoisIfNeeded();
+        eventBus.post(new PleaseInitializeNoteDrawerEvent(displayOpenNotes, displayClosedNotes));
+        if (poiTypePickerAdapter != null) {
+            poiTypePickerAdapter.setExpertMode(sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
+        }
+        mapboxListener.listen(mapboxMap, mapView);
 
         mapboxMap.getMarkerViewManager().addMarkerViewAdapter(new LocationMarkerViewAdapter(getActivity().getApplicationContext()));
     }
@@ -680,25 +680,25 @@ public class MapFragment extends Fragment {
                 removePolyline(editionPolyline);
                 break;
 
-      case WAY_EDITION:
-        switchMode(MapMode.DEFAULT);
-        break;
-      case DETAIL_POI:
-      case DETAIL_NOTE:
-      case POI_CREATION:
-      case NOTE_CREATION:
-      case TYPE_PICKER:
-        switchMode(MapMode.DEFAULT);
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(mapView.getWindowToken(), 0);
-        break;
+            case WAY_EDITION:
+                switchMode(MapMode.DEFAULT);
+                break;
+            case DETAIL_POI:
+            case DETAIL_NOTE:
+            case POI_CREATION:
+            case NOTE_CREATION:
+            case TYPE_PICKER:
+                switchMode(MapMode.DEFAULT);
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mapView.getWindowToken(), 0);
+                break;
 
 
-      default:
-        getActivity().finish();
-        break;
+            default:
+                getActivity().finish();
+                break;
+        }
     }
-  }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPleaseGiveMeMapCenterEvent(PleaseGiveMeMapCenterEvent event) {
@@ -813,11 +813,19 @@ public class MapFragment extends Fragment {
     public void displayAreaProgress(long loadedElements, long totalsElements) {
         String stringPois;
         if (loadedElements > 0) {
-            stringPois = getString(R.string.load_poi_progress, loadedElements, totalsElements);
+            long percentage = getPercentage(loadedElements, totalsElements);
+            stringPois = getString(R.string.load_poi_progress, percentage);
         } else {
             stringPois = getString(R.string.load_poi_calling_osm);
         }
         progressTextView.setText(stringPois);
+    }
+
+    private long getPercentage(long elements, long totals) {
+        if (totals == 0) {
+            return 100;
+        }
+        return (long) Math.floor((float) elements / totals * 100);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -919,13 +927,13 @@ public class MapFragment extends Fragment {
         markersNotes.keySet().removeAll(idsToRemove);
     }
 
-  private void removeMarkerView(LocationMarkerViewOptions marker) {
-    if (marker != null) {
-      mapboxMap.removeMarker(marker.getMarker());
-      Object poi = marker.getMarker().getRelatedObject();
+    private void removeMarkerView(LocationMarkerViewOptions marker) {
+        if (marker != null) {
+            mapboxMap.removeMarker(marker.getMarker());
+            Object poi = marker.getMarker().getRelatedObject();
 
+        }
     }
-  }
 
     private void removeWayMarker(WayMarkerOptions markerOptions) {
         mapboxMap.removeMarker(markerOptions.getMarker());

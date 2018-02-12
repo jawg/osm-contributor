@@ -459,6 +459,7 @@ public class MapFragmentPresenter {
                     displayProgress(poiLoadingProgress);
                     break;
                 case FINISH:
+                    Timber.i("done loading " + ids.size());
                     mapFragment.removeNoteMarkersNotIn(ids);
                     mapFragment.removePoiMarkersNotIn(ids);
                     mapFragment.showProgressBar(false);
