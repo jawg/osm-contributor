@@ -83,6 +83,8 @@ public class MapFragmentPresenter {
 
     private List<Long> ids;
 
+    private GetPoisSubscriber getPoisSubscriber;
+
     @Inject
     EventBus eventBus;
 
@@ -222,7 +224,12 @@ public class MapFragmentPresenter {
                     LatLngBounds latLngToLoad = LatLngBoundsUtils.enlarge(viewLatLngBounds, 1.2);
                     getPoisAndNotes.unsubscribe();
                     Timber.e("Unsubscribe current loading");
-                    getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad), refreshData).execute(new GetPoisSubscriber());
+
+                    if (getPoisSubscriber != null) {
+                        getPoisSubscriber.unsubscribe();
+                    }
+                    getPoisSubscriber = new GetPoisSubscriber();
+                    getPoisAndNotes.init(Box.convertFromLatLngBounds(latLngToLoad), refreshData).execute(getPoisSubscriber);
                     mapFragment.displayZoomTooLargeError(false);
                 }
             } else {
@@ -455,6 +462,8 @@ public class MapFragmentPresenter {
                     mapFragment.removeNoteMarkersNotIn(ids);
                     mapFragment.removePoiMarkersNotIn(ids);
                     mapFragment.showProgressBar(false);
+                    break;
+                case AREA_NEEDED:
                     break;
             }
             request(1);
