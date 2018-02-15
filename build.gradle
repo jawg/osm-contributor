@@ -42,15 +42,15 @@ buildscript {
         flatDir {
             dirs 'lib'
         }
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
 
         // add -Pfoss=true to gradlew args to build a version with no Crashlytics/Google analytics
-        if(!project.hasProperty('foss')) {
+        if (!project.hasProperty('foss')) {
             classpath "io.fabric.tools:gradle:1.+"
         }
-        classpath "com.neenbedankt.gradle.plugins:android-apt:1.8"
 
         // this plugin is provided as a jar as atm there is no relase with android supports
         classpath "nl.javadude.gradle.plugins:license-gradle-plugin:0.11.1-SNAPSHOT"
@@ -76,20 +76,21 @@ repositories {
     flatDir {
         dirs 'lib'
     }
+    google()
 }
 
 
 
 apply plugin: 'com.android.application'
-if(!project.hasProperty('foss')) {
+if (!project.hasProperty('foss')) {
     apply plugin: 'io.fabric'
 }
-apply plugin: 'com.neenbedankt.android-apt'
+
 apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    buildToolsVersion '26.0.2'
 
     useLibrary 'org.apache.http.legacy'
 
@@ -125,6 +126,8 @@ android {
             buildConfigField "String", "BASE_OSM_URL", '"https://www.openstreetmap.org/api/0.6/"'
         }
     }
+
+    flavorDimensions "default"
 
     productFlavors {
         store {
@@ -195,7 +198,7 @@ dependencies {
 
     // Dependency injection
     compile "com.google.dagger:dagger:$daggerVersion"
-    apt "com.google.dagger:dagger-compiler:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
     // Required for part of the generated code
     provided "org.glassfish:javax.annotation:$javaxAnnotationVersion"
 
@@ -205,7 +208,7 @@ dependencies {
 
     // Core
     compile "com.jakewharton:butterknife:$butterknifeVersion"
-    apt "com.jakewharton:butterknife-compiler:$butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVersion"
     compile "com.jakewharton.timber:timber:$timberVersion"
     compile "org.greenrobot:eventbus:$eventbusVersion"
     compile "com.j256.ormlite:ormlite-android:$ormliteVersion"
