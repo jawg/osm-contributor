@@ -26,7 +26,7 @@ import retrofit2.http.Part;
 
 public interface FlickrUploadClient {
 
-    @POST("/upload")
+    @POST("upload")
     @Multipart
-    Call<String> upload(@Part("photo") MultipartBody.Part photo);
+    Call<String> upload(@Part MultipartBody.Part photo);
 }

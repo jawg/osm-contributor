@@ -19,6 +19,13 @@
 package io.jawg.osmcontributor.flickr.oauth;
 
 import com.github.scribejava.core.model.Verb;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import io.jawg.osmcontributor.flickr.event.FlickrUserConnectedEvent;
 import io.jawg.osmcontributor.flickr.event.PleaseAuthorizeEvent;
 import io.jawg.osmcontributor.flickr.rest.FlickrOauthClient;
@@ -26,9 +33,6 @@ import io.jawg.osmcontributor.flickr.util.OAuthParams;
 import io.jawg.osmcontributor.flickr.util.ResponseConverter;
 import io.jawg.osmcontributor.rest.utils.MapParams;
 import io.jawg.osmcontributor.utils.ConfigManager;
-import java.util.Map;
-import javax.inject.Inject;
-import org.greenrobot.eventbus.EventBus;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,12 +45,16 @@ import timber.log.Timber;
  */
 public class FlickrOAuth {
 
+  private static boolean initialized = false;
+
   /*=========================================*/
     /*-------------CONSTANTS-------------------*/
     /*=========================================*/
   private static final String TAG = "FlickrOAuth";
 
-  private static final String OAUTH_URL = "http://www.flickr.com/services/oauth";
+  private static final String BASE_URL = "http://www.flickr.com";
+
+  private static final String OAUTH_URL = BASE_URL + "/services/oauth";
 
   private static final String REQUEST_TOKEN_URL = OAUTH_URL + "/request_token";
 
@@ -77,7 +85,7 @@ public class FlickrOAuth {
     /*=========================================*/
   public FlickrOAuth() {
     // Init Flickr retrofit client
-    Retrofit adapter = new Retrofit.Builder().addConverterFactory(ScalarsConverterFactory.create()).baseUrl(OAUTH_URL).build();
+    Retrofit adapter = new Retrofit.Builder().addConverterFactory(ScalarsConverterFactory.create()).baseUrl(BASE_URL).build();
     flickrOauthClient = adapter.create(FlickrOauthClient.class);
   }
 

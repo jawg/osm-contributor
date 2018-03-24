@@ -30,12 +30,12 @@ public interface FlickrOauthClient {
    *
    * @param params request params
    */
-  @GET("/request_token") Call<String> requestToken(@QueryMap Map<String, String> params);
+  @GET("services/oauth/request_token") Call<String> requestToken(@QueryMap Map<String, String> params);
 
   /**
    * Last step when trying to authenticate an user. Get final token to use Flickr API.
    *
    * @param params request params
    */
-  @GET("/access_token") Call<String> accessToken(@QueryMap Map<String, String> params);
+  @GET("services/oauth/access_token") Call<String> accessToken(@QueryMap Map<String, String> params);
 }

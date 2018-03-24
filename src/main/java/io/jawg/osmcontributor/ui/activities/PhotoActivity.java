@@ -20,9 +20,12 @@ package io.jawg.osmcontributor.ui.activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,6 +40,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -54,6 +58,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -394,10 +400,10 @@ public class PhotoActivity extends AppCompatActivity {
         OAuthRequest oAuthRequest = flickrOAuth.getOAuthRequest();
         if (oAuthRequest == null) {
             oAuthRequest = new OAuthRequest(application.getFlickr().getApiKey(), application.getFlickr().getSharedSecret());
-            oAuthRequest.setOAuthToken(configManager.getFlickrToken());
-            oAuthRequest.setOAuthTokenSecret(configManager.getFlickrTokenSecret());
             flickrOAuth.setOAuthRequest(oAuthRequest);
         }
+        flickrOAuth.flickrRequestToken();
+
         oAuthRequest.setRequestUrl(FLICKR_API_UPLOAD);
         oAuthRequest.initParam(OAuthParams.getOAuthParams().put(OAuthParams.OAUTH_TOKEN, oAuthRequest.getOAuthToken()).toMap());
         oAuthRequest.signRequest(Verb.POST);
@@ -406,9 +412,14 @@ public class PhotoActivity extends AppCompatActivity {
         if (flickrUploadClient == null) {
             flickrUploadClient = FlickrUploadUtils.getRestAdapter(oAuthRequest.getParams()).create(FlickrUploadClient.class);
         }
+
+        Log.d(TAG, "uploadPhoto: " + photoFile.length());
+        photoFile = resize(photoFile);
+        Log.d(TAG, "uploadPhoto after resize: " + photoFile.length());
+
         RequestBody requestFile =
                 RequestBody.create(
-                        MediaType.parse(getContentResolver().getType(Uri.fromFile(photoFile))), photoFile
+                        MediaType.parse(getMimeType(Uri.fromFile(photoFile))), photoFile
                 );
         flickrUploadClient.upload(MultipartBody.Part.createFormData("photo", photoFile.getName(), requestFile)).enqueue(new Callback<String>() {
             @Override
@@ -430,6 +441,64 @@ public class PhotoActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+
+    public File resize(File file) {
+        try {
+
+            // BitmapFactory options to downsize the image
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            o.inSampleSize = 6;
+            // factor of downsizing the image
+
+            FileInputStream inputStream = new FileInputStream(file);
+            //Bitmap selectedBitmap = null;
+            BitmapFactory.decodeStream(inputStream, null, o);
+            inputStream.close();
+
+            // The new size we want to scale to
+            final int REQUIRED_SIZE = 10;
+
+            // Find the correct scale value. It should be the power of 2.
+            int scale = 1;
+            while (o.outWidth / scale / 2 >= REQUIRED_SIZE &&
+                    o.outHeight / scale / 2 >= REQUIRED_SIZE) {
+                scale *= 2;
+            }
+
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            inputStream = new FileInputStream(file);
+
+            Bitmap selectedBitmap = BitmapFactory.decodeStream(inputStream, null, o2);
+            inputStream.close();
+
+            // here i override the original image file
+            file.createNewFile();
+            FileOutputStream outputStream = new FileOutputStream(file);
+
+            selectedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+
+            return file;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String getMimeType(Uri uri) {
+        String mimeType = null;
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            ContentResolver cr = getContentResolver();
+            mimeType = cr.getType(uri);
+        } else {
+            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
+                    .toString());
+            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                    fileExtension.toLowerCase());
+        }
+        return mimeType;
     }
 
     public void onUploadFinishedEvent(final String photoId) {
