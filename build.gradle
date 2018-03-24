@@ -102,7 +102,7 @@ android {
         applicationId "io.jawg.osmcontributor"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 32
+        versionCode 33
         versionName appVersion
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
