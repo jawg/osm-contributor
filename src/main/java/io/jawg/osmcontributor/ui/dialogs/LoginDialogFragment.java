@@ -21,7 +21,6 @@ package io.jawg.osmcontributor.ui.dialogs;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -36,6 +35,8 @@ import android.widget.Toast;
 import com.google.android.gms.common.AccountPicker;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
@@ -43,9 +44,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
+import io.jawg.osmcontributor.rest.events.GoogleAuthenticatedEvent;
 import io.jawg.osmcontributor.rest.security.GoogleOAuthManager;
 import io.jawg.osmcontributor.ui.events.login.AttemptLoginEvent;
-import io.jawg.osmcontributor.ui.events.login.LoginInitializedEvent;
+import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
+import io.jawg.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;
+import io.jawg.osmcontributor.ui.events.login.ValidLoginEvent;
 import io.jawg.osmcontributor.utils.StringUtils;
 
 /**
@@ -85,6 +89,7 @@ public class LoginDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.dialog_connection, container, false);
         ButterKnife.bind(this, rootView);
+        eventBus.register(this);
 
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
 
@@ -120,6 +125,12 @@ public class LoginDialogFragment extends DialogFragment {
         return rootView;
     }
 
+
+    @Override public void onDestroy() {
+        eventBus.unregister(this);
+        super.onDestroy();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -131,10 +142,23 @@ public class LoginDialogFragment extends DialogFragment {
         }
     }
 
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-        eventBus.postSticky(new LoginInitializedEvent());
+    @Subscribe(threadMode = ThreadMode.MAIN) public void onGoogleAuthenticatedEvent(GoogleAuthenticatedEvent event) {
+        if (event.isSuccessful()) {
+            eventBus.post(new UpdateGoogleCredentialsEvent(event.getToken(), event.getTokenSecret(), event.getConsumer(), event.getConsumerSecret()));
+        } else {
+            Toast.makeText(getActivity(), R.string.error_login, Toast.LENGTH_SHORT).show();
+        }
+        dismiss();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN) public void onValidLoginEvent(ValidLoginEvent event) {
+        Toast.makeText(getActivity(), R.string.valid_login, Toast.LENGTH_SHORT).show();
+        dismiss();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN) public void onErrorLoginEvent(ErrorLoginEvent event) {
+        Toast.makeText(getActivity(), R.string.error_first_login, Toast.LENGTH_SHORT).show();
+        resetLoginFields();
     }
 
     public void setEventBus(EventBus eventBus) {
