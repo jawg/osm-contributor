@@ -103,15 +103,6 @@ public class StoreLoginManager extends LoginManager {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * Do nothing for the store flavor.
-     */
-    @Override
-    public void initializeCredentials() {
-    }
-
     @Override
     public boolean checkFirstConnection() {
         return loginPreferences.retrieveFirstConnection();

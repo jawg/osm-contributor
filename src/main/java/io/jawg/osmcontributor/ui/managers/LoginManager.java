@@ -23,7 +23,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import io.jawg.osmcontributor.database.preferences.LoginPreferences;
-import io.jawg.osmcontributor.model.events.InitCredentialsEvent;
 import io.jawg.osmcontributor.ui.events.login.AttemptLoginEvent;
 import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
 import io.jawg.osmcontributor.ui.events.login.CheckFirstConnectionEvent;
@@ -55,11 +54,6 @@ public abstract class LoginManager {
         } else {
             bus.post(new ErrorLoginEvent());
         }
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onInitCredentialsEvent(InitCredentialsEvent event) {
-        initializeCredentials();
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -98,11 +92,6 @@ public abstract class LoginManager {
      * @return Whether the credentials are valid.
      */
     public abstract boolean isValidLogin(final String login, final String password);
-
-    /**
-     * Initialize the value of the credentials in the preferences.
-     */
-    public abstract void initializeCredentials();
 
     public abstract boolean checkFirstConnection();
 }

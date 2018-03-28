@@ -46,7 +46,6 @@ import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.database.events.DbInitializedEvent;
 import io.jawg.osmcontributor.database.events.InitDbEvent;
-import io.jawg.osmcontributor.model.events.InitCredentialsEvent;
 import io.jawg.osmcontributor.ui.events.login.SplashScreenTimerFinishedEvent;
 import io.jawg.osmcontributor.ui.utils.views.EventCountDownTimer;
 import timber.log.Timber;
@@ -127,7 +126,6 @@ public class SplashScreenActivity extends AppCompatActivity {
     timer.setStickyEvent(new SplashScreenTimerFinishedEvent());
     timer.start();
 
-    bus.post(new InitCredentialsEvent());
     bus.post(new InitDbEvent());
   }
 
