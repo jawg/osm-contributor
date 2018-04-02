@@ -123,6 +123,11 @@ public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, PoiNodeRef.class, true);
             TableUtils.dropTable(connectionSource, Note.class, true);
             TableUtils.dropTable(connectionSource, Comment.class, true);
+            TableUtils.dropTable(connectionSource, Constraint.class, true);
+            TableUtils.dropTable(connectionSource, Source.class, true);
+            TableUtils.dropTable(connectionSource, Condition.class, true);
+            TableUtils.dropTable(connectionSource, Action.class, true);
+            TableUtils.dropTable(connectionSource, MapArea.class, true);
         } catch (SQLException e) {
             Timber.e(e, "Error while creating tables");
         }
