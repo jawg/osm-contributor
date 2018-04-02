@@ -21,7 +21,6 @@ package io.jawg.osmcontributor.ui.fragments;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -50,7 +49,6 @@ import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.flickr.rest.asynctask.GetFlickrPhotos;
 import io.jawg.osmcontributor.model.entities.Poi;
-import io.jawg.osmcontributor.ui.activities.PhotoActivity;
 import io.jawg.osmcontributor.ui.events.map.PleaseChangePoiPosition;
 import io.jawg.osmcontributor.ui.events.map.PleaseChangeValuesDetailPoiFragmentEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseDeletePoiFromMapEvent;
@@ -153,11 +151,11 @@ public class PoiDetailFragment extends Fragment {
     /*=========================================*/
     @OnClick(R.id.thumbnail)
     public void onThumbnailClick(View view) {
-        Intent photoActivity = new Intent(getActivity(), PhotoActivity.class);
-        photoActivity.putExtra("latitude", poi.getLatitude());
-        photoActivity.putExtra("longitude", poi.getLongitude());
-        photoActivity.putExtra("poiId", poi.getId());
-        startActivity(photoActivity);
+//        Intent photoActivity = new Intent(getActivity(), PhotoActivity.class);
+//        photoActivity.putExtra("latitude", poi.getLatitude());
+//        photoActivity.putExtra("longitude", poi.getLongitude());
+//        photoActivity.putExtra("poiId", poi.getId());
+//        startActivity(photoActivity);
     }
 
     @OnClick(R.id.edit_poi_detail_floating_button)
