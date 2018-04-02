@@ -1,5 +1,5 @@
 ext {
-    appVersion = "3.0.15"
+    appVersion = "3.0.16"
     androidSupportVersion = '25.1.0'
     playServicesVersion = '7.8.0'
     daggerVersion = '2.0'
@@ -102,7 +102,7 @@ android {
         applicationId "io.jawg.osmcontributor"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 33
+        versionCode 34
         versionName appVersion
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
