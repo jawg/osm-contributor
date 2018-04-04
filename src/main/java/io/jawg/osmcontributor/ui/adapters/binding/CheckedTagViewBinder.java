@@ -10,23 +10,23 @@ import java.lang.ref.WeakReference;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 
-/**
- * Created by mouaad on 17/07/17.
- */
-
 public abstract class CheckedTagViewBinder<T> implements TagViewBinder<T> {
 
     public WeakReference<Activity> activity;
     public LinearLayout content;
-    public TagItem tagItem;
+    public OnTagItemChange onTagItemChange;
+
+    public CheckedTagViewBinder(Activity activity, OnTagItemChange onTagItemChange) {
+        this.activity = new WeakReference<>(activity);
+        this.onTagItemChange = onTagItemChange;
+    }
 
     /**
      * Check if the tag contains correct values
-     * @param activity Current activity (EditionPOI)
-     * @param content Current LinearLayout containing each tag
+     *
      * @param tagItem tag currently checked
      */
-    public void showInvalidityMessage(WeakReference<Activity> activity, LinearLayout content, TagItem tagItem) {
+    protected void showInvalidityMessage(TagItem tagItem) {
         // If the tag is not conform we show the error message, if not we remove it exists
         if (!tagItem.isConform() && content.getChildAt(1).getId() != R.id.malformated_layout) {
             content.addView(LayoutInflater.from(activity.get()).inflate(
@@ -38,5 +38,7 @@ public abstract class CheckedTagViewBinder<T> implements TagViewBinder<T> {
         }
     }
 
-    public abstract void showValidation();
+    public interface OnTagItemChange {
+        void onTagItemUpdated(TagItem updatedTag);
+    }
 }

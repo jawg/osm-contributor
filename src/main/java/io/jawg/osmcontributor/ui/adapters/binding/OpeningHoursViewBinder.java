@@ -8,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.lang.ref.WeakReference;
-
 import javax.inject.Inject;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
@@ -23,18 +21,14 @@ import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.utils.views.DividerItemDecoration;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagItemOpeningTimeViewHolder;
 
-/**
- * Created by loicortola on 05/07/2017.
- */
-
 public class OpeningHoursViewBinder extends CheckedTagViewBinder<TagItemOpeningTimeViewHolder> {
 
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
 
-    public OpeningHoursViewBinder(Activity activity) {
+    public OpeningHoursViewBinder(Activity activity, OnTagItemChange onTagItemChange) {
+        super(activity, onTagItemChange);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
-        this.activity = new WeakReference<>(activity);
     }
 
     @Override
@@ -46,7 +40,6 @@ public class OpeningHoursViewBinder extends CheckedTagViewBinder<TagItemOpeningT
     public void onBindViewHolder(TagItemOpeningTimeViewHolder holder, TagItem tagItem) {
         // Save holder
         this.content = holder.getContent();
-        this.tagItem = tagItem;
 
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), holder.getContent().getContext()));
 
@@ -84,17 +77,12 @@ public class OpeningHoursViewBinder extends CheckedTagViewBinder<TagItemOpeningT
             }
         });
 
-        showValidation();
+        showInvalidityMessage(tagItem);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_time, parent, false);
         return new TagItemOpeningTimeViewHolder(poiTagOpeningHoursLayout);
-    }
-
-    @Override
-    public void showValidation() {
-        showInvalidityMessage(activity, content, tagItem);
     }
 }

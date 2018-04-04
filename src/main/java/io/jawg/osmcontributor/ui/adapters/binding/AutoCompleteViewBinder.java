@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.lang.ref.WeakReference;
-
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
@@ -19,9 +17,9 @@ import io.jawg.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHold
 
 public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoCompleteViewHolder> {
 
-    public AutoCompleteViewBinder(Activity activity) {
+    public AutoCompleteViewBinder(Activity activity, OnTagItemChange onTagItemChange) {
+        super(activity, onTagItemChange);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
-        this.activity = new WeakReference<>(activity);
     }
 
     @Override
@@ -33,7 +31,6 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
     public void onBindViewHolder(final TagItemAutoCompleteViewHolder holder, final TagItem tagItem) {
         // Save holder
         this.content = holder.getContent();
-        this.tagItem = tagItem;
 
         // Set values input
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), activity.get()));
@@ -59,6 +56,9 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (i1 != i2) {
                     tagItem.setValue(charSequence.toString());
+                    if (onTagItemChange != null) {
+                        onTagItemChange.onTagItemUpdated(tagItem);
+                    }
                 }
             }
 
@@ -68,16 +68,12 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
         });
 
         // run validation process
-        showValidation();
+        showInvalidityMessage(tagItem);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         View autoCompleteLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_multi_choice, parent, false);
         return new TagItemAutoCompleteViewHolder(autoCompleteLayout);
-    }
-
-    public void showValidation() {
-        showInvalidityMessage(activity, content, tagItem);
     }
 }

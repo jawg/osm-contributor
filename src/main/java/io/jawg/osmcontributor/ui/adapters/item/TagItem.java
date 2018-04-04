@@ -116,13 +116,13 @@ public abstract class TagItem {
 
     public boolean hasChanged() {
         if (value == null && oldValue == null) {
-            return true;
+            return false;
         }
         if (value == null) {
-            return false;
+            return true;
         }
         if (oldValue == null) {
-            return false;
+            return true;
         }
         return value.compareTo(oldValue) != 0;
     }

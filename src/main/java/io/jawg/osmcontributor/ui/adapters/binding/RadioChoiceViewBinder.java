@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -18,15 +17,11 @@ import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagRadioChoiceHolder;
 
-/**
- * Created by capaldi on 05/07/17.
- */
-
 public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHolder> {
 
-    public RadioChoiceViewBinder(Activity activity) {
+    public RadioChoiceViewBinder(Activity activity, OnTagItemChange onTagItemChange) {
+        super(activity, onTagItemChange);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
-        this.activity = new WeakReference<>(activity);
     }
 
     @Override
@@ -35,10 +30,19 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
     }
 
     @Override
-    public void onBindViewHolder(TagRadioChoiceHolder holder, TagItem tagItem) {
+    public void onBindViewHolder(TagRadioChoiceHolder holder, final TagItem tagItem) {
         // Save holder
         this.content = holder.getContent();
-        this.tagItem = tagItem;
+
+        holder.setCheckBoxListener(new TagRadioChoiceHolder.CheckBoxListener() {
+            @Override
+            public void onCheckBoxSelected(String value) {
+                tagItem.setValue(value);
+                if (onTagItemChange != null) {
+                    onTagItemChange.onTagItemUpdated(tagItem);
+                }
+            }
+        });
 
         // Set key text view
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), holder.getContent().getContext()));
@@ -97,17 +101,12 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
         }
 
         // run validation process
-        showValidation();
+        showInvalidityMessage(tagItem);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         View booleanChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_radio, parent, false);
         return new TagRadioChoiceHolder(booleanChoiceLayout);
-    }
-
-    @Override
-    public void showValidation() {
-        showInvalidityMessage(activity, content, tagItem);
     }
 }

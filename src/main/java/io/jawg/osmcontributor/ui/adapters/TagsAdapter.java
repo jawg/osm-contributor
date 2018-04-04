@@ -23,6 +23,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +44,13 @@ import io.jawg.osmcontributor.ui.adapters.binding.TagViewBinder;
 import io.jawg.osmcontributor.ui.adapters.item.SingleTagItem;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
+import io.jawg.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChange;
 import io.jawg.osmcontributor.utils.StringUtils;
 import io.jawg.osmcontributor.utils.edition.PoiChanges;
 
 import static io.jawg.osmcontributor.ui.adapters.item.TagMapper.getTagItems;
 
-public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements CheckedTagViewBinder.OnTagItemChange {
     private List<TagItem> tagItemList = new ArrayList<>();
     private List<CheckedTagViewBinder> checkedViews = new ArrayList<>();
     private Poi poi;
@@ -71,11 +74,13 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             notifyDataSetChanged();
         }
 
-        viewBinders.add(new ShelterChoiceViewBinder(activity));
-        viewBinders.add(new AutoCompleteViewBinder(activity));
+        viewBinders.add(new ShelterChoiceViewBinder(activity, this));
+        viewBinders.add(new AutoCompleteViewBinder(activity, this));
         viewBinders.add(new ConstantViewBinder(activity));
-        viewBinders.add(new OpeningHoursViewBinder(activity));
-        viewBinders.add(new RadioChoiceViewBinder(activity));
+        viewBinders.add(new OpeningHoursViewBinder(activity, this));
+        viewBinders.add(new RadioChoiceViewBinder(activity, this));
+
+        eventBus.register(this);
     }
 
     /*=========================================*/
@@ -150,10 +155,8 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return true;
     }
 
-    public void showInvalidityForAll() {
-        for (CheckedTagViewBinder binder : checkedViews) {
-            binder.showValidation();
-        }
+    public void refreshErrorStatus() {
+        notifyDataSetChanged();
     }
 
     /*=========================================*/
@@ -202,5 +205,48 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
         return change;
+    }
+
+    @Override
+    public void onTagItemUpdated(TagItem updatedTag) {
+        for (TagItem tagItem : tagItemList) {
+            if (tagItem.getKey().compareTo(updatedTag.getKey()) == 0) {
+                editTag(tagItem, updatedTag.getValue());
+            }
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onPleaseApplyOpeningTimeChange(PleaseApplyOpeningTimeChange event) {
+        eventBus.removeStickyEvent(event);
+        for (TagItem tagItem : tagItemList) {
+            if (tagItem.getKey().compareTo("opening_hours") == 0) {
+                editTag(tagItem, openingTimeValueParser.toValue(event.getOpeningTime()));
+            }
+        }
+    }
+
+    /**
+     * Edit tag value
+     *
+     * @param tagItem  tag item to edit
+     * @param newValue new value
+     */
+    private void editTag(TagItem tagItem, String newValue) {
+        // If event comes from SingleChoiceTag
+        if (tagItem.getTagType() == TagItem.Type.SINGLE_CHOICE) {
+            // Get the key from value, safe cause no duplicate
+            String key = "";
+            for (Map.Entry<String, String> entry : tagItem.getValues().entrySet()) {
+                if (newValue.equals(entry.getValue())) {
+                    key = entry.getKey();
+                    break;
+                }
+            }
+            tagItem.setValue(key);
+        } else {
+            tagItem.setValue(newValue);
+        }
+        change = true;
     }
 }

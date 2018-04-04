@@ -45,11 +45,18 @@ public class ShelterChoiceHolder extends RecyclerView.ViewHolder {
     LinearLayout content;
 
 
-    public ShelterChoiceHolder(View v, SelectionListener selectionListener) {
+    public ShelterChoiceHolder(View v) {
         super(v);
         this.poiTagLayout = v;
-        this.selectionListener = selectionListener;
         ButterKnife.bind(this, v);
+    }
+
+    public SelectionListener getSelectionListener() {
+        return selectionListener;
+    }
+
+    public void setSelectionListener(SelectionListener selectionListener) {
+        this.selectionListener = selectionListener;
     }
 
     public LinearLayout getContent() {
