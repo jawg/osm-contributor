@@ -22,6 +22,8 @@ package io.jawg.osmcontributor;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.multidex.MultiDex;
@@ -56,6 +58,8 @@ public class OsmTemplateApplication extends Application {
     private OsmTemplateComponent osmTemplateComponent;
 
     private Flickr flickr;
+
+    private static ConnectivityManager conMgr;
 
     /*=========================================*/
     /*---------------OVERRIDE------------------*/
@@ -117,6 +121,8 @@ public class OsmTemplateApplication extends Application {
         editor.apply();
 
         MapboxAccountManager.start(this, BuildConfig.MAPBOX_TOKEN);
+
+        conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
     @Override
@@ -135,6 +141,7 @@ public class OsmTemplateApplication extends Application {
 
     /**
      * Use for Dagger Injection.
+     *
      * @return an object to inject a class
      */
     public OsmTemplateComponent getOsmTemplateComponent() {
@@ -143,9 +150,15 @@ public class OsmTemplateApplication extends Application {
 
     /**
      * Get Flickr Helper for API request.
+     *
      * @return flickr object with API key set
      */
     public Flickr getFlickr() {
         return flickr;
+    }
+
+    public static Boolean hasNetwork() {
+        return conMgr == null ? null :  conMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED
+                || conMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
     }
 }

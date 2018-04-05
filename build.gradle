@@ -146,7 +146,7 @@ android {
             buildConfigField "String", "MAP_STYLE_URL", '"https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json"'
             buildConfigField "String", "MAP_STYLE", '"asset://mapnik.json"'
             buildConfigField "String", "BASE_OSM_URL", osmUrl()
-            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass.osm.rambler.ru/cgi/interpreter/"'
+            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass-api.de/api/interpreter/"'
             buildConfigField "String", "FLICKR_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_key") + '"'
             buildConfigField "String", "FLICKR_API_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_secret") + '"'
             buildConfigField "String", "FLICKR_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token") + '"'
@@ -171,7 +171,7 @@ android {
             buildConfigField "String", "MAP_STYLE_URL", '"https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json"'
             buildConfigField "String", "MAP_STYLE", '"asset://mapnik.json"'
             buildConfigField "String", "BASE_OSM_URL", osmUrl()
-            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass.osm.rambler.ru/cgi/interpreter/"'
+            buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass-api.de/api/interpreter/"'
             buildConfigField "String", "FLICKR_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_key") + '"'
             buildConfigField "String", "FLICKR_API_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_secret") + '"'
             buildConfigField "String", "FLICKR_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token") + '"'

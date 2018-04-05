@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.database.dao.MapAreaDao;
 import io.jawg.osmcontributor.database.dao.PoiDao;
 import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
@@ -24,6 +25,7 @@ import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.rest.Backend;
+import io.jawg.osmcontributor.rest.NetworkException;
 import io.jawg.osmcontributor.rest.dtos.osm.NodeDto;
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
 import io.jawg.osmcontributor.rest.dtos.osm.PoiDto;
@@ -155,6 +157,11 @@ public class PoiLoader {
     }
 
     private void loadAndSavePoisFromBackend(MapArea toLoadArea, boolean clean) {
+        Boolean hasNetwork = OsmTemplateApplication.hasNetwork();
+        if (hasNetwork != null && !hasNetwork) {
+            throw new NetworkException();
+        }
+
         loadingStatus = LOADING_FROM_SERVER;
         publishProgress();
         loadedElements = 0L;
