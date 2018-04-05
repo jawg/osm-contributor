@@ -87,7 +87,9 @@ public class SyncModule {
 
     @Provides
     OverpassRestClient getOverpassRestClient(Persister persister, AuthorisationInterceptor interceptor, ConfigManager configManager) {
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).readTimeout(30, TimeUnit.SECONDS)
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(interceptor).readTimeout(50, TimeUnit.SECONDS)
+                .addInterceptor(interceptor).connectTimeout(50, TimeUnit.SECONDS)
                 .build();
 
         return new Retrofit.Builder()

@@ -160,7 +160,7 @@ android {
             buildConfigField "String", "APP_NAME", '"Jungle Bus"'
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
             buildConfigField "int", "MAX_POIS_ON_MAP", "300"
-            buildConfigField "int", "MAP_AREA_FACTOR", "30"
+            buildConfigField "int", "MAP_AREA_FACTOR", "200"
             buildConfigField "int", "DEFAULT_ZOOM", "16"
             buildConfigField "int", "ZOOM_VECTORIAL", "18"
             buildConfigField "int", "ZOOM_MAX_PROVIDER", "19"

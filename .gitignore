@@ -16,6 +16,8 @@ gen/
 .gradle/
 build/
 /*/build/
+/bus/release/*
+/store/release/*
 
 # Config properties file
 conf.properties
