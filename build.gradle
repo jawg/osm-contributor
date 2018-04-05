@@ -131,7 +131,7 @@ android {
 
     productFlavors {
         store {
-            applicationId "io.jawg.osmcontributor"
+            applicationId "io.mapsquare.osmcontributor"
             buildConfigField "String", "APP_NAME", '"OSM Contributor"'
             buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
             buildConfigField "int", "MAX_POIS_ON_MAP", "200"
