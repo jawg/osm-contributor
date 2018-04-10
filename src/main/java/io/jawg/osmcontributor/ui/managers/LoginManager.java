@@ -24,8 +24,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import io.jawg.osmcontributor.database.preferences.LoginPreferences;
 import io.jawg.osmcontributor.ui.events.login.AttemptLoginEvent;
-import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
 import io.jawg.osmcontributor.ui.events.login.CheckFirstConnectionEvent;
+import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
 import io.jawg.osmcontributor.ui.events.login.LoginInitializedEvent;
 import io.jawg.osmcontributor.ui.events.login.PleaseOpenLoginDialogEvent;
 import io.jawg.osmcontributor.ui.events.login.UpdateFirstConnectionEvent;

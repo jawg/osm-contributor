@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import io.jawg.osmcontributor.model.entities.MapArea;
 import io.jawg.osmcontributor.ui.managers.loadPoi.executors.CancelableObservable;
 import io.jawg.osmcontributor.ui.managers.loadPoi.executors.PoiThreadExecutor;
-import io.jawg.osmcontributor.ui.managers.loadPoi.executors.PostExecutionThread;
+import io.jawg.osmcontributor.ui.managers.executor.PostExecutionThread;
 import io.jawg.osmcontributor.utils.Box;
 import rx.Observable;
 import rx.Subscriber;

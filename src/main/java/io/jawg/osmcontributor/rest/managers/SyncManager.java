@@ -54,6 +54,8 @@ import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.Box;
 import io.jawg.osmcontributor.utils.FlavorUtils;
 import io.jawg.osmcontributor.utils.OsmAnswers;
+import rx.Observable;
+import rx.Subscriber;
 import timber.log.Timber;
 
 /**
@@ -132,6 +134,16 @@ public class SyncManager {
     // ********************************
     // ************ public ************
     // ********************************
+
+    public Observable<Void> sync() {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            }
+        });
+    }
 
     /**
      * Download the list of PoiType from the backend and actualize the database.

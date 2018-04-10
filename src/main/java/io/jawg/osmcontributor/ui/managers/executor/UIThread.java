@@ -1,4 +1,4 @@
-package io.jawg.osmcontributor.ui.managers.loadPoi.executors;
+package io.jawg.osmcontributor.ui.managers.executor;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

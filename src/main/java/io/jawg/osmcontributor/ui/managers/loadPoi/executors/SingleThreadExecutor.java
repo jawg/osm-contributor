@@ -1,17 +1,21 @@
 package io.jawg.osmcontributor.ui.managers.loadPoi.executors;
 
-
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-public abstract class SingleThreadExecutor implements ThreadExecutor {
+import javax.inject.Inject;
+
+import io.jawg.osmcontributor.ui.managers.executor.ThreadExecutor;
+
+public class SingleThreadExecutor implements ThreadExecutor {
 
     private final Executor executor;
     private final ThreadFactory threadFactory;
 
-    public SingleThreadExecutor(String threadName) {
-        this.threadFactory = new SingleThreadFactory(threadName);
+    @Inject
+    public SingleThreadExecutor() {
+        this.threadFactory = new SingleThreadFactory("Single thread");
         this.executor = Executors.newSingleThreadExecutor(threadFactory);
     }
 
