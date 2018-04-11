@@ -65,11 +65,11 @@ public class OsmTemplateApplication extends Application {
         super.onCreate();
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
+
+            // Init Stetho for debug purpose (database)
+            Stetho.initializeWithDefaults(this);
         }
         Fabric.with(this, new Crashlytics());
-
-        // Init Stetho for debug purpose (database)
-        Stetho.initializeWithDefaults(this);
 
         // Init Dagger
         osmTemplateComponent = DaggerOsmTemplateComponent.builder().osmTemplateModule(new OsmTemplateModule(this)).build();
