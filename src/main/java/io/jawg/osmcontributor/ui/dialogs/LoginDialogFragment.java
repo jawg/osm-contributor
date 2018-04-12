@@ -176,7 +176,6 @@ public class LoginDialogFragment extends DialogFragment {
                 Toast.makeText(getActivity(), R.string.error_first_login, Toast.LENGTH_SHORT).show();
                 resetLoginFields();
             }
-            super.onNext(isValidCredentials);
         }
     }
 }

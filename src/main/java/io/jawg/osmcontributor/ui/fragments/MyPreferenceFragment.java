@@ -21,7 +21,6 @@ package io.jawg.osmcontributor.ui.fragments;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -47,16 +46,14 @@ import io.jawg.osmcontributor.model.events.ResetDatabaseEvent;
 import io.jawg.osmcontributor.model.events.ResetTypeDatabaseEvent;
 import io.jawg.osmcontributor.rest.events.GoogleAuthenticatedEvent;
 import io.jawg.osmcontributor.rest.security.GoogleOAuthManager;
-import io.jawg.osmcontributor.ui.events.login.AttemptLoginEvent;
-import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
 import io.jawg.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;
-import io.jawg.osmcontributor.ui.events.login.ValidLoginEvent;
+import io.jawg.osmcontributor.ui.managers.executor.GenericSubscriber;
+import io.jawg.osmcontributor.ui.managers.login.UpdateCredentialsIfValid;
 import io.jawg.osmcontributor.utils.ConfigManager;
 import io.jawg.osmcontributor.utils.StringUtils;
 
 public class MyPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final int PICK_ACCOUNT_CODE = 1;
-    public static final int RC_SIGN_IN = 2;
     private String loginKey;
     private String passwordKey;
     private Preference loginPref;
@@ -75,6 +72,9 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
 
     @Inject
     ConfigManager configManager;
+
+    @Inject
+    UpdateCredentialsIfValid updateCredentialsIfValid;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -108,85 +108,57 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
         h2geoPreference.setSummary(sharedPreferences.getString(getString(R.string.shared_prefs_h2geo_date), ""));
 
         Preference resetPreference = findPreference(getString(R.string.shared_prefs_reset));
-        resetPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                new AlertDialog.Builder(getActivity())
-                        .setMessage(R.string.reset_dialog_message)
-                        .setPositiveButton(R.string.reset_dialog_positive_button, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                bus.post(new ResetDatabaseEvent());
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton(R.string.reset_dialog_negative_button, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        }).show();
-                return false;
-            }
+        resetPreference.setOnPreferenceClickListener(preference1 -> {
+            new AlertDialog.Builder(getActivity())
+                    .setMessage(R.string.reset_dialog_message)
+                    .setPositiveButton(R.string.reset_dialog_positive_button, (dialog, which) -> {
+                        bus.post(new ResetDatabaseEvent());
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton(R.string.reset_dialog_negative_button, (dialog, which) -> dialog.cancel())
+                    .show();
+            return false;
         });
 
         resetTypePref = findPreference(getString(R.string.shared_prefs_reset_type));
-        resetTypePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                new AlertDialog.Builder(getActivity())
-                        .setMessage(R.string.reset_dialog_message)
-                        .setPositiveButton(R.string.reset_dialog_positive_button, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                bus.post(new ResetTypeDatabaseEvent());
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton(R.string.reset_dialog_negative_button, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        }).show();
-                return false;
-            }
+        resetTypePref.setOnPreferenceClickListener(preference12 -> {
+            new AlertDialog.Builder(getActivity())
+                    .setMessage(R.string.reset_dialog_message)
+                    .setPositiveButton(R.string.reset_dialog_positive_button, (dialog, which) -> {
+                        bus.post(new ResetTypeDatabaseEvent());
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton(R.string.reset_dialog_negative_button, (dialog, which) -> dialog.cancel())
+                    .show();
+            return false;
         });
 
-        findPreference(getString(R.string.shared_prefs_expert_mode)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                if (sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false)) {
-                    new AlertDialog.Builder(getActivity())
-                            .setCancelable(false)
-                            .setMessage(getString(R.string.expert_mode_dialog))
-                            .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            }).show();
-                }
-                return false;
+        findPreference(getString(R.string.shared_prefs_expert_mode)).setOnPreferenceClickListener(preference13 -> {
+            if (sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false)) {
+                new AlertDialog.Builder(getActivity())
+                        .setCancelable(false)
+                        .setMessage(getString(R.string.expert_mode_dialog))
+                        .setPositiveButton(getString(R.string.ok), (dialog, which) -> dialog.dismiss())
+                        .show();
             }
+            return false;
         });
 
 
         googleConnectPref = findPreference(getString(R.string.shared_prefs_google_connection_key));
-        googleConnectPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Intent intent = AccountPicker.newChooseAccountIntent(
-                        null, null,
-                        new String[]{"com.google"},
-                        false, null, null, null, null);
-                startActivityForResult(intent, PICK_ACCOUNT_CODE);
-                return false;
-            }
+        googleConnectPref.setOnPreferenceClickListener(preference14 -> {
+            Intent intent = AccountPicker.newChooseAccountIntent(
+                    null, null,
+                    new String[]{"com.google"},
+                    false, null, null, null, null);
+            startActivityForResult(intent, PICK_ACCOUNT_CODE);
+            return false;
         });
 
         if (!sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false)) {
             getPreferenceScreen().removePreference(resetTypePref);
         }
     }
-
-    private static final String TAG = "MyPreferenceFragment";
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -212,6 +184,12 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
         super.onPause();
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         bus.unregister(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        updateCredentialsIfValid.unsubscribe();
+        super.onDestroy();
     }
 
     @Override
@@ -259,7 +237,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
         String login = getLogin(sharedPreferences);
         String password = getPassword(sharedPreferences);
         if (!StringUtils.isEmpty(login) && !StringUtils.isEmpty(password)) {
-            bus.post(new AttemptLoginEvent(login, password));
+            updateCredentialsIfValid.init(login, password).execute(new UpdateCredentialsIfValidObservable());
         }
     }
 
@@ -294,17 +272,24 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onValidLoginEvent(ValidLoginEvent event) {
-        Snackbar.make(getView(), R.string.valid_login, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onErrorLoginEvent(ErrorLoginEvent event) {
-        Snackbar.make(getView(), R.string.error_login, Snackbar.LENGTH_LONG).show();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDatabaseResetFinishedEvent(DatabaseResetFinishedEvent event) {
         Snackbar.make(getView(), event.isSuccess() ? R.string.reset_success : R.string.reset_failure, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private class UpdateCredentialsIfValidObservable extends GenericSubscriber<Boolean> {
+        @Override
+        public void onNext(Boolean isValidCredentials) {
+            if (isValidCredentials) {
+                Snackbar.make(getView(), R.string.valid_login, Snackbar.LENGTH_SHORT).show();
+            } else {
+                Snackbar.make(getView(), R.string.error_login, Snackbar.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Snackbar.make(getView(), R.string.error_login, Snackbar.LENGTH_LONG).show();
+        }
     }
 }

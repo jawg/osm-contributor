@@ -23,10 +23,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import io.jawg.osmcontributor.database.preferences.LoginPreferences;
-import io.jawg.osmcontributor.ui.events.login.AttemptLoginEvent;
-import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
 import io.jawg.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;
-import io.jawg.osmcontributor.ui.events.login.ValidLoginEvent;
 
 /**
  * Manage the credentials of the backend.
@@ -39,17 +36,6 @@ public abstract class LoginManager {
     public LoginManager(EventBus bus, LoginPreferences loginPreferences) {
         this.bus = bus;
         this.loginPreferences = loginPreferences;
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    @SuppressWarnings("unused")
-    public void onAttemptLoginEvent(final AttemptLoginEvent event) {
-        if (isValidLogin(event.getLogin(), event.getPassword())) {
-            bus.post(new ValidLoginEvent());
-            loginPreferences.updateCredentials(event.getLogin(), event.getPassword());
-        } else {
-            bus.post(new ErrorLoginEvent());
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
