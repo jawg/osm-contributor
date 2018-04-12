@@ -51,7 +51,6 @@ import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiTypes;
-import io.jawg.osmcontributor.ui.events.login.UpdateFirstConnectionEvent;
 import io.jawg.osmcontributor.ui.events.map.ChangesInDB;
 import io.jawg.osmcontributor.ui.events.map.OnBackPressedMapEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseApplyNoteFilterEvent;
@@ -122,8 +121,6 @@ public class MapActivity extends AppCompatActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         setSupportActionBar(toolbar);
-
-        eventBus.post(new UpdateFirstConnectionEvent());
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override

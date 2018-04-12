@@ -105,9 +105,4 @@ public class StoreLoginManager extends LoginManager {
         }
         return false;
     }
-
-    @Override
-    public boolean checkFirstConnection() {
-        return loginPreferences.retrieveFirstConnection();
-    }
 }

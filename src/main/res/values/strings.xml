@@ -143,7 +143,6 @@
     <!-- Shared preferences -->
     <string name="shared_prefs_login" translatable="false">SHARED_PREFS_LOGIN</string>
     <string name="shared_prefs_password" translatable="false">SHARED_PREFS_PASSWORD</string>
-    <string name="shared_prefs_first_connection" translatable="false">SHARED_PREFS_FIRST_CONNECTION</string>
     <string name="shared_prefs_token" translatable="false">SHARED_PREFS_TOKEN</string>
     <string name="shared_prefs_token_secret" translatable="false">SHARED_PREFS_TOKEN_SECRET</string>
     <string name="shared_prefs_consumer" translatable="false">SHARED_PREFS_CONSUMER</string>

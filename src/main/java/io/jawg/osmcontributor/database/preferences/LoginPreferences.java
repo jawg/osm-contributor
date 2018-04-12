@@ -64,25 +64,21 @@ public class LoginPreferences {
     }
 
     /**
-     * Return true if the user login for the first time
-     * @return
-     */
-    public boolean retrieveFirstConnection() {
-        return sharedPreferences.getBoolean(application.getString(R.string.shared_prefs_first_connection), true);
-    }
-
-    /**
      * Update the login and the password in the preferences.
      *
      * @param login    The new login.
      * @param password The new password.
      */
     public void updateCredentials(String login, String password) {
-        sharedPreferences.edit().putString(application.getString(R.string.shared_prefs_login), login).putString(application.getString(R.string.shared_prefs_password), password).apply();
+        sharedPreferences.edit()
+                .putString(application.getString(R.string.shared_prefs_login), login)
+                .putString(application.getString(R.string.shared_prefs_password), password)
+                .apply();
     }
 
     /**
      * Get the OAuth params from the preferences
+     *
      * @return the OAuth params
      */
     public Map<String, String> retrieveOAuthParams() {
@@ -103,17 +99,11 @@ public class LoginPreferences {
     }
 
     public void updateGoogleCredentials(String consumerKey, String consumerKeySecret, String token, String tokenSecret) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(application.getString(R.string.shared_prefs_consumer_secret), consumerKeySecret);
-        editor.putString(application.getString(R.string.shared_prefs_consumer), consumerKey);
-        editor.putString(application.getString(R.string.shared_prefs_token), token);
-        editor.putString(application.getString(R.string.shared_prefs_token_secret), tokenSecret);
-        editor.apply();
-    }
-
-    public void updateFirstConnection(boolean b) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(application.getString(R.string.shared_prefs_first_connection), b);
-        editor.apply();
+        sharedPreferences.edit()
+                .putString(application.getString(R.string.shared_prefs_consumer_secret), consumerKeySecret)
+                .putString(application.getString(R.string.shared_prefs_consumer), consumerKey)
+                .putString(application.getString(R.string.shared_prefs_token), token)
+                .putString(application.getString(R.string.shared_prefs_token_secret), tokenSecret)
+                .apply();
     }
 }

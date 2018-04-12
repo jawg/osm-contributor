@@ -24,11 +24,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import io.jawg.osmcontributor.database.preferences.LoginPreferences;
 import io.jawg.osmcontributor.ui.events.login.AttemptLoginEvent;
-import io.jawg.osmcontributor.ui.events.login.CheckFirstConnectionEvent;
 import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
-import io.jawg.osmcontributor.ui.events.login.LoginInitializedEvent;
-import io.jawg.osmcontributor.ui.events.login.PleaseOpenLoginDialogEvent;
-import io.jawg.osmcontributor.ui.events.login.UpdateFirstConnectionEvent;
 import io.jawg.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;
 import io.jawg.osmcontributor.ui.events.login.ValidLoginEvent;
 
@@ -56,23 +52,9 @@ public abstract class LoginManager {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onCheckFirstConnectionEvent(CheckFirstConnectionEvent event) {
-        if (checkFirstConnection()) {
-            bus.post(new PleaseOpenLoginDialogEvent());
-        } else {
-            bus.postSticky(new LoginInitializedEvent());
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateGoogleCredentialsEvent(UpdateGoogleCredentialsEvent event) {
         loginPreferences.updateGoogleCredentials(event.getConsumer(), event.getConsumerSecret(), event.getToken(), event.getTokenSecret());
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdateFisrtConnectionEvent(UpdateFirstConnectionEvent event) {
-        loginPreferences.updateFirstConnection(false);
     }
 
     /**
@@ -108,6 +90,4 @@ public abstract class LoginManager {
      * @return Whether the credentials are valid.
      */
     public abstract boolean isValidLogin(final String login, final String password);
-
-    public abstract boolean checkFirstConnection();
 }
