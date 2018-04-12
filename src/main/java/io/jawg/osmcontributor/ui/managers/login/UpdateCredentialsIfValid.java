@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import io.jawg.osmcontributor.ui.managers.LoginManager;
 import io.jawg.osmcontributor.ui.managers.UseCase;
 import io.jawg.osmcontributor.ui.managers.executor.UIThread;
-import io.jawg.osmcontributor.ui.managers.loadPoi.executors.PoiThreadExecutor;
+import io.jawg.osmcontributor.ui.managers.login.executors.LoginThreadExecutor;
 import rx.Observable;
 
 public class UpdateCredentialsIfValid extends UseCase {
@@ -15,7 +15,7 @@ public class UpdateCredentialsIfValid extends UseCase {
     private String password;
 
     @Inject
-    protected UpdateCredentialsIfValid(PoiThreadExecutor threadExecutor, UIThread postExecutionThread, LoginManager loginManager) {
+    protected UpdateCredentialsIfValid(LoginThreadExecutor threadExecutor, UIThread postExecutionThread, LoginManager loginManager) {
         super(threadExecutor, postExecutionThread);
         this.loginManager = loginManager;
     }

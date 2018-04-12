@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import io.jawg.osmcontributor.ui.managers.LoginManager;
 import io.jawg.osmcontributor.ui.managers.UseCase;
 import io.jawg.osmcontributor.ui.managers.executor.UIThread;
-import io.jawg.osmcontributor.ui.managers.loadPoi.executors.PoiThreadExecutor;
+import io.jawg.osmcontributor.ui.managers.login.executors.LoginThreadExecutor;
 import rx.Observable;
 
 public class CheckUserLogged extends UseCase {
@@ -13,7 +13,7 @@ public class CheckUserLogged extends UseCase {
     private final LoginManager loginManager;
 
     @Inject
-    protected CheckUserLogged(PoiThreadExecutor threadExecutor, UIThread postExecutionThread, LoginManager loginManager) {
+    protected CheckUserLogged(LoginThreadExecutor threadExecutor, UIThread postExecutionThread, LoginManager loginManager) {
         super(threadExecutor, postExecutionThread);
         this.loginManager = loginManager;
     }

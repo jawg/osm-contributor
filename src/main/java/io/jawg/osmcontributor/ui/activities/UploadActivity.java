@@ -197,7 +197,7 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
             String comment = editTextComment.getText().toString();
 
             if (!comment.isEmpty()) {
-                checkUserLogged.execute(new CheckLoginSubscriber(comment, adapter.getPoiToUpload(), adapter.getPoiNodeRefToUpload()));
+                checkUserLogged.execute(new CheckUserLoggedSubscriber(comment, adapter.getPoiToUpload(), adapter.getPoiNodeRefToUpload()));
             } else {
                 Toast.makeText(this, R.string.need_a_comment, Toast.LENGTH_SHORT).show();
             }
@@ -325,13 +325,13 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         ringProgressDialog.setCancelable(true);
     }
 
-    private class CheckLoginSubscriber extends GenericSubscriber<Boolean> {
+    private class CheckUserLoggedSubscriber extends GenericSubscriber<Boolean> {
 
         private final String comment;
         private final List<Long> poiToUpload;
         private final List<Long> poiNodeRefToUpload;
 
-        CheckLoginSubscriber(String comment, List<Long> poiToUpload, List<Long> poiNodeRefToUpload) {
+        CheckUserLoggedSubscriber(String comment, List<Long> poiToUpload, List<Long> poiNodeRefToUpload) {
             this.comment = comment;
             this.poiToUpload = poiToUpload;
             this.poiNodeRefToUpload = poiNodeRefToUpload;
