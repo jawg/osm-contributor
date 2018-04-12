@@ -62,6 +62,9 @@ import io.jawg.osmcontributor.rest.events.error.SyncUnauthorizedEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncUploadNoteRetrofitErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
 import io.jawg.osmcontributor.ui.adapters.PoisAdapter;
+import io.jawg.osmcontributor.ui.dialogs.LoginDialogFragment;
+import io.jawg.osmcontributor.ui.managers.executor.GenericSubscriber;
+import io.jawg.osmcontributor.ui.managers.login.CheckUserLogged;
 import io.jawg.osmcontributor.ui.managers.tutorial.SyncTutoManager;
 import io.jawg.osmcontributor.ui.managers.tutorial.TutorialManager;
 import io.jawg.osmcontributor.utils.OsmAnswers;
@@ -90,6 +93,9 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
 
     @Inject
     EventBus eventBus;
+
+    @Inject
+    CheckUserLogged checkUserLogged;
 
     /*=========================================*/
     /*---------------ATTRIBUTES----------------*/
@@ -134,13 +140,10 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(poisListView);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                View childAt = poisListView.getChildAt(0);
-                if (childAt != null) {
-                    syncTutoManager.launchTuto(childAt.findViewById(R.id.revert), findViewById(R.id.comment_edit_text), findViewById(R.id.action_confirm));
-                }
+        new Handler().postDelayed(() -> {
+            View childAt = poisListView.getChildAt(0);
+            if (childAt != null) {
+                syncTutoManager.launchTuto(childAt.findViewById(R.id.revert), findViewById(R.id.comment_edit_text), findViewById(R.id.action_confirm));
             }
         }, 500);
     }
@@ -156,6 +159,12 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
     protected void onPause() {
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        checkUserLogged.unsubscribe();
+        super.onDestroy();
     }
 
     @Override
@@ -188,9 +197,7 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
             String comment = editTextComment.getText().toString();
 
             if (!comment.isEmpty()) {
-                eventBus.post(new PleaseUploadPoiChangesByIdsEvent(comment, adapter.getPoiToUpload(), adapter.getPoiNodeRefToUpload()));
-                ringProgressDialog = ProgressDialog.show(this, null, getString(R.string.saving), true);
-                ringProgressDialog.setCancelable(true);
+                checkUserLogged.execute(new CheckLoginSubscriber(comment, adapter.getPoiToUpload(), adapter.getPoiNodeRefToUpload()));
             } else {
                 Toast.makeText(this, R.string.need_a_comment, Toast.LENGTH_SHORT).show();
             }
@@ -202,14 +209,11 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
     @Override
     public void onItemRemoved(final PoiUpdateWrapper removedItem, final int position) {
         final Snackbar snackbar = Snackbar.make(coordinatorLayout, getString(R.string.revert_snack_bar), Snackbar.LENGTH_SHORT);
-        snackbar.setAction(getString(R.string.undo_snack_bar), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isCanceled = true;
-                snackbar.dismiss();
-                adapter.insert(position, removedItem);
-                poisListView.smoothScrollToPosition(position);
-            }
+        snackbar.setAction(getString(R.string.undo_snack_bar), v -> {
+            isCanceled = true;
+            snackbar.dismiss();
+            adapter.insert(position, removedItem);
+            poisListView.smoothScrollToPosition(position);
         });
         snackbar.setCallback(new Snackbar.Callback() {
             @Override
@@ -313,5 +317,34 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
         ringProgressDialog.cancel();
         //get all pois not updated
         eventBus.post(new PleaseLoadPoisToUpdateEvent());
+    }
+
+    private void uploadPoiChanges(String comment, List<Long> poiToUpload, List<Long> poiNodeRefToUpload) {
+        eventBus.post(new PleaseUploadPoiChangesByIdsEvent(comment, poiToUpload, poiNodeRefToUpload));
+        ringProgressDialog = ProgressDialog.show(UploadActivity.this, null, getString(R.string.saving), true);
+        ringProgressDialog.setCancelable(true);
+    }
+
+    private class CheckLoginSubscriber extends GenericSubscriber<Boolean> {
+
+        private final String comment;
+        private final List<Long> poiToUpload;
+        private final List<Long> poiNodeRefToUpload;
+
+        CheckLoginSubscriber(String comment, List<Long> poiToUpload, List<Long> poiNodeRefToUpload) {
+            this.comment = comment;
+            this.poiToUpload = poiToUpload;
+            this.poiNodeRefToUpload = poiNodeRefToUpload;
+        }
+
+        @Override
+        public void onNext(Boolean isLogged) {
+            if (isLogged) {
+                uploadPoiChanges(comment, poiToUpload, poiNodeRefToUpload);
+            } else {
+                LoginDialogFragment.newInstance(() -> uploadPoiChanges(comment, poiToUpload, poiNodeRefToUpload))
+                        .show(getFragmentManager(), LoginDialogFragment.class.getSimpleName());
+            }
+        }
     }
 }

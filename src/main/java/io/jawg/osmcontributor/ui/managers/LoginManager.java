@@ -65,6 +65,16 @@ public abstract class LoginManager {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateGoogleCredentialsEvent(UpdateGoogleCredentialsEvent event) {
+        loginPreferences.updateGoogleCredentials(event.getConsumer(), event.getConsumerSecret(), event.getToken(), event.getTokenSecret());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateFisrtConnectionEvent(UpdateFirstConnectionEvent event) {
+        loginPreferences.updateFirstConnection(false);
+    }
+
     /**
      * Check if the credentials in the SharedPreferences are valid.
      *
@@ -74,14 +84,20 @@ public abstract class LoginManager {
         return isValidLogin(loginPreferences.retrieveLogin(), loginPreferences.retrievePassword());
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdateGoogleCredentialsEvent(UpdateGoogleCredentialsEvent event) {
-        loginPreferences.updateGoogleCredentials(event.getConsumer(), event.getConsumerSecret(), event.getToken(), event.getTokenSecret());
-    }
+    /**
+     * Update the credentials after verifying them using the {@link LoginManager#isValidLogin(String, String)}.
+     *
+     * @param login    User's login.
+     * @param password User's password.
+     * @return Whether the credentials are valid.
+     */
+    public boolean updateCredentialsIfValid(final String login, final String password) {
+        boolean validLogin = isValidLogin(login, password);
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdateFisrtConnectionEvent(UpdateFirstConnectionEvent event) {
-        loginPreferences.updateFirstConnection(false);
+        if (validLogin) {
+            loginPreferences.updateCredentials(login, password);
+        }
+        return validLogin;
     }
 
     /**

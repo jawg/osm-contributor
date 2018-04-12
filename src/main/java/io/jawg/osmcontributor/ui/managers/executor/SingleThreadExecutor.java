@@ -1,12 +1,10 @@
-package io.jawg.osmcontributor.ui.managers.loadPoi.executors;
+package io.jawg.osmcontributor.ui.managers.executor;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 import javax.inject.Inject;
-
-import io.jawg.osmcontributor.ui.managers.executor.ThreadExecutor;
 
 public class SingleThreadExecutor implements ThreadExecutor {
 

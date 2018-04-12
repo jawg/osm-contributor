@@ -5,8 +5,8 @@ import javax.inject.Singleton;
 
 import io.jawg.osmcontributor.rest.managers.SyncManager;
 import io.jawg.osmcontributor.ui.managers.executor.PostExecutionThread;
-import io.jawg.osmcontributor.ui.managers.loadPoi.UseCase;
-import io.jawg.osmcontributor.ui.managers.loadPoi.executors.SingleThreadExecutor;
+import io.jawg.osmcontributor.ui.managers.UseCase;
+import io.jawg.osmcontributor.ui.managers.executor.SingleThreadExecutor;
 import rx.Observable;
 
 @Singleton

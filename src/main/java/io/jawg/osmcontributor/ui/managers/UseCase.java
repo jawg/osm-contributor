@@ -1,4 +1,4 @@
-package io.jawg.osmcontributor.ui.managers.loadPoi;
+package io.jawg.osmcontributor.ui.managers;
 
 
 import io.jawg.osmcontributor.ui.managers.executor.PostExecutionThread;

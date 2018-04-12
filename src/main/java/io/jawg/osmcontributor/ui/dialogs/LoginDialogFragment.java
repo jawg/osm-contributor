@@ -27,9 +27,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.AccountPicker;
@@ -42,14 +40,15 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
+import io.jawg.osmcontributor.database.preferences.LoginPreferences;
 import io.jawg.osmcontributor.rest.events.GoogleAuthenticatedEvent;
 import io.jawg.osmcontributor.rest.security.GoogleOAuthManager;
-import io.jawg.osmcontributor.ui.events.login.AttemptLoginEvent;
-import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
 import io.jawg.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;
-import io.jawg.osmcontributor.ui.events.login.ValidLoginEvent;
+import io.jawg.osmcontributor.ui.managers.executor.GenericSubscriber;
+import io.jawg.osmcontributor.ui.managers.login.UpdateCredentialsIfValid;
 import io.jawg.osmcontributor.utils.StringUtils;
 
 /**
@@ -58,15 +57,6 @@ import io.jawg.osmcontributor.utils.StringUtils;
 public class LoginDialogFragment extends DialogFragment {
     private static final int PICK_ACCOUNT_CODE = 1;
 
-    @BindView(R.id.dialog_connection_google_button)
-    Button googleButton;
-
-    @BindView(R.id.dialog_connection_login_button)
-    Button loginButton;
-
-    @BindView(R.id.dialog_connection_login_later)
-    TextView loginLaterTextView;
-
     @BindView(R.id.dialog_connection_login_edit_text)
     EditText loginEditText;
 
@@ -74,13 +64,22 @@ public class LoginDialogFragment extends DialogFragment {
     EditText passwordEditText;
 
     @Inject
+    LoginPreferences loginPreferences;
+
+    @Inject
     GoogleOAuthManager googleOAuthManager;
 
-    private EventBus eventBus;
+    @Inject
+    EventBus eventBus;
 
-    public static LoginDialogFragment newInstance(EventBus bus) {
+    @Inject
+    UpdateCredentialsIfValid updateCredentialsIfValid;
+
+    private OnLoginSuccessfulListener onLoginSuccessfulListener;
+
+    public static LoginDialogFragment newInstance(OnLoginSuccessfulListener onLoginSuccessfulListener) {
         LoginDialogFragment fragment = new LoginDialogFragment();
-        fragment.setEventBus(bus);
+        fragment.onLoginSuccessfulListener = onLoginSuccessfulListener;
         return fragment;
     }
 
@@ -89,45 +88,22 @@ public class LoginDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.dialog_connection, container, false);
         ButterKnife.bind(this, rootView);
-        eventBus.register(this);
 
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
 
-        googleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = AccountPicker.newChooseAccountIntent(
-                        null, null,
-                        new String[]{"com.google"},
-                        false, null, null, null, null);
-                startActivityForResult(intent, PICK_ACCOUNT_CODE);
-            }
-        });
+        eventBus.register(this);
 
+        loginEditText.setText(loginPreferences.retrieveLogin());
+        passwordEditText.setText(loginPreferences.retrievePassword());
 
-        loginLaterTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
-        });
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!StringUtils.isEmpty(loginEditText.getText()) && !StringUtils.isEmpty(passwordEditText.getText())) {
-                    eventBus.post(new AttemptLoginEvent(loginEditText.getText().toString(), passwordEditText.getText().toString()));
-                } else {
-                    Toast.makeText(getActivity(), R.string.empty_fields, Toast.LENGTH_LONG).show();
-                }
-            }
-        });
         return rootView;
     }
 
 
-    @Override public void onDestroy() {
+    @Override
+    public void onDestroy() {
         eventBus.unregister(this);
+        updateCredentialsIfValid.unsubscribe();
         super.onDestroy();
     }
 
@@ -142,7 +118,31 @@ public class LoginDialogFragment extends DialogFragment {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN) public void onGoogleAuthenticatedEvent(GoogleAuthenticatedEvent event) {
+    @OnClick(R.id.dialog_connection_google_button)
+    void onGoogleButtonClicked() {
+        Intent intent = AccountPicker.newChooseAccountIntent(
+                null, null,
+                new String[]{"com.google"},
+                false, null, null, null, null);
+        startActivityForResult(intent, PICK_ACCOUNT_CODE);
+    }
+
+    @OnClick(R.id.dialog_connection_login_button)
+    void onConnectionButtonClicked() {
+        if (!StringUtils.isEmpty(loginEditText.getText()) && !StringUtils.isEmpty(passwordEditText.getText())) {
+            updateCredentialsIfValid.init(loginEditText.getText().toString(), passwordEditText.getText().toString()).execute(new UpdateCredentialsIfValidObservable());
+        } else {
+            Toast.makeText(getActivity(), R.string.empty_fields, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @OnClick(R.id.dialog_connection_login_later)
+    void onLoginLaterClicked() {
+        dismiss();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGoogleAuthenticatedEvent(GoogleAuthenticatedEvent event) {
         if (event.isSuccessful()) {
             eventBus.post(new UpdateGoogleCredentialsEvent(event.getToken(), event.getTokenSecret(), event.getConsumer(), event.getConsumerSecret()));
         } else {
@@ -151,22 +151,32 @@ public class LoginDialogFragment extends DialogFragment {
         dismiss();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN) public void onValidLoginEvent(ValidLoginEvent event) {
-        Toast.makeText(getActivity(), R.string.valid_login, Toast.LENGTH_SHORT).show();
-        dismiss();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN) public void onErrorLoginEvent(ErrorLoginEvent event) {
-        Toast.makeText(getActivity(), R.string.error_first_login, Toast.LENGTH_SHORT).show();
-        resetLoginFields();
-    }
-
-    public void setEventBus(EventBus eventBus) {
-        this.eventBus = eventBus;
-    }
-
-    public void resetLoginFields() {
+    private void resetLoginFields() {
         loginEditText.setText("");
         passwordEditText.setText("");
+    }
+
+    public interface OnLoginSuccessfulListener {
+
+        void onLoginSuccessful();
+    }
+
+    private class UpdateCredentialsIfValidObservable extends GenericSubscriber<Boolean> {
+        @Override
+        public void onNext(Boolean isValidCredentials) {
+            if (isValidCredentials) {
+                Toast.makeText(getActivity(), R.string.valid_login, Toast.LENGTH_SHORT).show();
+
+                if (onLoginSuccessfulListener != null) {
+                    onLoginSuccessfulListener.onLoginSuccessful();
+                }
+
+                dismiss();
+            } else {
+                Toast.makeText(getActivity(), R.string.error_first_login, Toast.LENGTH_SHORT).show();
+                resetLoginFields();
+            }
+            super.onNext(isValidCredentials);
+        }
     }
 }
