@@ -102,7 +102,7 @@ public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
     }
 
     /**
-     * Execute a script in a SQLiteDatabase.
+     * Execute a script in a SQLiteDatabase.F
      *
      * @param context           Context of the application.
      * @param connectionSource  ConnectionSource.
