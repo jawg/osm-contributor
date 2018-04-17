@@ -33,6 +33,7 @@ ext {
     rxAndroidVersion = '1.0.1'
     rxJavaVersion = '1.0.14'
     horizontalLoaderVersion = '1.1.0'
+    firebaseJobDispatcherVersion = '0.8.5'
 }
 
 buildscript {
@@ -257,6 +258,8 @@ dependencies {
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"
 
     compile "com.facebook.stetho:stetho:$stethoVersion"
+
+    compile "com.firebase:firebase-jobdispatcher:$firebaseJobDispatcherVersion"
 
     testCompile 'junit:junit:4.12'
     testCompile "org.mockito:mockito-core:$mockitoVersion"
