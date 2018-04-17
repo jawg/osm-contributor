@@ -33,15 +33,15 @@ import io.jawg.osmcontributor.model.entities.MapArea;
 /**
  * Dao for {@link MapArea} objects.
  */
-public class MapAreaDao extends RuntimeExceptionDao<MapArea, Long> {
+public class MapAreaDao extends RuntimeExceptionDao<MapArea, String> {
 
     @Inject
-    public MapAreaDao(Dao<MapArea, Long> dao) {
+    public MapAreaDao(Dao<MapArea, String> dao) {
         super(dao);
     }
 
-    public List<MapArea> queryForIds(List<Long> ids) {
-        QueryBuilder<MapArea, Long> queryBuilder = queryBuilder();
+    public List<MapArea> queryForIds(List<String> ids) {
+        QueryBuilder<MapArea, String> queryBuilder = queryBuilder();
         try {
             return queryBuilder.where().in(MapArea.ID, ids).query();
         } catch (SQLException e) {

@@ -26,10 +26,11 @@ public class AreasUtils {
         BigDecimal east = new BigDecimal(box.getEast());
         BigDecimal south = new BigDecimal(box.getSouth());
 
-        long northArea = north.multiply(GRANULARITY_LAT).setScale(0, RoundingMode.UP).longValue();
-        long westArea = west.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.DOWN).longValue();
-        long southArea = south.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.DOWN).longValue();
-        long eastArea = east.multiply(GRANULARITY_LNG).setScale(0, RoundingMode.UP).longValue();
+        long northArea = north.multiply(GRANULARITY_LAT).setScale(0, north.compareTo(BigDecimal.ZERO) > 0 ? RoundingMode.UP : RoundingMode.DOWN).longValue();
+        long westArea = west.multiply(GRANULARITY_LNG).setScale(0, west.compareTo(BigDecimal.ZERO) > 0 ? RoundingMode.DOWN : RoundingMode.UP).longValue();
+        long southArea = south.multiply(GRANULARITY_LNG).setScale(0, south.compareTo(BigDecimal.ZERO) > 0 ? RoundingMode.DOWN : RoundingMode.UP).longValue();
+        long eastArea = east.multiply(GRANULARITY_LNG).setScale(0, east.compareTo(BigDecimal.ZERO) > 0 ? RoundingMode.UP : RoundingMode.DOWN).longValue();
+
 
         //we get the long up the area is rounded up for north and down for south
         for (int latInc = 0; latInc <= northArea - southArea - 1; latInc++) {
@@ -38,7 +39,7 @@ public class AreasUtils {
                 long idLng = westArea + lngInc;
 
                 //ID is south west
-                Long id = Long.valueOf(String.valueOf(idLat) + String.valueOf(idLng));
+                String id = String.valueOf(idLat) + String.valueOf(idLng);
 
                 areas.add(new MapArea(id,
                         (southArea + latInc + 1) / GRANULARITY_LAT.doubleValue(),
@@ -52,8 +53,8 @@ public class AreasUtils {
     }
 
 
-    public static List<Long> getIds(List<MapArea> areasNeeded) {
-        List<Long> ids = new ArrayList<>();
+    public static List<String> getIds(List<MapArea> areasNeeded) {
+        List<String> ids = new ArrayList<>();
         for (MapArea mapArea : areasNeeded) {
             ids.add(mapArea.getId());
         }

@@ -50,7 +50,7 @@ import timber.log.Timber;
 public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DATABASE_NAME = "osm-db" + BuildConfig.APPLICATION_ID + ".sqlite";
-    public static final int CURRENT_VERSION = 13;
+    public static final int CURRENT_VERSION = 14;
 
     private Context context;
 
@@ -82,10 +82,23 @@ public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         Timber.d("Upgrading schema from version " + oldVersion + " to " + newVersion);
-        // Drop all tables
-        dropTables();
-        // Create All over
-        onCreate(database, connectionSource);
+
+        if (oldVersion < 13) {
+            // Drop all tables
+            dropTables();
+            // Create All over
+            onCreate(database, connectionSource);
+        } else {
+            for (int version = oldVersion; version < newVersion; version++) {
+                String sqlScriptFilename = "updateSql-" + version + "-" + (version + 1) + ".sql";
+                try {
+                    executeSqlScript(context, connectionSource, database, sqlScriptFilename);
+                } catch (Exception e) {
+                    Timber.e(e, "Error while upgrading database '%s' with script %s", DATABASE_NAME, sqlScriptFilename);
+                }
+            }
+        }
+
     }
 
     /**

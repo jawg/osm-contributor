@@ -44,7 +44,7 @@ public class MapArea {
 
 
     @DatabaseField(columnName = ID, canBeNull = false, id = true)
-    private Long id;
+    private String id;
 
     @DatabaseField(columnName = NORTH, canBeNull = false)
     private Double north;
@@ -64,7 +64,7 @@ public class MapArea {
     public MapArea() {
     }
 
-    public MapArea(Long id, Double north, Double south, Double east, Double weast) {
+    public MapArea(String id, Double north, Double south, Double east, Double weast) {
         this.id = id;
         this.north = north;
         this.south = south;
@@ -72,11 +72,11 @@ public class MapArea {
         this.weast = weast;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
