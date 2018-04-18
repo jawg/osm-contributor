@@ -28,7 +28,6 @@ import android.support.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.cache.disk.DiskCacheConfig;
-import com.facebook.common.internal.Supplier;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.cache.MemoryCacheParams;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
@@ -86,12 +85,7 @@ public class OsmTemplateApplication extends Application {
                 .build();
         // Cache Memory for Fresco
         ImagePipelineConfig imagePipelineConfig = ImagePipelineConfig.newBuilder(this)
-                .setBitmapMemoryCacheParamsSupplier(new Supplier<MemoryCacheParams>() {
-                    @Override
-                    public MemoryCacheParams get() {
-                        return new MemoryCacheParams(10485760, 100, 100, 100, 100);
-                    }
-                })
+                .setBitmapMemoryCacheParamsSupplier(() -> new MemoryCacheParams(10485760, 100, 100, 100, 100))
                 .setMainDiskCacheConfig(diskCacheConfig)
                 .build();
 
@@ -110,9 +104,13 @@ public class OsmTemplateApplication extends Application {
         bus.register(getOsmTemplateComponent().getGeocoder());
         bus.register(getOsmTemplateComponent().getEditVectorialWayManager());
 
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.shared_prefs_preset_default), false)) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (!sharedPreferences.getBoolean(getString(R.string.shared_prefs_preset_default), false)) {
             editor.putBoolean(getString(R.string.shared_prefs_preset_default), true);
+        }
+        if (!sharedPreferences.contains(getString(R.string.shared_prefs_auto_commit))) {
+            editor.putBoolean(getString(R.string.shared_prefs_auto_commit), true);
         }
         editor.apply();
 

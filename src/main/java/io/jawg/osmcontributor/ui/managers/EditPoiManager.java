@@ -19,6 +19,9 @@
 package io.jawg.osmcontributor.ui.managers;
 
 
+import android.app.Application;
+import android.content.SharedPreferences;
+
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
@@ -34,6 +37,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
 import io.jawg.osmcontributor.model.entities.Action;
 import io.jawg.osmcontributor.model.entities.Condition;
@@ -56,17 +60,21 @@ import timber.log.Timber;
 
 public class EditPoiManager {
 
+    private Application application;
     private PoiManager poiManager;
     private PoiNodeRefDao poiNodeRefDao;
     private EventBus eventBus;
     private FirebaseJobDispatcher dispatcher;
+    private SharedPreferences sharedPreferences;
 
     @Inject
-    public EditPoiManager(PoiManager poiManager, PoiNodeRefDao poiNodeRefDao, EventBus eventBus, FirebaseJobDispatcher dispatcher) {
+    public EditPoiManager(Application application, PoiManager poiManager, PoiNodeRefDao poiNodeRefDao, EventBus eventBus, FirebaseJobDispatcher dispatcher, SharedPreferences sharedPreferences) {
+        this.application = application;
         this.poiManager = poiManager;
         this.poiNodeRefDao = poiNodeRefDao;
         this.eventBus = eventBus;
         this.dispatcher = dispatcher;
+        this.sharedPreferences = sharedPreferences;
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -84,7 +92,7 @@ public class EditPoiManager {
             editPoi.setUpdated(true);
             poiManager.savePoi(editPoi);
             poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
-            PushToOSMService.schedulePushJob(dispatcher);
+            schedulePushJob();
         }
 
         eventBus.post(new PoiChangesApplyEvent());
@@ -102,7 +110,7 @@ public class EditPoiManager {
         editPoi.setUpdated(true);
         poiManager.savePoi(editPoi);
         poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
-        PushToOSMService.schedulePushJob(dispatcher);
+        schedulePushJob();
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -119,7 +127,7 @@ public class EditPoiManager {
         poiNodeRef.setLatitude(newLatLng.getLatitude());
         poiNodeRef.setUpdated(true);
         poiNodeRefDao.createOrUpdate(poiNodeRef);
-        PushToOSMService.schedulePushJob(dispatcher);
+        schedulePushJob();
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -132,7 +140,7 @@ public class EditPoiManager {
         poiManager.savePoi(poi);
         poiManager.updatePoiTypeLastUse(poi.getType().getId());
         eventBus.post(new PoiChangesApplyEvent());
-        PushToOSMService.schedulePushJob(dispatcher);
+        schedulePushJob();
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -150,7 +158,7 @@ public class EditPoiManager {
             poi.setToDelete(true);
             poiManager.savePoi(poi);
         }
-        PushToOSMService.schedulePushJob(dispatcher);
+        schedulePushJob();
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -179,7 +187,13 @@ public class EditPoiManager {
         poiManager.updatePoiTypeLastUse(event.getPoiType().getId());
 
         eventBus.post(new PoiNoTypeCreated());
-        PushToOSMService.schedulePushJob(dispatcher);
+        schedulePushJob();
+    }
+
+    private void schedulePushJob() {
+        if (sharedPreferences.getBoolean(application.getString(R.string.shared_prefs_auto_commit), false)) {
+            PushToOSMService.schedulePushJob(dispatcher);
+        }
     }
 
     private Long saveOldVersionOfPoi(Poi poi) {
