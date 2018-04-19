@@ -21,7 +21,7 @@ public class CheckUserLogged extends UseCase {
     @Override
     protected Observable<Boolean> buildUseCaseObservable() {
         return Observable.create(subscriber -> {
-            subscriber.onNext(loginManager.checkCredentials());
+            subscriber.onNext(loginManager.isUserLogged());
             subscriber.onCompleted();
         });
     }

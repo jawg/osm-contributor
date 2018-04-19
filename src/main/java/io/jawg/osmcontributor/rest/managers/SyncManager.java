@@ -109,7 +109,7 @@ public class SyncManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseUploadPoiChangesByIdsEvent(PleaseUploadPoiChangesByIdsEvent event) {
-        if (loginManager.checkCredentials()) {
+        if (loginManager.isUserLogged()) {
             remoteAddOrUpdateOrDeletePois(event.getComment(), event.getPoiIds(), event.getPoiNodeRefIds());
         } else {
             bus.post(new SyncUnauthorizedEvent());

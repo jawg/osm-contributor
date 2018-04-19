@@ -97,7 +97,7 @@ public class NoteManager {
     public void onPleaseApplyNewComment(PleaseApplyNewComment event) {
         Timber.d("please apply new comment");
 
-        if (loginManager.checkCredentials()) {
+        if (loginManager.isUserLogged()) {
             Note note = syncNoteManager.remoteAddComment(createComment(event.getNote(), event.getAction(), event.getText()));
 
             if (note != null) {

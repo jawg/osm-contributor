@@ -106,4 +106,12 @@ public class LoginPreferences {
                 .putString(application.getString(R.string.shared_prefs_token_secret), tokenSecret)
                 .apply();
     }
+
+    public void setLogged(boolean logged) {
+        sharedPreferences.edit().putBoolean(application.getString(R.string.shared_prefs_logged), logged).apply();
+    }
+
+    public boolean isLogged() {
+        return sharedPreferences.getBoolean(application.getString(R.string.shared_prefs_logged), false);
+    }
 }

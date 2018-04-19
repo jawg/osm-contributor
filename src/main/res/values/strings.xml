@@ -158,6 +158,7 @@
     <string name="shared_prefs_expert_mode" translatable="false">SHARED_PREFS_EXPERT</string>
     <string name="shared_prefs_h2geo_version" translatable="false">SHARED_PREFS_H2GEO_VERSION</string>
     <string name="shared_prefs_h2geo_date" translatable="false">SHARED_PREFS_H2GEO_DATE</string>
+    <string name="shared_prefs_logged" translatable="false">SHARED_PREFS_LOGGED</string>
     <string name="shared_prefs_h2geo_title" translatable="false">H2Geo</string>
     <string name="shared_prefs_login_title" translatable="false">Connection</string>
     <string name="shared_prefs_server" translatable="false">OSM Server</string>

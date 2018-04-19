@@ -44,12 +44,12 @@ public abstract class LoginManager {
     }
 
     /**
-     * Check if the credentials in the SharedPreferences are valid.
+     * Check if the user is logged.
      *
-     * @return Whether the credentials are valid.
+     * @return Whether the user is logged.
      */
-    public boolean checkCredentials() {
-        return isValidLogin(loginPreferences.retrieveLogin(), loginPreferences.retrievePassword());
+    public boolean isUserLogged() {
+        return loginPreferences.isLogged() || updateCredentialsIfValid(loginPreferences.retrieveLogin(), loginPreferences.retrievePassword());
     }
 
     /**
@@ -65,6 +65,7 @@ public abstract class LoginManager {
         if (validLogin) {
             loginPreferences.updateCredentials(login, password);
         }
+        loginPreferences.setLogged(validLogin);
         return validLogin;
     }
 
