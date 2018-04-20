@@ -81,31 +81,26 @@ public class ShelterChoiceHolder extends RecyclerView.ViewHolder {
 
     @OnClick(R.id.shelter)
     public void onShelterClick(View v) {
-        itemSelected(ShelterType.SHELTER);
+        if (selectionListener != null) {
+            selectionListener.shelterClicked(ShelterType.SHELTER);
+        }
     }
 
     @OnClick(R.id.none)
     public void onNoneClick(View v) {
-        itemSelected(ShelterType.NONE);
+        if (selectionListener != null) {
+            selectionListener.shelterClicked(ShelterType.NONE);
+        }
     }
 
     @OnClick(R.id.pole)
     public void onPoleClick(View v) {
-        itemSelected(ShelterType.POLE);
-    }
-
-    private void itemSelected(ShelterType shelterType) {
-        // Apply change
-        noneImg.setImageDrawable(itemView.getContext().getResources().getDrawable(shelterType.equals(ShelterType.NONE) ? R.drawable.no_shelter_on : R.drawable.no_shelter_off));
-        poleImg.setImageDrawable(itemView.getContext().getResources().getDrawable(shelterType.equals(ShelterType.POLE) ? R.drawable.pole_shelter_on : R.drawable.pole_shelter_off));
-        shelterImg.setImageDrawable(itemView.getContext().getResources().getDrawable(shelterType.equals(ShelterType.SHELTER) ? R.drawable.has_shelter_on : R.drawable.has_shelter_off));
-
         if (selectionListener != null) {
-            selectionListener.shelterSelected(shelterType);
+            selectionListener.shelterClicked(ShelterType.POLE);
         }
     }
 
     public interface SelectionListener {
-        void shelterSelected(ShelterType shelterType);
+        void shelterClicked(ShelterType shelterType);
     }
 }

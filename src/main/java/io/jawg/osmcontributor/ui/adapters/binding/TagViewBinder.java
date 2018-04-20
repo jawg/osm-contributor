@@ -5,8 +5,8 @@ import android.view.ViewGroup;
 
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 
-public interface TagViewBinder<T> {
+public interface TagViewBinder<H extends RecyclerView.ViewHolder, T extends TagItem> {
     boolean supports(TagItem.Type type);
-    void onBindViewHolder(T holder, TagItem tagItem);
-    RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent);
+    void onBindViewHolder(H holder, T tagItem);
+    H onCreateViewHolder(ViewGroup parent);
 }

@@ -1,7 +1,6 @@
 package io.jawg.osmcontributor.ui.adapters.binding;
 
 import android.app.Activity;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,7 @@ import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagRadioChoiceHolder;
 
-public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHolder> {
+public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHolder, TagItem> {
 
     public RadioChoiceViewBinder(Activity activity, OnTagItemChange onTagItemChange) {
         super(activity, onTagItemChange);
@@ -105,7 +104,7 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
+    public TagRadioChoiceHolder onCreateViewHolder(ViewGroup parent) {
         View booleanChoiceLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_radio, parent, false);
         return new TagRadioChoiceHolder(booleanChoiceLayout);
     }
