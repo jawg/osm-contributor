@@ -1,6 +1,7 @@
 package io.jawg.osmcontributor.ui.adapters.binding;
 
 import android.app.Activity;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -10,7 +11,7 @@ import java.lang.ref.WeakReference;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 
-public abstract class CheckedTagViewBinder<T> implements TagViewBinder<T> {
+public abstract class CheckedTagViewBinder<T extends RecyclerView.ViewHolder, H extends TagItem> implements TagViewBinder<T, H> {
 
     public WeakReference<Activity> activity;
     public LinearLayout content;

@@ -21,7 +21,7 @@ import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.utils.views.DividerItemDecoration;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagItemOpeningTimeViewHolder;
 
-public class OpeningHoursViewBinder extends CheckedTagViewBinder<TagItemOpeningTimeViewHolder> {
+public class OpeningHoursViewBinder extends CheckedTagViewBinder<TagItemOpeningTimeViewHolder, TagItem> {
 
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
@@ -81,7 +81,7 @@ public class OpeningHoursViewBinder extends CheckedTagViewBinder<TagItemOpeningT
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
+    public TagItemOpeningTimeViewHolder onCreateViewHolder(ViewGroup parent) {
         View poiTagOpeningHoursLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_opening_time, parent, false);
         return new TagItemOpeningTimeViewHolder(poiTagOpeningHoursLayout);
     }

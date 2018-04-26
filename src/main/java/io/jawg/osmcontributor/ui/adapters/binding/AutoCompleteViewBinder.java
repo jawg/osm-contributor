@@ -1,7 +1,6 @@
 package io.jawg.osmcontributor.ui.adapters.binding;
 
 import android.app.Activity;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -15,7 +14,7 @@ import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHolder;
 
-public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoCompleteViewHolder> {
+public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoCompleteViewHolder, TagItem> {
 
     public AutoCompleteViewBinder(Activity activity, OnTagItemChange onTagItemChange) {
         super(activity, onTagItemChange);
@@ -72,7 +71,7 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
+    public TagItemAutoCompleteViewHolder onCreateViewHolder(ViewGroup parent) {
         View autoCompleteLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_multi_choice, parent, false);
         return new TagItemAutoCompleteViewHolder(autoCompleteLayout);
     }

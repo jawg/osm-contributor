@@ -1,7 +1,6 @@
 package io.jawg.osmcontributor.ui.adapters.binding;
 
 import android.app.Activity;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagItemConstantViewHolder;
 
-public class ConstantViewBinder implements TagViewBinder<TagItemConstantViewHolder> {
+public class ConstantViewBinder implements TagViewBinder<TagItemConstantViewHolder, TagItem> {
 
     public ConstantViewBinder(Activity activity) {
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
@@ -34,7 +33,7 @@ public class ConstantViewBinder implements TagViewBinder<TagItemConstantViewHold
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
+    public TagItemConstantViewHolder onCreateViewHolder(ViewGroup parent) {
         View poiTagImposedLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item_constant, parent, false);
         return new TagItemConstantViewHolder(poiTagImposedLayout);
     }
