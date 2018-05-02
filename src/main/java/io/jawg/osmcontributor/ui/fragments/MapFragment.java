@@ -1483,7 +1483,7 @@ public class MapFragment extends Fragment {
         if (isFineLocationPerm && isLocationPerm) {
             // If permissions are enabled, check if GPS is enabled. If not, redirect user to settings page, otherwise set position.
             LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 permissionNotEnabled(R.string.redirection_title, R.string.enable_gps, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
