@@ -41,7 +41,6 @@
     <string name="tag_key">Clé</string>
     <string name="tag_value">Valeur</string>
     <!--Edit Poi-->
-    <!--Edit Poi-->
     <string name="tag_poi_name">Nom</string>
     <string name="tag_poi_shelter">Aménagements</string>
     <string name="tag_poi_wheelchair">Accès fauteuil roulant</string>
@@ -113,6 +112,8 @@
     <string name="summary_password">Veuillez saisir votre mot de passe</string>
     <string name="error_login">Impossible de se connecter avec ces identifiants. Etes-vous sûr d\'avoir les droits d\'édition?</string>
     <string name="error_first_login">Impossible de se connecter avec ces identifiants.</string>
+    <string name="auto_commit_summary">Envoie automatiquement toutes vos modifications après 5 minutes</string>
+    <string name="auto_commit_title">Envoie automatique</string>
     <string name="valid_login">Connexion réussie</string>
     <string name="reset_title">Réinitialiser la base de données</string>
     <string name="reset_summary">Supprime tous les Pois de la base de données</string>
@@ -187,7 +188,7 @@
     <string name="update_title">Ajouter un commentaire à vos modifications:</string>
     <string name="need_a_comment">Le commentaire ne peut pas être vide</string>
     <string name="nothing_to_update">Vous n\'avez rien à mettre à jour</string>
-    <string name="nothing_selected">Vous n\' avez rien selectionné</string>
+    <string name="nothing_selected">Vous n\'avez rien selectionné</string>
     <string name="created">Créé</string>
     <string name="deleted">Supprimé</string>
     <string name="updated">Modifié</string>

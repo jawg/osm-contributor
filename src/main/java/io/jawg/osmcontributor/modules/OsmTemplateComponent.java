@@ -80,6 +80,7 @@ import io.jawg.osmcontributor.ui.managers.NoteManager;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.ui.managers.TypeManager;
 import io.jawg.osmcontributor.ui.managers.WaysManager;
+import io.jawg.osmcontributor.ui.managers.sync.PushToOSMService;
 import io.jawg.osmcontributor.ui.presenters.MapFragmentPresenter;
 import io.jawg.osmcontributor.ui.presenters.TypeListActivityPresenter;
 import io.jawg.osmcontributor.utils.core.CoreModule;
@@ -111,6 +112,8 @@ public interface OsmTemplateComponent {
     void inject(ConstantViewBinder b);
 
     void inject(RadioChoiceViewBinder b);
+
+    void inject(PushToOSMService pushToOSMService);
 
     // Activities
     void inject(SplashScreenActivity splashScreenActivity);

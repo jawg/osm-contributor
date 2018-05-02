@@ -123,6 +123,8 @@
     <string name="title_activity_my_preferences">Parameters</string>
     <string name="summary_login">Please provide a login</string>
     <string name="summary_password">Please provide a password</string>
+    <string name="auto_commit_summary">Upload automatically all your changes after 5 min</string>
+    <string name="auto_commit_title">Automatic upload</string>
     <string name="error_login">Couldn’t connect with these credentials. Are you sure you have editing rights?</string>
     <string name="error_first_login">Couldn’t connect with these credentials.</string>
     <string name="valid_login">Successfully connected</string>
@@ -143,19 +145,20 @@
     <!-- Shared preferences -->
     <string name="shared_prefs_login" translatable="false">SHARED_PREFS_LOGIN</string>
     <string name="shared_prefs_password" translatable="false">SHARED_PREFS_PASSWORD</string>
-    <string name="shared_prefs_first_connection" translatable="false">SHARED_PREFS_FIRST_CONNECTION</string>
     <string name="shared_prefs_token" translatable="false">SHARED_PREFS_TOKEN</string>
     <string name="shared_prefs_token_secret" translatable="false">SHARED_PREFS_TOKEN_SECRET</string>
     <string name="shared_prefs_consumer" translatable="false">SHARED_PREFS_CONSUMER</string>
     <string name="shared_prefs_consumer_secret" translatable="false">SHARED_PREFS_CONSUMER_SECRET</string>
     <string name="shared_prefs_server_key" translatable="false">SHARED_PREFS_SERVER_KEY</string>
     <string name="shared_prefs_google_connection_key" translatable="false">SHARED_PREFS_GOOLE_CONNECTION</string>
+    <string name="shared_prefs_auto_commit" translatable="false">SHARED_PREFS_AUTO_COMMIT</string>
     <string name="shared_prefs_google_connection">Login with Google</string>
     <string name="shared_prefs_reset" translatable="false">SHARED_PREFS_RESET</string>
     <string name="shared_prefs_reset_type" translatable="false">SHARED_PREFS_RESET_TYPE</string>
     <string name="shared_prefs_expert_mode" translatable="false">SHARED_PREFS_EXPERT</string>
     <string name="shared_prefs_h2geo_version" translatable="false">SHARED_PREFS_H2GEO_VERSION</string>
     <string name="shared_prefs_h2geo_date" translatable="false">SHARED_PREFS_H2GEO_DATE</string>
+    <string name="shared_prefs_logged" translatable="false">SHARED_PREFS_LOGGED</string>
     <string name="shared_prefs_h2geo_title" translatable="false">H2Geo</string>
     <string name="shared_prefs_login_title" translatable="false">Connection</string>
     <string name="shared_prefs_server" translatable="false">OSM Server</string>

@@ -36,6 +36,11 @@
         android:summary="@string/reset_type_summary"
         android:title="@string/reset_type_title"/>
 
+    <CheckBoxPreference
+        android:key="@string/shared_prefs_auto_commit"
+        android:summary="@string/auto_commit_summary"
+        android:title="@string/auto_commit_title"/>
+
     <PreferenceCategory
         android:title="@string/shared_prefs_h2geo_title">
 

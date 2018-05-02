@@ -29,8 +29,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.jawg.osmcontributor.ui.managers.loadPoi.executors.PostExecutionThread;
-import io.jawg.osmcontributor.ui.managers.loadPoi.executors.UIThread;
+import io.jawg.osmcontributor.ui.managers.executor.PostExecutionThread;
+import io.jawg.osmcontributor.ui.managers.executor.UIThread;
 import io.jawg.osmcontributor.utils.ConfigManager;
 
 @Module

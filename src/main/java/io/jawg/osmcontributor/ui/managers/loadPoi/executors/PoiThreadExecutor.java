@@ -3,6 +3,8 @@ package io.jawg.osmcontributor.ui.managers.loadPoi.executors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.jawg.osmcontributor.ui.managers.executor.ThreadExecutor;
+
 
 @Singleton
 public class PoiThreadExecutor implements ThreadExecutor {

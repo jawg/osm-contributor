@@ -27,6 +27,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.inject.Singleton;
+
 import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.database.preferences.LoginPreferences;
 import io.jawg.osmcontributor.rest.clients.OsmRestClient;
@@ -40,6 +42,7 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 
+@Singleton
 public class StoreLoginManager extends LoginManager {
     public static final String CONSUMER_PARAM = "oauth_consumer_key";
     public static final String TOKEN_PARAM = "oauth_token";
@@ -101,19 +104,5 @@ public class StoreLoginManager extends LoginManager {
             Timber.e("Couldn't request permissions " + e);
         }
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * Do nothing for the store flavor.
-     */
-    @Override
-    public void initializeCredentials() {
-    }
-
-    @Override
-    public boolean checkFirstConnection() {
-        return loginPreferences.retrieveFirstConnection();
     }
 }

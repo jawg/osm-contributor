@@ -107,6 +107,15 @@
         <service android:name=".service.OfflineRegionDownloadService"
             android:exported="false"/>
 
+
+        <service
+            android:exported="false"
+            android:name=".ui.managers.sync.PushToOSMService">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+            </intent-filter>
+        </service>
+
         <receiver android:name=".service.CancelButtonReceiver"/>
         <meta-data
             android:name="io.fabric.ApiKey"

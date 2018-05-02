@@ -54,6 +54,7 @@ import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.Box;
 import io.jawg.osmcontributor.utils.FlavorUtils;
 import io.jawg.osmcontributor.utils.OsmAnswers;
+import rx.Observable;
 import timber.log.Timber;
 
 /**
@@ -108,7 +109,7 @@ public class SyncManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseUploadPoiChangesByIdsEvent(PleaseUploadPoiChangesByIdsEvent event) {
-        if (loginManager.checkCredentials()) {
+        if (loginManager.isUserLogged()) {
             remoteAddOrUpdateOrDeletePois(event.getComment(), event.getPoiIds(), event.getPoiNodeRefIds());
         } else {
             bus.post(new SyncUnauthorizedEvent());
@@ -132,6 +133,13 @@ public class SyncManager {
     // ********************************
     // ************ public ************
     // ********************************
+
+    public Observable<Void> sync() {
+        return Observable.create(subscriber -> {
+            remoteAddOrUpdateOrDeletePois("", poiDao.queryForAllUpdated(), poiDao.queryForAllNew(), poiDao.queryToDelete());
+            subscriber.onCompleted();
+        });
+    }
 
     /**
      * Download the list of PoiType from the backend and actualize the database.

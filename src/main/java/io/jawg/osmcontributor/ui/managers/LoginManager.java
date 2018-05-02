@@ -23,15 +23,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import io.jawg.osmcontributor.database.preferences.LoginPreferences;
-import io.jawg.osmcontributor.model.events.InitCredentialsEvent;
-import io.jawg.osmcontributor.ui.events.login.AttemptLoginEvent;
-import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
-import io.jawg.osmcontributor.ui.events.login.CheckFirstConnectionEvent;
-import io.jawg.osmcontributor.ui.events.login.LoginInitializedEvent;
-import io.jawg.osmcontributor.ui.events.login.PleaseOpenLoginDialogEvent;
-import io.jawg.osmcontributor.ui.events.login.UpdateFirstConnectionEvent;
 import io.jawg.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;
-import io.jawg.osmcontributor.ui.events.login.ValidLoginEvent;
 
 /**
  * Manage the credentials of the backend.
@@ -46,48 +38,35 @@ public abstract class LoginManager {
         this.loginPreferences = loginPreferences;
     }
 
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    @SuppressWarnings("unused")
-    public void onAttemptLoginEvent(final AttemptLoginEvent event) {
-        if (isValidLogin(event.getLogin(), event.getPassword())) {
-            bus.post(new ValidLoginEvent());
-            loginPreferences.updateCredentials(event.getLogin(), event.getPassword());
-        } else {
-            bus.post(new ErrorLoginEvent());
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onInitCredentialsEvent(InitCredentialsEvent event) {
-        initializeCredentials();
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onCheckFirstConnectionEvent(CheckFirstConnectionEvent event) {
-        if (checkFirstConnection()) {
-            bus.post(new PleaseOpenLoginDialogEvent());
-        } else {
-            bus.postSticky(new LoginInitializedEvent());
-        }
-    }
-
-    /**
-     * Check if the credentials in the SharedPreferences are valid.
-     *
-     * @return Whether the credentials are valid.
-     */
-    public boolean checkCredentials() {
-        return isValidLogin(loginPreferences.retrieveLogin(), loginPreferences.retrievePassword());
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateGoogleCredentialsEvent(UpdateGoogleCredentialsEvent event) {
         loginPreferences.updateGoogleCredentials(event.getConsumer(), event.getConsumerSecret(), event.getToken(), event.getTokenSecret());
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdateFisrtConnectionEvent(UpdateFirstConnectionEvent event) {
-        loginPreferences.updateFirstConnection(false);
+    /**
+     * Check if the user is logged.
+     *
+     * @return Whether the user is logged.
+     */
+    public boolean isUserLogged() {
+        return loginPreferences.isLogged() || updateCredentialsIfValid(loginPreferences.retrieveLogin(), loginPreferences.retrievePassword());
+    }
+
+    /**
+     * Update the credentials after verifying them using the {@link LoginManager#isValidLogin(String, String)}.
+     *
+     * @param login    User's login.
+     * @param password User's password.
+     * @return Whether the credentials are valid.
+     */
+    public boolean updateCredentialsIfValid(final String login, final String password) {
+        boolean validLogin = isValidLogin(login, password);
+
+        if (validLogin) {
+            loginPreferences.updateCredentials(login, password);
+        }
+        loginPreferences.setLogged(validLogin);
+        return validLogin;
     }
 
     /**
@@ -98,11 +77,4 @@ public abstract class LoginManager {
      * @return Whether the credentials are valid.
      */
     public abstract boolean isValidLogin(final String login, final String password);
-
-    /**
-     * Initialize the value of the credentials in the preferences.
-     */
-    public abstract void initializeCredentials();
-
-    public abstract boolean checkFirstConnection();
 }

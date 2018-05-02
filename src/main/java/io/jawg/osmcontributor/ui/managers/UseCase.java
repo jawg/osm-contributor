@@ -1,8 +1,8 @@
-package io.jawg.osmcontributor.ui.managers.loadPoi;
+package io.jawg.osmcontributor.ui.managers;
 
 
-import io.jawg.osmcontributor.ui.managers.loadPoi.executors.PostExecutionThread;
-import io.jawg.osmcontributor.ui.managers.loadPoi.executors.ThreadExecutor;
+import io.jawg.osmcontributor.ui.managers.executor.PostExecutionThread;
+import io.jawg.osmcontributor.ui.managers.executor.ThreadExecutor;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;

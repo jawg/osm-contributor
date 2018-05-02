@@ -18,6 +18,11 @@
  */
 package io.jawg.osmcontributor.sync;
 
+import android.app.Application;
+
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+
 import org.greenrobot.eventbus.EventBus;
 import org.simpleframework.xml.core.Persister;
 
@@ -83,6 +88,11 @@ public class SyncModule {
     @Provides
     OsmRestClient getOsmService(Retrofit restAdapter) {
         return restAdapter.create(OsmRestClient.class);
+    }
+
+    @Provides
+    FirebaseJobDispatcher getFirebaseJobDispatcher(Application application) {
+        return new FirebaseJobDispatcher(new GooglePlayDriver(application));
     }
 
     @Provides

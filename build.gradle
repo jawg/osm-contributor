@@ -1,6 +1,6 @@
 ext {
     appVersion = "3.0.19"
-    androidSupportVersion = '25.1.0'
+    androidSupportVersion = '27.1.1'
     playServicesVersion = '7.8.0'
     daggerVersion = '2.0'
     leakCanaryVersion = '1.4-beta2'
@@ -23,7 +23,7 @@ ext {
     licensesdialogVersion = '1.8.1'
     lovelyDialogVersion = '1.0.4'
     playServicesVersion = '9.2.0'
-    multidexSupportVersion = '1.0.1'
+    multidexSupportVersion = '1.0.3'
     crashlitycsVersion = '2.6.2'
     materialIntroViewVersion = '1.5.2'
     frescoVersion = '0.12.0'
@@ -33,6 +33,7 @@ ext {
     rxAndroidVersion = '1.0.1'
     rxJavaVersion = '1.0.14'
     horizontalLoaderVersion = '1.1.0'
+    firebaseJobDispatcherVersion = '0.8.5'
 }
 
 buildscript {
@@ -89,7 +90,7 @@ if (!project.hasProperty('foss')) {
 apply plugin: 'checkstyle'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 27
     buildToolsVersion '26.0.2'
 
     useLibrary 'org.apache.http.legacy'
@@ -101,7 +102,7 @@ android {
     defaultConfig {
         applicationId "io.jawg.osmcontributor"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 37
         versionName appVersion
         multiDexEnabled true
@@ -179,6 +180,11 @@ android {
             buildConfigField "String", "MAPBOX_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("mapbox_token") + '"'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 configurations {
@@ -252,6 +258,8 @@ dependencies {
     compile "de.psdev.licensesdialog:licensesdialog:$licensesdialogVersion"
 
     compile "com.facebook.stetho:stetho:$stethoVersion"
+
+    compile "com.firebase:firebase-jobdispatcher:$firebaseJobDispatcherVersion"
 
     testCompile 'junit:junit:4.12'
     testCompile "org.mockito:mockito-core:$mockitoVersion"

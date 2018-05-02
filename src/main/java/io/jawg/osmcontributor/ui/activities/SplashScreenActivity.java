@@ -28,7 +28,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.yarolegovich.lovelydialog.LovelyStandardDialog;
 
@@ -47,16 +46,7 @@ import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.database.events.DbInitializedEvent;
 import io.jawg.osmcontributor.database.events.InitDbEvent;
-import io.jawg.osmcontributor.model.events.InitCredentialsEvent;
-import io.jawg.osmcontributor.rest.events.GoogleAuthenticatedEvent;
-import io.jawg.osmcontributor.ui.dialogs.LoginDialogFragment;
-import io.jawg.osmcontributor.ui.events.login.CheckFirstConnectionEvent;
-import io.jawg.osmcontributor.ui.events.login.ErrorLoginEvent;
-import io.jawg.osmcontributor.ui.events.login.LoginInitializedEvent;
-import io.jawg.osmcontributor.ui.events.login.PleaseOpenLoginDialogEvent;
 import io.jawg.osmcontributor.ui.events.login.SplashScreenTimerFinishedEvent;
-import io.jawg.osmcontributor.ui.events.login.UpdateGoogleCredentialsEvent;
-import io.jawg.osmcontributor.ui.events.login.ValidLoginEvent;
 import io.jawg.osmcontributor.ui.utils.views.EventCountDownTimer;
 import timber.log.Timber;
 
@@ -79,8 +69,6 @@ public class SplashScreenActivity extends AppCompatActivity {
   @BindView(R.id.powered_by) TextView poweredBy;
 
   @BindView(R.id.mapsquare) TextView mapsquare;
-
-  private LoginDialogFragment loginDialogFragment;
 
   /*=========================================*/
   /*------------CODE-------------------------*/
@@ -119,9 +107,7 @@ public class SplashScreenActivity extends AppCompatActivity {
      */
     private boolean shouldStartMapActivity() {
         return bus.getStickyEvent(DbInitializedEvent.class) != null
-               && bus.getStickyEvent(SplashScreenTimerFinishedEvent.class) != null
-        &&
-                bus.getStickyEvent(LoginInitializedEvent.class) != null;
+               && bus.getStickyEvent(SplashScreenTimerFinishedEvent.class) != null;
     }
 
     /**
@@ -130,9 +116,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void startMapActivity() {
         bus.removeStickyEvent(DbInitializedEvent.class);
         bus.removeStickyEvent(SplashScreenTimerFinishedEvent.class);
-
-        bus.removeStickyEvent(LoginInitializedEvent.class);
-        Intent intent = new Intent(this, MapActivity.class);
+       Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
         finish();
     }
@@ -142,9 +126,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     timer.setStickyEvent(new SplashScreenTimerFinishedEvent());
     timer.start();
 
-    bus.post(new InitCredentialsEvent());
     bus.post(new InitDbEvent());
-    bus.post(new CheckFirstConnectionEvent());
   }
 
   private void startMapActivityIfNeeded() {
@@ -164,34 +146,6 @@ public class SplashScreenActivity extends AppCompatActivity {
   @Subscribe(threadMode = ThreadMode.ASYNC) public void onSplashScreenTimerFinishedEvent(SplashScreenTimerFinishedEvent event) {
     Timber.d("Timer finished");
     startMapActivityIfNeeded();
-  }
-
-  @Subscribe(sticky = true, threadMode = ThreadMode.ASYNC) public void onLoginInitializedEvent(LoginInitializedEvent event) {
-    startMapActivityIfNeeded();
-  }
-
-  @Subscribe(threadMode = ThreadMode.MAIN) public void onPleaseOpenLoginDialogEvent(PleaseOpenLoginDialogEvent event) {
-    loginDialogFragment = LoginDialogFragment.newInstance(bus);
-    loginDialogFragment.show(getFragmentManager(), LoginDialogFragment.class.getSimpleName());
-  }
-
-  @Subscribe(threadMode = ThreadMode.MAIN) public void onGoogleAuthenticatedEvent(GoogleAuthenticatedEvent event) {
-    if (event.isSuccessful()) {
-      bus.post(new UpdateGoogleCredentialsEvent(event.getToken(), event.getTokenSecret(), event.getConsumer(), event.getConsumerSecret()));
-    } else {
-      Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_SHORT).show();
-    }
-    loginDialogFragment.dismiss();
-  }
-
-  @Subscribe(threadMode = ThreadMode.MAIN) public void onValidLoginEvent(ValidLoginEvent event) {
-    Toast.makeText(getApplicationContext(), R.string.valid_login, Toast.LENGTH_SHORT).show();
-    loginDialogFragment.dismiss();
-  }
-
-  @Subscribe(threadMode = ThreadMode.MAIN) public void onErrorLoginEvent(ErrorLoginEvent event) {
-    Toast.makeText(getApplicationContext(), R.string.error_first_login, Toast.LENGTH_SHORT).show();
-    loginDialogFragment.resetLoginFields();
   }
 
     /*=========================================*/
@@ -277,12 +231,5 @@ public class SplashScreenActivity extends AppCompatActivity {
           }
         })
         .show();
-  }
-
-  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (loginDialogFragment != null) {
-      loginDialogFragment.onActivityResult(requestCode, resultCode, data);
-    }
   }
 }

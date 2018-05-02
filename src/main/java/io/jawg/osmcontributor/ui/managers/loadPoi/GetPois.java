@@ -6,13 +6,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.jawg.osmcontributor.model.entities.MapArea;
+import io.jawg.osmcontributor.ui.managers.UseCase;
+import io.jawg.osmcontributor.ui.managers.executor.PostExecutionThread;
 import io.jawg.osmcontributor.ui.managers.loadPoi.executors.CancelableObservable;
 import io.jawg.osmcontributor.ui.managers.loadPoi.executors.PoiThreadExecutor;
-import io.jawg.osmcontributor.ui.managers.loadPoi.executors.PostExecutionThread;
 import io.jawg.osmcontributor.utils.Box;
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -42,22 +42,16 @@ public class GetPois extends UseCase {
         ((PoiThreadExecutor) threadExecutor).clearQueue();
         poiRepository.verifyCount(box)
                 .concatWith(Observable.from(areasNeeded)
-                        .flatMap(new Func1<MapArea, Observable<PoiLoadingProgress>>() {
-                            @Override
-                            public Observable<PoiLoadingProgress> call(MapArea mapArea) {
-                                return Observable.just(mapArea)
-                                        .subscribeOn(Schedulers.from(threadExecutor))
-                                        .flatMap(new Func1<MapArea, Observable<PoiLoadingProgress>>() {
-                                            @Override
-                                            public Observable<PoiLoadingProgress> call(MapArea mapArea) {
-                                                Timber.d(" lodaing " + mapArea.getId() + "  on  " + Thread.currentThread().getName());
-                                                CancelableObservable<PoiLoadingProgress> poiFromArea = poiRepository.getPoiFromArea(mapArea, refreshData);
-                                                cancelableObservable.add(poiFromArea);
-                                                return poiFromArea.getObservable();
-                                            }
-                                        });
-                            }
-                        }))
+                        .flatMap(mapArea -> Observable.just(mapArea)
+                                .subscribeOn(Schedulers.from(threadExecutor))
+                                .flatMap(mapArea1 -> {
+                                    Timber.d(" loading " + mapArea1.getId() + "  on  " + Thread.currentThread().getName());
+                                    CancelableObservable<PoiLoadingProgress> poiFromArea = poiRepository.getPoiFromArea(mapArea1, refreshData);
+                                    cancelableObservable.add(poiFromArea);
+                                    return poiFromArea.getObservable();
+                                })
+                        )
+                )
                 .concatWith(poiRepository.getPoisFromDB(box).subscribeOn(Schedulers.from(threadExecutor)))
                 .concatWith(Observable.just(new PoiLoadingProgress(PoiLoadingProgress.LoadingStatus.FINISH)))
                 .onBackpressureBuffer()
