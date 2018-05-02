@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.jawg.osmcontributor.utils.StringUtils;
 import io.jawg.osmcontributor.utils.core.MapElement;
 import timber.log.Timber;
 
@@ -425,8 +426,8 @@ public class Poi implements Cloneable, MapElement {
 
         // Add the new tags to the Poi
         for (Map.Entry<String, String> tagToAdd : tagsMap.entrySet()) {
-            //The default level is zero, we don't send this tag if it's the default value
-            if (!("level".equals(tagToAdd.getKey()) && "0".equals(tagToAdd.getValue()))) {
+            //The default level is zero, we don't send this tag if it's the default value. We also do not want to send an empty tag.
+            if (!("level".equals(tagToAdd.getKey()) && "0".equals(tagToAdd.getValue())) && !StringUtils.isEmpty(tagToAdd.getValue())) {
                 PoiTag tempPoiTag = new PoiTag();
                 tempPoiTag.setKey(tagToAdd.getKey());
                 tempPoiTag.setValue(tagToAdd.getValue());
