@@ -3,7 +3,6 @@ ext {
     androidSupportVersion = '27.1.1'
     playServicesVersion = '7.8.0'
     daggerVersion = '2.0'
-    leakCanaryVersion = '1.4-beta2'
     butterknifeVersion = '8.0.1'
     eventbusVersion = '3.0.0'
     javaxAnnotationVersion = '10.0-b28'
@@ -47,24 +46,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
-
-        // add -Pfoss=true to gradlew args to build a version with no Crashlytics/Google analytics
-        if (!project.hasProperty('foss')) {
-            classpath "io.fabric.tools:gradle:1.+"
-        }
-
-        // this plugin is provided as a jar as atm there is no relase with android supports
-        classpath "nl.javadude.gradle.plugins:license-gradle-plugin:0.11.1-SNAPSHOT"
-
-        // BEGIN Dependencies of license-gradle-plugin
-        classpath "org.codehaus.plexus:plexus-utils:2.0.5"
-        classpath "com.mycila.xmltool:xmltool:3.3"
-        // Using compile instead of groovy, so that it goes into the pom
-        classpath('com.mycila.maven-license-plugin:maven-license-plugin:1.10.b1') {
-            exclude group: 'org.apache.maven', module: 'maven-plugin-api'
-            exclude group: 'org.apache.maven', module: 'maven-project'
-        }
-        // END Dependencies of license-gradle-plugin
+        classpath "io.fabric.tools:gradle:1.+"
     }
 }
 
@@ -83,9 +65,8 @@ repositories {
 
 
 apply plugin: 'com.android.application'
-if (!project.hasProperty('foss')) {
-    apply plugin: 'io.fabric'
-}
+apply plugin: 'io.fabric'
+
 
 apply plugin: 'checkstyle'
 
@@ -146,7 +127,6 @@ android {
             buildConfigField "String", "MAP_URL", '"http://tile.openstreetmap.org/{z}/{x}/{y}.png"'
             buildConfigField "String", "MAP_STYLE_URL", '"https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json"'
             buildConfigField "String", "MAP_STYLE", '"asset://mapnik.json"'
-            buildConfigField "String", "BASE_OSM_URL", osmUrl()
             buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass-api.de/api/interpreter/"'
             buildConfigField "String", "FLICKR_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_key") + '"'
             buildConfigField "String", "FLICKR_API_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_secret") + '"'
@@ -171,7 +151,6 @@ android {
             buildConfigField "String", "MAP_URL", '"http://tile.openstreetmap.org/{z}/{x}/{y}.png"'
             buildConfigField "String", "MAP_STYLE_URL", '"https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json"'
             buildConfigField "String", "MAP_STYLE", '"asset://mapnik.json"'
-            buildConfigField "String", "BASE_OSM_URL", osmUrl()
             buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass-api.de/api/interpreter/"'
             buildConfigField "String", "FLICKR_API_KEY", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_key") + '"'
             buildConfigField "String", "FLICKR_API_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_api_secret") + '"'
@@ -220,11 +199,8 @@ dependencies {
     compile "com.j256.ormlite:ormlite-android:$ormliteVersion"
     compile "joda-time:joda-time:$jodatimeVersion"
 
-    if (project.hasProperty('foss')) {
-        compile project(":fosstweaks")
-    } else {
-        compile "com.google.android.gms:play-services-analytics:$playServicesVersion"
-    }
+    compile "com.google.android.gms:play-services-analytics:$playServicesVersion"
+
     // network
     compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
     compile "com.squareup.okhttp3:okhttp:$okhttpVersion"
@@ -276,14 +252,6 @@ dependencies {
     compile('com.crashlytics.sdk.android:answers:1.3.11@aar') {
         transitive = true;
     }
-}
-
-// Specify the OSM API url to use when building by adding -PosmUrl=myUrl
-// Default url is the developer API at https://master.apis.dev.openstreetmap.org/api/0.6
-// The official API url is https://api.openstreetmap.org/api/0.6
-def osmUrl() {
-    def osmUrl = project.getProperties().get("osmUrl")
-    return osmUrl != null ? '"' + osmUrl + '"' : '"https://www.openstreetmap.org/api/0.6/"'
 }
 
 // Load the properties from the given file
