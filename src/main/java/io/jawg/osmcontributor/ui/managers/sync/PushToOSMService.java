@@ -62,13 +62,13 @@ public class PushToOSMService extends JobService {
                 .setLifetime(Lifetime.FOREVER)
                 .setTrigger(Trigger.executionWindow(TRIGGER_DELAY, TRIGGER_DELAY))
                 .setReplaceCurrent(true)
-                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
                 .setConstraints(Constraint.ON_ANY_NETWORK)
                 .build();
         dispatcher.mustSchedule(job);
     }
 
-    private class StartSynchronisationSubscriber extends GenericSubscriber<Void> {
+    private class StartSynchronisationSubscriber extends GenericSubscriber<Boolean> {
         private final JobParameters job;
 
         StartSynchronisationSubscriber(JobParameters job) {
@@ -76,9 +76,9 @@ public class PushToOSMService extends JobService {
         }
 
         @Override
-        public void onCompleted() {
-            Timber.i("Synchronization with OSM is done");
-            jobFinished(job, false);
+        public void onNext(Boolean isSyncSuccessful) {
+            Timber.i(isSyncSuccessful ? "Synchronization with OSM is done" : "Synchronization with OSM is done but with errors, rescheduling synchronization");
+            jobFinished(job, !isSyncSuccessful);
         }
 
         @Override

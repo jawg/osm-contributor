@@ -53,8 +53,11 @@ import io.jawg.osmcontributor.ui.events.edition.PleaseApplyNodeRefPositionChange
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyPoiChanges;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyPoiPositionChange;
 import io.jawg.osmcontributor.ui.events.edition.PoiChangesApplyEvent;
+import io.jawg.osmcontributor.ui.events.login.PleaseAskForLoginEvent;
 import io.jawg.osmcontributor.ui.events.map.PleaseCreateNoTagPoiEvent;
 import io.jawg.osmcontributor.ui.events.map.PoiNoTypeCreated;
+import io.jawg.osmcontributor.ui.managers.executor.GenericSubscriber;
+import io.jawg.osmcontributor.ui.managers.login.CheckUserLogged;
 import io.jawg.osmcontributor.ui.managers.sync.PushToOSMService;
 import timber.log.Timber;
 
@@ -66,15 +69,17 @@ public class EditPoiManager {
     private EventBus eventBus;
     private FirebaseJobDispatcher dispatcher;
     private SharedPreferences sharedPreferences;
+    private CheckUserLogged checkUserLogged;
 
     @Inject
-    public EditPoiManager(Application application, PoiManager poiManager, PoiNodeRefDao poiNodeRefDao, EventBus eventBus, FirebaseJobDispatcher dispatcher, SharedPreferences sharedPreferences) {
+    public EditPoiManager(Application application, PoiManager poiManager, PoiNodeRefDao poiNodeRefDao, EventBus eventBus, FirebaseJobDispatcher dispatcher, SharedPreferences sharedPreferences, CheckUserLogged checkUserLogged) {
         this.application = application;
         this.poiManager = poiManager;
         this.poiNodeRefDao = poiNodeRefDao;
         this.eventBus = eventBus;
         this.dispatcher = dispatcher;
         this.sharedPreferences = sharedPreferences;
+        this.checkUserLogged = checkUserLogged;
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -95,7 +100,7 @@ public class EditPoiManager {
             schedulePushJob();
         }
 
-        eventBus.post(new PoiChangesApplyEvent());
+        checkIfLoggedIn();
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -111,6 +116,7 @@ public class EditPoiManager {
         poiManager.savePoi(editPoi);
         poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
         schedulePushJob();
+        checkIfLoggedIn();
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -128,6 +134,7 @@ public class EditPoiManager {
         poiNodeRef.setUpdated(true);
         poiNodeRefDao.createOrUpdate(poiNodeRef);
         schedulePushJob();
+        checkIfLoggedIn();
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -139,8 +146,8 @@ public class EditPoiManager {
         poi.applyChanges(applyConstraints(poi));
         poiManager.savePoi(poi);
         poiManager.updatePoiTypeLastUse(poi.getType().getId());
-        eventBus.post(new PoiChangesApplyEvent());
         schedulePushJob();
+        checkIfLoggedIn();
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -159,6 +166,7 @@ public class EditPoiManager {
             poiManager.savePoi(poi);
         }
         schedulePushJob();
+        checkIfLoggedIn();
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -188,6 +196,12 @@ public class EditPoiManager {
 
         eventBus.post(new PoiNoTypeCreated());
         schedulePushJob();
+        checkIfLoggedIn();
+    }
+
+    private void checkIfLoggedIn() {
+        checkUserLogged.unsubscribe();
+        checkUserLogged.execute(new CheckUserLoggedSubscriber());
     }
 
     private void schedulePushJob() {
@@ -281,5 +295,24 @@ public class EditPoiManager {
             }
         }
         return null;
+    }
+
+    private class CheckUserLoggedSubscriber extends GenericSubscriber<Boolean> {
+        @Override
+        public void onNext(Boolean isLogged) {
+            if (!isLogged) {
+                eventBus.post(new PleaseAskForLoginEvent());
+            } else {
+                // If we don't send the PleaseAskForLoginEvent, we need to send the
+                // PoiChangesApplyEvent in order to let the EditPoiFragment that it can close itself.
+                eventBus.post(new PoiChangesApplyEvent());
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            eventBus.post(new PoiChangesApplyEvent());
+        }
     }
 }

@@ -21,6 +21,7 @@ package io.jawg.osmcontributor.ui.dialogs;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -77,10 +78,20 @@ public class LoginDialogFragment extends DialogFragment {
 
     private OnLoginSuccessfulListener onLoginSuccessfulListener;
 
-    public static LoginDialogFragment newInstance(OnLoginSuccessfulListener onLoginSuccessfulListener) {
-        LoginDialogFragment fragment = new LoginDialogFragment();
-        fragment.onLoginSuccessfulListener = onLoginSuccessfulListener;
-        return fragment;
+    private DialogInterface.OnDismissListener onDismissListener;
+
+    public static LoginDialogFragment newInstance() {
+        return new LoginDialogFragment();
+    }
+
+    public LoginDialogFragment setOnLoginSuccessful(OnLoginSuccessfulListener onLoginSuccessfulListener) {
+        this.onLoginSuccessfulListener = onLoginSuccessfulListener;
+        return this;
+    }
+
+    public LoginDialogFragment setOnDismiss(DialogInterface.OnDismissListener onDismissListener) {
+        this.onDismissListener = onDismissListener;
+        return this;
     }
 
     @Nullable
@@ -115,6 +126,13 @@ public class LoginDialogFragment extends DialogFragment {
                 String email = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                 googleOAuthManager.authenticate(getActivity(), email);
             }
+        }
+    }
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (onDismissListener != null) {
+            onDismissListener.onDismiss(dialog);
         }
     }
 

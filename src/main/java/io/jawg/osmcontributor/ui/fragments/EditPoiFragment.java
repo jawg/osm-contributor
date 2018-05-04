@@ -22,7 +22,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -66,9 +65,11 @@ import io.jawg.osmcontributor.ui.activities.EditPoiActivity;
 import io.jawg.osmcontributor.ui.adapters.TagsAdapter;
 import io.jawg.osmcontributor.ui.adapters.item.TagItem;
 import io.jawg.osmcontributor.ui.dialogs.AddTagDialogFragment;
+import io.jawg.osmcontributor.ui.dialogs.LoginDialogFragment;
 import io.jawg.osmcontributor.ui.events.edition.NewPoiTagAddedEvent;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyPoiChanges;
 import io.jawg.osmcontributor.ui.events.edition.PoiChangesApplyEvent;
+import io.jawg.osmcontributor.ui.events.login.PleaseAskForLoginEvent;
 import io.jawg.osmcontributor.ui.managers.tutorial.AddPoiTutoManager;
 import io.jawg.osmcontributor.ui.managers.tutorial.TutorialManager;
 import io.jawg.osmcontributor.utils.ConfigManager;
@@ -179,13 +180,10 @@ public class EditPoiFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Handler myHandler = new Handler();
-        myHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Display tutorial
-                AddPoiTutoManager addPoiTutoManager = new AddPoiTutoManager(getActivity(), TutorialManager.forceDisplayAddTuto);
-                addPoiTutoManager.addInfoTuto(getActivity().findViewById(R.id.action_confirm_edit));
-            }
+        myHandler.postDelayed(() -> {
+            // Display tutorial
+            AddPoiTutoManager addPoiTutoManager = new AddPoiTutoManager(getActivity(), TutorialManager.forceDisplayAddTuto);
+            addPoiTutoManager.addInfoTuto(getActivity().findViewById(R.id.action_confirm_edit));
         }, 500);
     }
 
@@ -204,7 +202,6 @@ public class EditPoiFragment extends Fragment {
         }
         super.onDetach();
     }
-
 
     @Override
     public void onDestroyView() {
@@ -287,18 +284,12 @@ public class EditPoiFragment extends Fragment {
 
                 alertDialog.setTitle(R.string.quit_edition_title);
                 alertDialog.setMessage(R.string.quit_edition_message);
-                alertDialog.setPositiveButton(R.string.quit_edition_positive_btn, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        getActivity().setResult(Activity.RESULT_CANCELED, null);
-                        getActivity().finish();
-                    }
+                alertDialog.setPositiveButton(R.string.quit_edition_positive_btn, (dialog, which) -> {
+                    getActivity().setResult(Activity.RESULT_CANCELED, null);
+                    getActivity().finish();
                 });
 
-                alertDialog.setNegativeButton(R.string.quit_edition_negative_btn, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+                alertDialog.setNegativeButton(R.string.quit_edition_negative_btn, (dialog, which) -> dialog.cancel());
 
                 alertDialog.show();
             }
@@ -351,6 +342,13 @@ public class EditPoiFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPoiChangesApplyEvent(PoiChangesApplyEvent event) {
         getActivity().finish();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAskForLoginEvent(PleaseAskForLoginEvent event) {
+        LoginDialogFragment.newInstance()
+                .setOnDismiss(dialogInterface -> getActivity().finish())
+                .show(getFragmentManager(), LoginDialogFragment.class.getSimpleName());
     }
 }
 

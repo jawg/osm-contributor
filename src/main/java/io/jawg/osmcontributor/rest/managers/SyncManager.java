@@ -134,9 +134,9 @@ public class SyncManager {
     // ************ public ************
     // ********************************
 
-    public Observable<Void> sync() {
+    public Observable<Boolean> sync() {
         return Observable.create(subscriber -> {
-            remoteAddOrUpdateOrDeletePois("", poiDao.queryForAllUpdated(), poiDao.queryForAllNew(), poiDao.queryToDelete());
+            subscriber.onNext(remoteAddOrUpdateOrDeletePois("", poiDao.queryForAllUpdated(), poiDao.queryForAllNew(), poiDao.queryToDelete()));
             subscriber.onCompleted();
         });
     }
@@ -216,30 +216,23 @@ public class SyncManager {
      * @param comment       The comment of the changeSet.
      * @param poisId        Pois to upload
      * @param poiNodeRefsId PoisNodeRef to upload
+     * @return Whether everything was correctly sent to the remote or not.
      */
-    public void remoteAddOrUpdateOrDeletePois(String comment, List<Long> poisId, List<Long> poiNodeRefsId) {
+    public boolean remoteAddOrUpdateOrDeletePois(String comment, List<Long> poisId, List<Long> poiNodeRefsId) {
         final List<Poi> pois = poiDao.queryForIds(poisId);
-        final List<Poi> updatedPois = new ArrayList<>();
-        final List<Poi> newPois = new ArrayList<>();
-        final List<Poi> toDeletePois = new ArrayList<>();
 
-        updatedPois.addAll(syncWayManager.downloadPoiForWayEdition(poiNodeRefsId));
+        final List<Poi> updatedPois = new ArrayList<>(syncWayManager.downloadPoiForWayEdition(poiNodeRefsId));
 
         for (Poi p : pois) {
-            if (p.getBackendId() == null) {
-                newPois.add(p);
-                continue;
+            if (p.getBackendId() != null && !p.getToDelete()) {
+                updatedPois.add(p);
             }
-            if (p.getToDelete()) {
-                toDeletePois.add(p);
-                continue;
-            }
-            updatedPois.add(p);
         }
-        remoteAddOrUpdateOrDeletePois(comment, poiDao.queryForAllUpdated(), poiDao.queryForAllNew(), poiDao.queryToDelete());
+        return remoteAddOrUpdateOrDeletePois(comment, poiDao.queryForAllUpdated(), poiDao.queryForAllNew(), poiDao.queryToDelete());
     }
 
-    private void remoteAddOrUpdateOrDeletePois(String comment, List<Poi> updatedPois, List<Poi> newPois, List<Poi> toDeletePois) {
+    private boolean remoteAddOrUpdateOrDeletePois(String comment, List<Poi> updatedPois, List<Poi> newPois, List<Poi> toDeletePois) {
+        boolean success = true;
         int successfullyAddedPoisCount = 0;
         int successfullyUpdatedPoisCount = 0;
         int successfullyDeletedPoisCount = 0;
@@ -257,8 +250,13 @@ public class SyncManager {
                 successfullyUpdatedPoisCount = remoteUpdatePois(updatedPois, changeSetId);
                 successfullyDeletedPoisCount = remoteDeletePois(toDeletePois, changeSetId);
             }
+            success = changeSetId != null
+                    && successfullyAddedPoisCount == newPois.size()
+                    && successfullyUpdatedPoisCount == updatedPois.size()
+                    && successfullyDeletedPoisCount == toDeletePois.size();
         }
         bus.post(new SyncFinishUploadPoiEvent(successfullyAddedPoisCount, successfullyUpdatedPoisCount, successfullyDeletedPoisCount));
+        return success;
     }
 
     // *********************************

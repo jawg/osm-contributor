@@ -123,9 +123,11 @@ import io.jawg.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.TooManyRequestsEvent;
 import io.jawg.osmcontributor.ui.activities.EditPoiActivity;
 import io.jawg.osmcontributor.ui.adapters.PoiTypePickerAdapter;
+import io.jawg.osmcontributor.ui.dialogs.LoginDialogFragment;
 import io.jawg.osmcontributor.ui.dialogs.NoteCommentDialogFragment;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyNodeRefPositionChange;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyPoiPositionChange;
+import io.jawg.osmcontributor.ui.events.login.PleaseAskForLoginEvent;
 import io.jawg.osmcontributor.ui.events.map.AddressFoundEvent;
 import io.jawg.osmcontributor.ui.events.map.ChangeMapModeEvent;
 import io.jawg.osmcontributor.ui.events.map.EditionWaysLoadedEvent;
@@ -1681,6 +1683,11 @@ public class MapFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTooManyRequestsEvent(TooManyRequestsEvent event) {
 //        progressBar.setVisibility(View.GONE);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAskForLoginEvent(PleaseAskForLoginEvent event) {
+        LoginDialogFragment.newInstance().show(getFragmentManager(), LoginDialogFragment.class.getSimpleName());
     }
 
 

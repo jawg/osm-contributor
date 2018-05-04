@@ -342,7 +342,8 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
             if (isLogged) {
                 uploadPoiChanges(comment, poiToUpload, poiNodeRefToUpload);
             } else {
-                LoginDialogFragment.newInstance(() -> uploadPoiChanges(comment, poiToUpload, poiNodeRefToUpload))
+                LoginDialogFragment.newInstance()
+                        .setOnLoginSuccessful(() -> uploadPoiChanges(comment, poiToUpload, poiNodeRefToUpload))
                         .show(getFragmentManager(), LoginDialogFragment.class.getSimpleName());
             }
         }

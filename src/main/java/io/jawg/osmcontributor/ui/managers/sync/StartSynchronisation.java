@@ -22,7 +22,7 @@ public class StartSynchronisation extends UseCase {
     }
 
     @Override
-    protected Observable<Void> buildUseCaseObservable() {
+    protected Observable<Boolean> buildUseCaseObservable() {
         return syncManager.sync();
     }
 }
