@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.jawg.osmcontributor.BuildConfig;
 import io.jawg.osmcontributor.database.dao.PoiDao;
 import io.jawg.osmcontributor.database.dao.PoiTypeDao;
 import io.jawg.osmcontributor.database.events.DbInitializedEvent;
@@ -136,7 +137,7 @@ public class SyncManager {
 
     public Observable<Boolean> sync() {
         return Observable.create(subscriber -> {
-            subscriber.onNext(remoteAddOrUpdateOrDeletePois("", poiDao.queryForAllUpdated(), poiDao.queryForAllNew(), poiDao.queryToDelete()));
+            subscriber.onNext(remoteAddOrUpdateOrDeletePois(BuildConfig.AUTO_COMMIT_CHANGESET, poiDao.queryForAllUpdated(), poiDao.queryForAllNew(), poiDao.queryToDelete()));
             subscriber.onCompleted();
         });
     }

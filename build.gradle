@@ -133,6 +133,7 @@ android {
             buildConfigField "String", "FLICKR_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token") + '"'
             buildConfigField "String", "FLICKR_TOKEN_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token_secret") + '"'
             buildConfigField "String", "MAPBOX_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("mapbox_token") + '"'
+            buildConfigField "String", "AUTO_COMMIT_CHANGESET", '""'
         }
 
         bus {
@@ -157,6 +158,7 @@ android {
             buildConfigField "String", "FLICKR_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token") + '"'
             buildConfigField "String", "FLICKR_TOKEN_SECRET", '"' + loadPropertiesFile("conf.properties").getProperty("flickr_token_secret") + '"'
             buildConfigField "String", "MAPBOX_TOKEN", '"' + loadPropertiesFile("conf.properties").getProperty("mapbox_token") + '"'
+            buildConfigField "String", "AUTO_COMMIT_CHANGESET", '"Edited bus stop(s)"'
         }
     }
 
