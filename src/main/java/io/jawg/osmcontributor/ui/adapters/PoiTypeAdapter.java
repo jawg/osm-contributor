@@ -18,6 +18,7 @@
  */
 package io.jawg.osmcontributor.ui.adapters;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,14 +32,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
 import io.jawg.osmcontributor.ui.utils.BitmapHandler;
-import io.jawg.osmcontributor.utils.helper.SwipeItemTouchHelperAdapter;
 import io.jawg.osmcontributor.utils.helper.ItemTouchHelperViewHolder;
+import io.jawg.osmcontributor.utils.helper.SwipeItemTouchHelperAdapter;
 import timber.log.Timber;
 
 public class PoiTypeAdapter extends RecyclerView.Adapter<PoiTypeAdapter.PoiTypeViewHolder> implements SwipeItemTouchHelperAdapter, Filterable {
@@ -65,7 +66,7 @@ public class PoiTypeAdapter extends RecyclerView.Adapter<PoiTypeAdapter.PoiTypeV
     }
 
     @Override
-    public void onBindViewHolder(PoiTypeViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PoiTypeViewHolder holder, int position) {
         holder.onBind(filteredValues.get(position));
     }
 
@@ -215,7 +216,7 @@ public class PoiTypeAdapter extends RecyclerView.Adapter<PoiTypeAdapter.PoiTypeV
 
         }
 
-        public void onBind(PoiType item) {
+        private void onBind(PoiType item) {
             text.setText(item.getName());
             technicalName.setText(item.getTechnicalName());
             details.setText(itemView.getContext().getResources().getQuantityString(R.plurals.tag_number, item.getTags().size(), item.getTags().size()));

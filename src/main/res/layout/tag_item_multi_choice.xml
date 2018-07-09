@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:theme="@style/TextInputLayout">
 
-            <android.support.design.widget.TextInputEditText
+            <io.jawg.osmcontributor.ui.utils.EditTextWithClear
                 android:id="@+id/complete_value"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
