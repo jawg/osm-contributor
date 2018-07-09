@@ -22,7 +22,8 @@ import java.util.List;
 
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiType;
-import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
+import io.jawg.osmcontributor.model.entities.relation.FullOSMRelation;
+import io.jawg.osmcontributor.rest.dtos.osm.OsmDtoInterface;
 import io.jawg.osmcontributor.utils.Box;
 
 /**
@@ -106,7 +107,17 @@ public interface Backend {
      */
     List<Poi> getPoisInBox(final Box box) throws NetworkException;
 
-    List<OsmDto> getPoisDtosInBox(final Box box) throws NetworkException;
+    List<OsmDtoInterface> getPoisDtosInBox(final Box box) throws NetworkException;
+
+    /**
+     * Get all pois in the current box
+     */
+    List<? super OsmDtoInterface> requestPoisDtosInBox(final Box box) throws NetworkException;
+
+    /**
+     * Get relationsDisplays to be displayed in jungle bus
+     */
+    List<OsmDtoInterface> getBusRelationForDisplayInArea(Box box) throws NetworkException;
 
     /**
      * Download a Poi from the backend by its id.
@@ -150,5 +161,21 @@ public interface Backend {
      */
     List<PoiType> getPoiTypes();
 
+    /**
+     * Download Relations from the backend.
+     *
+     * @param backendIds The backend ids of the Relations to download.
+     * @return The downloaded Relations.
+     */
+    List<FullOSMRelation> getRelations(String backendIds);
+
+    /**
+     * Update a FullOSMRelation in the backend.
+     *
+     * @param fullOSMRelation      The FullOSMRelation to update in the backend.
+     * @param transactionId The transaction in which the update must be done.
+     * @return The result of the update.
+     */
+    UpdateResult updateRelation(FullOSMRelation fullOSMRelation, String transactionId);
 
 }

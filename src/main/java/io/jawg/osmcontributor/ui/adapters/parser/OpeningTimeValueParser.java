@@ -21,8 +21,8 @@ package io.jawg.osmcontributor.ui.adapters.parser;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.jawg.osmcontributor.model.utils.OpeningMonth;
-import io.jawg.osmcontributor.model.utils.OpeningTime;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningMonth;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningTime;
 
 /**
  * @author Tommy Buonomo on 05/07/16.

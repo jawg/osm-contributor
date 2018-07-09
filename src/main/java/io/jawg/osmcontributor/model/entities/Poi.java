@@ -130,6 +130,9 @@ public class Poi implements Cloneable, MapElement {
     @ForeignCollectionField(orderColumnName = PoiNodeRef.ORDINAL)
     private Collection<PoiNodeRef> nodeRefs = new ArrayList<>();
 
+    @ForeignCollectionField
+    private Collection<RelationId> relationIds = new ArrayList<>();
+
     private Set<Double> levels = null;
 
     public Poi() {
@@ -274,6 +277,15 @@ public class Poi implements Cloneable, MapElement {
     public LatLng getPosition() {
         return new LatLng(latitude, longitude);
     }
+
+    public Collection<RelationId> getRelationIds() {
+        return relationIds;
+    }
+
+    public void setRelationIds(Collection<RelationId> relationIds) {
+        this.relationIds = relationIds;
+    }
+
 
     //fill levels set if there isn't any levels adding level 0
     private void initLevel() {

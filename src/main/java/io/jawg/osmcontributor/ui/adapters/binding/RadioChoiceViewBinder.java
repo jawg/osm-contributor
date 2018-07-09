@@ -12,14 +12,14 @@ import java.util.Map;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
-import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagRadioChoiceHolder;
 
 public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHolder, TagItem> {
 
-    public RadioChoiceViewBinder(Activity activity, OnTagItemChange onTagItemChange) {
-        super(activity, onTagItemChange);
+    public RadioChoiceViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
+        super(activity, tagItemChangeListener);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
     }
 
@@ -37,8 +37,8 @@ public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHo
             @Override
             public void onCheckBoxSelected(String value) {
                 tagItem.setValue(value);
-                if (onTagItemChange != null) {
-                    onTagItemChange.onTagItemUpdated(tagItem);
+                if (tagItemChangeListener != null) {
+                    tagItemChangeListener.onTagItemUpdated(tagItem);
                 }
             }
         });

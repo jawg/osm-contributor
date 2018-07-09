@@ -18,6 +18,7 @@
  */
 package io.jawg.osmcontributor.rest.clients;
 
+import io.jawg.osmcontributor.rest.dtos.osm.OsmBlockDto;
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -27,4 +28,7 @@ public interface OverpassRestClient {
 
     @POST("0.6")
     Call<OsmDto> sendRequest(@Body String data);
+
+    @POST("0.6")
+    Call<OsmBlockDto> sendRequestBlock(@Body String data);
 }

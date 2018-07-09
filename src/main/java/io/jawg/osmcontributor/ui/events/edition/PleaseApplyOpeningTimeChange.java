@@ -18,7 +18,7 @@
  */
 package io.jawg.osmcontributor.ui.events.edition;
 
-import io.jawg.osmcontributor.model.utils.OpeningTime;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningTime;
 
 /**
  * @author Tommy Buonomo on 11/07/16.

@@ -22,6 +22,7 @@ package io.jawg.osmcontributor.rest.mappers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import io.jawg.osmcontributor.database.dao.PoiTypeDao;
@@ -30,11 +31,14 @@ import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
+import io.jawg.osmcontributor.model.entities.RelationId;
 import io.jawg.osmcontributor.rest.NetworkException;
+import io.jawg.osmcontributor.rest.dtos.osm.BlockDto;
 import io.jawg.osmcontributor.rest.dtos.osm.NdDto;
 import io.jawg.osmcontributor.rest.dtos.osm.NodeDto;
-import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
+import io.jawg.osmcontributor.rest.dtos.osm.OsmDtoInterface;
 import io.jawg.osmcontributor.rest.dtos.osm.PoiDto;
+import io.jawg.osmcontributor.rest.dtos.osm.RelationIdDto;
 import io.jawg.osmcontributor.rest.dtos.osm.TagDto;
 import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
 import io.jawg.osmcontributor.utils.FlavorUtils;
@@ -50,19 +54,34 @@ public class PoiMapper {
         this.poiTagMapper = poiTagMapper;
     }
 
-    public List<Poi> convertPois(OsmDto osmDto) {
+    public Poi convertBlockToPoi(BlockDto blockDto) {
+        return convertDtoToPoi(true, poiTypeDao.queryForAll(), blockDto.getNodeDtoList().get(0), blockDto.getRelationIdDtoList());
+    }
+
+    public List<Poi> convertPois(OsmDtoInterface osmDto) {
         if (osmDto != null) {
             throw new NetworkException();
         }
         List<Poi> pois = convertDtosToPois(osmDto.getNodeDtoList());
         pois.addAll(convertDtosToPois(osmDto.getWayDtoList()));
         return pois;
+
     }
 
-    public List<Poi> convertPois(List<OsmDto> osmDtos) {
+    public List<Poi> convertPois(List<OsmDtoInterface> osmDtos) {
         List<Poi> pois = new ArrayList<>();
-        for (OsmDto osmDto : osmDtos) {
-            pois.addAll(convertPois(osmDto));
+        if (FlavorUtils.isBus()) {
+            for (OsmDtoInterface osmBlockDto : osmDtos) {
+                for (BlockDto blockDto : osmBlockDto.getBlockList()) {
+                    if (blockDto.getNodeDtoList().size() >= 1) {
+                        pois.add(convertBlockToPoi(blockDto));
+                    }
+                }
+            }
+        } else {
+            for (OsmDtoInterface osmDto : osmDtos) {
+                pois.addAll(convertPois(osmDto));
+            }
         }
         return pois;
     }
@@ -76,19 +95,19 @@ public class PoiMapper {
         if (dtos != null) {
             List<PoiType> availableTypes = poiTypeDao.queryForAll();
             for (PoiDto dto : dtos) {
-                Poi poi = convertDtoToPoi(typeFiltering, availableTypes, dto);
+                Poi poi = convertDtoToPoi(typeFiltering, availableTypes, dto, null);
                 if (poi != null) {
                     result.add(poi);
                 }
             }
         }
-
         return result;
     }
 
-    public Poi convertDtoToPoi(boolean typeFiltering, List<PoiType> availableTypes, PoiDto dto) {
+    public Poi convertDtoToPoi(boolean typeFiltering, List<PoiType> availableTypes, PoiDto dto, @Nullable List<RelationIdDto> relationIdDtos) {
         List<PoiNodeRef> nodeRefs = new ArrayList<>();
         List<PoiTag> tags = new ArrayList<>();
+        List<RelationId> relationIds = new ArrayList<>();
 
         PoiType type;
         if (FlavorUtils.isBus()) {
@@ -108,6 +127,15 @@ public class PoiMapper {
         poi.setUpdated(false);
         poi.setUpdateDate(dto.getTimestamp());
         poi.setWay(dto.isWay());
+
+        if (relationIdDtos != null) {
+            for (RelationIdDto rel : relationIdDtos) {
+                RelationId relationId = new RelationId();
+                relationId.setRelationId(rel.getId());
+                relationIds.add(relationId);
+            }
+            poi.setRelationIds(relationIds);
+        }
 
         for (TagDto tagDto : dto.getTagsDtoList()) {
             PoiTag tag = new PoiTag();

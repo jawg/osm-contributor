@@ -45,4 +45,26 @@ public final class CollectionUtils {
         }
         return result;
     }
+
+
+    /**
+     * Transform a list of ids into a string where ids are separated from each over by a ",".
+     *
+     * @param ids The list of ids to transform.
+     * @return The formatted list.
+     */
+    public static String formatIdList(List<Long> ids) {
+        String idsStr = "";
+        int i = 1;
+        for (Long id : ids) {
+            if (id != null) {
+                idsStr += id;
+                if (i < ids.size()) {
+                    idsStr += ",";
+                }
+            }
+            i++;
+        }
+        return idsStr;
+    }
 }

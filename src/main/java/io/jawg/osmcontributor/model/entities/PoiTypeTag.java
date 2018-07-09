@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 
 @DatabaseTable(tableName = PoiTypeTag.TABLE_NAME)
 public class PoiTypeTag implements Comparable<PoiTypeTag> {

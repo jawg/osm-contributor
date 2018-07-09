@@ -23,12 +23,14 @@ import com.mapbox.mapboxsdk.exceptions.ConversionException;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import io.jawg.osmcontributor.utils.CloseableUtils;
+import io.jawg.osmcontributor.utils.FlavorUtils;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -36,7 +38,12 @@ import retrofit2.Retrofit;
 public class XMLConverterFactory extends Converter.Factory {
     private Serializer serializer;
 
-    public XMLConverterFactory(Serializer serializer) {
+    private static final String REPLACE_BLOCK_BY_OPENING_XML = "(<block id=\"[13579]\"/>)|(<block id=\".*?(?!\")\\d[13579]\"/>)";
+    private static final String REPLACE_BLOCK_BY_CLOSING_XML = "(<block id=\"[02468]\"/>)|(<block id=\".*?(?!\")\\d[02468]\"/>)";
+    private static final String OPENING_BLOCK = "<block>";
+    private static final String CLOSING_BLOCK = "</block>";
+
+    private XMLConverterFactory(Serializer serializer) {
         this.serializer = serializer;
     }
 
@@ -44,25 +51,54 @@ public class XMLConverterFactory extends Converter.Factory {
         return new XMLConverterFactory(persister);
     }
 
-
     @Override
     public Converter<ResponseBody, ?> responseBodyConverter(final Type type, Annotation[] annotations, Retrofit retrofit) {
-        return new Converter<ResponseBody, Object>() {
-            @Override
-            public Object convert(ResponseBody body) throws IOException {
+        return (Converter<ResponseBody, Object>) body -> {
 
-                String charset = "UTF-8";
+            String charset = "UTF-8";
 
-                InputStreamReader isr = null;
-                try {
-                    isr = new InputStreamReader(body.byteStream(), charset);
-                    return serializer.read((Class<?>) type, isr);
-                } catch (Exception e) {
-                    throw new ConversionException(e);
-                } finally {
-                    CloseableUtils.closeQuietly(isr);
-                }
+            InputStreamReader isr = null;
+            InputStream str;
+
+            if (FlavorUtils.isBus()) {
+                String stream = filterBlocks(body.string());
+                str = new ByteArrayInputStream(stream.getBytes());
+            } else {
+                str = body.byteStream();
+            }
+
+            try {
+                isr = new InputStreamReader(str, charset);
+                return serializer.read((Class<?>) type, isr);
+            } catch (Exception e) {
+                throw new ConversionException(e);
+            } finally {
+                CloseableUtils.closeQuietly(isr);
             }
         };
+    }
+
+    /**
+     * The filters enable the string to be parsed and to associate a relation to a node
+     * The filter replaces
+     *
+     * <block id=xx1/>
+     * <node></node>
+     * <relation></relation>
+     * <block id=xx2/>
+     *
+     * by
+     *
+     * <block>
+     *     <node></node>
+     *     <relation></relation>
+     * </block>
+     *
+     * @param body the response
+     * @return the xml parsable response
+     */
+    private static String filterBlocks(String body) {
+        String temp = body.replaceAll(REPLACE_BLOCK_BY_CLOSING_XML, CLOSING_BLOCK);
+        return temp.replaceAll(REPLACE_BLOCK_BY_OPENING_XML, OPENING_BLOCK);
     }
 }

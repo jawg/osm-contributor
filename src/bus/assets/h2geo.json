@@ -26,7 +26,7 @@
         {
           "name": "highway=bus_stop",
           "url": "https://wiki.openstreetmap.org/wiki/Tag:highway=bus_stop",
-          "query": "(node[\"highway\"=\"bus_stop\"]({{bbox}});node[\"bus\"=\"yes\"][\"public_transport\"=\"platform\"]({{bbox}}););out meta center;",
+          "query": "(node[\"highway\"=\"bus_stop\"]({{bbox}});node[\"bus\"=\"yes\"][\"public_transport\"=\"platform\"]({{bbox}});)-> .a;foreach { (._ -> .nodes;< -> .relations;);make block; out;.nodes out meta center;.relations out ids;make block; out;} relation[\"route\"=\"bus\"]({{bbox}});out tags;",
           "label": {
             "default": "Bus stop",
             "en": "Bus stop",
@@ -137,7 +137,7 @@
             },
             {
               "key": "route_ref",
-              "type": "TEXT"
+              "type": "BUS_LINE"
             },
             {
               "key": "note",

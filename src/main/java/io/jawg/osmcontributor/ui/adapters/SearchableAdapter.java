@@ -35,8 +35,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.jawg.osmcontributor.R;
 
 public class SearchableAdapter extends BaseAdapter implements Filterable {
@@ -50,7 +50,7 @@ public class SearchableAdapter extends BaseAdapter implements Filterable {
 
     public SearchableAdapter(Context context, List<String> values, EditText editText) {
         this.filteredValues = values;
-        Collections.sort(filteredValues, new SortIgnoreCase()); // sorting values ignoring case
+        Collections.sort(filteredValues, new SortIgnoreCase());
         this.originalValues = filteredValues;
         this.editText = editText;
         this.context = context;

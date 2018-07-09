@@ -4,13 +4,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.jawg.osmcontributor.rest.managers.SyncManager;
-import io.jawg.osmcontributor.ui.managers.executor.PostExecutionThread;
 import io.jawg.osmcontributor.ui.managers.UseCase;
+import io.jawg.osmcontributor.ui.managers.executor.PostExecutionThread;
 import io.jawg.osmcontributor.ui.managers.executor.SingleThreadExecutor;
 import rx.Observable;
 
 @Singleton
-public class StartSynchronisation extends UseCase {
+public class StartSynchronisation extends UseCase<Boolean> {
 
     private final SyncManager syncManager;
 

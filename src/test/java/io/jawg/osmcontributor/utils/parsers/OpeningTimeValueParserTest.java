@@ -28,11 +28,11 @@ import org.robolectric.RuntimeEnvironment;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.jawg.osmcontributor.model.utils.OpeningHours;
-import io.jawg.osmcontributor.model.utils.OpeningMonth;
-import io.jawg.osmcontributor.model.utils.OpeningTime;
 import io.jawg.osmcontributor.modules.DaggerOsmTemplateComponent;
 import io.jawg.osmcontributor.modules.OsmTemplateModule;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningHours;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningMonth;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningTime;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeTagParserImpl;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 

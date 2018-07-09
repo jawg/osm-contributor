@@ -8,16 +8,16 @@ import android.widget.RelativeLayout;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
-import io.jawg.osmcontributor.ui.adapters.item.ShelterTagItem;
-import io.jawg.osmcontributor.ui.adapters.item.ShelterType;
-import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.ShelterTagItem;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.ShelterType;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 import io.jawg.osmcontributor.ui.utils.views.holders.ShelterChoiceHolder;
 
 
 public class ShelterChoiceViewBinder extends CheckedTagViewBinder<ShelterChoiceHolder, ShelterTagItem> {
 
-    public ShelterChoiceViewBinder(Activity activity, OnTagItemChange onTagItemChange) {
-        super(activity, onTagItemChange);
+    public ShelterChoiceViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
+        super(activity, tagItemChangeListener);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
     }
 
@@ -31,16 +31,13 @@ public class ShelterChoiceViewBinder extends CheckedTagViewBinder<ShelterChoiceH
         // Save holder
         this.content = holder.getContent();
 
-        holder.setSelectionListener(new ShelterChoiceHolder.SelectionListener() {
-                                        @Override
-                                        public void shelterClicked(ShelterType shelterType) {
-                                            tagItem.setShelterType(tagItem.getShelterType() == shelterType ? ShelterType.UNDEFINED : shelterType);
-                                            updateImages(holder, tagItem);
-                                            if (onTagItemChange != null) {
-                                                onTagItemChange.onTagItemUpdated(tagItem);
-                                            }
-                                        }
-                                    }
+        holder.setSelectionListener(shelterType -> {
+            tagItem.setShelterType(tagItem.getShelterType() == shelterType ? ShelterType.UNDEFINED : shelterType);
+            updateImages(holder, tagItem);
+            if (tagItemChangeListener != null) {
+                tagItemChangeListener.onTagItemUpdated(tagItem);
+            }
+        }
         );
 
         // if Tag is show=false, hide it

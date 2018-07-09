@@ -63,7 +63,7 @@ import io.jawg.osmcontributor.model.events.PleaseLoadPoiForEditionEvent;
 import io.jawg.osmcontributor.model.events.PoiForEditionLoadedEvent;
 import io.jawg.osmcontributor.ui.activities.EditPoiActivity;
 import io.jawg.osmcontributor.ui.adapters.TagsAdapter;
-import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 import io.jawg.osmcontributor.ui.dialogs.AddTagDialogFragment;
 import io.jawg.osmcontributor.ui.dialogs.LoginDialogFragment;
 import io.jawg.osmcontributor.ui.events.edition.NewPoiTagAddedEvent;
@@ -106,20 +106,6 @@ public class EditPoiFragment extends Fragment {
     /*=========================================*/
     /*---------------ATTRIBUTES----------------*/
     /*=========================================*/
-    private enum Category {
-        Creation("Creation POI"),
-        Edition("Edition POI");
-
-        private final String value;
-
-        Category(String value) {
-            this.value = value;
-        }
-
-        String getValue() {
-            return value;
-        }
-    }
 
     private TagsAdapter tagsAdapter;
 
@@ -236,12 +222,11 @@ public class EditPoiFragment extends Fragment {
                     OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "add");
                 } else if (tagsAdapter.isChange()) {
                     getActivity().setResult(EditPoiActivity.POI_EDITED, null);
-                    eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges()));
+                    eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges(), null));
                     OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "update");
                 } else {
                     Toast.makeText(getActivity(), R.string.not_any_changes, Toast.LENGTH_SHORT).show();
                 }
-
                 return true;
             }
 
@@ -263,7 +248,7 @@ public class EditPoiFragment extends Fragment {
             if (tagsAdapter.isChange()) {
                 if (tagsAdapter.isValidChanges()) {
                     getActivity().setResult(EditPoiActivity.POI_EDITED, null);
-                    eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges()));
+                    eventBus.post(new PleaseApplyPoiChanges(tagsAdapter.getPoiChanges(), tagsAdapter.getChangedRelations()));
                     OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "update");
                 } else {
                     tagsAdapter.refreshErrorStatus();

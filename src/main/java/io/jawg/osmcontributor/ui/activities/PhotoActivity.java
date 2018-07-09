@@ -604,7 +604,7 @@ public class PhotoActivity extends AppCompatActivity {
 
             PoiChanges currentPoiChanges = new PoiChanges(poiId);
             currentPoiChanges.setTagsMap(currentPoiTagsMap);
-            eventBus.post(new PleaseApplyPoiChanges(currentPoiChanges));
+            eventBus.post(new PleaseApplyPoiChanges(currentPoiChanges, null));
         } else {
             Log.e(TAG, "Invalid Flickr URL: " + imageUrl);
         }

@@ -42,7 +42,7 @@ import butterknife.ButterKnife;
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.ui.adapters.SearchableAdapter;
-import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 
 public class PickValueActivity extends AppCompatActivity {
     public static final int PICK_VALUE_ACTIVITY_CODE = 1;
