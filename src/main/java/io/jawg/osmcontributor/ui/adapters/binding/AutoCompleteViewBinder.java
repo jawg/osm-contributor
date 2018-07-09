@@ -10,14 +10,14 @@ import android.view.ViewGroup;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
-import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHolder;
 
 public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoCompleteViewHolder, TagItem> {
 
-    public AutoCompleteViewBinder(Activity activity, OnTagItemChange onTagItemChange) {
-        super(activity, onTagItemChange);
+    public AutoCompleteViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
+        super(activity, tagItemChangeListener);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
     }
 
@@ -55,8 +55,8 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (i1 != i2) {
                     tagItem.setValue(charSequence.toString());
-                    if (onTagItemChange != null) {
-                        onTagItemChange.onTagItemUpdated(tagItem);
+                    if (tagItemChangeListener != null) {
+                        tagItemChangeListener.onTagItemUpdated(tagItem);
                     }
                 }
             }

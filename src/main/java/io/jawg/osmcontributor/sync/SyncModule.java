@@ -20,6 +20,7 @@ package io.jawg.osmcontributor.sync;
 
 import android.app.Application;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 
@@ -41,11 +42,14 @@ import io.jawg.osmcontributor.rest.OsmBackend;
 import io.jawg.osmcontributor.rest.clients.OsmRestClient;
 import io.jawg.osmcontributor.rest.clients.OverpassRestClient;
 import io.jawg.osmcontributor.rest.managers.OSMSyncNoteManager;
+import io.jawg.osmcontributor.rest.managers.OSMSyncRelationManager;
 import io.jawg.osmcontributor.rest.managers.OSMSyncWayManager;
 import io.jawg.osmcontributor.rest.managers.SyncNoteManager;
+import io.jawg.osmcontributor.rest.managers.SyncRelationManager;
 import io.jawg.osmcontributor.rest.managers.SyncWayManager;
 import io.jawg.osmcontributor.rest.mappers.NoteMapper;
 import io.jawg.osmcontributor.rest.mappers.PoiMapper;
+import io.jawg.osmcontributor.rest.mappers.RelationMapper;
 import io.jawg.osmcontributor.rest.utils.XMLConverterFactory;
 import io.jawg.osmcontributor.rest.utils.XMLConverterStringFactory;
 import io.jawg.osmcontributor.ui.activities.AuthorisationInterceptor;
@@ -61,8 +65,8 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 public class SyncModule {
 
     @Provides
-    Backend getBackend(LoginPreferences loginPreferences, EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient, OsmRestClient osmRestClient, PoiMapper poiMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
-        return new OsmBackend(loginPreferences, bus, osmProxy, overpassRestClient, osmRestClient, poiMapper, poiManager, poiAssetLoader);
+    Backend getBackend(LoginPreferences loginPreferences, EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient, OsmRestClient osmRestClient, PoiMapper poiMapper, RelationMapper relationMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
+        return new OsmBackend(loginPreferences, bus, osmProxy, overpassRestClient, osmRestClient, poiMapper, relationMapper, poiManager, poiAssetLoader);
     }
 
     @Singleton
@@ -78,6 +82,11 @@ public class SyncModule {
     @Provides
     SyncWayManager getSyncWayManager(OSMProxy osmProxy, OverpassRestClient overpassRestClient, PoiMapper poiMapper, PoiManager poiManager, EventBus bus, PoiNodeRefDao poiNodeRefDao, OsmRestClient osmRestClient) {
         return new OSMSyncWayManager(osmProxy, overpassRestClient, poiMapper, poiManager, bus, poiNodeRefDao, osmRestClient);
+    }
+
+    @Provides
+    SyncRelationManager getSyncRelationManager(RelationMapper relationMapper, OsmRestClient osmRestClient) {
+        return new OSMSyncRelationManager(relationMapper, osmRestClient);
     }
 
     @Provides
@@ -100,6 +109,7 @@ public class SyncModule {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(interceptor).readTimeout(50, TimeUnit.SECONDS)
                 .addInterceptor(interceptor).connectTimeout(50, TimeUnit.SECONDS)
+                .addNetworkInterceptor(new StethoInterceptor())
                 .build();
 
         return new Retrofit.Builder()

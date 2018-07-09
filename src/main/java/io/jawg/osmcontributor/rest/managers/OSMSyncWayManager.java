@@ -39,6 +39,7 @@ import io.jawg.osmcontributor.rest.mappers.PoiMapper;
 import io.jawg.osmcontributor.ui.events.map.PleaseLoadEditWaysEvent;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.Box;
+import io.jawg.osmcontributor.utils.CollectionUtils;
 import retrofit2.Call;
 import retrofit2.Response;
 import timber.log.Timber;
@@ -81,6 +82,7 @@ public class OSMSyncWayManager implements SyncWayManager {
         cmplReq.append(");out meta geom;");
         return cmplReq.toString();
     }
+
 
     /**
      * {@inheritDoc}
@@ -172,7 +174,7 @@ public class OSMSyncWayManager implements SyncWayManager {
         List<Poi> pois = new ArrayList<>();
 
         if (ids != null && !ids.isEmpty()) {
-            Call<OsmDto> callOsm = osmRestClient.getNode(formatIdList(ids));
+            Call<OsmDto> callOsm = osmRestClient.getNode(CollectionUtils.formatIdList(ids));
             try {
                 Response<OsmDto> response = callOsm.execute();
                 if (response.isSuccessful()) {
@@ -191,24 +193,4 @@ public class OSMSyncWayManager implements SyncWayManager {
         return pois;
     }
 
-    /**
-     * Transform a list of ids into a string where ids are separated from each over by a ",".
-     *
-     * @param ids The list of ids to transform.
-     * @return The formatted list.
-     */
-    private String formatIdList(List<Long> ids) {
-        String idsStr = "";
-        int i = 1;
-        for (Long id : ids) {
-            if (id != null) {
-                idsStr += id;
-                if (i < ids.size()) {
-                    idsStr += ",";
-                }
-            }
-            i++;
-        }
-        return idsStr;
-    }
 }

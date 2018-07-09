@@ -1,4 +1,4 @@
-package io.jawg.osmcontributor.ui.adapters.item;
+package io.jawg.osmcontributor.ui.adapters.item.shelter;
 
 import java.util.Collection;
 import java.util.HashMap;

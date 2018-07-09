@@ -29,6 +29,7 @@ import android.preference.PreferenceManager;
 import android.support.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.cache.MemoryCacheParams;
@@ -72,7 +73,8 @@ public class OsmTemplateApplication extends Application {
             // Init Stetho for debug purpose (database)
             Stetho.initializeWithDefaults(this);
         }
-        Fabric.with(this, new Crashlytics());
+        // Fabric.with(this, new Crashlytics());
+        configureCrashReporting();
 
         // Init Dagger
         osmTemplateComponent = DaggerOsmTemplateComponent.builder().osmTemplateModule(new OsmTemplateModule(this)).build();
@@ -123,6 +125,13 @@ public class OsmTemplateApplication extends Application {
         conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
+    private void configureCrashReporting() {
+        CrashlyticsCore crashlyticsCore = new CrashlyticsCore.Builder()
+                .disabled(BuildConfig.DEBUG)
+                .build();
+        Fabric.with(this, new Crashlytics.Builder().core(crashlyticsCore).build());
+    }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         try {
@@ -156,7 +165,15 @@ public class OsmTemplateApplication extends Application {
     }
 
     public static Boolean hasNetwork() {
-        return conMgr == null ? null :  conMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED
-                || conMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
+        if (conMgr != null) {
+            if (conMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null) {
+                return conMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED
+                        || conMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
+            } else { //check only wifi for tablets
+                return conMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
+            }
+        } else {
+            return null;
+        }
     }
 }

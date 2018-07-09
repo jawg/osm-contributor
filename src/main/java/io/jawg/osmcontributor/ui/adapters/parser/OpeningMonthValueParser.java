@@ -23,8 +23,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.jawg.osmcontributor.model.utils.OpeningHours;
-import io.jawg.osmcontributor.model.utils.OpeningMonth;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningHours;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningMonth;
 
 /**
  * @author Tommy Buonomo on 18/07/16.

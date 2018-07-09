@@ -50,6 +50,8 @@
     <string name="tag_key">Key</string>
     <string name="tag_value">Value</string>
     <string name="undefined">undefined</string>
+    <string name="bus_line_hint">Bus line</string>
+
     <!--Edit Poi-->
     <string name="tag_poi_name">Name</string>
     <string name="tag_poi_shelter">Facilities</string>
@@ -65,6 +67,9 @@
     <plurals name="update_done">
         <item quantity="one">%1$s points updated on OSM.</item>
         <item quantity="other">%1$s points updated on OSM.</item>
+    </plurals><plurals name="update_done_relation">
+        <item quantity="one">%1$s fullOSMRelation updated on OSM.</item>
+        <item quantity="other">%1$s fullOSMRelations updated on OSM.</item>
     </plurals>
     <plurals name="delete_done">
         <item quantity="one">%1$s points deleted on OSM.</item>
@@ -94,7 +99,7 @@
     <string name="delete_poi_confirm_message">Do you really want to delete this poi?</string>
     <string name="delete_poi_positive_btn">Delete</string>
     <string name="delete_poi_negative_btn">Cancel</string>
-    <string name="point_modification_forbidden">This version doesn\'t allowed points modification</string>
+    <string name="point_modification_forbidden">This version doesn\'t allow points modification</string>
     <string name="licenses_title">Licenses</string>
     <string name="osm_copyright" translatable="false"><![CDATA[<font color=\"#000\">© </font><font color=\"#1565C0\">OpenStreetMap </font><font color=\"#000\">contributors</font>]]></string>
     <string name="zoom_to_edit">This area is too large to load, please zoom more.</string>
@@ -108,7 +113,7 @@
     <string name="load_poi_network_error">The network is unreachable, it is impossible to load all POIS. (Click to retry)</string>
     <string name="load_poi_too_many_pois">There is too many Pois to display (%1$d Pois the max is %2$d). Please zoom a bit more.</string>
     <string name="load_poi_progress">Loading %1$d %%</string>
-    <string name="load_poi_calling_osm">Loading ...</string>
+    <string name="load_poi_calling_osm">Loading …</string>
     <string name="load_poi_area_message">Loading in progress, don\’t move!.</string>
 
     <!-- Strings related to login -->

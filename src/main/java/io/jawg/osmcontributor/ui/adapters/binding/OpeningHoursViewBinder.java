@@ -12,10 +12,10 @@ import javax.inject.Inject;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
-import io.jawg.osmcontributor.model.utils.OpeningMonth;
-import io.jawg.osmcontributor.model.utils.OpeningTime;
 import io.jawg.osmcontributor.ui.adapters.OpeningMonthAdapter;
-import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningMonth;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningTime;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 import io.jawg.osmcontributor.ui.utils.views.DividerItemDecoration;
@@ -26,8 +26,8 @@ public class OpeningHoursViewBinder extends CheckedTagViewBinder<TagItemOpeningT
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
 
-    public OpeningHoursViewBinder(Activity activity, OnTagItemChange onTagItemChange) {
-        super(activity, onTagItemChange);
+    public OpeningHoursViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
+        super(activity, tagItemChangeListener);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
     }
 

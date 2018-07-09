@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import java.util.Map;
 
-import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 
 public class PoiTypeTagDto {
 

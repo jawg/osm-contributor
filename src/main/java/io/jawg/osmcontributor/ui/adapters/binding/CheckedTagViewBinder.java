@@ -2,6 +2,7 @@ package io.jawg.osmcontributor.ui.adapters.binding;
 
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -9,17 +10,19 @@ import android.widget.TextView;
 import java.lang.ref.WeakReference;
 
 import io.jawg.osmcontributor.R;
-import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplay;
+import io.jawg.osmcontributor.model.entities.relation_save.RelationEdition;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 
 public abstract class CheckedTagViewBinder<T extends RecyclerView.ViewHolder, H extends TagItem> implements TagViewBinder<T, H> {
 
     public WeakReference<Activity> activity;
     public LinearLayout content;
-    public OnTagItemChange onTagItemChange;
+    public TagItemChangeListener tagItemChangeListener;
 
-    public CheckedTagViewBinder(Activity activity, OnTagItemChange onTagItemChange) {
+    public CheckedTagViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
         this.activity = new WeakReference<>(activity);
-        this.onTagItemChange = onTagItemChange;
+        this.tagItemChangeListener = tagItemChangeListener;
     }
 
     /**
@@ -39,7 +42,8 @@ public abstract class CheckedTagViewBinder<T extends RecyclerView.ViewHolder, H 
         }
     }
 
-    public interface OnTagItemChange {
+    public interface TagItemChangeListener {
         void onTagItemUpdated(TagItem updatedTag);
+        void onRelationForBusUpdated(Pair<RelationDisplay, RelationEdition.RelationModificationType> relationIDAndModification);
     }
 }

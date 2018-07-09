@@ -10,7 +10,7 @@ ext {
     ormliteVersion = '4.48'
     clansFabVersion = '1.6.4'
     scribeJavaVersion = '2.8.1'
-    stethoVersion = '1.3.1'
+    stethoVersion = '1.5.0'
     jodatimeVersion = '2.9.4'
     flickr4javaVersion = '2.16'
     mapboxVersion = '4.2.0'
@@ -105,7 +105,7 @@ android {
 
         debug {
             versionNameSuffix ".debug-3"
-            buildConfigField "String", "BASE_OSM_URL", '"https://www.openstreetmap.org/api/0.6/"'
+            buildConfigField "String", "BASE_OSM_URL", '"https://master.apis.dev.openstreetmap.org/api/0.6/"'
         }
     }
 
@@ -237,6 +237,8 @@ dependencies {
 
     compile "com.facebook.stetho:stetho:$stethoVersion"
 
+    compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+
     compile "com.firebase:firebase-jobdispatcher:$firebaseJobDispatcherVersion"
 
     testCompile 'junit:junit:4.12'
@@ -269,8 +271,8 @@ checkstyle {
 }
 
 task checkstyle(type: Checkstyle) {
-    source 'src'
-    include '**/*.java'
+    exclude 'src'
+    //include '**/*.java'
     exclude '**/gen/**'
     exclude '**/R.java'
     exclude '**/BuildConfig.java'

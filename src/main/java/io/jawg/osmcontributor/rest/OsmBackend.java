@@ -26,6 +26,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,18 +36,22 @@ import io.jawg.osmcontributor.database.preferences.LoginPreferences;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
+import io.jawg.osmcontributor.model.entities.relation.FullOSMRelation;
 import io.jawg.osmcontributor.rest.clients.OsmRestClient;
 import io.jawg.osmcontributor.rest.clients.OverpassRestClient;
 import io.jawg.osmcontributor.rest.dtos.osm.ChangeSetDto;
 import io.jawg.osmcontributor.rest.dtos.osm.NodeDto;
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDto;
+import io.jawg.osmcontributor.rest.dtos.osm.OsmDtoInterface;
 import io.jawg.osmcontributor.rest.dtos.osm.TagDto;
 import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
 import io.jawg.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
 import io.jawg.osmcontributor.rest.mappers.PoiMapper;
+import io.jawg.osmcontributor.rest.mappers.RelationMapper;
 import io.jawg.osmcontributor.rest.utils.AuthenticationRequestInterceptor;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.Box;
+import io.jawg.osmcontributor.utils.FlavorUtils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -61,24 +66,26 @@ public class OsmBackend implements Backend {
 
     public static final String[] OBJECT_TYPES = new String[]{"node", "way"};
     private static final String BBOX = "({{bbox}});";
-    PoiManager poiManager;
-    PoiAssetLoader poiAssetLoader;
-    OSMProxy osmProxy;
-    OverpassRestClient overpassRestClient;
-    OsmRestClient osmRestClient;
-    PoiMapper poiMapper;
-    EventBus bus;
-    LoginPreferences loginPreferences;
-    Map<Long, PoiType> poiTypes = null;
+    private PoiManager poiManager;
+    private PoiAssetLoader poiAssetLoader;
+    private OSMProxy osmProxy;
+    private OverpassRestClient overpassRestClient;
+    private OsmRestClient osmRestClient;
+    private PoiMapper poiMapper;
+    private RelationMapper relationMapper;
+    private EventBus bus;
+    private LoginPreferences loginPreferences;
+    private Map<Long, PoiType> poiTypes = null;
 
     public OsmBackend(LoginPreferences loginPreferences, EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient,
-                      OsmRestClient osmRestClient, PoiMapper poiMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
+                      OsmRestClient osmRestClient, PoiMapper poiMapper, RelationMapper relationMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
         this.loginPreferences = loginPreferences;
         this.bus = bus;
         this.osmProxy = osmProxy;
         this.overpassRestClient = overpassRestClient;
         this.osmRestClient = osmRestClient;
         this.poiMapper = poiMapper;
+        this.relationMapper = relationMapper;
         this.poiManager = poiManager;
         this.poiAssetLoader = poiAssetLoader;
     }
@@ -132,40 +139,49 @@ public class OsmBackend implements Backend {
      */
     @Override
     @NonNull
-    public List<OsmDto> getPoisDtosInBox(final Box box) throws NetworkException {
-        Timber.d("Requesting overpass for download");
+    public List<OsmDtoInterface> getPoisDtosInBox(final Box box) throws NetworkException {
+        return requestPoisDtosInBox(box);
+    }
 
-        List<OsmDto> osmDtos = new ArrayList<>();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NonNull
+    public List<OsmDtoInterface> requestPoisDtosInBox(final Box box) throws NetworkException {
+        List<OsmDtoInterface> osmDtos = new ArrayList<>();
+
+        Timber.d("Requesting overpass for download");
 
         poiTypes = poiManager.loadPoiTypes();
 
         for (Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
             final PoiType poiTypeDto = entry.getValue();
             if (poiTypeDto.getQuery() != null) {
-                OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
-                    @Override
-                    public OsmDto proceed() {
-                        // if it is a customize overpass request which contain ({{bbox}})
-                        // replace it by the coordinates of the current position
-                        if (poiTypeDto.getQuery().contains(BBOX)) {
-                            String format = poiTypeDto.getQuery().replace(BBOX, box.osmFormat());
-                            try {
-                                return overpassRestClient.sendRequest(format).execute().body();
-                            } catch (IOException e) {
-                                return null;
-                            }
-                        } else {
-                            try {
-                                return overpassRestClient.sendRequest(poiTypeDto.getQuery()).execute().body();
-                            } catch (IOException e) {
-                                return null;
-                            }
+                OSMProxy.Result<OsmDtoInterface> result;
+                // if it is a customize overpass request which contain ({{bbox}})
+                // replace it by the coordinates of the current position
+                String format = poiTypeDto.getQuery().contains(BBOX) ? poiTypeDto.getQuery().replace(BBOX, box.osmFormat()) : poiTypeDto.getQuery();
+                if (FlavorUtils.isBus()) {
+                    result = osmProxy.proceed(() -> {
+                        try {
+                            return overpassRestClient.sendRequestBlock(format).execute().body();
+                        } catch (IOException e) {
+                            return null;
                         }
-                    }
-                });
+                    });
+                } else {
+                    result = osmProxy.proceed(() -> {
+                        try {
+                            return overpassRestClient.sendRequest(format).execute().body();
+                        } catch (IOException e) {
+                            return null;
+                        }
+                    });
+                }
 
                 if (result != null) {
-                    OsmDto osmDto = result.getResult();
+                    OsmDtoInterface osmDto = result.getResult();
                     if (osmDto != null) {
                         osmDtos.add(osmDto);
                     } else {
@@ -179,10 +195,16 @@ public class OsmBackend implements Backend {
         }
 
         if (!poiTypes.isEmpty()) {
-            OSMProxy.Result<OsmDto> result = osmProxy.proceed(new OSMProxy.NetworkAction<OsmDto>() {
-                @Override
-                public OsmDto proceed() {
-                    String request = generateOverpassRequest(box, poiTypes);
+            OSMProxy.Result<OsmDtoInterface> result = osmProxy.proceed(() -> {
+                String request = generateOverpassRequest(box, poiTypes);
+                if (FlavorUtils.isBus()) {
+                    try {
+                        return overpassRestClient.sendRequestBlock(request).execute().body();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                } else {
                     try {
                         return overpassRestClient.sendRequest(request).execute().body();
                     } catch (IOException e) {
@@ -190,9 +212,10 @@ public class OsmBackend implements Backend {
                         return null;
                     }
                 }
+
             });
             if (result != null) {
-                OsmDto osmDto = result.getResult();
+                OsmDtoInterface osmDto = result.getResult();
                 if (osmDto != null) {
                     osmDtos.add(osmDto);
                 } else {
@@ -203,6 +226,33 @@ public class OsmBackend implements Backend {
             }
         }
         return osmDtos;
+    }
+
+    @Override
+    public List<OsmDtoInterface> getBusRelationForDisplayInArea(Box box) {
+        List<OsmDtoInterface> osmDtos = new ArrayList<>();
+        Timber.d("Requesting overpass for downloading bus relations");
+
+        OSMProxy.Result<OsmDtoInterface> result = osmProxy.proceed(() -> {
+            try {
+                return overpassRestClient.sendRequest(getBusRelationRequest(box)).execute().body();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        });
+        if (result != null) {
+            OsmDtoInterface dto = result.getResult();
+            if (dto != null) {
+                osmDtos.add(dto);
+            }
+        }
+        return osmDtos;
+    }
+
+    private String getBusRelationRequest(Box box) {
+        String request = "relation[\"route\"=\"bus\"]({{bbox}});out tags;";
+        return request.replace(BBOX, box.osmFormat());
     }
 
     /**
@@ -407,5 +457,56 @@ public class OsmBackend implements Backend {
     @Override
     public List<PoiType> getPoiTypes() {
         return poiAssetLoader.loadPoiTypesByDefault();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<FullOSMRelation> getRelations(String backendIds) {
+        Call<OsmDto> relationCall = osmRestClient.getRelations(backendIds);
+        try {
+            Response<OsmDto> response = relationCall.execute();
+            if (response.isSuccessful()) {
+                OsmDto osmDto = response.body();
+                if (osmDto != null && osmDto.getRelationDtoList() != null) {
+                    List<FullOSMRelation> fullOSMRelations = relationMapper.convertDTOstoRelations(osmDto.getRelationDtoList());
+                    if (fullOSMRelations.size() > 0)
+                        return fullOSMRelations;
+                }
+            }
+        } catch (IOException e) {
+            Timber.e(e, e.getMessage());
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public UpdateResult updateRelation(FullOSMRelation fullOSMRelation, String transactionId) {
+        final OsmDto osmDto = new OsmDto();
+        osmDto.setRelationDtoList(singletonList(relationMapper.convertRelationToDTO(fullOSMRelation, transactionId)));
+
+        Call<ResponseBody> versionCall= osmRestClient.updateRelation(fullOSMRelation.getBackendId(), osmDto);
+
+        try {
+            Response<ResponseBody> response = versionCall.execute();
+            if (response.isSuccessful()) {
+                return new UpdateResult(ModificationStatus.SUCCESS, response.body().string());
+            } else {
+                if (response.code() == 400) {
+                    Timber.e("Couldn't update node, conflicting version");
+                    return new UpdateResult(ModificationStatus.FAILURE_CONFLICT, null);
+                } else if (response.code() == 404) {
+                    Timber.e("Couldn't update node, no existing node found with the id " + fullOSMRelation.getId());
+                    return new UpdateResult(ModificationStatus.FAILURE_NOT_EXISTING, null);
+                } else {
+                    Timber.e("Couldn't update node");
+                    return new UpdateResult(ModificationStatus.FAILURE_UNKNOWN, null);
+                }
+            }
+        } catch (IOException e) {
+            Timber.e(e, e.getMessage());
+        }
+        return new UpdateResult(ModificationStatus.FAILURE_UNKNOWN, null);
     }
 }

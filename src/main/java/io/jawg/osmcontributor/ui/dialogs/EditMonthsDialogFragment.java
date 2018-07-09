@@ -30,7 +30,7 @@ import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 import io.jawg.osmcontributor.R;
-import io.jawg.osmcontributor.model.utils.OpeningMonth;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningMonth;
 import io.jawg.osmcontributor.ui.utils.views.customs.TextViewCheck;
 
 /**

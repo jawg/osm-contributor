@@ -52,11 +52,13 @@ import io.jawg.osmcontributor.ui.activities.PickValueActivity;
 import io.jawg.osmcontributor.ui.activities.SplashScreenActivity;
 import io.jawg.osmcontributor.ui.activities.TypeListActivity;
 import io.jawg.osmcontributor.ui.activities.UploadActivity;
+import io.jawg.osmcontributor.ui.adapters.BusLineAdapter;
 import io.jawg.osmcontributor.ui.adapters.OpeningHoursLinearLayoutAdapter;
 import io.jawg.osmcontributor.ui.adapters.OpeningMonthAdapter;
 import io.jawg.osmcontributor.ui.adapters.ProfileAdapter;
 import io.jawg.osmcontributor.ui.adapters.TagsAdapter;
 import io.jawg.osmcontributor.ui.adapters.binding.AutoCompleteViewBinder;
+import io.jawg.osmcontributor.ui.adapters.binding.BusLinesViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.ConstantViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.OpeningHoursViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.RadioChoiceViewBinder;
@@ -106,6 +108,8 @@ public interface OsmTemplateComponent {
     void inject(OpeningHoursViewBinder b);
 
     void inject(AutoCompleteViewBinder b);
+
+    void inject(BusLinesViewBinder b);
 
     void inject(ShelterChoiceViewBinder b);
 
@@ -164,6 +168,8 @@ public interface OsmTemplateComponent {
     void inject(OpeningHoursLinearLayoutAdapter openingHoursLinearLayoutAdapter);
 
     void inject(TagsAdapter tagsAdapter);
+
+    void inject(BusLineAdapter busLineAdapter);
 
     void inject(PhotoActivity photoActivity);
 
