@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.jawg.osmcontributor.model.utils;
+package io.jawg.osmcontributor.ui.adapters.item.opening;
 
 import java.util.ArrayList;
 import java.util.Arrays;

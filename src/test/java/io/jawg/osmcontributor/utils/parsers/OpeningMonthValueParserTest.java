@@ -25,10 +25,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
 
-import io.jawg.osmcontributor.model.utils.OpeningHours;
-import io.jawg.osmcontributor.model.utils.OpeningMonth;
 import io.jawg.osmcontributor.modules.DaggerOsmTemplateComponent;
 import io.jawg.osmcontributor.modules.OsmTemplateModule;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningHours;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningMonth;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningMonthValueParser;
 
 /**

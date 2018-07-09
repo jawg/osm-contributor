@@ -18,7 +18,7 @@ import timber.log.Timber;
 
 import static io.jawg.osmcontributor.ui.managers.loadPoi.AreasUtils.computeMapAreaOfBox;
 
-public class GetPois extends UseCase {
+public class GetPois extends UseCase<PoiLoadingProgress> {
     private final PoiRepository poiRepository;
     private Box box;
     private boolean refreshData;

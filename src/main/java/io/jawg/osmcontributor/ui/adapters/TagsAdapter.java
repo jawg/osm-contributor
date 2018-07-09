@@ -20,6 +20,7 @@ package io.jawg.osmcontributor.ui.adapters;
 
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.ViewGroup;
 
 import org.greenrobot.eventbus.EventBus;
@@ -28,30 +29,35 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.model.entities.Poi;
+import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplay;
+import io.jawg.osmcontributor.model.entities.relation_save.RelationEdition;
 import io.jawg.osmcontributor.ui.adapters.binding.AutoCompleteViewBinder;
+import io.jawg.osmcontributor.ui.adapters.binding.BusLinesViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.CheckedTagViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.ConstantViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.OpeningHoursViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.RadioChoiceViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.ShelterChoiceViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.TagViewBinder;
-import io.jawg.osmcontributor.ui.adapters.item.SingleTagItem;
-import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.SingleTagItem;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.jawg.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChange;
 import io.jawg.osmcontributor.utils.StringUtils;
 import io.jawg.osmcontributor.utils.edition.PoiChanges;
 
-import static io.jawg.osmcontributor.ui.adapters.item.TagMapper.getTagItems;
+import static io.jawg.osmcontributor.ui.adapters.item.shelter.TagMapper.getTagItems;
 
-public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements CheckedTagViewBinder.OnTagItemChange {
-    private List<TagItem> tagItemList = new ArrayList<>();
+public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements CheckedTagViewBinder.TagItemChangeListener {
+    private List<TagItem> tagItemList;
+    private List<RelationEdition> relationEditions = new ArrayList<>();
     private List<CheckedTagViewBinder> checkedViews = new ArrayList<>();
     private Poi poi;
     private boolean change = false;
@@ -79,6 +85,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         viewBinders.add(new ConstantViewBinder(activity));
         viewBinders.add(new OpeningHoursViewBinder(activity, this));
         viewBinders.add(new RadioChoiceViewBinder(activity, this));
+        viewBinders.add(new BusLinesViewBinder(activity, this, poi.getRelationIds()));
 
         eventBus.register(this);
     }
@@ -198,11 +205,18 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         return result;
     }
 
+    public List<RelationEdition> getChangedRelations() {
+        return relationEditions;
+    }
+
     public boolean isChange() {
         for (TagItem tagItem : tagItemList) {
             if (tagItem.hasChanged()) {
                 return true;
             }
+        }
+        if (relationEditions.size() > 0) {
+            return true;
         }
         return change;
     }
@@ -214,6 +228,18 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                 editTag(tagItem, updatedTag.getValue());
             }
         }
+    }
+
+    @Override
+    public void onRelationForBusUpdated(Pair<RelationDisplay, RelationEdition.RelationModificationType> relationIDAndModification) {
+        //first remove all previous modification made on the relation
+        ListIterator<RelationEdition> iter = relationEditions.listIterator();
+        while (iter.hasNext()) {
+            if (iter.next().getBackendId().equals(relationIDAndModification.first.getBackendId())) {
+                iter.remove();
+            }
+        }
+        relationEditions.add(new RelationEdition(relationIDAndModification.first.getBackendId(), poi, relationIDAndModification.second));
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)

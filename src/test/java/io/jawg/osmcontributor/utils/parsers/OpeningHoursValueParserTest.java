@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import io.jawg.osmcontributor.model.utils.OpeningHours;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningHours;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningHoursValueParser;
 
 /**

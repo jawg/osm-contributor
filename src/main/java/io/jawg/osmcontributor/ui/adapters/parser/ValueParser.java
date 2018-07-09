@@ -18,9 +18,6 @@
  */
 package io.jawg.osmcontributor.ui.adapters.parser;
 
-/**
- * @author Tommy Buonomo on 07/07/16.
- */
 public interface ValueParser<T> {
     T fromValue(String value);
     String toValue(T t);

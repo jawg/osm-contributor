@@ -34,8 +34,8 @@ import javax.inject.Inject;
 
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
-import io.jawg.osmcontributor.model.utils.OpeningHours;
-import io.jawg.osmcontributor.model.utils.OpeningTime;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningHours;
+import io.jawg.osmcontributor.ui.adapters.item.opening.OpeningTime;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningHoursValueParser;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
 import io.jawg.osmcontributor.ui.dialogs.EditDaysDialogFragment;

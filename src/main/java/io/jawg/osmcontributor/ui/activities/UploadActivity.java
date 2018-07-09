@@ -272,6 +272,11 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
             Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
             resultReceived();
         }
+        if (event.getSuccessfullyUpdatedRelationsCount() > 0) {
+            result = getResources().getQuantityString(R.plurals.update_done_relation, event.getSuccessfullyUpdatedRelationsCount(), event.getSuccessfullyUpdatedRelationsCount());
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            resultReceived();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

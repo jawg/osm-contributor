@@ -28,7 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.jawg.osmcontributor.R;
-import io.jawg.osmcontributor.ui.adapters.item.ShelterType;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.ShelterType;
 
 public class ShelterChoiceHolder extends RecyclerView.ViewHolder {
     public View poiTagLayout;

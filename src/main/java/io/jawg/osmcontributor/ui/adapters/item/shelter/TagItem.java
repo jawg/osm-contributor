@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.jawg.osmcontributor.ui.adapters.item;
+package io.jawg.osmcontributor.ui.adapters.item.shelter;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,7 +43,8 @@ public abstract class TagItem {
         NUMBER,                 // Use when tag value is a number (ex: height, floors)
         TEXT,                    // Use by default
         TIME,
-        SHELTER
+        SHELTER,
+        BUS_LINE
     }
 
     public Map<String, String> getValues() {

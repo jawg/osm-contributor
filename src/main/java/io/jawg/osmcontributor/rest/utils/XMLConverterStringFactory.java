@@ -48,21 +48,16 @@ public class XMLConverterStringFactory extends Converter.Factory {
     @Nullable
     @Override
     public Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
-        return new Converter<String, RequestBody>() {
+        return (Converter<String, RequestBody>) value -> new RequestBody() {
+            @Nullable
             @Override
-            public RequestBody convert(final String value) throws IOException {
-                return new RequestBody() {
-                    @Nullable
-                    @Override
-                    public MediaType contentType() {
-                        return MediaType.parse("text/plain; charset=utf-8");
-                    }
+            public MediaType contentType() {
+                return MediaType.parse("text/plain; charset=utf-8");
+            }
 
-                    @Override
-                    public void writeTo(BufferedSink sink) throws IOException {
-                        sink.write(value.getBytes(Charset.forName("UTF-8")));
-                    }
-                };
+            @Override
+            public void writeTo(BufferedSink sink) throws IOException {
+                sink.write(value.getBytes(Charset.forName("UTF-8")));
             }
         };
     }

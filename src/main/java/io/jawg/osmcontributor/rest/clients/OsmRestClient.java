@@ -82,6 +82,16 @@ public interface OsmRestClient {
     Call<OsmDto> getWay(@Query("ways") long id);
 
     /**
+     * Get one or multiple Relations
+     * enter comma separated ids ex: 1223,54564
+     *
+     * @param ids The ids of the relations.
+     * @return The relations.
+     */
+    @GET("relations")
+    Call<OsmDto> getRelations(@Query("relations") String ids);
+
+    /**
      * Get a changeSet and it's discussion from it's id.
      *
      * @param id The id of the changeSet.
@@ -203,6 +213,16 @@ public interface OsmRestClient {
      */
     @PUT("way/{id}")
     Call<ResponseBody> updateWay(@Path("id") String id, @Body OsmDto osmDto);
+
+    /**
+     * Update a FullOSMRelation. Returns a 409 if the version doesn't match.
+     *
+     * @param id     The id of the FullOSMRelation to update.
+     * @param osmDto OsmDto containing a FullOSMRelation.
+     * @return The version of the FullOSMRelation updated.
+     */
+    @PUT("relation/{id}")
+    Call<ResponseBody> updateRelation(@Path("id") String id, @Body OsmDto osmDto);
 
     /**
      * Delete a Node.

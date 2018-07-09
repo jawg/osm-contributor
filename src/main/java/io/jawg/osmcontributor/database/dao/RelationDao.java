@@ -16,33 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.jawg.osmcontributor.ui.adapters.item;
 
-import java.util.HashMap;
-import java.util.Map;
+package io.jawg.osmcontributor.database.dao;
 
-public class SingleTagItem extends TagItem {
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 
-    private SingleTagItem(SingleTagItemBuilder builder) {
-        super(builder);
-    }
+import javax.inject.Inject;
 
-    public static class SingleTagItemBuilder extends TagItemBuilder {
+import io.jawg.osmcontributor.model.entities.relation.FullOSMRelation;
 
-        public SingleTagItemBuilder(String key, String value) {
-            super(key, value);
-        }
-
-        @Override
-        public SingleTagItem build() {
-            return new SingleTagItem(this);
-        }
-    }
-
-    @Override
-    public Map<String, String> getOsmValues() {
-        HashMap<String, String> stringStringHashMap = new HashMap<>();
-        stringStringHashMap.put(key, value);
-        return stringStringHashMap;
+/**
+ * Dao for {@link FullOSMRelation} objects.
+ */
+public class RelationDao extends RuntimeExceptionDao<FullOSMRelation, Long> {
+    @Inject
+    public RelationDao(Dao<FullOSMRelation, Long> dao) {
+        super(dao);
     }
 }

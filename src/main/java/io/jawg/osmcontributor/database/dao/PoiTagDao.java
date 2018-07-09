@@ -78,6 +78,22 @@ public class PoiTagDao extends RuntimeExceptionDao<PoiTag, Long> {
         });
     }
 
+    public List<String> queryForBusWaySuggestions(String search) {
+        return DatabaseHelper.wrapException(() -> {
+            String statement=  queryBuilder().limit(5L)
+                    .selectColumns(PoiTag.VALUE)
+                    .where().like(PoiTag.VALUE, "%"+search+"%")
+                    .and().eq(PoiTag.KEY, "route_ref")
+                    .prepare().getStatement();
+            return queryRaw(statement, new RawRowMapper<String>() {
+                @Override
+                public String mapRow(String[] columnNames, String[] resultColumns) throws SQLException {
+                    return resultColumns[0];
+                }
+            }).getResults();
+        });
+    }
+
     /**
      * Query for all the PoiTag of a given Poi.
      *

@@ -1,4 +1,4 @@
-package io.jawg.osmcontributor.ui.adapters.item;
+package io.jawg.osmcontributor.ui.adapters.item.shelter;
 
 import android.support.annotation.NonNull;
 
@@ -15,9 +15,9 @@ import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
 
 import static io.jawg.osmcontributor.ui.adapters.TagsAutocompleteUtils.getPossibleValuesAsList;
 import static io.jawg.osmcontributor.ui.adapters.TagsAutocompleteUtils.removeDuplicate;
-import static io.jawg.osmcontributor.ui.adapters.item.TagItem.Type.CONSTANT;
-import static io.jawg.osmcontributor.ui.adapters.item.TagItem.Type.SHELTER;
-import static io.jawg.osmcontributor.ui.adapters.item.TagItem.Type.TEXT;
+import static io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem.Type.CONSTANT;
+import static io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem.Type.SHELTER;
+import static io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem.Type.TEXT;
 
 public class TagMapper {
     private Poi poi;
@@ -103,7 +103,7 @@ public class TagMapper {
         String value = poi.getTagsMap().get(key);
         TagItem.Type type = mapType(key, updatable, poiTypeTag.getTagType());
 
-        String valueFormatted = ParserManager.getValue(value, type);
+        boolean supportValue = ParserManager.supportValue(value, type);
 
         boolean display = (poiTypeTag.getShow() != null ? poiTypeTag.getShow() : true) && type != CONSTANT;
         TagItem tagItem = new SingleTagItem.SingleTagItemBuilder(key, value)
@@ -111,7 +111,7 @@ public class TagMapper {
                 .mandatory(!expertMode && poiTypeTag.getMandatory())
                 .values(values)
                 .type(type)
-                .isConform(valueFormatted != null || type == TagItem.Type.NUMBER)
+                .isConform(supportValue || type == TagItem.Type.NUMBER)
                 // Display the tags of the poi that are not in the PoiType
                 .show(expertMode || display)
                 .build();

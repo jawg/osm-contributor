@@ -65,6 +65,7 @@ public class EditPoiManager {
 
     private Application application;
     private PoiManager poiManager;
+    private RelationManager relationManager;
     private PoiNodeRefDao poiNodeRefDao;
     private EventBus eventBus;
     private FirebaseJobDispatcher dispatcher;
@@ -72,9 +73,10 @@ public class EditPoiManager {
     private CheckUserLogged checkUserLogged;
 
     @Inject
-    public EditPoiManager(Application application, PoiManager poiManager, PoiNodeRefDao poiNodeRefDao, EventBus eventBus, FirebaseJobDispatcher dispatcher, SharedPreferences sharedPreferences, CheckUserLogged checkUserLogged) {
+    public EditPoiManager(Application application, PoiManager poiManager, RelationManager relationManager, PoiNodeRefDao poiNodeRefDao, EventBus eventBus, FirebaseJobDispatcher dispatcher, SharedPreferences sharedPreferences, CheckUserLogged checkUserLogged) {
         this.application = application;
         this.poiManager = poiManager;
+        this.relationManager = relationManager;
         this.poiNodeRefDao = poiNodeRefDao;
         this.eventBus = eventBus;
         this.dispatcher = dispatcher;
@@ -87,7 +89,8 @@ public class EditPoiManager {
         Timber.d("please apply poi changes");
         Poi editPoi = poiManager.queryForId(event.getPoiChanges().getId());
 
-        if (editPoi.hasChanges(event.getPoiChanges().getTagsMap())) {
+        // if the poi has some changes on its tags or if some changes should be applied to its relations
+        if (editPoi.hasChanges(event.getPoiChanges().getTagsMap()) || !event.getRelationEditions().isEmpty()) {
 
             editPoi.setOldPoiId(saveOldVersionOfPoi(editPoi));
 
@@ -97,6 +100,7 @@ public class EditPoiManager {
             editPoi.setUpdated(true);
             poiManager.savePoi(editPoi);
             poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
+            relationManager.saveRelationSave(event.getRelationEditions(), editPoi);
             schedulePushJob();
         }
 
@@ -256,11 +260,11 @@ public class EditPoiManager {
                         if (poiTag != null && condition.getValue()
                                 .equalsIgnoreCase(Condition.ExistsValues.TRUE.getValue())) {
                             continue;
-                        // if the value is false and tag doesn't exists
+                            // if the value is false and tag doesn't exists
                         } else if (poiTag == null && condition.getValue()
                                 .equalsIgnoreCase(Condition.ExistsValues.FALSE.getValue())) {
                             continue;
-                        // If none is valid
+                            // If none is valid
                         } else {
                             break;
                         }

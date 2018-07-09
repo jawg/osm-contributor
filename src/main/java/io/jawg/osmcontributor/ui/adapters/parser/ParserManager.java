@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.jawg.osmcontributor.ui.adapters.item.TagItem;
+import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 import io.jawg.osmcontributor.ui.utils.Translator;
 
 /**
@@ -59,19 +59,23 @@ public class ParserManager {
         TextTagParserImpl textParser = new TextTagParserImpl();
         OpeningTimeTagParserImpl openingTimeParserImpl = new OpeningTimeTagParserImpl();
         SingleChoiceTagParserImpl singleChoiceParser = new SingleChoiceTagParserImpl();
+        BusLineTagParserImpl busLineTagParser = new BusLineTagParserImpl();
 
         tagParsers.put(numberParser.getPriority(), numberParser);
         tagParsers.put(autoCompleteParser.getPriority(), autoCompleteParser);
         tagParsers.put(textParser.getPriority(), textParser);
         tagParsers.put(openingTimeParserImpl.getPriority(), openingTimeParserImpl);
         tagParsers.put(singleChoiceParser.getPriority(), singleChoiceParser);
+        tagParsers.put(busLineTagParser.getPriority(), busLineTagParser);
 
         valueParsers.put(singleChoiceParser.getType(), new SingleChoiceValueParserImpl());
         valueParsers.put(numberParser.getType(), new NumberValueParserImpl());
+        valueParsers.put(busLineTagParser.getType(), new BusLineValueParserImpl());
     }
 
     /**
      * Get tag name formated.
+     *
      * @param tagName tag name
      * @return tag name correctly formated
      */
@@ -86,6 +90,7 @@ public class ParserManager {
 
     /**
      * Get tag name formated.
+     *
      * @param tagName tag name
      * @return tag name correctly formated
      */
@@ -94,21 +99,8 @@ public class ParserManager {
     }
 
     @SuppressWarnings("unchecked")
-    public static String getValue(String value, TagItem.Type tagType) {
+    public static boolean supportValue(String value, TagItem.Type tagType) {
         ValueParser valueParser = valueParsers.get(tagType);
-        if (valueParser == null) {
-            if (value == null) {
-                return "";
-            }
-            return value;
-        }
-
-        if (tagParsers.get(valueParser.getPriority()).supports(value)) {
-            return (String) valueParser.fromValue(value);
-        }
-        if (value == null) {
-            return "";
-        }
-        return value;
+        return valueParser == null || tagParsers.get(valueParser.getPriority()).supports(value);
     }
 }

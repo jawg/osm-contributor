@@ -5,15 +5,15 @@ import javax.inject.Inject;
 import io.jawg.osmcontributor.ui.managers.LoginManager;
 import io.jawg.osmcontributor.ui.managers.UseCase;
 import io.jawg.osmcontributor.ui.managers.executor.UIThread;
-import io.jawg.osmcontributor.ui.managers.login.executors.LoginThreadExecutor;
+import io.jawg.osmcontributor.ui.managers.login.executors.PoolThreadExecutor;
 import rx.Observable;
 
-public class CheckUserLogged extends UseCase {
+public class CheckUserLogged extends UseCase<Boolean> {
 
     private final LoginManager loginManager;
 
     @Inject
-    protected CheckUserLogged(LoginThreadExecutor threadExecutor, UIThread postExecutionThread, LoginManager loginManager) {
+    protected CheckUserLogged(PoolThreadExecutor threadExecutor, UIThread postExecutionThread, LoginManager loginManager) {
         super(threadExecutor, postExecutionThread);
         this.loginManager = loginManager;
     }
