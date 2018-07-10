@@ -28,7 +28,7 @@ import java.util.Collection;
 @DatabaseTable(tableName = RelationDisplay.TABLE_NAME)
 public class RelationDisplay {
 
-    public static final String TABLE_NAME = "RELATION-DISPLAY";
+    public static final String TABLE_NAME = "RELATION_DISPLAY";
 
     public static final String ID = "ID";
     public static final String BACKEND_ID = "BACKEND_ID";
@@ -91,7 +91,6 @@ public class RelationDisplay {
         return "RelationDisplay{" +
                 "id=" + id +
                 ", backendId='" + backendId + '\'' +
-                ", tags=" + tags +
                 '}';
     }
 }

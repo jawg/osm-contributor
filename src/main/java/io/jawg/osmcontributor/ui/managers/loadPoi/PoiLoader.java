@@ -311,10 +311,10 @@ public class PoiLoader {
         try {
             TransactionManager.callInTransaction(relationDisplayDao.getConnectionSource(),
                     () -> {
-                        RelationDisplay relaion = relationDisplayDao.createIfNotExists(relationDisplay);
-                        if (relaion != null && relationDisplay.getTags() != null) {
-                            for (RelationDisplayTag relationDisplayTag : relationDisplay.getTags()) {
-                                relationDisplayTag.setRelationDisplay(relationDisplay);
+                        RelationDisplay relation = relationDisplayDao.createIfNotExists(relationDisplay);
+                        if (relation != null && relationDisplay.getTags() != null) {
+                            for (RelationDisplayTag relationDisplayTag : relation.getTags()) {
+                                relationDisplayTag.setRelationDisplay(relation);
                                 relationDisplayTagDao.create(relationDisplayTag);
                             }
                         }

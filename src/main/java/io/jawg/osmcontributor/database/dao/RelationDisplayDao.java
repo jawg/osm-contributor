@@ -39,7 +39,6 @@ public class RelationDisplayDao extends RuntimeExceptionDao<RelationDisplay, Lon
         super(dao);
     }
 
-
     /**
      * Query for all RelationsDisplays by Backend Ids .
      *
@@ -51,6 +50,24 @@ public class RelationDisplayDao extends RuntimeExceptionDao<RelationDisplay, Lon
                 .query());
     }
 
+    /**
+     * Query for a RelationsDisplay by Backend Id .
+     *
+     * @return The RelationDisplay.
+     */
+    public RelationDisplay queryByBackendRelationId(final String relationId) {
+        return DatabaseHelper.wrapException(() -> queryBuilder()
+                 .where().eq(RelationDisplay.BACKEND_ID, relationId)
+                 .queryForFirst());
+    }
+
+    @Override
+    public RelationDisplay createIfNotExists(RelationDisplay data) {
+        if (queryByBackendRelationId(data.getBackendId()) == null) {
+             create(data);
+        }
+        return data;
+    }
 
     /**
      * Query for all RelationsDisplays by their database Ids .
