@@ -21,6 +21,14 @@ public class RelationId {
     @DatabaseField(columnName = RELATION_ID, canBeNull = false)
     private String relationId;
 
+    public RelationId() {
+    }
+
+    public RelationId(String relationId, Poi poi) {
+        this.relationId = relationId;
+        this.poi = poi;
+    }
+
     public Long getId() {
         return id;
     }
@@ -43,5 +51,25 @@ public class RelationId {
 
     public void setPoi(Poi poi) {
         this.poi = poi;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        RelationId that = (RelationId) o;
+
+        return !(id != null ? !id.equals(that.id) : that.id != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

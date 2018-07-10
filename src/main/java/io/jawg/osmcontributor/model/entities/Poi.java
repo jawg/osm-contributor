@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016 eBusiness Information
- *
+ * <p>
  * This file is part of OSM Contributor.
- *
+ * <p>
  * OSM Contributor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * OSM Contributor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.jawg.osmcontributor.model.entities.relation_save.RelationEdition;
 import io.jawg.osmcontributor.utils.StringUtils;
 import io.jawg.osmcontributor.utils.core.MapElement;
 import timber.log.Timber;
@@ -459,6 +460,32 @@ public class Poi implements Cloneable, MapElement {
         }
     }
 
+    public void applyChangesOnRelationList(List<RelationEdition> editions) {
+        for (RelationEdition edition : editions) {
+            switch (edition.getChange()) {
+                case ADD_MEMBER:
+                    if (!isIdInRelationList(edition.getBackendId())) {
+                        getRelationIds().add(new RelationId(edition.getBackendId(), this));
+                    }
+                    break;
+                case REMOVE_MEMBER:
+                    if (isIdInRelationList(edition.getBackendId())) {
+                        getRelationIds().remove(new RelationId(edition.getBackendId(), this));
+                    }
+                    break;
+            }
+        }
+    }
+
+    private boolean isIdInRelationList(String relationId) {
+        for (RelationId id : getRelationIds()) {
+            if (id.getBackendRelationId().equals(relationId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean hasChanges(Map<String, String> tagsMap) {
         if (tags == null) {
             tags = new ArrayList<>();
@@ -531,6 +558,14 @@ public class Poi implements Cloneable, MapElement {
             poiNodeRefsOld.add(poiNodeRefOld);
         }
         poi.setNodeRefs(poiNodeRefsOld);
+
+        List<RelationId> relationIds = new ArrayList<>();
+        for (RelationId relationId : getRelationIds()) {
+            RelationId relationIdOld = new RelationId();
+            relationIdOld.setRelationId(relationId.getBackendRelationId());
+            relationIds.add(relationIdOld);
+        }
+        poi.setRelationIds(relationIds);
 
         return poi;
     }
