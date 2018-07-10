@@ -93,11 +93,18 @@ public class EditPoiManager {
         if (editPoi.hasChanges(event.getPoiChanges().getTagsMap()) || !event.getRelationEditions().isEmpty()) {
 
             editPoi.setOldPoiId(saveOldVersionOfPoi(editPoi));
-
-            //this is the edition of a new poi or we already edited this poi
-            editPoi.applyChanges(event.getPoiChanges().getTagsMap());
-            editPoi.applyChanges(applyConstraints(editPoi));
             editPoi.setUpdated(true);
+
+            if (editPoi.hasChanges(event.getPoiChanges().getTagsMap())){
+                //this is the edition of a new poi or we already edited this poi
+                editPoi.applyChanges(event.getPoiChanges().getTagsMap());
+                editPoi.applyChanges(applyConstraints(editPoi));
+            }
+
+            if (!event.getRelationEditions().isEmpty()){
+                editPoi.applyChangesOnRelationList(event.getRelationEditions());
+            }
+
             poiManager.savePoi(editPoi);
             poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
             relationManager.saveRelationSave(event.getRelationEditions(), editPoi);
