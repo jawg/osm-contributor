@@ -57,16 +57,20 @@ public class RelationDisplayDao extends RuntimeExceptionDao<RelationDisplay, Lon
      */
     public RelationDisplay queryByBackendRelationId(final String relationId) {
         return DatabaseHelper.wrapException(() -> queryBuilder()
-                 .where().eq(RelationDisplay.BACKEND_ID, relationId)
-                 .queryForFirst());
+                .where().eq(RelationDisplay.BACKEND_ID, relationId)
+                .queryForFirst());
     }
 
+    /**
+     * @param data
+     * @return
+     */
     @Override
     public RelationDisplay createIfNotExists(RelationDisplay data) {
         if (queryByBackendRelationId(data.getBackendId()) == null) {
-             create(data);
+            create(data);
         }
-        return data;
+        return queryByBackendRelationId(data.getBackendId());
     }
 
     /**

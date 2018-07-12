@@ -115,6 +115,7 @@ import io.jawg.osmcontributor.model.events.PleaseDeletePoiEvent;
 import io.jawg.osmcontributor.rest.events.SyncDownloadWayEvent;
 import io.jawg.osmcontributor.rest.events.SyncFinishUploadPoiEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncConflictingNodeErrorEvent;
+import io.jawg.osmcontributor.rest.events.error.SyncConflictingRelationErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncDownloadRetrofitErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncNewNodeErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncUnauthorizedEvent;
@@ -1642,6 +1643,11 @@ public class MapFragment extends Fragment {
     public void onSyncConflictingNodeErrorEvent(SyncConflictingNodeErrorEvent event) {
         Toast.makeText(getActivity(), R.string.couldnt_update_node, Toast.LENGTH_LONG).show();
         removePoiMarkerInError(event.getPoiIdInError());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSyncConflictingRelationErrorEvent(SyncConflictingRelationErrorEvent event) {
+        Toast.makeText(getActivity(), R.string.couldnt_update_relation, Toast.LENGTH_LONG).show();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

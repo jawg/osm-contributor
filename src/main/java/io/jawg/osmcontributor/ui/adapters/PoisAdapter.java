@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -35,19 +34,19 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.jawg.osmcontributor.R;
-import io.jawg.osmcontributor.utils.upload.PoiDiffWrapper;
-import io.jawg.osmcontributor.utils.upload.PoiUpdateWrapper;
+import io.jawg.osmcontributor.ui.utils.views.ViewAnimation;
+import io.jawg.osmcontributor.utils.HtmlFontHelper;
 import io.jawg.osmcontributor.utils.helper.ItemTouchHelperViewHolder;
 import io.jawg.osmcontributor.utils.helper.SwipeItemTouchHelperAdapter;
-import io.jawg.osmcontributor.utils.HtmlFontHelper;
-import io.jawg.osmcontributor.ui.utils.views.ViewAnimation;
+import io.jawg.osmcontributor.utils.upload.PoiDiffWrapper;
+import io.jawg.osmcontributor.utils.upload.PoiUpdateWrapper;
 
 public class PoisAdapter extends RecyclerView.Adapter<PoisAdapter.PoiViewHolder> implements SwipeItemTouchHelperAdapter {
 
-    private List<PoiUpdateWrapper> poisWrapper = null;
+    private List<PoiUpdateWrapper> poisWrapper;
     private LayoutInflater inflater;
     private Context context;
     private OnItemRemovedListener OnRemoveListener;
@@ -88,17 +87,14 @@ public class PoisAdapter extends RecyclerView.Adapter<PoisAdapter.PoiViewHolder>
             holder.getExpandBtn().setVisibility(View.VISIBLE);
             populateDiffs(holder, holder.getDetailsWrapper(), poiWrapper);
 
-            View.OnClickListener expendCardnew = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    poiWrapper.setOpen(!poiWrapper.isOpen());
+            View.OnClickListener expendCardnew = v -> {
+                poiWrapper.setOpen(!poiWrapper.isOpen());
 
-                    ViewAnimation.animate(wrapper, poiWrapper.isOpen());
-                    if (poiWrapper.isOpen()) {
-                        holder.getExpandBtn().setImageResource(R.drawable.chevron_up);
-                    } else {
-                        holder.getExpandBtn().setImageResource(R.drawable.chevron_down);
-                    }
+                ViewAnimation.animate(wrapper, poiWrapper.isOpen());
+                if (poiWrapper.isOpen()) {
+                    holder.getExpandBtn().setImageResource(R.drawable.chevron_up);
+                } else {
+                    holder.getExpandBtn().setImageResource(R.drawable.chevron_down);
                 }
             };
 
@@ -119,20 +115,10 @@ public class PoisAdapter extends RecyclerView.Adapter<PoisAdapter.PoiViewHolder>
             holder.getPoiName().setText("");
         }
 
-        holder.getRevertBtn().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                remove(poisWrapper.indexOf(poiWrapper));
-            }
-        });
+        holder.getRevertBtn().setOnClickListener(v -> remove(poisWrapper.indexOf(poiWrapper)));
 
         holder.getCheckbox().setChecked(poiWrapper.isSelected());
-        holder.getCheckbox().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                poiWrapper.setSelected(isChecked);
-            }
-        });
+        holder.getCheckbox().setOnCheckedChangeListener((buttonView, isChecked) -> poiWrapper.setSelected(isChecked));
     }
 
     @Override
@@ -178,6 +164,10 @@ public class PoisAdapter extends RecyclerView.Adapter<PoisAdapter.PoiViewHolder>
             tagChangeViewHolder.getOldTag().setText(Html.fromHtml(poiDiffWrapper.getColoredDetail(false)), TextView.BufferType.SPANNABLE);
 
             holder.getDetailsWrapper().addView(singleLine);
+        }
+        if (poiWrapper.getNewPoi().getRelation_updated()){
+            View relationUpdated = inflater.inflate(R.layout.single_change_bus_line_layout, parent, false);
+            holder.getDetailsWrapper().addView(relationUpdated);
         }
     }
 

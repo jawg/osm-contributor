@@ -64,7 +64,7 @@ public class RelationId {
 
         RelationId that = (RelationId) o;
 
-        return !(id != null ? !id.equals(that.id) : that.id != null);
+        return relationId != null && that.getBackendRelationId() != null && relationId.equals(that.getBackendRelationId());
 
     }
 
