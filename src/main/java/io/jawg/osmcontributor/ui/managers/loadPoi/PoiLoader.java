@@ -313,7 +313,7 @@ public class PoiLoader {
                     () -> {
                         RelationDisplay relation = relationDisplayDao.createIfNotExists(relationDisplay);
                         if (relation != null && relationDisplay.getTags() != null) {
-                            for (RelationDisplayTag relationDisplayTag : relation.getTags()) {
+                            for (RelationDisplayTag relationDisplayTag : relationDisplay.getTags()) {
                                 relationDisplayTag.setRelationDisplay(relation);
                                 relationDisplayTagDao.create(relationDisplayTag);
                             }

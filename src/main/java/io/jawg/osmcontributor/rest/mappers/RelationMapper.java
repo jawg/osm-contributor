@@ -99,6 +99,7 @@ public class RelationMapper {
         relationDto.setTagsDtoList(tagDtos);
         relationDto.setId(fullOSMRelation.getBackendId());
         relationDto.setChangeset(changeSetId);
+        relationDto.setVersion(Integer.valueOf(fullOSMRelation.getVersion()));
 
         return relationDto;
     }

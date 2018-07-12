@@ -19,32 +19,16 @@
 
 package io.jawg.osmcontributor.model.entities.relation;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
-@DatabaseTable(tableName = RelationMember.TABLE_NAME)
 public class RelationMember {
-    public static final String TABLE_NAME = "RELATION_MEMBER";
 
-    public static final String ID = "ID";
-    public static final String TYPE = "TYPE";
-    public static final String REF = "REF";
-    public static final String ROLE = "ROLE";
-    public static final String RELATION_ID = "RELATION_ID";
-
-    @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
 
-    @DatabaseField(columnName = TYPE, canBeNull = false)
     private String type;
 
-    @DatabaseField(columnName = REF, canBeNull = false)
     private Long ref;
 
-    @DatabaseField(columnName = ROLE)
     private String role;
 
-    @DatabaseField(foreign = true, columnName = RELATION_ID, canBeNull = false)
     private FullOSMRelation fullOSMRelation;
 
     public String getType() {
@@ -93,6 +77,18 @@ public class RelationMember {
         add.setRole("platform");
         add.setType("node");
         return add;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        return ref.equals(((RelationMember) o).getRef());
     }
 
 }

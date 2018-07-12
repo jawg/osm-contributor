@@ -68,8 +68,8 @@
         <item quantity="one">%1$s points updated on OSM.</item>
         <item quantity="other">%1$s points updated on OSM.</item>
     </plurals><plurals name="update_done_relation">
-        <item quantity="one">%1$s fullOSMRelation updated on OSM.</item>
-        <item quantity="other">%1$s fullOSMRelations updated on OSM.</item>
+        <item quantity="one">%1$s bus relation updated on OSM.</item>
+        <item quantity="other">%1$s bus relations updated on OSM.</item>
     </plurals>
     <plurals name="delete_done">
         <item quantity="one">%1$s points deleted on OSM.</item>
@@ -86,6 +86,7 @@
     <string name="couldnt_connect_retrofit">Couldn\’t add/update. Check your login/password in your preferences.</string>
     <string name="couldnt_create_node">There was an error during creation, your changes have been reverted.</string>
     <string name="couldnt_update_node">There was an error during the update, your changes have been reverted.</string>
+    <string name="couldnt_update_relation">There was an error during the update. Bus routes have been ignored</string>
     <string name="couldnt_download_retrofit">Couldn\’t download POIs. Check your connectivity.</string>
     <string name="couldnt_upload_retrofit">Couldn\’t upload POIs. Check your connectivity.</string>
     <string name="edit_poi_position">Change Poi position</string>

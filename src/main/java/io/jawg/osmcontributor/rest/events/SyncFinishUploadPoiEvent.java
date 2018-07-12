@@ -23,13 +23,11 @@ public class SyncFinishUploadPoiEvent {
     private int successfullyAddedPoisCount;
     private int successfullyUpdatedPoisCount;
     private int successfullyDeletedPoisCount;
-    private int successfullyUpdatedRelationsCount;
 
-    public SyncFinishUploadPoiEvent(int successfullyAddedPoisCount, int successfullyUpdatedPoisCount, int successfullyDeletedPoisCount, int successfullyUpdatedRelationsCount) {
+    public SyncFinishUploadPoiEvent(int successfullyAddedPoisCount, int successfullyUpdatedPoisCount, int successfullyDeletedPoisCount) {
         this.successfullyAddedPoisCount = successfullyAddedPoisCount;
         this.successfullyUpdatedPoisCount = successfullyUpdatedPoisCount;
         this.successfullyDeletedPoisCount = successfullyDeletedPoisCount;
-        this.successfullyUpdatedRelationsCount = successfullyUpdatedRelationsCount;
     }
 
     public int getSuccessfullyAddedPoisCount() {
@@ -44,7 +42,4 @@ public class SyncFinishUploadPoiEvent {
         return successfullyDeletedPoisCount;
     }
 
-    public int getSuccessfullyUpdatedRelationsCount() {
-        return successfullyUpdatedRelationsCount;
-    }
 }

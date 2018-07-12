@@ -19,61 +19,29 @@
 
 package io.jawg.osmcontributor.model.entities.relation;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-@DatabaseTable(tableName = FullOSMRelation.TABLE_NAME)
 public class FullOSMRelation {
 
-    public static final String TABLE_NAME = "RELATION";
-
-    public static final String ID = "ID";
-    public static final String CHANGESET = "CHANGESET";
-    public static final String BACKEND_ID = "BACKEND_ID";
-    public static final String NAME = "NAME";
-    public static final String VERSION = "VERSION";
-    public static final String UPDATE_DATE = "UPDATE_DATE";
-    public static final String UPDATED = "UPDATED";
-    public static final String RELATION_CENTER = "RELATION_CENTER";
-    public static final String RELATION_MEMBERS = "RELATION_MEMBERS";
-    public static final String RELATION_TAGS = "RELATION_TAGS";
-
-
-    /**
-     * Common attributes of a relation
-     */
-
-    @DatabaseField(generatedId = true, columnName = ID)
     private Long id;
 
-    @DatabaseField(columnName = BACKEND_ID)
     private String backendId;
 
-    @DatabaseField(columnName = VERSION)
     private String version = "1";
 
-    @DatabaseField(columnName = NAME)
     private String name;
 
-    @DatabaseField(columnName = UPDATE_DATE)
     private DateTime updateDate;
 
-    @DatabaseField(columnName = CHANGESET)
     private String changeset;
 
-    @ForeignCollectionField(columnName = RELATION_MEMBERS)
     private Collection<RelationMember> members = new ArrayList<>();
 
-    @ForeignCollectionField(columnName = RELATION_TAGS)
     private Collection<RelationTag> tags = new ArrayList<>();
 
-    @DatabaseField(columnName = UPDATED, canBeNull = false)
     private Boolean updated;
 
     @Override

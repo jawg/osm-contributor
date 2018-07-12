@@ -84,9 +84,6 @@ public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, RelationId.class);
             TableUtils.createTable(connectionSource, RelationDisplay.class);
             TableUtils.createTable(connectionSource, RelationDisplayTag.class);
-            TableUtils.createTable(connectionSource, FullOSMRelation.class);
-            TableUtils.createTable(connectionSource, RelationMember.class);
-            TableUtils.createTable(connectionSource, RelationTag.class);
             TableUtils.createTable(connectionSource, RelationEdition.class);
         } catch (SQLException e) {
             Timber.e(e, "Error while creating tables");
@@ -158,9 +155,6 @@ public class OsmSqliteOpenHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, RelationId.class, true);
             TableUtils.dropTable(connectionSource, RelationDisplay.class, true);
             TableUtils.dropTable(connectionSource, RelationDisplayTag.class, true);
-            TableUtils.dropTable(connectionSource, FullOSMRelation.class, true);
-            TableUtils.dropTable(connectionSource, RelationMember.class, true);
-            TableUtils.dropTable(connectionSource, RelationTag.class, true);
             TableUtils.dropTable(connectionSource, RelationEdition.class, true);
         } catch (SQLException e) {
             Timber.e(e, "Error while creating tables");

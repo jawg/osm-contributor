@@ -31,7 +31,7 @@ public class OsmAnswers {
         Answers.getInstance()
                 // Create an event for creation of POI.
                 .logCustom(new CustomEvent(event)
-                .putCustomAttribute("Type", poiType));
+                        .putCustomAttribute("Type", poiType));
     }
 
     public static void remotePoiAction(String poiType, String action) {
@@ -57,14 +57,18 @@ public class OsmAnswers {
                         .putCustomAttribute("Type", poiType));
     }
 
+    public static void remoteRelationAction() {
+        Answers.getInstance()
+                // Create an event for modification of bus line
+                .logCustom(new CustomEvent("Relation (bus line) updated"));
+    }
+
     public static void visitedActivity(String activity) {
         Answers.getInstance()
                 // Create an event for creation of POI.
                 .logCustom(new CustomEvent("Pages visitées")
                         .putCustomAttribute("Page", activity));
     }
-
-
 
 
 }
