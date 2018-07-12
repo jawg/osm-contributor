@@ -52,6 +52,7 @@ public class Poi implements Cloneable, MapElement {
     public static final String UPDATE_DATE = "UPDATE_DATE";
     public static final String VISIBLE = "VISIBLE";
     public static final String UPDATED = "UPDATED";
+    public static final String RELATION_UPDATED = "RELATION_UPDATED";
     public static final String WAY = "WAY";
     public static final String TO_DELETE = "TO_DELETE";
     public static final String LEVEL = "LEVEL";
@@ -109,6 +110,9 @@ public class Poi implements Cloneable, MapElement {
 
     @DatabaseField(columnName = UPDATED, canBeNull = false)
     private Boolean updated;
+
+    @DatabaseField(columnName = RELATION_UPDATED, canBeNull = false)
+    private Boolean relation_updated = false;
 
     @DatabaseField(columnName = WAY, canBeNull = false)
     private Boolean way = false;
@@ -211,6 +215,14 @@ public class Poi implements Cloneable, MapElement {
         this.updated = updated;
     }
 
+    public Boolean getRelation_updated() {
+        return relation_updated;
+    }
+
+    public void setRelation_updated(Boolean relation_updated) {
+        this.relation_updated = relation_updated;
+    }
+
     public Boolean getWay() {
         return way;
     }
@@ -286,7 +298,6 @@ public class Poi implements Cloneable, MapElement {
     public void setRelationIds(Collection<RelationId> relationIds) {
         this.relationIds = relationIds;
     }
-
 
     //fill levels set if there isn't any levels adding level 0
     private void initLevel() {

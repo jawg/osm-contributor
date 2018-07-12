@@ -18,6 +18,7 @@
  */
 package io.jawg.osmcontributor.rest;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 
 import org.simpleframework.xml.convert.AnnotationStrategy;
@@ -40,7 +41,10 @@ public class CommonSyncModule {
 
     @Provides
     OkHttpClient getOkHttpClient(AuthenticationRequestInterceptor interceptor) {
-        return new OkHttpClient().newBuilder().authenticator(interceptor).build();
+        return new OkHttpClient().newBuilder()
+                .authenticator(interceptor)
+                .addInterceptor(new StethoInterceptor())
+                .build();
     }
 
     @Provides

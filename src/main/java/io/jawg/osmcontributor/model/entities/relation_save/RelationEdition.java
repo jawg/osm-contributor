@@ -21,7 +21,10 @@ package io.jawg.osmcontributor.model.entities.relation_save;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.Objects;
+
 import io.jawg.osmcontributor.model.entities.Poi;
+import io.jawg.osmcontributor.model.entities.relation.RelationMember;
 
 /**
  * The model is used to save changes made to the relations containing a poi
@@ -40,7 +43,7 @@ public class RelationEdition {
     public static final String POI_ID = "POI_ID";
     public static final String MODIFICATION = "MODIFICATION";
 
-    public RelationEdition(){
+    public RelationEdition() {
         //empty
     }
 
@@ -65,7 +68,7 @@ public class RelationEdition {
     @DatabaseField(columnName = BACKEND_ID)
     private String backendId;
 
-    @DatabaseField(foreign = true, columnName = POI_ID, canBeNull = false)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1, columnName = POI_ID, canBeNull = false)
     private Poi poi;
 
     @DatabaseField(columnName = MODIFICATION)
@@ -102,5 +105,30 @@ public class RelationEdition {
     public void setChange(RelationModificationType change) {
         this.change = change;
     }
+
+    @Override
+    public int hashCode() {
+        return backendId.charAt(backendId.length()-1);
+    }
+
+    /**
+     * Regardless of the modification type
+     * Objects are equals if they have same poi and same backend id
+     */
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        RelationEdition thatRelationEdition = (RelationEdition) o;
+
+        return poi.equals(thatRelationEdition.getPoi()) && backendId.equals(thatRelationEdition.getBackendId());
+    }
+
 }
 

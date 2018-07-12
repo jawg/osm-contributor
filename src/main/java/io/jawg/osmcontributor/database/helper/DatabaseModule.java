@@ -134,21 +134,6 @@ public class DatabaseModule {
     }
 
     @Provides
-    Dao<FullOSMRelation, Long> getRelationDao(OsmSqliteOpenHelper helper) {
-        return createDao(helper, FullOSMRelation.class);
-    }
-
-    @Provides
-    Dao<RelationMember, Long> getRelationMemberDao(OsmSqliteOpenHelper helper) {
-        return createDao(helper, RelationMember.class);
-    }
-
-    @Provides
-    Dao<RelationTag, Long> getRelationTagDao(OsmSqliteOpenHelper helper) {
-        return createDao(helper, RelationTag.class);
-    }
-
-    @Provides
     Dao<RelationEdition, Long> getRelationSaveDao(OsmSqliteOpenHelper helper) {
         return createDao(helper, RelationEdition.class);
     }

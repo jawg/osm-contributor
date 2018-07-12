@@ -21,28 +21,14 @@
 package io.jawg.osmcontributor.model.entities.relation;
 
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
-@DatabaseTable(tableName = RelationTag.TABLE_NAME)
 public class RelationTag {
-    public static final String TABLE_NAME = "RELATION_TAG";
 
-    public static final String ID = "ID";
-    public static final String KEY = "KEY";
-    public static final String VALUE = "VALUE";
-    public static final String RELATION_ID = "RELATION_ID";
-
-    @DatabaseField(columnName = ID, generatedId = true, canBeNull = false)
     private Long id;
 
-    @DatabaseField(columnName = KEY, canBeNull = false)
     private String key;
 
-    @DatabaseField(columnName = VALUE)
     private String value;
 
-    @DatabaseField(foreign = true, columnName = RELATION_ID, canBeNull = false)
     private FullOSMRelation fullOSMRelation;
 
     public Long getId() {

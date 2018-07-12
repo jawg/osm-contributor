@@ -84,6 +84,11 @@ public class EditPoiManager {
         this.checkUserLogged = checkUserLogged;
     }
 
+    /**
+     * Set poi updated when changes made to pois tags
+     * Set poi relation updated when changes to the relations ids
+     * @param event
+     */
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseApplyPoiChanges(PleaseApplyPoiChanges event) {
         Timber.d("please apply poi changes");
@@ -93,21 +98,22 @@ public class EditPoiManager {
         if (editPoi.hasChanges(event.getPoiChanges().getTagsMap()) || !event.getRelationEditions().isEmpty()) {
 
             editPoi.setOldPoiId(saveOldVersionOfPoi(editPoi));
-            editPoi.setUpdated(true);
 
-            if (editPoi.hasChanges(event.getPoiChanges().getTagsMap())){
+            if (editPoi.hasChanges(event.getPoiChanges().getTagsMap())) {
                 //this is the edition of a new poi or we already edited this poi
                 editPoi.applyChanges(event.getPoiChanges().getTagsMap());
                 editPoi.applyChanges(applyConstraints(editPoi));
+                editPoi.setUpdated(true);
             }
 
-            if (!event.getRelationEditions().isEmpty()){
+            if (!event.getRelationEditions().isEmpty()) {
                 editPoi.applyChangesOnRelationList(event.getRelationEditions());
+                editPoi.setRelation_updated(true);
             }
 
             poiManager.savePoi(editPoi);
             poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
-            relationManager.saveRelationSave(event.getRelationEditions(), editPoi);
+            relationManager.saveRelationEditions(event.getRelationEditions(), editPoi);
             schedulePushJob();
         }
 

@@ -23,6 +23,7 @@ import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.SelectArg;
+import com.j256.ormlite.stmt.Where;
 
 import org.joda.time.DateTime;
 
@@ -139,16 +140,40 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
      * @return The list of updated POIs.
      */
     public List<Poi> queryForAllUpdated() {
-        return DatabaseHelper.wrapException(new Callable<List<Poi>>() {
-            @Override
-            public List<Poi> call() throws Exception {
-                return queryBuilder()
-                        .where().isNotNull(Poi.BACKEND_ID)
-                        .and().eq(Poi.UPDATED, true)
-                        .and().eq(Poi.TO_DELETE, false)
-                        .query();
-            }
+        return DatabaseHelper.wrapException(() -> {
+            Where<Poi, Long> where = queryBuilder().where();
+            return where.and(
+                    where.isNotNull(Poi.BACKEND_ID),
+                    where.or(where.eq(Poi.UPDATED, true), where.eq(Poi.RELATION_UPDATED, true)),
+                    where.eq(Poi.TO_DELETE, false))
+                    .query();
         });
+    }
+
+    /**
+     * Query for all updated pois and NOT new POIs.
+     *
+     * @return The list of updated POIs.
+     */
+    public List<Poi> queryForAllUpdatedPois() {
+        return DatabaseHelper.wrapException(() -> queryBuilder()
+                .where().isNotNull(Poi.BACKEND_ID)
+                .and().eq(Poi.UPDATED, true)
+                .and().eq(Poi.TO_DELETE, false)
+                .query());
+    }
+
+ /**
+     * Query for all updated relations of pois and NOT new POIs.
+     *
+     * @return The list of updated POIs.
+     */
+    public List<Poi> queryForAllUpdatedPoisRelations() {
+        return DatabaseHelper.wrapException(() -> queryBuilder()
+                .where().isNotNull(Poi.BACKEND_ID)
+                .and().eq(Poi.RELATION_UPDATED, true)
+                .and().eq(Poi.TO_DELETE, false)
+                .query());
     }
 
     /**

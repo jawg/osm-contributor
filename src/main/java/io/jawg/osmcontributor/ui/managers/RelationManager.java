@@ -26,7 +26,7 @@ import javax.inject.Inject;
 
 import io.jawg.osmcontributor.database.dao.RelationDisplayDao;
 import io.jawg.osmcontributor.database.dao.RelationDisplayTagDao;
-import io.jawg.osmcontributor.database.dao.RelationSaveDao;
+import io.jawg.osmcontributor.database.dao.RelationEditionDao;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.RelationId;
 import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplay;
@@ -40,12 +40,13 @@ public class RelationManager {
 
     private RelationDisplayDao relationDisplayDao;
     private RelationDisplayTagDao relationDisplayTagDao;
-    private RelationSaveDao relationSaveDao;
+    private RelationEditionDao relationEditionDao;
+
 
     @Inject
-    public RelationManager(RelationDisplayDao relationDisplayDao, RelationDisplayTagDao relationDisplayTagDao, RelationSaveDao relationSaveDao) {
+    public RelationManager(RelationDisplayDao relationDisplayDao, RelationDisplayTagDao relationDisplayTagDao, RelationEditionDao relationEditionDao) {
         this.relationDisplayDao = relationDisplayDao;
-        this.relationSaveDao = relationSaveDao;
+        this.relationEditionDao = relationEditionDao;
         this.relationDisplayTagDao = relationDisplayTagDao;
     }
 
@@ -68,12 +69,12 @@ public class RelationManager {
      * Save the changes made to the relations associated to a poi
      *
      * @param relationEditions the list of changes
-     * @param poi           the poi
+     * @param poi              the poi
      */
-    public void saveRelationSave(List<RelationEdition> relationEditions, Poi poi) {
-        for (RelationEdition re : relationEditions) {
-            re.setPoi(poi);
-            relationSaveDao.create(re);
+    public void saveRelationEditions(List<RelationEdition> relationEditions, Poi poi) {
+        for (RelationEdition relationEdition : relationEditions) {
+            relationEdition.setPoi(poi);
+            relationEditionDao.create(relationEdition);
         }
     }
 
@@ -88,24 +89,11 @@ public class RelationManager {
         );
     }
 
-
-    /* @Inject
-    public RelationManager(RelationDao relationDao,
-                           RelationMemberDao relationMemberDao, DatabaseHelper databaseHelper) {
-        this.relationDao = relationDao;
-        this.relationMemberDao = relationMemberDao;
-
-        this.databaseHelper = databaseHelper;
-
-    }*/
-
-    // ********************************
-    // ************ Events ************
-    // ********************************
-
-
-    // ********************************
-    // ************ public ************
-    // ********************************
-
+    /**
+     * delete the relation edition objects
+     * @param relationEditions list of editions
+     */
+    public void deleteFinishedEditions(List<RelationEdition> relationEditions) {
+        relationEditionDao.delete(relationEditions);
+    }
 }

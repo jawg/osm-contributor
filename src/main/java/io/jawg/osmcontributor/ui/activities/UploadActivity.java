@@ -55,6 +55,7 @@ import io.jawg.osmcontributor.model.events.PleaseRevertPoiNodeRefEvent;
 import io.jawg.osmcontributor.model.events.PoisToUpdateLoadedEvent;
 import io.jawg.osmcontributor.rest.events.PleaseUploadPoiChangesByIdsEvent;
 import io.jawg.osmcontributor.rest.events.SyncFinishUploadPoiEvent;
+import io.jawg.osmcontributor.rest.events.SyncFinishUploadRelationEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncConflictingNodeErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncConnectionLostErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncNewNodeErrorEvent;
@@ -272,6 +273,12 @@ public class UploadActivity extends AppCompatActivity implements PoisAdapter.OnI
             Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
             resultReceived();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void SyncFinishUploadRelationEvent(SyncFinishUploadRelationEvent event) {
+        String result;
+
         if (event.getSuccessfullyUpdatedRelationsCount() > 0) {
             result = getResources().getQuantityString(R.plurals.update_done_relation, event.getSuccessfullyUpdatedRelationsCount(), event.getSuccessfullyUpdatedRelationsCount());
             Toast.makeText(this, result, Toast.LENGTH_SHORT).show();

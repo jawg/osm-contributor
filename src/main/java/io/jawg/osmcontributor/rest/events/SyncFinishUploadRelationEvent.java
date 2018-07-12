@@ -16,22 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
  */
+package io.jawg.osmcontributor.rest.events;
 
-package io.jawg.osmcontributor.database.dao;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
+public class SyncFinishUploadRelationEvent {
+    private int successfullyUpdatedRelationsCount;
 
-import javax.inject.Inject;
+    public SyncFinishUploadRelationEvent(int successfullyUpdatedRelationsCount) {
+        this.successfullyUpdatedRelationsCount = successfullyUpdatedRelationsCount;
+    }
 
-import io.jawg.osmcontributor.model.entities.relation.FullOSMRelation;
-
-/**
- * Dao for {@link FullOSMRelation} objects.
- */
-public class RelationDao extends RuntimeExceptionDao<FullOSMRelation, Long> {
-    @Inject
-    public RelationDao(Dao<FullOSMRelation, Long> dao) {
-        super(dao);
+    public int getSuccessfullyUpdatedRelationsCount() {
+        return successfullyUpdatedRelationsCount;
     }
 }
