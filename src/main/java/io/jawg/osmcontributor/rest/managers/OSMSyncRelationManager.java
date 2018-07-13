@@ -90,11 +90,8 @@ public class OSMSyncRelationManager implements SyncRelationManager {
                         case ADD_MEMBER:
                             if (editedRelation.getPoi() != null && editedRelation.getPoi().getBackendId() != null &&
                                     !isPoiInRelationMemberList(fullOSMRelation.getMembers(), editedRelation.getPoi())) {
-                                Log.e(TAG, "applyChangesToRelations: " );
-                                fullOSMRelation.getMembers().add(
-                                        RelationMember.createBusStop(Long.valueOf(editedRelation.getPoi().getBackendId())));
-                            } else {
-                                //this case should not happen
+                                fullOSMRelation.getMembers().add(RelationMember.createBusStop(Long.valueOf(editedRelation.getPoi().getBackendId())));
+                            } else { //this case should not happen
                                 Timber.e(TAG, "While editig relation, the poi with id %s was already in the relation", editedRelation.getPoi().getBackendId());
                             }
                             break;
@@ -102,12 +99,9 @@ public class OSMSyncRelationManager implements SyncRelationManager {
                             removeMemberFromList(fullOSMRelation.getMembers(), editedRelation.getPoi());
                             break;
                     }
-
                     editedOsmRelations.add(fullOSMRelation);
                 }
-
             }
-
         }
         return editedOsmRelations;
     }
@@ -115,8 +109,8 @@ public class OSMSyncRelationManager implements SyncRelationManager {
 
     private boolean isPoiInRelationMemberList(Collection<RelationMember> members, Poi poi) {
         for (RelationMember m : members) {
-            if (m.getRef() != null && poi.getBackendId() != null && m.getRef().equals(Long.valueOf(poi.getBackendId()))){
-                Log.e(TAG, "isPoiInRelationMemberList: " );
+            if (m.getRef() != null && poi.getBackendId() != null && m.getRef().equals(Long.valueOf(poi.getBackendId()))) {
+                Log.e(TAG, "isPoiInRelationMemberList: ");
                 return true;
             }
 
@@ -127,7 +121,7 @@ public class OSMSyncRelationManager implements SyncRelationManager {
     private void removeMemberFromList(Collection<RelationMember> members, Poi poi) {
         Iterator<RelationMember> iterator = members.iterator();
         while (iterator.hasNext()) {
-            if (poi.getBackendId()!= null && iterator.next().getRef().equals(Long.valueOf(poi.getBackendId()))) {
+            if (poi.getBackendId() != null && iterator.next().getRef().equals(Long.valueOf(poi.getBackendId()))) {
                 iterator.remove();
                 break;
             }

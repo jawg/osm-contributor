@@ -206,6 +206,7 @@ public class PoiDao extends RuntimeExceptionDao<Poi, Long> {
                 return queryBuilder()
                         .where()
                         .eq(Poi.UPDATED, true)
+                        .or().eq(Poi.RELATION_UPDATED, true)
                         .or().eq(Poi.TO_DELETE, true)
                         .countOf();
             }
