@@ -145,7 +145,7 @@ public class OSMSyncWayManager implements SyncWayManager {
             if (poiNodeRef != null) {
                 poi.setLatitude(poiNodeRef.getLatitude());
                 poi.setLongitude(poiNodeRef.getLongitude());
-                poi.setUpdated(true);
+                poi.setDetailsUpdated(true);
 
                 poiNodeRef.setUpdated(false);
                 Long oldId = poiNodeRef.getOldPoiId();

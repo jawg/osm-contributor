@@ -101,7 +101,6 @@ public class BitmapHandler {
         icons.put("wilderness_hut", R.drawable.alpinehut);
         icons.put("ship", R.drawable.sailing);
         icons.put("music_venue", R.drawable.music);
-        icons.put("music_venue", R.drawable.music);
         icons.put("nursing_home", R.drawable.hotel2);
         icons.put("optician", R.drawable.opticians);
         icons.put("viewpoint", R.drawable.photo);
@@ -120,7 +119,6 @@ public class BitmapHandler {
         icons.put("tomb", R.drawable.memorial);
         icons.put("travel_agency", R.drawable.aerodrome);
         icons.put("video", R.drawable.video_rental);
-        icons.put("waste_basket", R.drawable.waste_bin);
         icons.put("waste_basket", R.drawable.waste_bin);
         icons.put("artwork", R.drawable.art_gallery);
         icons.put("aerodrome", R.drawable.aerodrome);

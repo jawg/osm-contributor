@@ -95,15 +95,16 @@ public class EditPoiManager {
         Poi editPoi = poiManager.queryForId(event.getPoiChanges().getId());
 
         // if the poi has some changes on its tags or if some changes should be applied to its relations
-        if (editPoi.hasChanges(event.getPoiChanges().getTagsMap()) || !event.getRelationEditions().isEmpty()) {
+        boolean poiHasChanges = editPoi.hasChanges(event.getPoiChanges().getTagsMap());
+        if (poiHasChanges || !event.getRelationEditions().isEmpty()) {
 
             editPoi.setOldPoiId(saveOldVersionOfPoi(editPoi));
 
-            if (editPoi.hasChanges(event.getPoiChanges().getTagsMap())) {
+            if (poiHasChanges) {
                 //this is the edition of a new poi or we already edited this poi
                 editPoi.applyChanges(event.getPoiChanges().getTagsMap());
                 editPoi.applyChanges(applyConstraints(editPoi));
-                editPoi.setUpdated(true);
+                editPoi.setDetailsUpdated(true);
             }
 
             if (!event.getRelationEditions().isEmpty()) {
@@ -129,7 +130,7 @@ public class EditPoiManager {
 
         editPoi.setLatitude(event.getPoiPosition().getLatitude());
         editPoi.setLongitude(event.getPoiPosition().getLongitude());
-        editPoi.setUpdated(true);
+        editPoi.setDetailsUpdated(true);
         poiManager.savePoi(editPoi);
         poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
         schedulePushJob();
@@ -158,7 +159,7 @@ public class EditPoiManager {
     public void onPleaseCreatePoiEvent(PleaseCreatePoiEvent event) {
         Timber.d("Please create poi");
         Poi poi = event.getPoi();
-        poi.setUpdated(true);
+        poi.setDetailsUpdated(true);
         poi.applyChanges(event.getPoiChanges().getTagsMap());
         poi.applyChanges(applyConstraints(poi));
         poiManager.savePoi(poi);
@@ -206,7 +207,7 @@ public class EditPoiManager {
         }
 
         poi.setTags(defaultTags);
-        poi.setUpdated(true);
+        poi.setDetailsUpdated(true);
 
         poiManager.savePoi(poi);
         poiManager.updatePoiTypeLastUse(event.getPoiType().getId());
