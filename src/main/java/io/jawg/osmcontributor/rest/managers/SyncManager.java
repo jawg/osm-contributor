@@ -19,13 +19,15 @@
 package io.jawg.osmcontributor.rest.managers;
 
 import android.app.Application;
+import android.util.Pair;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.w3c.dom.ls.LSException;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +43,7 @@ import io.jawg.osmcontributor.database.events.InitDbEvent;
 import io.jawg.osmcontributor.model.entities.Note;
 import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.PoiType;
+import io.jawg.osmcontributor.model.entities.RelationId;
 import io.jawg.osmcontributor.model.entities.relation.FullOSMRelation;
 import io.jawg.osmcontributor.model.entities.relation_save.RelationEdition;
 import io.jawg.osmcontributor.model.events.PoiTypesLoaded;
@@ -289,12 +292,12 @@ public class SyncManager {
 
             if (changeSetId != null) {
                 successfullyAddedPoisCount = remoteAddPois(newPois, changeSetId);
-                //successfullyUpdatedPoisCount = remoteUpdatePois(updatedPois, changeSetId);
+                successfullyUpdatedPoisCount = remoteUpdatePois(updatedPois, changeSetId);
                 successfullyDeletedPoisCount = remoteDeletePois(toDeletePois, changeSetId);
             }
             success = changeSetId != null
                     && successfullyAddedPoisCount == newPois.size()
-                    //   && successfullyUpdatedPoisCount == updatedPois.size()
+                    && successfullyUpdatedPoisCount == updatedPois.size()
                     && successfullyDeletedPoisCount == toDeletePois.size();
         }
         bus.post(new SyncFinishUploadPoiEvent(successfullyAddedPoisCount, successfullyUpdatedPoisCount, successfullyDeletedPoisCount));
@@ -303,11 +306,11 @@ public class SyncManager {
     }
 
     private boolean remoteUpdateRelationsInTransaction(String changeSetId, String comment) {
-        //this request to the database has to be done after the other operations on the pois are done
+        //this request to the database has to be done after the previous operations on the pois are done
         List<RelationEdition> relationEditions = getRelationEditions(poiDao.queryForAllUpdatedPoisRelations());
         List<RelationEdition> filteredRelationEditions = filterForDuplicateOperations(relationEditions);
         List<FullOSMRelation> updatedFullOSMRelations = downloadRelationsToUpdate(filteredRelationEditions);
-
+        List<Pair<RelationEdition, FullOSMRelation>> editions = getRelationEditionList(filteredRelationEditions, updatedFullOSMRelations);
         boolean success = true;
         int successfullyUpdatedRelationsCount = 0;
 
@@ -321,13 +324,11 @@ public class SyncManager {
             }
 
             if (changeSetId != null) {
-                successfullyUpdatedRelationsCount = remoteUpdateRelations(updatedFullOSMRelations, changeSetId);
+                successfullyUpdatedRelationsCount = remoteUpdateRelations(editions, changeSetId);
             }
             success = changeSetId != null && successfullyUpdatedRelationsCount == updatedFullOSMRelations.size();
         }
         bus.post(new SyncFinishUploadRelationEvent(successfullyUpdatedRelationsCount));
-
-        cleanRelationEditions(relationEditions);
 
         return success;
     }
@@ -340,14 +341,14 @@ public class SyncManager {
         return new ArrayList<>(uniqueEditions);
     }
 
-    private void cleanRelationEditions(List<RelationEdition> relationEditions) {
-        for (RelationEdition re : relationEditions) {
-            if (re.getPoi() != null) {
-                re.getPoi().setRelation_updated(false);
-                poiManager.savePoi(re.getPoi());
+    private List<Pair<RelationEdition, FullOSMRelation>> getRelationEditionList(List<RelationEdition> filteredRelationEditions, List<FullOSMRelation> updatedFUllOSMRelations) {
+        List<Pair<RelationEdition, FullOSMRelation>> editions = new ArrayList<>();
+        if (filteredRelationEditions.size() == updatedFUllOSMRelations.size()) {
+            for (int i = 0; i != filteredRelationEditions.size(); i++) {
+                editions.add(new Pair<>(filteredRelationEditions.get(i), updatedFUllOSMRelations.get(i)));
             }
         }
-        relationManager.deleteFinishedEditions(relationEditions);
+        return editions;
     }
 
     // *********************************
@@ -384,7 +385,7 @@ public class SyncManager {
         switch (creationResult.getStatus()) {
             case SUCCESS:
                 poi.setBackendId(creationResult.getBackendId());
-                poi.setUpdated(false);
+                poi.setDetailsUpdated(false);
                 poiManager.savePoi(poi);
                 OsmAnswers.remotePoiAction(poi.getType().getTechnicalName(), "add");
                 return true;
@@ -406,7 +407,7 @@ public class SyncManager {
     private int remoteUpdatePois(List<Poi> pois, String changeSetId) {
         int count = 0;
         for (Poi poi : pois) {
-            if (poi.getUpdated()) {
+            if (poi.getDetailsUpdated()) {
                 if (remoteUpdatePoi(poi, changeSetId)) {
                     count++;
                 }
@@ -419,14 +420,14 @@ public class SyncManager {
     /**
      * Update a List of Relations to the backend.
      *
-     * @param fullOSMRelations The List of Relations to update to the backend.
+     * @param editions The List of Relations to update to the backend.
      * @param changeSetId      The changeSet in which the Relations are sent.
      * @return The number of fullOSMRelations who where successfully updated.
      */
-    private int remoteUpdateRelations(List<FullOSMRelation> fullOSMRelations, String changeSetId) {
+    private int remoteUpdateRelations(List<Pair<RelationEdition, FullOSMRelation>> editions, String changeSetId) {
         int count = 0;
-        for (FullOSMRelation fullOSMRelation : fullOSMRelations) {
-            if (remoteUpdateRelation(fullOSMRelation, changeSetId)) {
+        for (Pair<RelationEdition, FullOSMRelation> edition : editions) {
+            if (remoteUpdateRelation(edition, changeSetId)) {
                 count++;
             }
         }
@@ -447,7 +448,7 @@ public class SyncManager {
         switch (updateResult.getStatus()) {
             case SUCCESS:
                 poi.setVersion(updateResult.getVersion());
-                poi.setUpdated(false);
+                poi.setDetailsUpdated(false);
                 poiManager.savePoi(poi);
                 OsmAnswers.remotePoiAction(poi.getType().getTechnicalName(), "update");
                 return true;
@@ -473,31 +474,46 @@ public class SyncManager {
     /**
      * Update a FullOSMRelation of the backend.
      *
-     * @param fullOSMRelation The FullOSMRelation to update.
-     * @param changeSetId     The changeSet in which the Relation is sent.
+     * @param edition     The FullOSMRelation to update.
+     * @param changeSetId The changeSet in which the Relation is sent.
      * @return Whether the update was a success or not.
      */
-    private boolean remoteUpdateRelation(final FullOSMRelation fullOSMRelation, String changeSetId) {
-        Backend.UpdateResult updateResult = backend.updateRelation(fullOSMRelation, changeSetId);
+    private boolean remoteUpdateRelation(final Pair<RelationEdition, FullOSMRelation> edition, String changeSetId) {
+        Backend.UpdateResult updateResult = backend.updateRelation(edition.second, changeSetId);
 
         switch (updateResult.getStatus()) {
             case SUCCESS:
+                edition.first.getPoi().setRelation_updated(false);
+                poiManager.savePoi(edition.first.getPoi());
+                relationManager.deleteFinishedEditions(edition.first);
                 OsmAnswers.remoteRelationAction();
                 return true;
             case FAILURE_CONFLICT:
+                revertChangesInPoi(edition);
+                relationManager.deleteFinishedEditions(edition.first);
                 bus.post(new SyncConflictingRelationErrorEvent());
-                Timber.e("Couldn't update fullOSMRelation %s: conflict, cancelling change", fullOSMRelation.getBackendId());
+                Timber.e("Couldn't update fullOSMRelation %s: conflict, cancelling change", edition.second.getBackendId());
                 return false;
             case FAILURE_NOT_EXISTING:
-                Timber.e("Couldn't update fullOSMRelation %s, it didn't exist. Cancelling change", fullOSMRelation.getBackendId());
+                revertChangesInPoi(edition);
+                relationManager.deleteFinishedEditions(edition.first);
+                Timber.e("Couldn't update fullOSMRelation %s, it didn't exist. Cancelling change", edition.second.getBackendId());
                 bus.post(new SyncConflictingRelationErrorEvent());
                 return false;
             case FAILURE_UNKNOWN:
             default:
-                Timber.e("Couldn't update relation %s. Cancelling change", fullOSMRelation.getBackendId());
+                revertChangesInPoi(edition);
+                relationManager.deleteFinishedEditions(edition.first);
+                Timber.e("Couldn't update relation %s. Cancelling change", edition.second.getBackendId());
                 bus.post(new SyncConflictingRelationErrorEvent());
                 return false;
         }
+    }
+
+    private void revertChangesInPoi(Pair<RelationEdition, FullOSMRelation> edition) {
+        Collection<RelationId> relationIds = poiManager.queryForId(edition.first.getPoi().getOldPoiId()).getRelationIds();
+        edition.first.getPoi().setRelationIds(relationIds);
+        poiManager.savePoi(edition.first.getPoi());
     }
 
 

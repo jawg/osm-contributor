@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,10 +110,10 @@ public class Poi implements Cloneable, MapElement {
     private boolean old;
 
     @DatabaseField(columnName = UPDATED, canBeNull = false)
-    private Boolean updated;
+    private Boolean detailsUpdated;
 
     @DatabaseField(columnName = RELATION_UPDATED, canBeNull = false)
-    private Boolean relation_updated = false;
+    private Boolean relation_updated;
 
     @DatabaseField(columnName = WAY, canBeNull = false)
     private Boolean way = false;
@@ -207,12 +208,16 @@ public class Poi implements Cloneable, MapElement {
         this.visible = visible;
     }
 
-    public Boolean getUpdated() {
-        return updated;
+    public Boolean getDetailsUpdated() {
+        return detailsUpdated;
     }
 
-    public void setUpdated(Boolean updated) {
-        this.updated = updated;
+    public void setDetailsUpdated(Boolean detailsUpdated) {
+        this.detailsUpdated = detailsUpdated;
+    }
+
+    public Boolean getUpdated() {
+        return this.detailsUpdated || this.relation_updated;
     }
 
     public Boolean getRelation_updated() {
@@ -400,7 +405,8 @@ public class Poi implements Cloneable, MapElement {
                 ", updateDate=" + updateDate +
                 ", visible=" + visible +
                 ", old=" + old +
-                ", updated=" + updated +
+                ", detailsUpdated=" + detailsUpdated +
+                ", relationUpdated=" + relation_updated +
                 ", way=" + way +
                 ", toDelete=" + toDelete +
                 ", level='" + level + '\'' +
@@ -488,6 +494,10 @@ public class Poi implements Cloneable, MapElement {
         }
     }
 
+    private void revertRelationChanges(Collection<RelationId> relationIds) {
+
+    }
+
     private boolean isIdInRelationList(String relationId) {
         for (RelationId id : getRelationIds()) {
             if (id.getBackendRelationId().equals(relationId)) {
@@ -501,6 +511,7 @@ public class Poi implements Cloneable, MapElement {
         if (tags == null) {
             tags = new ArrayList<>();
         }
+        Map<String, String> removeTags = new HashMap<>(tagsMap);
 
         int count = tagsMap.entrySet().size();
 
@@ -508,10 +519,19 @@ public class Poi implements Cloneable, MapElement {
         for (PoiTag poiTag : tags) {
             String newValue = tagsMap.get(poiTag.getKey());
             if (newValue != null) {
+                removeTags.remove(poiTag.getKey());
                 count--;
                 if (!newValue.equals(poiTag.getValue())) {
                     return true;
                 }
+            }
+        }
+        //don't count new tags with empty values
+        Iterator it = removeTags.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            if (((String) pair.getValue()).isEmpty()) {
+                count--;
             }
         }
         return count > 0;

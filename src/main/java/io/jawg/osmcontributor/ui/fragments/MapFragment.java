@@ -622,7 +622,7 @@ public class MapFragment extends Fragment {
                 markerSelected.setPosition(newPoiPosition);
                 markerSelected.setIcon(
                         IconFactory.getInstance(getActivity()).fromBitmap(bitmapHandler.getMarkerBitmap(poi.getType(), Poi.computeState(false, false, true))));
-                poi.setUpdated(true);
+                poi.setDetailsUpdated(true);
                 mapboxMap.updateMarker(markerSelected);
                 switchMode(MapMode.DETAIL_POI);
                 break;
