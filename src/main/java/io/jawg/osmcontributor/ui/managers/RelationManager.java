@@ -121,7 +121,7 @@ public class RelationManager {
      * delete the relation edition objects
      * @param relationEditions list of editions
      */
-    public void deleteFinishedEditions(List<RelationEdition> relationEditions) {
+    public void deleteFinishedEditions(RelationEdition relationEditions) {
         relationEditionDao.delete(relationEditions);
     }
 }

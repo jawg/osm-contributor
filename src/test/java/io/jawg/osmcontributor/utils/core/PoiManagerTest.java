@@ -71,7 +71,7 @@ public class PoiManagerTest {
         assertThat(queried.getName()).isEqualTo("MyPoi1");
         assertThat(queried.getLatitude()).isEqualTo(42.0);
         assertThat(queried.getLongitude()).isEqualTo(73.0);
-        assertThat(queried.getUpdated()).isFalse();
+        assertThat(queried.getDetailsUpdated()).isFalse();
     }
 
     @Test
@@ -109,7 +109,7 @@ public class PoiManagerTest {
         poi.setName("MyPoi" + i);
         poi.setLatitude(42.0);
         poi.setLongitude(73.0);
-        poi.setUpdated(false);
+        poi.setDetailsUpdated(false);
         Map<String, String> tags = new HashMap<>();
         tags.put("tag1", "value1");
         poi.applyChanges(tags);

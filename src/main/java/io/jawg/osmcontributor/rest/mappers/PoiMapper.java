@@ -124,7 +124,8 @@ public class PoiMapper {
         poi.setLongitude(dto.getLon());
         poi.setBackendId(dto.getId());
         poi.setVersion(String.valueOf(dto.getVersion()));
-        poi.setUpdated(false);
+        poi.setDetailsUpdated(false);
+        poi.setRelation_updated(false);
         poi.setUpdateDate(dto.getTimestamp());
         poi.setWay(dto.isWay());
 

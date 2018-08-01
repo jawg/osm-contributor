@@ -318,7 +318,7 @@ public class MapFragmentPresenter {
                     Poi poi = (Poi) mapElement;
                     Poi oldPoi = (Poi) markerOptions.getMarker().getRelatedObject();
                     oldPoi.setName(poi.getName());
-                    oldPoi.setUpdated(poi.getUpdated());
+                    oldPoi.setDetailsUpdated(poi.getDetailsUpdated());
                     selected = false;
                     if (mapFragment.getSelectedMarkerType().equals(LocationMarkerView.MarkerType.POI)
                             && (mapElement.getId().equals(mapFragment.getMarkerSelectedId())
