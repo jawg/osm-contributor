@@ -85,7 +85,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         viewBinders.add(new ConstantViewBinder(activity));
         viewBinders.add(new OpeningHoursViewBinder(activity, this));
         viewBinders.add(new RadioChoiceViewBinder(activity, this));
-        viewBinders.add(new BusLinesViewBinder(activity, this, poi.getRelationIds()));
+        viewBinders.add(new BusLinesViewBinder(activity, this, poi));
 
         eventBus.register(this);
     }
