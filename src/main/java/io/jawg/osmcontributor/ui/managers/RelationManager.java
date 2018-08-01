@@ -19,7 +19,9 @@
 package io.jawg.osmcontributor.ui.managers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -87,6 +89,32 @@ public class RelationManager {
         return relationDisplayDao.queryByDatabaseIds(
                 relationDisplayTagDao.queryForRelationIDsByTag(search)
         );
+    }
+
+    /**
+     * get bus lines ordered by distance ASC from a POI
+     *
+     * @param poiId a Poi id
+     * @return a list of RelationDisplay
+     */
+    public List<RelationDisplay> getBusLinesOrderedByDistanceFromPoiById(Long poiId) {
+        List<Long> relationIds = relationDisplayDao.queryForRelationIdsOrderedByDistance(poiId);
+        List<RelationDisplay> relationDisplays = relationDisplayDao.queryByDatabaseIds(relationIds);
+
+        // The request which converts List<Long> to List<RelationDisplay> sorts the result by id ASC
+        // But we want to keep the same relations order after the Long to RelationDisplay conversion
+        // So we create a HashMap to set an index for each id
+        HashMap<Long, Integer> hm = new HashMap<>();
+        for (int idx = 0; idx < relationIds.size(); idx++) {
+            hm.put(relationIds.get(idx), idx);
+        }
+        // Then we create an array and fill it with the list of RelationDisplay in the right order
+        RelationDisplay[] relationsArray = new RelationDisplay[relationIds.size()];
+        for (RelationDisplay relationDisplay : relationDisplays) {
+            relationsArray[hm.get(relationDisplay.getId())] = relationDisplay;
+        }
+
+        return Arrays.asList(relationsArray);
     }
 
     /**
