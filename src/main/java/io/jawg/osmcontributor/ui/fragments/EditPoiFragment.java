@@ -48,6 +48,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -57,7 +58,12 @@ import butterknife.Unbinder;
 import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.model.entities.Poi;
+import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplay;
+import io.jawg.osmcontributor.model.events.BusLinesForPoiLoadedEvent;
+import io.jawg.osmcontributor.model.events.BusLinesNearbyForPoiLoadedEvent;
 import io.jawg.osmcontributor.model.events.PleaseCreatePoiEvent;
+import io.jawg.osmcontributor.model.events.PleaseLoadBusLinesForPoiEvent;
+import io.jawg.osmcontributor.model.events.PleaseLoadBusLinesNearbyForPoiEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForCreationEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForEditionEvent;
 import io.jawg.osmcontributor.model.events.PoiForEditionLoadedEvent;
@@ -317,6 +323,9 @@ public class EditPoiFragment extends Fragment {
                 event.getValuesMap(),
                 sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false));
         recyclerView.setAdapter(tagsAdapter);
+
+        eventBus.post(new PleaseLoadBusLinesForPoiEvent(poi.getRelationIds()));
+        eventBus.post(new PleaseLoadBusLinesNearbyForPoiEvent(poi.getId()));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -335,5 +344,16 @@ public class EditPoiFragment extends Fragment {
                 .setOnDismiss(dialogInterface -> getActivity().finish())
                 .show(getFragmentManager(), LoginDialogFragment.class.getSimpleName());
     }
-}
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBusLinesForPoiLoadedEvent(BusLinesForPoiLoadedEvent event) {
+        List<RelationDisplay> relationDisplays = event.getRelationDisplays();
+        tagsAdapter.setRelationDisplays(relationDisplays);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBusLinesNearbyForPoiLoadedEvent(BusLinesNearbyForPoiLoadedEvent event) {
+        List<RelationDisplay> relationDisplays = event.getRelationDisplays();
+        tagsAdapter.setRelationDisplaysNearby(relationDisplays);
+    }
+}

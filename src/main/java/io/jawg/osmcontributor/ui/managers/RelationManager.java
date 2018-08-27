@@ -18,10 +18,15 @@
  */
 package io.jawg.osmcontributor.ui.managers;
 
+import android.util.LongSparseArray;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -33,6 +38,12 @@ import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.RelationId;
 import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplay;
 import io.jawg.osmcontributor.model.entities.relation_save.RelationEdition;
+import io.jawg.osmcontributor.model.events.BusLinesNearbyForPoiLoadedEvent;
+import io.jawg.osmcontributor.model.events.BusLinesSuggestionForPoiLoadedEvent;
+import io.jawg.osmcontributor.model.events.PleaseLoadBusLinesNearbyForPoiEvent;
+import io.jawg.osmcontributor.model.events.PleaseLoadBusLinesForPoiEvent;
+import io.jawg.osmcontributor.model.events.BusLinesForPoiLoadedEvent;
+import io.jawg.osmcontributor.ui.events.type.PleaseLoadBusLinesSuggestionForPoiEvent;
 
 /**
  * Manager class for Relations.
@@ -43,18 +54,34 @@ public class RelationManager {
     private RelationDisplayDao relationDisplayDao;
     private RelationDisplayTagDao relationDisplayTagDao;
     private RelationEditionDao relationEditionDao;
-
+    private EventBus eventBus;
 
     @Inject
-    public RelationManager(RelationDisplayDao relationDisplayDao, RelationDisplayTagDao relationDisplayTagDao, RelationEditionDao relationEditionDao) {
+    public RelationManager(RelationDisplayDao relationDisplayDao, RelationDisplayTagDao relationDisplayTagDao,
+                           RelationEditionDao relationEditionDao, EventBus eventBus) {
         this.relationDisplayDao = relationDisplayDao;
         this.relationEditionDao = relationEditionDao;
         this.relationDisplayTagDao = relationDisplayTagDao;
+        this.eventBus = eventBus;
     }
 
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadBusLinesForPoiEvent(PleaseLoadBusLinesForPoiEvent event) {
+        List<RelationDisplay> relationDisplays = relationDisplayDao
+                .queryByBackendRelationIds(getBackendIdsFromRelation(event.getRelationIds()));
+        eventBus.post(new BusLinesForPoiLoadedEvent(relationDisplays));
+    }
 
-    public List<RelationDisplay> getRelationDisplaysFromRelationsIDs(Collection<RelationId> relationIds) {
-        return relationDisplayDao.queryByBackendRelationIds(getBackendIdsFromRelation(relationIds));
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadBusLinesNearbyForPoiEvent(PleaseLoadBusLinesNearbyForPoiEvent event) {
+        List<RelationDisplay> relationDisplays = getBusLinesOrderedByDistanceFromPoiById(event.getPoiId());
+        eventBus.post(new BusLinesNearbyForPoiLoadedEvent(relationDisplays));
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onPleaseLoadBusLinesSuggestionForPoiEvent(PleaseLoadBusLinesSuggestionForPoiEvent event) {
+        List<RelationDisplay> relationDisplays = getValuesForBusLinesAutocompletion(event.getSearch());
+        eventBus.post(new BusLinesSuggestionForPoiLoadedEvent(relationDisplays));
     }
 
     private List<Long> getBackendIdsFromRelation(Collection<RelationId> relationIds) {
@@ -87,8 +114,7 @@ public class RelationManager {
      */
     public List<RelationDisplay> getValuesForBusLinesAutocompletion(String search) {
         return relationDisplayDao.queryByDatabaseIds(
-                relationDisplayTagDao.queryForRelationIDsByTag(search)
-        );
+                relationDisplayTagDao.queryForRelationIDsByTag(search));
     }
 
     /**
@@ -104,14 +130,14 @@ public class RelationManager {
         // The request which converts List<Long> to List<RelationDisplay> sorts the result by id ASC
         // But we want to keep the same relations order after the Long to RelationDisplay conversion
         // So we create a HashMap to set an index for each id
-        HashMap<Long, Integer> hm = new HashMap<>();
-        for (int idx = 0; idx < relationIds.size(); idx++) {
-            hm.put(relationIds.get(idx), idx);
+        LongSparseArray<Integer> array = new LongSparseArray<>();
+        for (int i = 0; i < relationIds.size(); i++) {
+            array.put(relationIds.get(i), i);
         }
         // Then we create an array and fill it with the list of RelationDisplay in the right order
         RelationDisplay[] relationsArray = new RelationDisplay[relationIds.size()];
         for (RelationDisplay relationDisplay : relationDisplays) {
-            relationsArray[hm.get(relationDisplay.getId())] = relationDisplay;
+            relationsArray[array.get(relationDisplay.getId())] = relationDisplay;
         }
 
         return Arrays.asList(relationsArray);

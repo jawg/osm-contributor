@@ -56,6 +56,7 @@ import io.jawg.osmcontributor.utils.edition.PoiChanges;
 import static io.jawg.osmcontributor.ui.adapters.item.shelter.TagMapper.getTagItems;
 
 public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements CheckedTagViewBinder.TagItemChangeListener {
+    private final BusLinesViewBinder busLinesViewBinder;
     private List<TagItem> tagItemList;
     private List<RelationEdition> relationEditions = new ArrayList<>();
     private List<CheckedTagViewBinder> checkedViews = new ArrayList<>();
@@ -85,7 +86,8 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         viewBinders.add(new ConstantViewBinder(activity));
         viewBinders.add(new OpeningHoursViewBinder(activity, this));
         viewBinders.add(new RadioChoiceViewBinder(activity, this));
-        viewBinders.add(new BusLinesViewBinder(activity, this, poi));
+        busLinesViewBinder = new BusLinesViewBinder(activity, this);
+        viewBinders.add(busLinesViewBinder);
 
         eventBus.register(this);
     }
@@ -274,5 +276,19 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             tagItem.setValue(newValue);
         }
         change = true;
+    }
+
+    public void setRelationDisplays(List<RelationDisplay> relationDisplays) {
+        busLinesViewBinder.setCurrentBusLines(relationDisplays);
+        for (TagItem tagItem : tagItemList) {
+            if (tagItem.getType() == TagItem.Type.BUS_LINE) {
+                notifyItemChanged(tagItemList.indexOf(tagItem));
+                break;
+            }
+        }
+    }
+
+    public void setRelationDisplaysNearby(List<RelationDisplay> relationDisplays) {
+        busLinesViewBinder.setBusLinesNearby(relationDisplays);
     }
 }

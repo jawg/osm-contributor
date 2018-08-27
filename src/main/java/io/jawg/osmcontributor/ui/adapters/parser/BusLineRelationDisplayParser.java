@@ -18,6 +18,8 @@
  */
 package io.jawg.osmcontributor.ui.adapters.parser;
 
+import android.text.TextUtils;
+
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -28,10 +30,11 @@ import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplayTag
 
 @Singleton
 public class BusLineRelationDisplayParser {
+    private static final String NETWORK = "network";
     private static final String NAME = "name";
-    private static final String FROM = "from";
+    private static final String REF = "ref";
+    private static final String DIR = "→ ";
     private static final String TO = "to";
-    private static final String DIR = " → ";
 
     @Inject
     public BusLineRelationDisplayParser() {
@@ -39,21 +42,63 @@ public class BusLineRelationDisplayParser {
     }
 
     /**
-     * try to get bus line name from the relation tags
-     * try with NAME and then with FROM and TO
+     * Get bus line tag 'NETWORK' from the relation tags
+     * @param relationDisplay the relationDisplay Object
+     * @return a string or null if nothing found
+     */
+    public String getBusLineNetwork(RelationDisplay relationDisplay) {
+        return getValue(NETWORK, relationDisplay.getTags());
+    }
+
+    /**
+     * Get bus line tag 'NAME' from the relation tags
      * @param relationDisplay the relationDisplay Object
      * @return a string or null if nothing found
      */
     public String getBusLineName(RelationDisplay relationDisplay) {
-        String value = getValue(NAME, relationDisplay.getTags());
-        if (value != null) {
-            return value;
+        return getValue(NAME, relationDisplay.getTags());
+    }
+
+    /**
+     * Get bus line tag 'REF' from the relation tags
+     * @param relationDisplay the relationDisplay Object
+     * @return a string or null if nothing found
+     */
+    public String getBusLineRef(RelationDisplay relationDisplay) {
+        return getValue(REF, relationDisplay.getTags());
+    }
+
+    /**
+     * Get bus line tag 'TO' from the relation tags
+     * @param relationDisplay the relationDisplay Object
+     * @return a string or null if nothing found
+     */
+    public String getBusLineDestination(RelationDisplay relationDisplay) {
+        String destination = getValue(TO, relationDisplay.getTags());
+        if (destination != null) {
+            destination = DIR + destination;
         }
-        value = getValue(FROM, relationDisplay.getTags());
-        if (value != null) {
-            String value2 = getValue(TO, relationDisplay.getTags());
-            if (value2 != null)
-                return value + DIR + value2;
+        return destination;
+    }
+
+    /**
+     * Get a formated string made of some bus line infos from the relation tags
+     * First try with NETWORK + REF + TO, then with NAME
+     * @param relationDisplay the relationDisplay Object
+     * @return a string or null if nothing found
+     */
+    public String getBusLine(RelationDisplay relationDisplay) {
+        final String network = getBusLineNetwork(relationDisplay);
+        final String name = getBusLineName(relationDisplay);
+        final String ref = getBusLineRef(relationDisplay);
+        final String to = getBusLineDestination(relationDisplay);
+
+        String busLine = network + " " + ref;
+        if (!busLine.isEmpty() && !TextUtils.isEmpty(to)) {
+            return busLine + " " + to;
+        }
+        if (!TextUtils.isEmpty(name)) {
+            return name;
         }
         return null;
     }
@@ -66,10 +111,10 @@ public class BusLineRelationDisplayParser {
      */
     private String getValue(String tag, Collection<RelationDisplayTag> tags) {
         for (RelationDisplayTag t : tags) {
-            if (t.getKey() != null && t.getKey().equals(tag) && t.getValue() != null && !t.getValue().isEmpty())
+            if (t.getKey() != null && t.getKey().equals(tag) && !TextUtils.isEmpty(t.getValue())) {
                 return t.getValue();
+            }
         }
         return null;
     }
-
 }

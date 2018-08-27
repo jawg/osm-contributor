@@ -65,6 +65,7 @@ import io.jawg.osmcontributor.ui.adapters.binding.RadioChoiceViewBinder;
 import io.jawg.osmcontributor.ui.adapters.binding.ShelterChoiceViewBinder;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningMonthValueParser;
 import io.jawg.osmcontributor.ui.adapters.parser.OpeningTimeValueParser;
+import io.jawg.osmcontributor.ui.dialogs.AddPoiBusLineDialogFragment;
 import io.jawg.osmcontributor.ui.dialogs.AddValueDialogFragment;
 import io.jawg.osmcontributor.ui.dialogs.EditPoiTagDialogFragment;
 import io.jawg.osmcontributor.ui.dialogs.EditPoiTypeDialogFragment;
@@ -80,6 +81,7 @@ import io.jawg.osmcontributor.ui.managers.EditPoiManager;
 import io.jawg.osmcontributor.ui.managers.LoginManager;
 import io.jawg.osmcontributor.ui.managers.NoteManager;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
+import io.jawg.osmcontributor.ui.managers.RelationManager;
 import io.jawg.osmcontributor.ui.managers.TypeManager;
 import io.jawg.osmcontributor.ui.managers.WaysManager;
 import io.jawg.osmcontributor.ui.managers.sync.PushToOSMService;
@@ -185,6 +187,8 @@ public interface OsmTemplateComponent {
 
     void inject(OfflineRegionsActivity offlineRegionsActivity);
 
+    void inject(AddPoiBusLineDialogFragment addPoiBusLineDialogFragment);
+
     // PROVIDING
 
     // Core
@@ -203,6 +207,8 @@ public interface OsmTemplateComponent {
     PoiAssetLoader getPoiAssetLoader();
 
     PoiManager getPoiManager();
+
+    RelationManager getRelationManager();
 
     NoteManager getNoteManager();
 

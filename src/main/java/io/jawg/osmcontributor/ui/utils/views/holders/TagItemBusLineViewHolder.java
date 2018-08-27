@@ -20,7 +20,6 @@ package io.jawg.osmcontributor.ui.utils.views.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -29,7 +28,6 @@ import butterknife.ButterKnife;
 import io.jawg.osmcontributor.R;
 
 public class TagItemBusLineViewHolder extends RecyclerView.ViewHolder {
-    private View poiTagLayout;
 
     @BindView(R.id.opening_time_list_view)
     RecyclerView busLineRecyclerView;
@@ -37,8 +35,8 @@ public class TagItemBusLineViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.poi_key)
     TextView textViewKey;
 
-    @BindView(R.id.bus_line_input_edit_text)
-    AutoCompleteTextView textViewValue;
+    @BindView(R.id.tag_item_edit_bus_line_add_layout)
+    View editAddLayout;
 
     @BindView(R.id.tag_item_edit_bus_line_add_button)
     View editAddButton;
@@ -46,22 +44,13 @@ public class TagItemBusLineViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.content_layout)
     LinearLayout content;
 
-    public View getEditAddButton() {
-        return editAddButton;
-    }
-
-    public AutoCompleteTextView getTextViewValue() {
-        return textViewValue;
-    }
-
     public TagItemBusLineViewHolder(View v) {
         super(v);
-        poiTagLayout = v;
         ButterKnife.bind(this, v);
     }
 
-    public View getPoiTagLayout() {
-        return poiTagLayout;
+    public View getEditAddLayout() {
+        return editAddLayout;
     }
 
     public TextView getTextViewKey() {

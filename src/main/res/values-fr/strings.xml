@@ -45,7 +45,7 @@
     <string name="tag_poi_shelter">Aménagements</string>
     <string name="tag_poi_wheelchair">Accès fauteuil roulant</string>
     <string name="tag_poi_bench">Banc</string>
-    <string name="tag_poi_rout_ref">Ligne desservie</string>
+    <string name="tag_poi_rout_ref">Lignes desservies</string>
     <string name="bus_shelter_note">Informations complémentaires</string>
     <!--Map-->
     <string name="no_poi_name">Ce poi n\'a pas de nom</string>
@@ -226,6 +226,7 @@
     <string name="day_saturday_letter">S</string>
     <string name="day_sunday_letter">D</string>
     <!--Snackbar-->
+    <string name="item_added">\"%1$s\" a été ajouté</string>
     <string name="item_removed">\"%1$s\" a été supprimé</string>
     <string name="undo">Annuler</string>
     <!--Upload-->
@@ -281,4 +282,11 @@ Il est conseillé d\'avoir une connexion Wifi pendant le téléchargement.\n\nVo
     <string name="offline_step2">Zoomez pour sélectionner une zone</string>
     <string name="offline_step1">Cliquer pour sélectionner une région</string>
     <string name="offline_step4">Vos régions apparaitront ici.</string>
+
+    <!-- POI bus route served -->
+    <string name="adding_poi_bus_line_title">Ajouter une ligne de bus</string>
+    <string name="adding_poi_bus_line_suggestion_hint">Suggestion</string>
+    <string name="adding_poi_network_hint">Réseau</string>
+    <string name="adding_poi_bus_line_hint">Ligne</string>
+    <string name="adding_poi_destination_hint">Destination</string>
 </resources>

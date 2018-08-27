@@ -57,7 +57,7 @@
     <string name="tag_poi_shelter">Facilities</string>
     <string name="tag_poi_wheelchair">Wheelchair access</string>
     <string name="tag_poi_bench">Bench</string>
-    <string name="tag_poi_rout_ref">Bus route served</string>
+    <string name="tag_poi_rout_ref">Bus routes served</string>
     <string name="bus_shelter_note">Extra information</string>
     <!-- Map -->
     <string name="no_poi_name">This POI doesn\'t have a name</string>
@@ -287,6 +287,7 @@
     <string name="undefined_button_text">Unknown</string>
 
     <!-- Snackbar -->
+    <string name="item_added">\"%1$s\" was added</string>
     <string name="item_removed">\"%1$s\" was removed</string>
     <string name="undo">Undo</string>
 
@@ -350,4 +351,11 @@
     <string name="offline_step1">Click to select a region</string>
     <string name="offline_step4">Your areas will appear here</string>
     <string name="thanks">Thanks !</string>
+
+    <!-- POI bus route served -->
+    <string name="adding_poi_bus_line_title">Add a bus route</string>
+    <string name="adding_poi_bus_line_suggestion_hint">Suggestion</string>
+    <string name="adding_poi_network_hint">Network</string>
+    <string name="adding_poi_bus_line_hint">Bus route</string>
+    <string name="adding_poi_destination_hint">Destination</string>
 </resources>
