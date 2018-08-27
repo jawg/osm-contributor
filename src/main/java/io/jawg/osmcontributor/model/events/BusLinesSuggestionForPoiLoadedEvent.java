@@ -20,18 +20,16 @@ package io.jawg.osmcontributor.model.events;
 
 import java.util.List;
 
-public class BusSuggestionsLoaded {
-    private List<String> suggestions;
+import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplay;
 
-    public BusSuggestionsLoaded(List<String> suggestions) {
-        this.suggestions = suggestions;
+public class BusLinesSuggestionForPoiLoadedEvent {
+    private List<RelationDisplay> relationDisplays;
+
+    public BusLinesSuggestionForPoiLoadedEvent(List<RelationDisplay> relationDisplays) {
+        this.relationDisplays = relationDisplays;
     }
 
-    public List<String> getPoiTypes() {
-        return suggestions;
-    }
-
-    public void setPoiTypes(List<String> poiTypes) {
-        this.suggestions = poiTypes;
+    public List<RelationDisplay> getRelationDisplays() {
+        return relationDisplays;
     }
 }

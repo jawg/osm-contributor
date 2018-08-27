@@ -1,10 +1,10 @@
 package io.jawg.osmcontributor.ui.events.type;
 
-public class PleaseLoadBusLinesSuggestions {
+public class PleaseLoadBusLinesSuggestionForPoiEvent {
 
     private String search;
 
-    public PleaseLoadBusLinesSuggestions(String search) {
+    public PleaseLoadBusLinesSuggestionForPoiEvent(String search) {
         this.search = search;
     }
 

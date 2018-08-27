@@ -103,6 +103,7 @@ public class OsmTemplateApplication extends Application {
         bus.register(getOsmTemplateComponent().getLoginManager());
         bus.register(getOsmTemplateComponent().getEditPoiManager());
         bus.register(getOsmTemplateComponent().getPoiManager());
+        bus.register(getOsmTemplateComponent().getRelationManager());
         bus.register(getOsmTemplateComponent().getNoteManager());
         bus.register(getOsmTemplateComponent().getSyncManager());
         bus.register(getOsmTemplateComponent().getTypeManager());

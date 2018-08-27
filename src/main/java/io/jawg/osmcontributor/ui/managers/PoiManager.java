@@ -56,7 +56,6 @@ import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
-import io.jawg.osmcontributor.model.events.BusSuggestionsLoaded;
 import io.jawg.osmcontributor.model.events.DatabaseResetFinishedEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForCreationEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForEditionEvent;
@@ -76,7 +75,6 @@ import io.jawg.osmcontributor.ui.events.map.ChangesInDB;
 import io.jawg.osmcontributor.ui.events.map.LastUsePoiTypeLoaded;
 import io.jawg.osmcontributor.ui.events.map.PleaseLoadLastUsedPoiType;
 import io.jawg.osmcontributor.ui.events.map.PleaseTellIfDbChanges;
-import io.jawg.osmcontributor.ui.events.type.PleaseLoadBusLinesSuggestions;
 import io.jawg.osmcontributor.ui.utils.BitmapHandler;
 import io.jawg.osmcontributor.ui.utils.views.map.marker.LocationMarkerView;
 import io.jawg.osmcontributor.utils.Box;
@@ -192,11 +190,6 @@ public class PoiManager {
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseLoadPoiTypes(PleaseLoadPoiTypes event) {
         bus.postSticky(new PoiTypesLoaded(getPoiTypesSortedByName()));
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onPleaseLoadBusLinesSuggestions(PleaseLoadBusLinesSuggestions event) {
-        bus.postSticky(new BusSuggestionsLoaded(getValuesForBusLinesAutocompletion(event.getSearch())));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -716,14 +709,6 @@ public class PoiManager {
 
     public List<String> loadPoiTypeKeysWithDefaultValues() {
         return poiTypeTagDao.queryForTagKeysWithDefaultValues();
-    }
-
-    /**
-     * get values for autocompletion of bus field
-     * @return
-     */
-    public List<String> getValuesForBusLinesAutocompletion(String search){
-        return poiTagDao.queryForBusWaySuggestions(search);
     }
 
     /**

@@ -28,6 +28,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -39,78 +40,70 @@ import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplay;
 import io.jawg.osmcontributor.ui.adapters.parser.BusLineRelationDisplayParser;
 import io.jawg.osmcontributor.utils.edition.RelationDisplayDto;
 
-public class BusLineAdapter extends RecyclerView.Adapter<BusLineAdapter.BusLineHolder> {
+public class PoiBusLineAddingAdapter extends RecyclerView.Adapter<PoiBusLineAddingAdapter.BusLineHolder> {
 
+    private static final int NB_MAX_RELATIONS_TO_DISPLAY = 3;
     private static final int DEFAULT_COLOR = R.color.active_text;
     private static final String TAG_COLOUR = "colour";
 
-    private Context context;
-    private List<RelationDisplay> busLines;
-    private RemoveBusListener removeBusListener;
-    private BusLineRelationDisplayParser relationNameParser;
+    private final Context context;
+    private final BusLineRelationDisplayParser busLineParser;
+    private final List<RelationDisplay> busLines;
 
-    public void setRemoveBusListener(RemoveBusListener removeBusListener) {
-        this.removeBusListener = removeBusListener;
+    private AddBusLineListener addBusLineListener;
+
+    public interface AddBusLineListener {
+        void onBusLineClick(int position, RelationDisplay busLine);
     }
 
-    public interface RemoveBusListener {
-        void onBusLineClick(RelationDisplay busLine, int position);
+    public void setAddBusLineListener(AddBusLineListener addBusLineListener) {
+        this.addBusLineListener = addBusLineListener;
     }
 
-    public BusLineAdapter(Context context, List<RelationDisplay> busLines, BusLineRelationDisplayParser parser) {
+    public PoiBusLineAddingAdapter(Context context, BusLineRelationDisplayParser parser, List<RelationDisplay> busLines) {
         this.context = context;
-        this.relationNameParser = parser;
+        this.busLineParser = parser;
         this.busLines = busLines;
     }
 
     @NonNull
     @Override
     public BusLineHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View viewRoot = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bus_line, parent, false);
-        return new BusLineHolder(viewRoot);
+        View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bus_line, parent, false);
+        return new BusLineHolder(rootView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final BusLineHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final PoiBusLineAddingAdapter.BusLineHolder holder, int position) {
         final RelationDisplay busLine = busLines.get(position);
-        String color = new RelationDisplayDto(busLine).getTagValue(TAG_COLOUR);
-
-        String dest = relationNameParser.getBusLineDestination(busLine);
+        final String color = new RelationDisplayDto(busLine).getTagValue(TAG_COLOUR);
+        String dest = busLineParser.getBusLineDestination(busLine);
 
         if (TextUtils.isEmpty(dest)) {
-            dest = relationNameParser.getBusLineName(busLine);
+            dest = busLineParser.getBusLineName(busLine);
         }
 
-        holder.tvBusLineRef.setText(relationNameParser.getBusLineRef(busLine));
-        holder.tvBusLineNetwork.setText(relationNameParser.getBusLineNetwork(busLine));
+        holder.tvBusLineNetwork.setText(busLineParser.getBusLineNetwork(busLine));
         holder.tvBusLineDestination.setText(dest);
+        holder.tvBusLineRef.setText(busLineParser.getBusLineRef(busLine));
         holder.tvBusLineRef.setTypeface(holder.tvBusLineRef.getTypeface(), Typeface.BOLD);
 
         holder.tvBusLineRef.setTextColor(color == null ?
                 ContextCompat.getColor(context, DEFAULT_COLOR) : Color.parseColor(color));
 
-        holder.deleteButton.setOnClickListener(view ->
-                removeBusListener.onBusLineClick(busLine, position));
+        holder.layoutBusLinePoi.setOnClickListener(view ->
+                addBusLineListener.onBusLineClick(position, busLine));
     }
 
     @Override
     public int getItemCount() {
-        return busLines.size();
-    }
-
-    public void addItem(int position, RelationDisplay busLine) {
-        notifyItemRangeRemoved(0, getItemCount());
-        busLines.add(position, busLine);
-        notifyItemRangeInserted(0, getItemCount());
-    }
-
-    public void removeItem(int position) {
-        notifyItemRangeRemoved(0, getItemCount());
-        busLines.remove(position);
-        notifyItemRangeInserted(0, getItemCount());
+        return busLines.size() < NB_MAX_RELATIONS_TO_DISPLAY ?
+                busLines.size() : NB_MAX_RELATIONS_TO_DISPLAY;
     }
 
     public static class BusLineHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.layout_item_bus_line)
+        LinearLayout layoutBusLinePoi;
 
         @BindView(R.id.tv_bus_line_ref)
         TextView tvBusLineRef;
@@ -124,9 +117,11 @@ public class BusLineAdapter extends RecyclerView.Adapter<BusLineAdapter.BusLineH
         @BindView(R.id.item_bus_line_delete_button)
         View deleteButton;
 
-        BusLineHolder(View itemView) {
-            super(itemView);
+        BusLineHolder(View view) {
+            super(view);
             ButterKnife.bind(this, itemView);
+
+            deleteButton.setVisibility(View.GONE);
         }
     }
 }

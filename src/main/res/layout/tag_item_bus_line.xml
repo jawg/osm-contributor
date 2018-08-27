@@ -54,46 +54,20 @@
 
         <include layout="@layout/card_divider" />
 
-        <include
-            android:id="@+id/tag_item_edit_bus_line_add_button"
-            layout="@layout/card_add_button"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:layout_gravity="center"
-            android:layout_margin="16dp" />
-
-        <include layout="@layout/card_divider" />
-
         <LinearLayout
+            android:id="@+id/tag_item_edit_bus_line_add_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-android:visibility="gone"
-            >
+            android:paddingBottom="8dp"
+            android:paddingTop="4dp"
+            android:layout_margin="4dp">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:hint="@string/tag_poi_rout_ref"
-                android:paddingBottom="16dp"
-                android:paddingEnd="16dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp">
-                <!--android:theme="@style/TextInputLayout">-->
-
-                <AutoCompleteTextView
-                    android:id="@+id/bus_line_input_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:completionThreshold="1"
-                    android:inputType="text|textAutoComplete"
-                    android:textColor="#424242"
-                    android:textSize="17sp" />
-
-            </android.support.design.widget.TextInputLayout>
+            <include
+                android:id="@+id/tag_item_edit_bus_line_add_button"
+                layout="@layout/card_add_button"
+                android:layout_width="match_parent"
+                android:layout_height="22dp"
+                android:layout_gravity="center" />
 
         </LinearLayout>
 
