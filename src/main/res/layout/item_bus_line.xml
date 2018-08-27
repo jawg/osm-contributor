@@ -19,42 +19,76 @@
     along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingBottom="16dp"
-    android:paddingEnd="16dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingStart="16dp"
-    android:paddingTop="16dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:id="@+id/layout_item_bus_line"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginBottom="@dimen/dialog_vertical_margin"
+android:layout_marginTop="@dimen/dialog_vertical_margin"
+android:orientation="horizontal"
+android:paddingEnd="@dimen/activity_horizontal_margin"
+android:paddingLeft="@dimen/activity_horizontal_margin"
+android:paddingRight="@dimen/activity_horizontal_margin"
+android:paddingStart="@dimen/activity_horizontal_margin">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:id="@+id/content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
-            android:id="@+id/poi_bus_line_value"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:hint="@string/bus_line_hint"
-            android:textColor="#424242"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginBottom="8dp"
-            android:textSize="17sp"
-            app:typeface="Roboto-Light.ttf" />
+            android:orientation="horizontal">
 
-        <include
-            android:id="@+id/item_bus_line_delete_button"
-            layout="@layout/card_delete_button"
-            android:layout_width="40dp"
-            android:layout_weight="0.4"
-            android:layout_height="40dp" />
+            <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+                android:id="@+id/tv_bus_line_network"
+                android:hint="@string/adding_poi_network_hint"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:textColor="#424242"
+                android:textSize="17sp"
+                app:typeface="Roboto-Light.ttf" />
+
+            <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+                android:id="@+id/tv_bus_line_ref"
+                android:hint="@string/adding_poi_bus_line_hint"
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:layout_height="wrap_content"
+                android:textColor="#424242"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                app:typeface="Roboto-Light.ttf" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+                android:id="@+id/tv_bus_line_destination"
+                android:hint="@string/adding_poi_destination_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#424242"
+                android:textSize="15sp"
+                app:typeface="Roboto-Light.ttf" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
-</RelativeLayout>
+    <include
+        android:id="@+id/item_bus_line_delete_button"
+        layout="@layout/card_delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_gravity="center"/>
+
+</LinearLayout>

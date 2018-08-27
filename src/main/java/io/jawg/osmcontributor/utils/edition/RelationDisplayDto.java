@@ -51,7 +51,7 @@ public class RelationDisplayDto {
         this.tags = tags;
     }
 
-    public String getTag(String key) {
+    public String getTagValue(String key) {
         return tags.get(key);
     }
 
