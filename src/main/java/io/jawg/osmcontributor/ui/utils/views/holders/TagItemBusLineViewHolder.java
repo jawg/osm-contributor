@@ -38,9 +38,6 @@ public class TagItemBusLineViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.tag_item_edit_bus_line_add_layout)
     View editAddLayout;
 
-    @BindView(R.id.tag_item_edit_bus_line_add_button)
-    View editAddButton;
-
     @BindView(R.id.content_layout)
     LinearLayout content;
 
