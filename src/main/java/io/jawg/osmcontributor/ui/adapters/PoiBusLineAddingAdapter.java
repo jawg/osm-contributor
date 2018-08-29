@@ -74,7 +74,7 @@ public class PoiBusLineAddingAdapter extends RecyclerView.Adapter<PoiBusLineAddi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final PoiBusLineAddingAdapter.BusLineHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final BusLineHolder holder, int position) {
         final RelationDisplay busLine = busLines.get(position);
         final String color = new RelationDisplayDto(busLine).getTagValue(TAG_COLOUR);
         String dest = busLineParser.getBusLineDestination(busLine);
@@ -102,6 +102,7 @@ public class PoiBusLineAddingAdapter extends RecyclerView.Adapter<PoiBusLineAddi
     }
 
     public static class BusLineHolder extends RecyclerView.ViewHolder {
+
         @BindView(R.id.layout_item_bus_line)
         LinearLayout layoutBusLinePoi;
 
