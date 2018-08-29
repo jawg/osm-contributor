@@ -56,18 +56,17 @@
 
         <LinearLayout
             android:id="@+id/tag_item_edit_bus_line_add_layout"
+            android:background="@drawable/ripple_effect_blue"
+            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
-            android:paddingTop="4dp"
-            android:layout_margin="4dp">
+            android:layout_margin="16dp"
+            android:padding="8dp">
 
-            <include
-                android:id="@+id/tag_item_edit_bus_line_add_button"
-                layout="@layout/card_add_button"
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:layout_gravity="center" />
+                android:src="@drawable/add_white" />
 
         </LinearLayout>
 

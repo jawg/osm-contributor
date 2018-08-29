@@ -20,17 +20,29 @@
 
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-android:id="@+id/layout_item_bus_line"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_marginBottom="@dimen/dialog_vertical_margin"
-android:layout_marginTop="@dimen/dialog_vertical_margin"
-android:orientation="horizontal"
-android:paddingEnd="@dimen/activity_horizontal_margin"
-android:paddingLeft="@dimen/activity_horizontal_margin"
-android:paddingRight="@dimen/activity_horizontal_margin"
-android:paddingStart="@dimen/activity_horizontal_margin">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_item_bus_line"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingBottom="4dp"
+    android:paddingEnd="@dimen/activity_horizontal_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingStart="@dimen/activity_horizontal_margin"
+    android:paddingTop="4dp"
+    android:focusable="true"
+    android:clickable="true"
+    android:background="@drawable/ripple_effect_bus_line_item">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_gravity="center"
+        android:src="@drawable/bus_stop"
+        android:contentDescription="@string/bus_line_hint" />
 
     <LinearLayout
         android:layout_width="0dp"

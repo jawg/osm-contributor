@@ -27,6 +27,10 @@
     <color name="colorCreation">#FF9800</color>
     <color name="colorCreationDark">#F57C00</color>
 
+    <color name="colorRippleDarkBlue">#0a3358</color>
+    <color name="colorRippleLightBlue">#FF82B7E1</color>
+    <color name="colorWhite">#ffffff</color>
+
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar"/>
 
     <style name="AppTheme" parent="AppTheme.Base">
