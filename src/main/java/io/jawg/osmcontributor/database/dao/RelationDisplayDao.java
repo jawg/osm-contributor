@@ -30,8 +30,8 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import io.jawg.osmcontributor.database.helper.DatabaseHelper;
+import io.jawg.osmcontributor.model.entities.Poi;
 import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplay;
-import timber.log.Timber;
 
 /**
  * Dao for {@link RelationDisplay} objects.
@@ -93,44 +93,29 @@ public class RelationDisplayDao extends RuntimeExceptionDao<RelationDisplay, Lon
      *
      * @return A list of RelationDisplay.
      */
-    public List<Long> queryForRelationIdsOrderedByDistance(Long poiId) {
+    public List<Long> queryForRelationIdsOrderedByDistance(Poi poi) {
         return DatabaseHelper.wrapException(() -> {
             final String    RELATION_TAG_REF    = "ref";
             final int       LIMIT_NB_NEARBY_POI = 20;
 
-            final String rawSqlFetchPoisRelationsIdsOrderedByDistance =
+            final String query =
                     " SELECT DISTINCT rdt.relation_display_id "
                             + " FROM "
                             + " ( "
-                            + "     SELECT DISTINCT p_nearby.id AS id, ABS(p_nearby.latitude - p_origin.latitude) + ABS(p_nearby.longitude - p_origin.longitude) AS distance "
-                            + "     FROM poi p_origin "
-                            + "     INNER JOIN poi p_nearby "
-                            + "     ON p_nearby.id <> p_origin.id "
-                            + "     WHERE p_origin.id = %d "
+                            + "     SELECT DISTINCT id, ABS(latitude - " + poi.getLatitude() + ") + ABS(longitude - " + poi.getLongitude() + ") AS distance "
+                            + "     FROM poi "
+                            + (poi.getId() == null ? "" : "     WHERE id != " + poi.getId() + " ")
                             + "     ORDER BY distance "
-                            + "     LIMIT %d "
+                            + "     LIMIT " + LIMIT_NB_NEARBY_POI + " "
                             + " ) "
                             + " AS nearby_pois "
                             + " JOIN relation_id ri ON ri.poi_id = nearby_pois.id "
                             + " JOIN relation_display rd ON rd.backend_id = ri.relation_id "
-                            + " JOIN relation_display_tag rdt ON rdt.relation_display_id = rd.id AND rdt.key = '%s' "
-                            + " WHERE rdt.value NOT IN "
-                            + " ( "
-                            + "     SELECT DISTINCT rdt.value AS value "
-                            + "     FROM relation_id ri "
-                            + "     JOIN relation_display rd ON rd.backend_id = ri.relation_id "
-                            + "     JOIN relation_display_tag rdt ON rdt.relation_display_id = rd.id AND rdt.key = '%s' "
-                            + "     WHERE poi_id = %d "
-                            + "     ORDER BY relation_id "
-                            + " ) "
+                            + " JOIN relation_display_tag rdt ON rdt.relation_display_id = rd.id AND rdt.key = '" + RELATION_TAG_REF + "' "
                             + " ORDER BY nearby_pois.distance "
                     ;
 
-            GenericRawResults<String[]> rawResults = queryRaw(String.format(
-                    Locale.FRENCH,
-                    rawSqlFetchPoisRelationsIdsOrderedByDistance,
-                    poiId, LIMIT_NB_NEARBY_POI, RELATION_TAG_REF, RELATION_TAG_REF, poiId
-            ));
+            GenericRawResults<String[]> rawResults = queryRaw(query);
 
             List<Long> relationsIds = new ArrayList<>();
 
