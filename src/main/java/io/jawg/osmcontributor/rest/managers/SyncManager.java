@@ -24,7 +24,6 @@ import android.util.Pair;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.w3c.dom.ls.LSException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -483,7 +482,7 @@ public class SyncManager {
 
         switch (updateResult.getStatus()) {
             case SUCCESS:
-                edition.first.getPoi().setRelation_updated(false);
+                edition.first.getPoi().setRelationsUpdated(false);
                 poiManager.savePoi(edition.first.getPoi());
                 relationManager.deleteFinishedEditions(edition.first);
                 OsmAnswers.remoteRelationAction();

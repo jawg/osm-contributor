@@ -113,7 +113,7 @@ public class Poi implements Cloneable, MapElement {
     private Boolean detailsUpdated;
 
     @DatabaseField(columnName = RELATION_UPDATED, canBeNull = false)
-    private Boolean relation_updated;
+    private Boolean relationsUpdated = false;
 
     @DatabaseField(columnName = WAY, canBeNull = false)
     private Boolean way = false;
@@ -217,15 +217,15 @@ public class Poi implements Cloneable, MapElement {
     }
 
     public Boolean getUpdated() {
-        return this.detailsUpdated || this.relation_updated;
+        return this.detailsUpdated || this.relationsUpdated;
     }
 
-    public Boolean getRelation_updated() {
-        return relation_updated;
+    public Boolean getRelationsUpdated() {
+        return relationsUpdated;
     }
 
-    public void setRelation_updated(Boolean relation_updated) {
-        this.relation_updated = relation_updated;
+    public void setRelationsUpdated(Boolean relationsUpdated) {
+        this.relationsUpdated = relationsUpdated;
     }
 
     public Boolean getWay() {
@@ -406,7 +406,7 @@ public class Poi implements Cloneable, MapElement {
                 ", visible=" + visible +
                 ", old=" + old +
                 ", detailsUpdated=" + detailsUpdated +
-                ", relationUpdated=" + relation_updated +
+                ", relationsUpdated=" + relationsUpdated +
                 ", way=" + way +
                 ", toDelete=" + toDelete +
                 ", level='" + level + '\'' +
