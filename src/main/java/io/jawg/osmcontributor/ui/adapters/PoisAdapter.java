@@ -165,7 +165,7 @@ public class PoisAdapter extends RecyclerView.Adapter<PoisAdapter.PoiViewHolder>
 
             holder.getDetailsWrapper().addView(singleLine);
         }
-        if (poiWrapper.getNewPoi().getRelation_updated()){
+        if (poiWrapper.getNewPoi().getRelationsUpdated()){
             View relationUpdated = inflater.inflate(R.layout.single_change_bus_line_layout, parent, false);
             holder.getDetailsWrapper().addView(relationUpdated);
         }

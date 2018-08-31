@@ -109,7 +109,7 @@ public class EditPoiManager {
 
             if (!event.getRelationEditions().isEmpty()) {
                 editPoi.applyChangesOnRelationList(event.getRelationEditions());
-                editPoi.setRelation_updated(true);
+                editPoi.setRelationsUpdated(true);
             }
 
             poiManager.savePoi(editPoi);

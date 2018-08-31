@@ -74,7 +74,7 @@ public class RelationManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseLoadBusLinesNearbyForPoiEvent(PleaseLoadBusLinesNearbyForPoiEvent event) {
-        List<RelationDisplay> relationDisplays = getBusLinesOrderedByDistanceFromPoiById(event.getPoiId());
+        List<RelationDisplay> relationDisplays = getBusLinesOrderedByDistanceFromPoiById(event.getPoi());
         eventBus.post(new BusLinesNearbyForPoiLoadedEvent(relationDisplays));
     }
 
@@ -120,11 +120,11 @@ public class RelationManager {
     /**
      * get bus lines ordered by distance ASC from a POI
      *
-     * @param poiId a Poi id
+     * @param poi a Poi
      * @return a list of RelationDisplay
      */
-    public List<RelationDisplay> getBusLinesOrderedByDistanceFromPoiById(Long poiId) {
-        List<Long> relationIds = relationDisplayDao.queryForRelationIdsOrderedByDistance(poiId);
+    public List<RelationDisplay> getBusLinesOrderedByDistanceFromPoiById(Poi poi) {
+        List<Long> relationIds = relationDisplayDao.queryForRelationIdsOrderedByDistance(poi);
         List<RelationDisplay> relationDisplays = relationDisplayDao.queryByDatabaseIds(relationIds);
 
         // The request which converts List<Long> to List<RelationDisplay> sorts the result by id ASC

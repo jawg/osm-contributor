@@ -48,7 +48,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -325,7 +324,7 @@ public class EditPoiFragment extends Fragment {
         recyclerView.setAdapter(tagsAdapter);
 
         eventBus.post(new PleaseLoadBusLinesForPoiEvent(poi.getRelationIds()));
-        eventBus.post(new PleaseLoadBusLinesNearbyForPoiEvent(poi.getId()));
+        eventBus.post(new PleaseLoadBusLinesNearbyForPoiEvent(poi));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

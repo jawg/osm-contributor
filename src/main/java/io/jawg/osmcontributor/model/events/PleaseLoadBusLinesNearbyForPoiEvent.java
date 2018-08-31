@@ -18,14 +18,16 @@
  */
 package io.jawg.osmcontributor.model.events;
 
-public class PleaseLoadBusLinesNearbyForPoiEvent {
-    private final Long poiId;
+import io.jawg.osmcontributor.model.entities.Poi;
 
-    public PleaseLoadBusLinesNearbyForPoiEvent(Long poiId) {
-        this.poiId = poiId;
+public class PleaseLoadBusLinesNearbyForPoiEvent {
+    private final Poi poi;
+
+    public PleaseLoadBusLinesNearbyForPoiEvent(Poi poi) {
+        this.poi = poi;
     }
 
-    public Long getPoiId() {
-        return poiId;
+    public Poi getPoi() {
+        return poi;
     }
 }
