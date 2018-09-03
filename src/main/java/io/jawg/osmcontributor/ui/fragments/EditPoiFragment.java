@@ -223,7 +223,7 @@ public class EditPoiFragment extends Fragment {
             if (sharedPreferences.getBoolean(getString(R.string.shared_prefs_expert_mode), false)) {
                 if (creation) {
                     getActivity().setResult(EditPoiActivity.POI_CREATED, null);
-                    eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges()));
+                    eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges(), tagsAdapter.getChangedRelations()));
                     OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "add");
                 } else if (tagsAdapter.isChange()) {
                     getActivity().setResult(EditPoiActivity.POI_EDITED, null);
@@ -240,7 +240,7 @@ public class EditPoiFragment extends Fragment {
             if (creation) {
                 if (!poi.getType().hasMandatoryTags() || tagsAdapter.isValidChanges()) {
                     getActivity().setResult(EditPoiActivity.POI_CREATED, null);
-                    eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges()));
+                    eventBus.post(new PleaseCreatePoiEvent(poi, tagsAdapter.getPoiChanges(), tagsAdapter.getChangedRelations()));
                     OsmAnswers.localPoiAction(poi.getType().getTechnicalName(), "add");
                 } else {
                     tagsAdapter.refreshErrorStatus();

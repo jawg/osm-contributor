@@ -46,6 +46,7 @@ import io.jawg.osmcontributor.database.dao.PoiNodeRefDao;
 import io.jawg.osmcontributor.database.dao.PoiTagDao;
 import io.jawg.osmcontributor.database.dao.PoiTypeDao;
 import io.jawg.osmcontributor.database.dao.PoiTypeTagDao;
+import io.jawg.osmcontributor.database.dao.RelationIdDao;
 import io.jawg.osmcontributor.database.dao.SourceDao;
 import io.jawg.osmcontributor.database.events.DbInitializedEvent;
 import io.jawg.osmcontributor.database.events.InitDbEvent;
@@ -56,6 +57,7 @@ import io.jawg.osmcontributor.model.entities.PoiNodeRef;
 import io.jawg.osmcontributor.model.entities.PoiTag;
 import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.PoiTypeTag;
+import io.jawg.osmcontributor.model.entities.RelationId;
 import io.jawg.osmcontributor.model.events.DatabaseResetFinishedEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForCreationEvent;
 import io.jawg.osmcontributor.model.events.PleaseLoadPoiForEditionEvent;
@@ -104,6 +106,7 @@ public class PoiManager {
     SourceDao sourceDao;
     ConditionDao conditionDao;
     ActionDao actionDao;
+    RelationIdDao relationIdDao;
     DatabaseHelper databaseHelper;
     ConfigManager configManager;
     EventBus bus;
@@ -113,8 +116,9 @@ public class PoiManager {
     public PoiManager(Application application, BitmapHandler bitmapHandler, PoiDao poiDao,
                       PoiTagDao poiTagDao, PoiNodeRefDao poiNodeRefDao, PoiTypeDao poiTypeDao,
                       PoiTypeTagDao poiTypeTagDao, ConstraintDao constraintDao, SourceDao sourceDao,
-                      ConditionDao conditionDao, ActionDao actionDao, DatabaseHelper databaseHelper,
-                      ConfigManager configManager, EventBus bus, PoiAssetLoader poiAssetLoader) {
+                      ConditionDao conditionDao, ActionDao actionDao, RelationIdDao relationIdDao,
+                      DatabaseHelper databaseHelper, ConfigManager configManager, EventBus bus,
+                      PoiAssetLoader poiAssetLoader) {
         this.application = application;
         this.bitmapHandler = bitmapHandler;
         this.poiDao = poiDao;
@@ -126,6 +130,7 @@ public class PoiManager {
         this.sourceDao = sourceDao;
         this.conditionDao = conditionDao;
         this.actionDao = actionDao;
+        this.relationIdDao = relationIdDao;
         this.databaseHelper = databaseHelper;
         this.configManager = configManager;
         this.bus = bus;
@@ -374,6 +379,13 @@ public class PoiManager {
                 poiNodeRef.setPoi(poi);
                 poiNodeRefDao.createOrUpdate(poiNodeRef);
 
+            }
+        }
+
+        if (poi.getRelationIds() != null) {
+            for (RelationId relationId : poi.getRelationIds()) {
+                relationId.setPoi(poi);
+                relationIdDao.createOrUpdate(relationId);
             }
         }
 

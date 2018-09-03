@@ -26,8 +26,9 @@ import io.jawg.osmcontributor.model.entities.relation_save.RelationEdition;
 import io.jawg.osmcontributor.utils.edition.PoiChanges;
 
 public class PleaseApplyPoiChanges {
+
     private final PoiChanges poiChanges;
-    private List<RelationEdition> relationEditions;
+    private final List<RelationEdition> relationEditions;
 
     public PleaseApplyPoiChanges(PoiChanges poiChanges, List<RelationEdition> relationEditions) {
         this.relationEditions = relationEditions == null ? Collections.emptyList() : relationEditions;

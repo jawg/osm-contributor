@@ -18,18 +18,22 @@
  */
 package io.jawg.osmcontributor.model.events;
 
+import java.util.List;
+
 import io.jawg.osmcontributor.model.entities.Poi;
+import io.jawg.osmcontributor.model.entities.relation_save.RelationEdition;
 import io.jawg.osmcontributor.utils.edition.PoiChanges;
 
 public class PleaseCreatePoiEvent {
 
     private final Poi poi;
     private final PoiChanges poiChanges;
+    private final List<RelationEdition> relationEditions;
 
-
-    public PleaseCreatePoiEvent(Poi poi, PoiChanges poiChanges) {
+    public PleaseCreatePoiEvent(Poi poi, PoiChanges poiChanges, List<RelationEdition> relationEditions) {
         this.poi = poi;
         this.poiChanges = poiChanges;
+        this.relationEditions = relationEditions;
     }
 
     public Poi getPoi() {
@@ -38,5 +42,9 @@ public class PleaseCreatePoiEvent {
 
     public PoiChanges getPoiChanges() {
         return poiChanges;
+    }
+
+    public List<RelationEdition> getRelationEditions() {
+        return relationEditions;
     }
 }
