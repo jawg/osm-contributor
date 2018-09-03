@@ -74,7 +74,7 @@ public class RelationManager {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseLoadBusLinesNearbyForPoiEvent(PleaseLoadBusLinesNearbyForPoiEvent event) {
-        List<RelationDisplay> relationDisplays = getBusLinesOrderedByDistanceFromPoiById(event.getPoi());
+        List<RelationDisplay> relationDisplays = getBusLinesOrderedByDistanceFromPoi(event.getPoi());
         eventBus.post(new BusLinesNearbyForPoiLoadedEvent(relationDisplays));
     }
 
@@ -123,7 +123,7 @@ public class RelationManager {
      * @param poi a Poi
      * @return a list of RelationDisplay
      */
-    public List<RelationDisplay> getBusLinesOrderedByDistanceFromPoiById(Poi poi) {
+    public List<RelationDisplay> getBusLinesOrderedByDistanceFromPoi(Poi poi) {
         List<Long> relationIds = relationDisplayDao.queryForRelationIdsOrderedByDistance(poi);
         List<RelationDisplay> relationDisplays = relationDisplayDao.queryByDatabaseIds(relationIds);
 
