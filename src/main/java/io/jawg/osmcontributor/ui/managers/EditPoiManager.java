@@ -73,7 +73,9 @@ public class EditPoiManager {
     private CheckUserLogged checkUserLogged;
 
     @Inject
-    public EditPoiManager(Application application, PoiManager poiManager, RelationManager relationManager, PoiNodeRefDao poiNodeRefDao, EventBus eventBus, FirebaseJobDispatcher dispatcher, SharedPreferences sharedPreferences, CheckUserLogged checkUserLogged) {
+    public EditPoiManager(Application application, PoiManager poiManager, RelationManager relationManager,
+                          PoiNodeRefDao poiNodeRefDao, EventBus eventBus, FirebaseJobDispatcher dispatcher,
+                          SharedPreferences sharedPreferences, CheckUserLogged checkUserLogged) {
         this.application = application;
         this.poiManager = poiManager;
         this.relationManager = relationManager;
@@ -159,11 +161,20 @@ public class EditPoiManager {
     public void onPleaseCreatePoiEvent(PleaseCreatePoiEvent event) {
         Timber.d("Please create poi");
         Poi poi = event.getPoi();
+
         poi.setDetailsUpdated(true);
         poi.applyChanges(event.getPoiChanges().getTagsMap());
         poi.applyChanges(applyConstraints(poi));
+
+        if (!event.getRelationEditions().isEmpty()) {
+            poi.applyChangesOnRelationList(event.getRelationEditions());
+            poi.setRelationsUpdated(true);
+        }
+
         poiManager.savePoi(poi);
         poiManager.updatePoiTypeLastUse(poi.getType().getId());
+        relationManager.saveRelationEditions(event.getRelationEditions(), poi);
+
         schedulePushJob();
         checkIfLoggedIn();
     }
