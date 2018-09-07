@@ -40,6 +40,9 @@ import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplay;
 import io.jawg.osmcontributor.ui.adapters.parser.BusLineRelationDisplayParser;
 import io.jawg.osmcontributor.utils.edition.RelationDisplayDto;
 
+/**
+ * Adapter used to display the list of bus lines near a POI when you want to add a bus line to that POI
+ */
 public class PoiBusLineAddingAdapter extends RecyclerView.Adapter<PoiBusLineAddingAdapter.BusLineHolder> {
 
     private static final int NB_MAX_RELATIONS_TO_DISPLAY = 3;
@@ -47,8 +50,8 @@ public class PoiBusLineAddingAdapter extends RecyclerView.Adapter<PoiBusLineAddi
     private static final String TAG_COLOUR = "colour";
 
     private final Context context;
-    private final BusLineRelationDisplayParser busLineParser;
     private final List<RelationDisplay> busLines;
+    private final BusLineRelationDisplayParser busLineParser;
 
     private AddBusLineListener addBusLineListener;
 
@@ -60,10 +63,18 @@ public class PoiBusLineAddingAdapter extends RecyclerView.Adapter<PoiBusLineAddi
         this.addBusLineListener = addBusLineListener;
     }
 
-    public PoiBusLineAddingAdapter(Context context, BusLineRelationDisplayParser parser, List<RelationDisplay> busLines) {
+    public PoiBusLineAddingAdapter(Context context, List<RelationDisplay> busLines, BusLineRelationDisplayParser parser) {
         this.context = context;
         this.busLineParser = parser;
         this.busLines = busLines;
+    }
+
+    public RelationDisplay getItem(int position) {
+        return busLines.get(position);
+    }
+
+    public List<RelationDisplay> getItems() {
+        return busLines;
     }
 
     @NonNull

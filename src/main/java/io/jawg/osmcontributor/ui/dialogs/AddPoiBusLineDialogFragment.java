@@ -52,7 +52,7 @@ import io.jawg.osmcontributor.ui.adapters.parser.BusLineRelationDisplayParser;
 import io.jawg.osmcontributor.ui.events.type.PleaseLoadBusLinesSuggestionForPoiEvent;
 import io.jawg.osmcontributor.ui.managers.RelationManager;
 import io.jawg.osmcontributor.ui.utils.views.DividerItemDecoration;
-import io.jawg.osmcontributor.utils.edition.RelationDisplayDto;
+import io.jawg.osmcontributor.utils.edition.RelationDisplayUtils;
 
 public class AddPoiBusLineDialogFragment extends DialogFragment {
 
@@ -86,6 +86,7 @@ public class AddPoiBusLineDialogFragment extends DialogFragment {
 
     private List<RelationDisplay> currentBusLines;
     private List<RelationDisplay> busLinesNearby;
+    private List<RelationDisplay> suggestionList;
     private AddBusLineListener addBusLineListener;
     private BusLineSuggestionAdapter suggestionAdapter;
 
@@ -98,15 +99,21 @@ public class AddPoiBusLineDialogFragment extends DialogFragment {
     }
 
     public static AddPoiBusLineDialogFragment
-    newInstance(List<RelationDisplay> busLines, List<RelationDisplay> busLinesNearby) {
+    newInstance(List<RelationDisplay> currentBusLines, List<RelationDisplay> busLinesNearby) {
         AddPoiBusLineDialogFragment dialog = new AddPoiBusLineDialogFragment();
-        dialog.init(busLines, busLinesNearby);
+        dialog.init(currentBusLines, busLinesNearby);
         return dialog;
     }
 
     private void init(List<RelationDisplay> currentBusLines, List<RelationDisplay> busLinesNearby) {
         this.currentBusLines = currentBusLines;
         this.busLinesNearby = busLinesNearby;
+        this.suggestionList = new ArrayList<>();
+    }
+
+    private void addBusLine(RelationDisplay busLine) {
+        addBusLineListener.onBusLineClick(busLine);
+        dismiss();
     }
 
     @Override
@@ -139,13 +146,10 @@ public class AddPoiBusLineDialogFragment extends DialogFragment {
         clearButton.setOnClickListener(view -> searchBusLineTextView.setText(""));
 
         suggestionAdapter = new BusLineSuggestionAdapter(getActivity().getBaseContext(), busLineParser);
-
         searchBusLineTextView.setAdapter(suggestionAdapter);
         searchBusLineTextView.setOnItemClickListener((parent, view, position, id) -> addBusLine(suggestionAdapter.getItem(position)));
 
-        PoiBusLineAddingAdapter adapter = new PoiBusLineAddingAdapter(
-                getActivity().getBaseContext(), busLineParser, busLinesNearby
-        );
+        PoiBusLineAddingAdapter adapter = new PoiBusLineAddingAdapter(getActivity().getBaseContext(), busLinesNearby, busLineParser);
         adapter.setAddBusLineListener((position, busLine) -> addBusLine(busLine));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
@@ -155,39 +159,13 @@ public class AddPoiBusLineDialogFragment extends DialogFragment {
         return alertDialog;
     }
 
-    private void addBusLine(RelationDisplay busLine) {
-        addBusLineListener.onBusLineClick(busLine);
-        dismiss();
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBusLinesSuggestionForPoiLoadedEvent(BusLinesSuggestionForPoiLoadedEvent event) {
-        List<RelationDisplay> relationDisplays = event.getRelationDisplays();
-        List<RelationDisplay> suggestionList = new ArrayList<>();
-        boolean addItem;
-
-        for (RelationDisplay relationDisplay : relationDisplays) {
-            final String tagRefValNearby = new RelationDisplayDto(relationDisplay).getTagValue(TAG_REF);
-            addItem = true;
-
-            for (RelationDisplay currentBusLine : currentBusLines) {
-                final String tagRefValCurrent = new RelationDisplayDto(currentBusLine).getTagValue(TAG_REF);
-
-                // If the list "currentBusLines" already contains the bus line "relationDisplay"
-                // or a bus line whose tag value "REF" is equal,
-                // relationDisplay is not added to the list "suggestionList"
-                if (currentBusLine.equals(relationDisplay) || tagRefValCurrent.equals(tagRefValNearby)) {
-                    addItem = false;
-                    break;
-                }
-            }
-            if (addItem) {
+        for (RelationDisplay relationDisplay : event.getRelationDisplays()) {
+            if (!RelationDisplayUtils.isBusLineOrTagEqual(currentBusLines, relationDisplay, TAG_REF)) {
                 suggestionList.add(relationDisplay);
             }
         }
-
-        suggestionAdapter.clear();
-        suggestionAdapter.setBusLinesSuggestion(suggestionList);
-        suggestionAdapter.notifyDataSetChanged();
+        suggestionAdapter.setItems(suggestionList);
     }
 }

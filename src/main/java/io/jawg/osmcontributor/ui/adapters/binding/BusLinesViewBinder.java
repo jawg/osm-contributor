@@ -2,7 +2,6 @@ package io.jawg.osmcontributor.ui.adapters.binding;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,7 +30,7 @@ import io.jawg.osmcontributor.ui.dialogs.AddPoiBusLineDialogFragment;
 import io.jawg.osmcontributor.ui.managers.RelationManager;
 import io.jawg.osmcontributor.ui.utils.views.DividerItemDecoration;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagItemBusLineViewHolder;
-import io.jawg.osmcontributor.utils.edition.RelationDisplayDto;
+import io.jawg.osmcontributor.utils.edition.RelationDisplayUtils;
 
 public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewHolder, TagItem> {
 
@@ -47,8 +46,9 @@ public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewH
     private static final String TAG = BusLinesViewBinder.class.getName();
     private static final String TAG_REF = "ref";
 
-    private List<RelationDisplay> currentBusLines = new ArrayList<>();
+    private TagItemBusLineViewHolder holder;
     private List<RelationDisplay> busLinesNearby = new ArrayList<>();
+    private BusLineAdapter adapter;
 
     public BusLinesViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
         super(activity, tagItemChangeListener);
@@ -69,12 +69,12 @@ public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewH
     @Override
     public void onBindViewHolder(TagItemBusLineViewHolder holder, TagItem tagItem) {
         // Save holder
+        this.holder = holder;
         this.content = holder.getContent();
 
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), holder.getContent().getContext()));
 
-        BusLineAdapter adapter = new BusLineAdapter(activity.get().getBaseContext(), currentBusLines, busLineRelationDisplayParser);
-
+        adapter = new BusLineAdapter(activity.get().getBaseContext(), busLineRelationDisplayParser);
         adapter.setRemoveBusListener((busLine, position) -> {
             removeBusLine(adapter, busLine, position);
             cancelBusLinesUpdate(
@@ -96,47 +96,8 @@ public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewH
                 new DividerItemDecoration(recyclerView.getContext(), R.drawable.bus_line_divider);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        onSwipeBusLine(recyclerView, adapter, currentBusLines);
-
-        holder.getEditAddLayout().setOnClickListener(
-                view -> {
-                    List<RelationDisplay> filteredBusLinesNearby = new ArrayList<>();
-                    boolean addItem;
-
-                    for (RelationDisplay busLineNearby : busLinesNearby) {
-                        final String tagRefValNearby = new RelationDisplayDto(busLineNearby).getTagValue(TAG_REF);
-                        addItem = true;
-
-                        for (RelationDisplay currentBusLine : currentBusLines) {
-                            final String tagRefValCurrent = new RelationDisplayDto(currentBusLine).getTagValue(TAG_REF);
-
-                            // If the list "currentBusLines" already contains the bus line "busLineNearby"
-                            // or a bus line whose tag value "REF" is equal,
-                            // busLineNearby is not added to the list "filteredBusLinesNearby"
-                            if (currentBusLine.equals(busLineNearby) || tagRefValCurrent.equals(tagRefValNearby)) {
-                                addItem = false;
-                                break;
-                            }
-                        }
-                        if (addItem) {
-                            filteredBusLinesNearby.add(busLineNearby);
-                        }
-                    }
-
-                    AddPoiBusLineDialogFragment frag =
-                            AddPoiBusLineDialogFragment.newInstance(currentBusLines, filteredBusLinesNearby);
-
-                    frag.setAddBusLineListener(busLine -> {
-                        addBusLine(adapter, busLine, currentBusLines.size());
-                        cancelBusLinesUpdate(
-                                activity.get().getBaseContext(), holder.getBusLineRecyclerView(),
-                                v -> adapter.removeItem(currentBusLines.indexOf(busLine)),
-                                busLine, R.string.item_added);
-                    });
-
-                    frag.show(activity.get().getFragmentManager(), TAG);
-                }
-        );
+        onSwipeBusLine(recyclerView, adapter);
+        onAddBusLineButtonClick();
     }
 
     private void addBusLine(BusLineAdapter adapter, RelationDisplay busLine, int position) {
@@ -156,12 +117,41 @@ public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewH
     }
 
     /**
-     * Action when swipping bus line item
+     * Action when clicking on the button to add a new bus line
+     */
+    private void onAddBusLineButtonClick() {
+        holder.getEditAddLayout().setOnClickListener(
+                view -> {
+                    List<RelationDisplay> busLines = adapter.getItems();
+                    List<RelationDisplay> filteredBusLinesNearby = new ArrayList<>();
+
+                    for (RelationDisplay busLineNearby : busLinesNearby) {
+                        if (!RelationDisplayUtils.isBusLineOrTagEqual(busLines, busLineNearby, TAG_REF)) {
+                            filteredBusLinesNearby.add(busLineNearby);
+                        }
+                    }
+
+                    AddPoiBusLineDialogFragment frag =
+                            AddPoiBusLineDialogFragment.newInstance(busLines, filteredBusLinesNearby);
+
+                    frag.setAddBusLineListener(busLine -> {
+                        addBusLine(adapter, busLine, busLines.size());
+                        cancelBusLinesUpdate(
+                                activity.get().getBaseContext(), holder.getBusLineRecyclerView(),
+                                v -> adapter.removeItem(busLines.indexOf(busLine)),
+                                busLine, R.string.item_added);
+                    });
+                    frag.show(activity.get().getFragmentManager(), TAG);
+                }
+        );
+    }
+
+    /**
+     * Action when swiping bus line item
      * @param recyclerView  Bus line recyclerView
      * @param adapter       Bus lines adapter
-     * @param busLines      List of bus lines
      */
-    private void onSwipeBusLine(RecyclerView recyclerView, BusLineAdapter adapter, List<RelationDisplay> busLines) {
+    private void onSwipeBusLine(RecyclerView recyclerView, BusLineAdapter adapter) {
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper
                 .SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -173,11 +163,11 @@ public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewH
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 final int position = viewHolder.getAdapterPosition();
-                final RelationDisplay busLine = busLines.get(position);
+                final RelationDisplay busLine = adapter.getItem(position);
 
                 removeBusLine(adapter, busLine, position);
                 cancelBusLinesUpdate(
-                        activity.get().getBaseContext(), viewHolder.itemView,
+                        activity.get().getBaseContext(), recyclerView,
                         v -> adapter.addItem(position, busLine),
                         busLine, R.string.item_removed);
             }
@@ -208,10 +198,11 @@ public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewH
     }
 
     public void setCurrentBusLines(List<RelationDisplay> currentBusLines) {
-        this.currentBusLines = currentBusLines;
+        adapter.setItems(currentBusLines);
     }
 
     public void setBusLinesNearby(List<RelationDisplay> busLinesNearby) {
-        this.busLinesNearby = busLinesNearby;
+        this.busLinesNearby.clear();
+        this.busLinesNearby.addAll(busLinesNearby);
     }
 }

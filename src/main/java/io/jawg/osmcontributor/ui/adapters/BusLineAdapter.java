@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -39,6 +40,9 @@ import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplay;
 import io.jawg.osmcontributor.ui.adapters.parser.BusLineRelationDisplayParser;
 import io.jawg.osmcontributor.utils.edition.RelationDisplayDto;
 
+/**
+ * Adapter used to display the list of bus lines in the cardview when creating/editing a POI
+ */
 public class BusLineAdapter extends RecyclerView.Adapter<BusLineAdapter.BusLineHolder> {
 
     private static final int DEFAULT_COLOR = R.color.active_text;
@@ -57,10 +61,36 @@ public class BusLineAdapter extends RecyclerView.Adapter<BusLineAdapter.BusLineH
         void onBusLineClick(RelationDisplay busLine, int position);
     }
 
-    public BusLineAdapter(Context context, List<RelationDisplay> busLines, BusLineRelationDisplayParser parser) {
+    public BusLineAdapter(Context context, BusLineRelationDisplayParser parser) {
         this.context = context;
         this.relationNameParser = parser;
-        this.busLines = busLines;
+        this.busLines = new ArrayList<>();
+    }
+
+    public RelationDisplay getItem(int position) {
+        return busLines.get(position);
+    }
+
+    public List<RelationDisplay> getItems() {
+        return busLines;
+    }
+
+    public void setItems(List<RelationDisplay> busLines) {
+        if (busLines != null) {
+            this.busLines.clear();
+            this.busLines.addAll(busLines);
+            notifyDataSetChanged();
+        }
+    }
+
+    public void addItem(int position, RelationDisplay busLine) {
+        busLines.add(position, busLine);
+        notifyItemInserted(position);
+    }
+
+    public void removeItem(int position) {
+        busLines.remove(position);
+        notifyItemRemoved(position);
     }
 
     @NonNull
@@ -96,18 +126,6 @@ public class BusLineAdapter extends RecyclerView.Adapter<BusLineAdapter.BusLineH
     @Override
     public int getItemCount() {
         return busLines.size();
-    }
-
-    public void addItem(int position, RelationDisplay busLine) {
-        notifyItemRangeRemoved(0, getItemCount());
-        busLines.add(position, busLine);
-        notifyItemRangeInserted(0, getItemCount());
-    }
-
-    public void removeItem(int position) {
-        notifyItemRangeRemoved(0, getItemCount());
-        busLines.remove(position);
-        notifyItemRangeInserted(0, getItemCount());
     }
 
     public static class BusLineHolder extends RecyclerView.ViewHolder {
