@@ -42,6 +42,7 @@ import io.jawg.osmcontributor.rest.mappers.PoiMapper;
 import io.jawg.osmcontributor.rest.mappers.RelationDisplayMapper;
 import io.jawg.osmcontributor.ui.utils.BooleanHolder;
 import io.jawg.osmcontributor.utils.FlavorUtils;
+import io.jawg.osmcontributor.utils.upload.PoiLoadWrapper;
 import rx.Subscriber;
 import timber.log.Timber;
 
@@ -183,6 +184,7 @@ public class PoiLoader {
 
 
     private void loadAndSavePoisFromBackend(MapArea toLoadArea, boolean clean) {
+        OsmDtoInterface osmDto;
         Boolean hasNetwork = OsmTemplateApplication.hasNetwork();
         if (hasNetwork != null && !hasNetwork) {
             throw new NetworkException();
@@ -193,21 +195,21 @@ public class PoiLoader {
         loadedElements = 0L;
         nodeDtos.clear();
         blockDtos.clear();
-        osmDtos = backend.getPoisDtosInBox(toLoadArea.getBox());
 
-        for (OsmDtoInterface osmDto : osmDtos) {
+        final List<PoiLoadWrapper> poiLoadWrapper = backend.getPoisDtosInBox(toLoadArea.getBox());
+        for (PoiLoadWrapper poiLoad : poiLoadWrapper) {
             killIfNeeded();
-            if (FlavorUtils.isBus()) {
-                if (osmDto != null && osmDto.getBlockList() != null) {
+            osmDto = poiLoad.getOsmDto();
+
+            if (FlavorUtils.isBus(poiLoad.getPoiType())) {
+                if (osmDto.getBlockList() != null) {
                     for (BlockDto blockDto : osmDto.getBlockList()) {
                         if (blockDto != null && blockDto.getNodeDtoList() != null) {
                             blockDtos.add(blockDto);
                         }
-
                     }
                 }
-                //for jungle bus, load relations for displaying purpose
-                if (osmDto != null && osmDto.getRelationDtoList() != null) {
+                if (osmDto.getRelationDtoList() != null) {
                     relationDisplayDtos.addAll(osmDto.getRelationDtoList());
                 }
             } else {
@@ -224,10 +226,8 @@ public class PoiLoader {
             }
         }
 
-        osmDtos.clear();
-
         loadingStatus = MAPPING_POIS;
-        totalsElements = FlavorUtils.isBus() ? blockDtos.size() : nodeDtos.size();
+        totalsElements = blockDtos.size() + nodeDtos.size();
 
         if (clean) {
             cleanArea(toLoadArea);
@@ -237,7 +237,6 @@ public class PoiLoader {
         saveRelationDisplaysInDB();
     }
 
-
     private void saveRelationDisplaysInDB() {
         for (RelationDto re : relationDisplayDtos) {
             saveRelationDisplay(relationDisplayMapper.convertDTOtoRelation(re));
@@ -246,20 +245,18 @@ public class PoiLoader {
 
     private void savePoisInDB() {
         counter = 0;
-        if (FlavorUtils.isBus()) {
-            for (BlockDto dto : blockDtos) {
-                killIfNeeded();
-                savePoi(poiMapper.convertDtoToPoi(false, availableTypes, dto.getNodeDtoList().get(0), dto.getRelationIdDtoList()));
-                manageProgress();
-                counter++;
-            }
-        } else {
-            for (PoiDto dto : nodeDtos) {
-                killIfNeeded();
-                savePoi(poiMapper.convertDtoToPoi(false, availableTypes, dto, null));
-                manageProgress();
-                counter++;
-            }
+
+        for (BlockDto dto : blockDtos) {
+            killIfNeeded();
+            savePoi(poiMapper.convertDtoToPoi(false, availableTypes, dto.getNodeDtoList().get(0), dto.getRelationIdDtoList()));
+            manageProgress();
+            counter++;
+        }
+        for (PoiDto dto : nodeDtos) {
+            killIfNeeded();
+            savePoi(poiMapper.convertDtoToPoi(false, availableTypes, dto, null));
+            manageProgress();
+            counter++;
         }
 
         nodeDtos.clear();

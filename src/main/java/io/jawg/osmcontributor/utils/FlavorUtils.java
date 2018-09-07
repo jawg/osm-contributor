@@ -18,13 +18,22 @@
  */
 package io.jawg.osmcontributor.utils;
 
+import java.util.Collection;
+
 import io.jawg.osmcontributor.BuildConfig;
+import io.jawg.osmcontributor.model.entities.PoiType;
+import io.jawg.osmcontributor.model.entities.PoiTypeTag;
 
 public class FlavorUtils {
     public static final String TEMPLATE = "template";
     public static final String POI_STORAGE = "poi_storage";
     public static final String STORE = "store";
     public static final String BUS = "bus";
+    public static final String TAG_HIGHWAY_KEY = "highway";
+    public static final String TAG_HIGHWAY_VAL = "bus_stop";
+    public static final String TAG_PUBLIC_TRANSPORT_KEY = "public_transport";
+    public static final String TAG_PUBLIC_TRANSPORT_VAL = "platform";
+
 
     public static boolean isTemplate() {
         return TEMPLATE.equals(BuildConfig.FLAVOR);
@@ -44,5 +53,26 @@ public class FlavorUtils {
 
     public static boolean hasFilter() {
         return BuildConfig.WITH_FILTER;
+    }
+
+    public static boolean isBus(PoiType poiTypeDto) {
+        if (poiTypeDto == null) {
+            return false;
+        }
+        Collection<PoiTypeTag> tags = poiTypeDto.getTags();
+        if (tags == null || tags.isEmpty()) {
+            return false;
+        }
+        boolean highway = false;
+        boolean transport = false;
+        for (PoiTypeTag t : tags) {
+            if (TAG_HIGHWAY_KEY.equals(t.getKey()) && TAG_HIGHWAY_VAL.equals(t.getValue())) {
+                highway = true;
+            }
+            if (TAG_PUBLIC_TRANSPORT_KEY.equals(t.getKey()) && TAG_PUBLIC_TRANSPORT_VAL.equals(t.getValue())) {
+                transport = true;
+            }
+        }
+        return highway && transport;
     }
 }
