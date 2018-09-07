@@ -1,0 +1,280 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    Copyright (C) 2016 eBusiness Information
+
+    This file is part of OSM Contributor.
+
+    OSM Contributor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OSM Contributor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OSM Contributor.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<resources>
+  <string name="title_activity_edit_poi">编辑兴趣点激活</string>
+  <string name="location_not_found">找不到您的位置</string>
+  <!--MAP FRAGMENT POPUP-->
+  <string name="load_poi_data_outdated_refresh_btn">刷新</string>
+  <string name="load_poi_data_outdated_refresh_cancel">取消</string>
+  <string name="load_poi_data_outdated_refresh_title">数据已过时</string>
+  <string name="load_poi_data_outdated_refresh_content">这个区域的数据已过时，最后于%s同步。你想刷新这些数据吗？</string>
+  <!--EDITION-->
+  <string name="addValueDialogTitle">修改值为：\"%1$s\"</string>
+  <string name="addValueDialogAdd">修改</string>
+  <string name="addValueDialogCancel">取消</string>
+  <string name="uncompleted_fields">有未完成的区域</string>
+  <string name="not_any_changes">没有任何修改</string>
+  <string name="quit_edition_title">退出编辑</string>
+  <string name="quit_edition_message">你真的想放弃你的修改吗？</string>
+  <string name="quit_edition_positive_btn">是</string>
+  <string name="quit_edition_negative_btn">否</string>
+  <string name="no_values_yet">没有值</string>
+  <string name="creation_title">创建</string>
+  <string name="edition_title">编辑</string>
+  <string name="required">需要</string>
+  <string name="optional">可选的</string>
+  <string name="add_tag">添加标签</string>
+  <string name="tag_key">键</string>
+  <string name="tag_value">值</string>
+  <string name="undefined">未定义</string>
+  <!--Edit Poi-->
+  <string name="tag_poi_name">名称</string>
+  <string name="tag_poi_shelter">设备</string>
+  <string name="tag_poi_wheelchair">轮椅通道</string>
+  <string name="tag_poi_bench">长凳</string>
+  <string name="tag_poi_rout_ref">公交路线服务</string>
+  <string name="bus_shelter_note">额外信息</string>
+  <!--Map-->
+  <string name="no_poi_name">此兴趣点没有名称</string>
+  <string name="edit_position">修改位置</string>
+  <string name="edit_poi">编辑兴趣点</string>
+  <string name="duplicate_poi">复制兴趣点</string>
+  <plurals name="update_done">
+    <item quantity="other">%1$s点已在OSM上更新。</item>
+  </plurals>
+  <plurals name="delete_done">
+    <item quantity="other">%1$s点已在OSM上删除。</item>
+  </plurals>
+  <plurals name="noderef_moved">
+    <item quantity="other">%1$s点已在OSM上更新，几分钟后刷新地图以查看修改。</item>
+  </plurals>
+  <plurals name="add_done">
+    <item quantity="other">%1$s兴趣点已在OSM上添加。</item>
+  </plurals>
+  <string name="couldnt_connect_retrofit">无法添加/更新。在您的首选项中检查您的登录名/密码。</string>
+  <string name="couldnt_create_node">创建过程中出现错误，您的修改已被还原。</string>
+  <string name="couldnt_update_node">更新期间出现错误，您的修改已被还原。</string>
+  <string name="couldnt_download_retrofit">无法下载兴趣点。检查您的连接。</string>
+  <string name="couldnt_upload_retrofit">无法上传兴趣点。检查您的连接。</string>
+  <string name="edit_poi_position">修改兴趣点的位置</string>
+  <string name="edit_way_title">编辑道路</string>
+  <string name="edit_noderef_position_title">编辑位置</string>
+  <string name="poi_creation">创建兴趣点</string>
+  <string name="note_creation">创建笔记</string>
+  <string name="delete_poi">删除兴趣点</string>
+  <string name="add_poi">添加兴趣点</string>
+  <string name="delete_poi_title">删除兴趣点</string>
+  <string name="delete_poi_confirm_message">你真的想删除这个兴趣点吗？</string>
+  <string name="delete_poi_positive_btn">删除</string>
+  <string name="delete_poi_negative_btn">否</string>
+  <string name="point_modification_forbidden">此版本不允许修改点</string>
+  <string name="licenses_title">授权</string>
+  <string name="zoom_to_edit">此区域太大而无法加载，请继续放大。</string>
+  <string name="download_in_progress">下载显示区域的所有兴趣点和笔记</string>
+  <string name="switch_style_satellite">卫星视图</string>
+  <string name="switch_style_mapnik">Mapnik视图</string>
+  <string name="switch_style_default">默认视图</string>
+  <string name="zoom_more">您需要继续放大才能下载兴趣点</string>
+  <string name="search_poitype_hint">搜索兴趣点类型</string>
+  <string name="load_poi_zoom_banner">请放大以查看可编辑的地方。</string>
+  <string name="load_poi_network_error">无法访问网络，无法加载所有兴趣点。(点击重试)</string>
+  <string name="load_poi_too_many_pois">需显示的兴趣点太多(%1$d兴趣点的最大值是%2$d)请放大一点。</string>
+  <string name="load_poi_progress">载入中 %1$d %%</string>
+  <string name="load_poi_calling_osm">载入中 ...</string>
+  <string name="load_poi_area_message">正在加载中，请勿操作！</string>
+  <!--Strings related to login-->
+  <string name="prompt_login">登陆</string>
+  <string name="prompt_password">密码</string>
+  <string name="splash_screen_message">正在进行初始化…</string>
+  <!--Preferences-->
+  <string name="title_activity_my_preferences">首选项</string>
+  <string name="summary_login">请提供登录名</string>
+  <string name="summary_password">请提供登陆密码</string>
+  <string name="auto_commit_summary">5分钟后自动上传所有修改</string>
+  <string name="auto_commit_title">自动上传</string>
+  <string name="error_login">无法连接这些凭据。 你确定你有编辑权吗？</string>
+  <string name="error_first_login">无法连接这些凭据。</string>
+  <string name="valid_login">成功连接</string>
+  <string name="reset_title">重置数据库</string>
+  <string name="reset_summary">从数据库中移除所有兴趣点</string>
+  <string name="reset_type_title">重置兴趣点类型</string>
+  <string name="reset_type_summary">重置兴趣点类型并从数据库中移除所有兴趣点</string>
+  <string name="expert_mode_summary">允许您管理兴趣点类型</string>
+  <string name="expert_mode_title">专家模式</string>
+  <string name="reset_dialog_message">您确定要重置数据库吗？ 所有未保存的修改都将丢失。</string>
+  <string name="reset_dialog_positive_button">是</string>
+  <string name="reset_dialog_negative_button">否</string>
+  <string name="reset_success">数据库已成功重置</string>
+  <string name="reset_failure">重置数据库时出错</string>
+  <string name="expert_mode_dialog">您正在进入专家模式。 您将能够创建、更新或删除兴趣点类型并完全的编辑兴趣点。</string>
+  <string name="ok">好</string>
+  <!--Shared preferences-->
+  <string name="shared_prefs_google_connection">用Google登录</string>
+  <!--Login-->
+  <string name="login_google_error">此Google帐户无法用于登录。\ n
+         您可以尝试使用OpenStreetMap用户名和密码登录。\ n \ n
+         如果您想使用自己的Google帐户登录，请在Android用户首选项中将其添加为新帐户。</string>
+  <string name="login_title">连接</string>
+  <!--Tuto-->
+  <string name="tuto_text_press_create">单击此处添加新点</string>
+  <string name="tuto_text_choose_type">选择要添加的兴趣点类型</string>
+  <string name="tuto_text_confirm_position_creation">点击以确认位置，任何返回操作将丢弃您的创建。</string>
+  <string name="tuto_text_confirm_creation">单击以完成您的创建或编辑。</string>
+  <string name="replay_tuto">重开新手提示</string>
+  <string name="replay_tuto_info">提示已重开</string>
+  <string name="tuto_text_synchronized">灰色图标不同步</string>
+  <string name="tuto_text_clic_to_synchronized">您可以随时从此菜单同步修改</string>
+  <string name="tuto_text_cancel_sync">您可以在此处取消一项或多项修改</string>
+  <string name="tuto_text_comment">保存之前，请评论您的修改集</string>
+  <string name="tuto_text_confirm_sync">您可以验证并同步修改集</string>
+  <!--note-->
+  <string name="Note">笔记</string>
+  <string name="comment_text_hint">输入评论</string>
+  <string name="comment_label">评论</string>
+  <string name="action_label">动作</string>
+  <string name="quit_note_title">退出评论编辑</string>
+  <string name="quit_note_message">你真的想放弃你的修改吗？</string>
+  <string name="quit_note_positive_btn">是</string>
+  <string name="quit_note_negative_btn">否</string>
+  <string name="comment_text_cant_be_null">评论文本不能为空</string>
+  <string name="comment_synchronizing">请等待同步完成。</string>
+  <string name="save_note">保存</string>
+  <string name="synchronizing">同步...</string>
+  <string name="note_already_closed">笔记已关闭</string>
+  <string name="title_activity_note">笔记</string>
+  <string name="note">笔记</string>
+  <string name="title_note">笔记 (%s)</string>
+  <string name="title_creation_note">笔记</string>
+  <string name="create_note">创建</string>
+  <string name="cancel">取消</string>
+  <string name="note_spinner_element">笔记</string>
+  <string name="failed_apply_comment">无法添加评论，请检查您的连接和凭据</string>
+  <!--Filter drawer-->
+  <string name="filters">筛选</string>
+  <string name="filter_notes">笔记</string>
+  <string name="filter_note_open">打开</string>
+  <string name="filter_note_closed">关闭</string>
+  <string name="filter_pois">兴趣点</string>
+  <string name="filter_poi_all">所有</string>
+  <!--Profile-->
+  <string name="profile_load">加载配置文件</string>
+  <string name="profile_refresh_error">刷新配置文件时出错！</string>
+  <!--Saving-->
+  <string name="save_now">保存…</string>
+  <string name="title_activity_upload">保存修改</string>
+  <string name="couldnt_save_connectivity">无法上传兴趣点，检查网络连接。</string>
+  <string name="saving">保存中…</string>
+  <!--Update-->
+  <string name="update_title">为您的修改集添加评论：</string>
+  <string name="need_a_comment">评论不能为空</string>
+  <string name="nothing_to_update">您没有任何要更新的内容</string>
+  <string name="nothing_selected">您没有选择任何修改集</string>
+  <string name="created">创建了</string>
+  <string name="deleted">删除了</string>
+  <string name="updated">更新了</string>
+  <!--About-->
+  <string name="title_activity_about">关于我们</string>
+  <string name="about_title">关于</string>
+  <!--edit way-->
+  <string name="edit_way">编辑道路</string>
+  <!--POI types/tags-->
+  <string name="manage_poi_types">管理兴趣点类型</string>
+  <string name="manage_poi_tags">管理兴趣点标签</string>
+  <plurals name="tag_number">
+    <item quantity="other">%1$s标签</item>
+  </plurals>
+  <string name="new_poi_type">新类型</string>
+  <string name="edit_poi_name">编辑类型的名称</string>
+  <string name="new_poi_tag">新标签</string>
+  <string name="edit_poi_type">类型无法编辑</string>
+  <string name="edit_poi_tag">编辑标签</string>
+  <string name="poi_type_name_hint">名称</string>
+  <string name="poi_tag_key_hint">键</string>
+  <string name="poi_tag_value_hint">值</string>
+  <string name="poi_tag_mandatory">强制</string>
+  <string name="poi_tag_days">天</string>
+  <string name="poi_tag_months">月</string>
+  <string name="poi_tag_hours">营业时间</string>
+  <string name="hours">小时</string>
+  <string name="day_monday_letter">周一</string>
+  <string name="day_tuesday_letter">周二</string>
+  <string name="day_wednesday_letter">周三</string>
+  <string name="day_thursday_letter">周四</string>
+  <string name="day_friday_letter">周五</string>
+  <string name="day_saturday_letter">周六</string>
+  <string name="day_sunday_letter">周日</string>
+  <string name="undefined_button_text">未知</string>
+  <!--Snackbar-->
+  <string name="item_removed">\"%1$s\" 已移除</string>
+  <string name="undo">撤销</string>
+  <!--Upload-->
+  <string name="position">位置:</string>
+  <string name="changed">已修改</string>
+  <string name="revert">还原</string>
+  <string name="revert_snack_bar">还原修改集</string>
+  <string name="undo_snack_bar">撤销</string>
+  <string name="node_ref_title">点</string>
+  <!--Easter Egg-->
+  <string name="easter_egg_activation">激活了3D！</string>
+  <!--Android 6.0 dialog messages-->
+  <string name="permissions_title">需要权限</string>
+  <string name="permissions_information">位置权限和修改访问权限是
+         需要处理地图和数据库。 我们不收集个人信息。
+         没有此权限，应用程序无法正常工作。</string>
+  <string name="permissions_information_gps">位置权限已禁用，请修改您的设备设置。</string>
+  <string name="redirection_title">GPS已禁用</string>
+  <string name="enable_gps">您将重定向到设置页面以启用GPS。</string>
+  <!--Pictures-->
+  <string name="picture_sent_failure">发送图片时出错，请重试</string>
+  <string name="flickr_communication_failure">无法与Flickr通信，请重试</string>
+  <string name="picture_sent_success">图片已成功发送， 它将在几分钟内可用</string>
+  <string name="poi_association_failure">无法将图片关联到兴趣点</string>
+  <string name="malformated_tag">此标记的值不符合OSM约定</string>
+  <string name="malformated_value">当前值: </string>
+  <string name="flickr_title">需要Flickr帐户</string>
+  <string name="flickr_need">您需要一个雅虎帐户(Flickr)才能发布照片</string>
+  <string name="upload_message">正在上传</string>
+  <string name="login_using">使用登录</string>
+  <string name="login_verb">登陆</string>
+  <string name="login_later">稍后登录</string>
+  <string name="google">Google</string>
+  <string name="empty_fields">空区域!</string>
+  <string name="notification_download_title">下载</string>
+  <string name="download_offline_area_title">下载离线区域</string>
+  <string name="download_offline_area_message">此预设包含离线区域。\ n需要首先加载这些区域，这可能导致大量数据消耗。 强烈建议使用Wifi连接。\ n \ n您想要启动加载吗？</string>
+  <string name="download_offline_area_more_later">稍后下载</string>
+  <string name="offline_regions">离线区域</string>
+  <string name="no_photos">此兴趣点没有照片</string>
+  <string name="offline_regions_empty_list">没有下载的离线区域，点击加号按钮添加一个。</string>
+  <string name="delete">删除</string>
+  <string name="rename">重命名</string>
+  <string name="download">下载</string>
+  <string name="offline_regions_deleted">区域已成功删除</string>
+  <string name="enter_region_name">输入区域名称</string>
+  <string name="region_name_error">最多15个字符</string>
+  <string name="region_to_large">区域太大，请放大。</string>
+  <string name="offline_step3">点击此处下载区域</string>
+  <string name="offline_step2">缩放以选择区域</string>
+  <string name="offline_step1">点击以选择区域</string>
+  <string name="offline_step4">您的区域将显示在此处</string>
+  <string name="thanks">谢谢 ！</string>
+</resources>
