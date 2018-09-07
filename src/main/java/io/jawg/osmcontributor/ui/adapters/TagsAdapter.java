@@ -280,12 +280,6 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     public void setRelationDisplays(List<RelationDisplay> relationDisplays) {
         busLinesViewBinder.setCurrentBusLines(relationDisplays);
-        for (TagItem tagItem : tagItemList) {
-            if (tagItem.getType() == TagItem.Type.BUS_LINE) {
-                notifyItemChanged(tagItemList.indexOf(tagItem));
-                break;
-            }
-        }
     }
 
     public void setRelationDisplaysNearby(List<RelationDisplay> relationDisplays) {

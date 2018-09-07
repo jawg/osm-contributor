@@ -32,29 +32,44 @@ import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.model.entities.relation_display.RelationDisplay;
 import io.jawg.osmcontributor.ui.adapters.parser.BusLineRelationDisplayParser;
 
+/**
+ * Adapter used to display suggestions of bus lines when you want to add a bus line to a POI
+ */
 public class BusLineSuggestionAdapter extends ArrayAdapter<RelationDisplay> {
 
     private static final int LAYOUT = R.layout.simple_dropdown_item;
 
     private LayoutInflater layoutInflater;
-    private List<RelationDisplay> suggestionsList;
     private BusLineRelationDisplayParser busLineRelationDisplayParser;
+    private List<RelationDisplay> busLines;
 
     public BusLineSuggestionAdapter(Context context, BusLineRelationDisplayParser busLineRelationDisplayParser) {
         super(context, LAYOUT);
         layoutInflater = LayoutInflater.from(context);
         this.busLineRelationDisplayParser = busLineRelationDisplayParser;
-        suggestionsList = new ArrayList<>();
+        this.busLines = new ArrayList<>();
+    }
+
+    public List<RelationDisplay> getItems() {
+        return busLines;
+    }
+
+    public void setItems(List<RelationDisplay> busLines) {
+        if (busLines != null) {
+            this.busLines.clear();
+            this.busLines.addAll(busLines);
+            notifyDataSetChanged();
+        }
     }
 
     @Override
     public int getCount() {
-        return suggestionsList.size();
+        return busLines.size();
     }
 
     @Override
     public RelationDisplay getItem(int position) {
-        return suggestionsList.get(position);
+        return busLines.get(position);
     }
 
     @Override
@@ -76,7 +91,7 @@ public class BusLineSuggestionAdapter extends ArrayAdapter<RelationDisplay> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.bind(busLineRelationDisplayParser.getBusLine(suggestionsList.get(position)));
+        holder.bind(busLineRelationDisplayParser.getBusLine(busLines.get(position)));
 
         return view;
     }
@@ -91,9 +106,5 @@ public class BusLineSuggestionAdapter extends ArrayAdapter<RelationDisplay> {
         public void bind(String item) {
             textView.setText(item);
         }
-    }
-
-    public void setBusLinesSuggestion(List<RelationDisplay> suggestionsList) {
-        this.suggestionsList = suggestionsList;
     }
 }
