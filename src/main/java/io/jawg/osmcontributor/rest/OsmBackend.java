@@ -19,6 +19,7 @@
 package io.jawg.osmcontributor.rest;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.github.scribejava.core.model.Verb;
 
@@ -27,6 +28,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +54,7 @@ import io.jawg.osmcontributor.rest.utils.AuthenticationRequestInterceptor;
 import io.jawg.osmcontributor.ui.managers.PoiManager;
 import io.jawg.osmcontributor.utils.Box;
 import io.jawg.osmcontributor.utils.FlavorUtils;
+import io.jawg.osmcontributor.utils.upload.PoiLoadWrapper;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -139,7 +142,7 @@ public class OsmBackend implements Backend {
      */
     @Override
     @NonNull
-    public List<OsmDtoInterface> getPoisDtosInBox(final Box box) throws NetworkException {
+    public List<PoiLoadWrapper> getPoisDtosInBox(final Box box) throws NetworkException {
         return requestPoisDtosInBox(box);
     }
 
@@ -148,42 +151,48 @@ public class OsmBackend implements Backend {
      */
     @Override
     @NonNull
-    public List<OsmDtoInterface> requestPoisDtosInBox(final Box box) throws NetworkException {
-        List<OsmDtoInterface> osmDtos = new ArrayList<>();
-
+    public List<PoiLoadWrapper> requestPoisDtosInBox(final Box box) throws NetworkException {
         Timber.d("Requesting overpass for download");
 
         poiTypes = poiManager.loadPoiTypes();
 
-        for (Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
+        final Map<Long, PoiType> poiTypeDtoCopy = new HashMap<>(poiTypes);
+        final Map<Long, PoiType> poiTypeDtoList = new HashMap<>();
+        final List<PoiLoadWrapper> poiLoad = new ArrayList<>();
+        final Long idx = 0L;
+
+        for (Map.Entry<Long, PoiType> entry : poiTypeDtoCopy.entrySet()) {
             final PoiType poiTypeDto = entry.getValue();
+            poiTypeDtoList.clear();
+            poiTypeDtoList.put(idx, poiTypeDto);
+
+            StringBuilder sbRequest = new StringBuilder();
             if (poiTypeDto.getQuery() != null) {
-                OSMProxy.Result<OsmDtoInterface> result;
-                // if it is a customize overpass request which contain ({{bbox}})
-                // replace it by the coordinates of the current position
-                String format = poiTypeDto.getQuery().contains(BBOX) ? poiTypeDto.getQuery().replace(BBOX, box.osmFormat()) : poiTypeDto.getQuery();
-                if (FlavorUtils.isBus()) {
-                    result = osmProxy.proceed(() -> {
-                        try {
-                            return overpassRestClient.sendRequestBlock(format).execute().body();
-                        } catch (IOException e) {
-                            return null;
-                        }
-                    });
-                } else {
-                    result = osmProxy.proceed(() -> {
-                        try {
-                            return overpassRestClient.sendRequest(format).execute().body();
-                        } catch (IOException e) {
-                            return null;
-                        }
-                    });
-                }
+                sbRequest.append(poiTypeDto.getQuery().contains(BBOX) ?
+                        poiTypeDto.getQuery().replace(BBOX, box.osmFormat()) :
+                        poiTypeDto.getQuery());
+            }
+            else if (poiTypeDto.getQuery() == null && FlavorUtils.isBus(poiTypeDto)) {
+                sbRequest.append(generateOverpassRequest(box, poiTypeDtoList));
+            }
+
+            if (!TextUtils.isEmpty(sbRequest.toString())) {
+                final String request = sbRequest.toString();
+
+                OSMProxy.Result<OsmDtoInterface> result = osmProxy.proceed(() -> {
+                    try {
+                        return FlavorUtils.isBus(poiTypeDto) ?
+                                overpassRestClient.sendRequestBlock(request).execute().body() :
+                                overpassRestClient.sendRequest(request).execute().body();
+                    } catch (IOException e) {
+                        return null;
+                    }
+                });
 
                 if (result != null) {
                     OsmDtoInterface osmDto = result.getResult();
                     if (osmDto != null) {
-                        osmDtos.add(osmDto);
+                        poiLoad.add(new PoiLoadWrapper(osmDto, poiTypeDto));
                     } else {
                         throw new NetworkException();
                     }
@@ -196,28 +205,19 @@ public class OsmBackend implements Backend {
 
         if (!poiTypes.isEmpty()) {
             OSMProxy.Result<OsmDtoInterface> result = osmProxy.proceed(() -> {
-                String request = generateOverpassRequest(box, poiTypes);
-                if (FlavorUtils.isBus()) {
-                    try {
-                        return overpassRestClient.sendRequestBlock(request).execute().body();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                } else {
-                    try {
-                        return overpassRestClient.sendRequest(request).execute().body();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
+                final String request = generateOverpassRequest(box, poiTypes);
+                try {
+                    return overpassRestClient.sendRequest(request).execute().body();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
                 }
-
             });
+
             if (result != null) {
                 OsmDtoInterface osmDto = result.getResult();
                 if (osmDto != null) {
-                    osmDtos.add(osmDto);
+                    poiLoad.add(new PoiLoadWrapper(osmDto, null));
                 } else {
                     throw new NetworkException();
                 }
@@ -225,7 +225,7 @@ public class OsmBackend implements Backend {
                 throw new NetworkException();
             }
         }
-        return osmDtos;
+        return poiLoad;
     }
 
     @Override

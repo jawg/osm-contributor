@@ -42,6 +42,7 @@ import io.jawg.osmcontributor.rest.dtos.osm.RelationIdDto;
 import io.jawg.osmcontributor.rest.dtos.osm.TagDto;
 import io.jawg.osmcontributor.rest.dtos.osm.WayDto;
 import io.jawg.osmcontributor.utils.FlavorUtils;
+import io.jawg.osmcontributor.utils.upload.PoiLoadWrapper;
 
 public class PoiMapper {
 
@@ -68,19 +69,19 @@ public class PoiMapper {
 
     }
 
-    public List<Poi> convertPois(List<OsmDtoInterface> osmDtos) {
+    public List<Poi> convertPois(List<PoiLoadWrapper> poiLoadList) {
         List<Poi> pois = new ArrayList<>();
-        if (FlavorUtils.isBus()) {
-            for (OsmDtoInterface osmBlockDto : osmDtos) {
-                for (BlockDto blockDto : osmBlockDto.getBlockList()) {
+
+        for (PoiLoadWrapper poiLoad : poiLoadList) {
+            if (FlavorUtils.isBus(poiLoad.getPoiType())) {
+                for (BlockDto blockDto : poiLoad.getOsmDto().getBlockList()) {
                     if (blockDto.getNodeDtoList().size() >= 1) {
                         pois.add(convertBlockToPoi(blockDto));
                     }
                 }
             }
-        } else {
-            for (OsmDtoInterface osmDto : osmDtos) {
-                pois.addAll(convertPois(osmDto));
+            else {
+                pois.addAll(convertPois(poiLoad.getOsmDto()));
             }
         }
         return pois;

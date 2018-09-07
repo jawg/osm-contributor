@@ -60,11 +60,6 @@
               "type": "CONSTANT"
             },
             {
-              "key": "highway",
-              "value": "bus_stop",
-              "type": "CONSTANT"
-            },
-            {
               "key": "name",
               "type": "TEXT"
             },
