@@ -62,7 +62,8 @@
         <activity
             android:name=".ui.activities.EditPoiActivity"
             android:windowSoftInputMode="stateHidden"
-            android:label="@string/title_activity_edit_poi" />
+            android:label="@string/title_activity_edit_poi"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activities.PickValueActivity"
             android:label="@string/title_activity_pick_value" />
