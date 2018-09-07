@@ -60,12 +60,12 @@ public class XMLConverterFactory extends Converter.Factory {
             InputStreamReader isr = null;
             InputStream str;
 
-            if (FlavorUtils.isBus()) {
-                String stream = filterBlocks(body.string());
-                str = new ByteArrayInputStream(stream.getBytes());
-            } else {
-                str = body.byteStream();
-            }
+            /*
+             * Use ByteArrayInputStream instead of byteStream to be able to get nodes and their relations with only one request.
+             * Example of use: bus stop and its bus lines
+             */
+            String stream = filterBlocks(body.string());
+            str = new ByteArrayInputStream(stream.getBytes());
 
             try {
                 isr = new InputStreamReader(str, charset);

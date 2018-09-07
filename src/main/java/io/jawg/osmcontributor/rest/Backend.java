@@ -25,6 +25,7 @@ import io.jawg.osmcontributor.model.entities.PoiType;
 import io.jawg.osmcontributor.model.entities.relation.FullOSMRelation;
 import io.jawg.osmcontributor.rest.dtos.osm.OsmDtoInterface;
 import io.jawg.osmcontributor.utils.Box;
+import io.jawg.osmcontributor.utils.upload.PoiLoadWrapper;
 
 /**
  * Interface representing the application's backend.
@@ -107,12 +108,12 @@ public interface Backend {
      */
     List<Poi> getPoisInBox(final Box box) throws NetworkException;
 
-    List<OsmDtoInterface> getPoisDtosInBox(final Box box) throws NetworkException;
+    List<PoiLoadWrapper> getPoisDtosInBox(final Box box) throws NetworkException;
 
     /**
      * Get all pois in the current box
      */
-    List<? super OsmDtoInterface> requestPoisDtosInBox(final Box box) throws NetworkException;
+    List<PoiLoadWrapper> requestPoisDtosInBox(final Box box) throws NetworkException;
 
     /**
      * Get relationsDisplays to be displayed in jungle bus
