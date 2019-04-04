@@ -1,5 +1,7 @@
 package io.jawg.osmcontributor.ui.managers.loadPoi;
 
+import android.util.Log;
+
 import com.j256.ormlite.misc.TransactionManager;
 
 import org.joda.time.DateTime;
@@ -246,15 +248,24 @@ public class PoiLoader {
     private void savePoisInDB() {
         counter = 0;
 
+
+        List<String> backendIds = new ArrayList<>();
         for (BlockDto dto : blockDtos) {
             killIfNeeded();
-            savePoi(poiMapper.convertDtoToPoi(false, availableTypes, dto.getNodeDtoList().get(0), dto.getRelationIdDtoList()));
+            Poi poi = poiMapper.convertDtoToPoi(false, availableTypes, dto.getNodeDtoList().get(0), dto.getRelationIdDtoList());
+            backendIds.add(poi.getBackendId());
+            savePoi(poi);
             manageProgress();
             counter++;
         }
         for (PoiDto dto : nodeDtos) {
             killIfNeeded();
-            savePoi(poiMapper.convertDtoToPoi(false, availableTypes, dto, null));
+            Poi poi = poiMapper.convertDtoToPoi(false, availableTypes, dto, null);
+            if(!backendIds.contains(poi.getBackendId())) {
+                savePoi(poi);
+            }else{
+                Log.i("POI Type ","POI Type "+ poi.getType());
+            }
             manageProgress();
             counter++;
         }
