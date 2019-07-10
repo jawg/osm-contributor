@@ -1,6 +1,6 @@
 package io.jawg.osmcontributor.ui.adapters.binding;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +18,7 @@ import io.jawg.osmcontributor.ui.utils.views.holders.TagRadioChoiceHolder;
 
 public class RadioChoiceViewBinder extends CheckedTagViewBinder<TagRadioChoiceHolder, TagItem> {
 
-    public RadioChoiceViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
+    public RadioChoiceViewBinder(FragmentActivity activity, TagItemChangeListener tagItemChangeListener) {
         super(activity, tagItemChangeListener);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
     }

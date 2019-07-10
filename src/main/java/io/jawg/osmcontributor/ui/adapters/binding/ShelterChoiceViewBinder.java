@@ -1,6 +1,6 @@
 package io.jawg.osmcontributor.ui.adapters.binding;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +16,7 @@ import io.jawg.osmcontributor.ui.utils.views.holders.ShelterChoiceHolder;
 
 public class ShelterChoiceViewBinder extends CheckedTagViewBinder<ShelterChoiceHolder, ShelterTagItem> {
 
-    public ShelterChoiceViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
+    public ShelterChoiceViewBinder(FragmentActivity activity, TagItemChangeListener tagItemChangeListener) {
         super(activity, tagItemChangeListener);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
     }

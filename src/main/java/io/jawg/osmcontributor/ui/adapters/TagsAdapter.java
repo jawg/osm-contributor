@@ -18,7 +18,7 @@
  */
 package io.jawg.osmcontributor.ui.adapters;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.ViewGroup;
@@ -70,7 +70,7 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
 
-    public TagsAdapter(Poi poi, List<TagItem> tagItemList, Activity activity, Map<String, List<String>> tagValueSuggestionsMap, boolean expertMode) {
+    public TagsAdapter(Poi poi, List<TagItem> tagItemList, FragmentActivity activity, Map<String, List<String>> tagValueSuggestionsMap, boolean expertMode) {
         this.poi = poi;
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
 

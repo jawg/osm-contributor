@@ -1,6 +1,6 @@
 package io.jawg.osmcontributor.ui.adapters.binding;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +26,7 @@ public class OpeningHoursViewBinder extends CheckedTagViewBinder<TagItemOpeningT
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
 
-    public OpeningHoursViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
+    public OpeningHoursViewBinder(FragmentActivity activity, TagItemChangeListener tagItemChangeListener) {
         super(activity, tagItemChangeListener);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
     }

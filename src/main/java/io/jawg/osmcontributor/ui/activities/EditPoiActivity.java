@@ -92,7 +92,7 @@ public class EditPoiActivity extends AppCompatActivity {
             EditPoiFragment editPoiFragment = new EditPoiFragment();
             editPoiFragment.setArguments(args);
 
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, editPoiFragment, EDIT_POI_FRAGMENT_TAG)
                     .commit();
         }

@@ -1,6 +1,6 @@
 package io.jawg.osmcontributor.ui.adapters.binding;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -16,11 +16,11 @@ import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 
 public abstract class CheckedTagViewBinder<T extends RecyclerView.ViewHolder, H extends TagItem> implements TagViewBinder<T, H> {
 
-    public WeakReference<Activity> activity;
+    public WeakReference<FragmentActivity> activity;
     public LinearLayout content;
     public TagItemChangeListener tagItemChangeListener;
 
-    public CheckedTagViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
+    public CheckedTagViewBinder(FragmentActivity activity, TagItemChangeListener tagItemChangeListener) {
         this.activity = new WeakReference<>(activity);
         this.tagItemChangeListener = tagItemChangeListener;
     }

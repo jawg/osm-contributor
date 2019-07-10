@@ -1,8 +1,8 @@
 package io.jawg.osmcontributor.ui.adapters.binding;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -50,7 +50,7 @@ public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewH
     private List<RelationDisplay> busLinesNearby = new ArrayList<>();
     private BusLineAdapter adapter;
 
-    public BusLinesViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
+    public BusLinesViewBinder(FragmentActivity activity, TagItemChangeListener tagItemChangeListener) {
         super(activity, tagItemChangeListener);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
     }
@@ -141,7 +141,7 @@ public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewH
                                 v -> adapter.removeItem(busLines.indexOf(busLine)),
                                 busLine, R.string.item_added);
                     });
-                    frag.show(activity.get().getFragmentManager(), TAG);
+                    frag.show(activity.get().getSupportFragmentManager(), TAG);
                 }
         );
     }

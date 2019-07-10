@@ -19,6 +19,7 @@
 package io.jawg.osmcontributor.rest.security;
 
 import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
@@ -56,12 +57,12 @@ public class GoogleOAuthManager {
         this.eventBus = eventBus;
     }
 
-    public void authenticate(final Activity activity, final String email) {
+    public void authenticate(final FragmentActivity activity, final String email) {
         finish = false;
         final WebViewDialogFragment dialog = WebViewDialogFragment.newInstance(OSM_GOOGLE_AUTH_URL,
                 new MapParams<String, String>().put(LOGIN_HINT_PARAM, email).toMap());
 
-        dialog.show(activity.getFragmentManager(), WebViewDialogFragment.class.getSimpleName());
+        dialog.show(activity.getSupportFragmentManager(), WebViewDialogFragment.class.getSimpleName());
         dialog.setOnPageFinishedListener(new WebViewDialogFragment.OnPageFinishedListener() {
             @Override
             public void onPageFinished(WebView webView, String url, boolean isRedirect) {

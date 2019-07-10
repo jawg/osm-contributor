@@ -23,7 +23,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,6 +39,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -612,7 +612,7 @@ public class MapFragment extends Fragment {
             case NOTE_CREATION:
                 pos = mapboxMap.getCameraPosition().target;
                 NoteCommentDialogFragment dialog = NoteCommentDialogFragment.newInstance(pos.getLatitude(), pos.getLongitude());
-                dialog.show(getActivity().getFragmentManager(), "dialog");
+                dialog.show(getActivity().getSupportFragmentManager(), "dialog");
                 break;
 
             case POI_POSITION_EDITION:
