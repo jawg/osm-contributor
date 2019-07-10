@@ -18,7 +18,6 @@
  */
 package io.jawg.osmcontributor.ui.dialogs;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +28,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import org.greenrobot.eventbus.EventBus;
+
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.ui.events.edition.NewPoiTagAddedEvent;
 import io.jawg.osmcontributor.utils.StringUtils;
@@ -40,16 +40,6 @@ public class AddTagDialogFragment extends BaseOkCancelDialogFragment {
     private EditText tagkey;
     private EditText tagValue;
     private EventBus eventBus;
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 
     @Override
     public boolean onDialogCreated(Bundle savedInstanceState, AlertDialog dialog) {

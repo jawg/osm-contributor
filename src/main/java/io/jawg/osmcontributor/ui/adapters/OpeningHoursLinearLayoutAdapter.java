@@ -18,7 +18,7 @@
  */
 package io.jawg.osmcontributor.ui.adapters;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -50,7 +50,7 @@ public class OpeningHoursLinearLayoutAdapter {
     private static final String TAG = "OpeningHoursAdapter";
 
     private final EventBus eventBus;
-    private Activity activity;
+    private FragmentActivity activity;
     private OpeningTime openingTime;
     private CopyOnWriteArrayList<OpeningHours> openingHoursList;
     private LinearLayout linearLayout;
@@ -65,7 +65,7 @@ public class OpeningHoursLinearLayoutAdapter {
     public OpeningHoursLinearLayoutAdapter(OpeningTime openingTime,
                                            List<OpeningHours> openingHoursList,
                                            LinearLayout openingHoursLayout,
-                                           Activity activity, boolean hasToHide) {
+                                           FragmentActivity activity, boolean hasToHide) {
         this.openingTime = openingTime;
         this.activity = activity;
         this.openingHoursList = new CopyOnWriteArrayList<>();
@@ -105,7 +105,7 @@ public class OpeningHoursLinearLayoutAdapter {
                         eventBus.post(new PleaseApplyOpeningTimeChange(openingTime));
                     }
                 });
-                fragment.show(activity.getFragmentManager(), EditDaysDialogFragment.class.getSimpleName());
+                fragment.show(activity.getSupportFragmentManager(), EditDaysDialogFragment.class.getSimpleName());
             }
         };
 
@@ -176,7 +176,7 @@ public class OpeningHoursLinearLayoutAdapter {
                         }
                     }
                 });
-                fragment.show(activity.getFragmentManager(), EditDaysDialogFragment.class.getSimpleName());
+                fragment.show(activity.getSupportFragmentManager(), EditDaysDialogFragment.class.getSimpleName());
             }
         };
 
