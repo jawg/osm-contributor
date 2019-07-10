@@ -18,8 +18,8 @@
  */
 package io.jawg.osmcontributor.ui.adapters;
 
-import android.app.Activity;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,7 +48,7 @@ import io.jawg.osmcontributor.ui.events.edition.PleaseApplyOpeningTimeChange;
  */
 public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapter.OpeningTimeHolder> {
     private OpeningTime openingTime;
-    private Activity activity;
+    private FragmentActivity activity;
     private EventBus eventBus;
     private String time;
     private boolean hasToHide;
@@ -59,7 +59,7 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
     @Inject
     OpeningTimeValueParser openingTimeValueParser;
 
-    public OpeningMonthAdapter(OpeningTime openingTime, Activity activity) {
+    public OpeningMonthAdapter(OpeningTime openingTime, FragmentActivity activity) {
         this.openingTime = openingTime;
         this.activity = activity;
         eventBus = EventBus.getDefault();
@@ -103,7 +103,7 @@ public class OpeningMonthAdapter extends RecyclerView.Adapter<OpeningMonthAdapte
                         eventBus.post(new PleaseApplyOpeningTimeChange(openingTime));
                     }
                 });
-                fragment.show(activity.getFragmentManager(), EditDaysDialogFragment.class.getSimpleName());
+                fragment.show(activity.getSupportFragmentManager(), EditDaysDialogFragment.class.getSimpleName());
             }
         });
 

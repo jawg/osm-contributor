@@ -1,6 +1,6 @@
 package io.jawg.osmcontributor.ui.adapters.binding;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -17,7 +17,7 @@ import io.jawg.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHold
 
 public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoCompleteViewHolder, TagItem> {
 
-    public AutoCompleteViewBinder(Activity activity, TagItemChangeListener tagItemChangeListener) {
+    public AutoCompleteViewBinder(FragmentActivity activity, TagItemChangeListener tagItemChangeListener) {
         super(activity, tagItemChangeListener);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
     }

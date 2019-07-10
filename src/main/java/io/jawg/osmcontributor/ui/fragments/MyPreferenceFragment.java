@@ -24,11 +24,11 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.MenuItem;
 
 import com.google.android.gms.common.AccountPicker;
@@ -52,7 +52,7 @@ import io.jawg.osmcontributor.ui.managers.login.UpdateCredentialsIfValid;
 import io.jawg.osmcontributor.utils.ConfigManager;
 import io.jawg.osmcontributor.utils.StringUtils;
 
-public class MyPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class MyPreferenceFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final int PICK_ACCOUNT_CODE = 1;
     private String loginKey;
     private String passwordKey;
@@ -77,8 +77,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements SharedPr
     UpdateCredentialsIfValid updateCredentialsIfValid;
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         ((OsmTemplateApplication) getActivity().getApplication()).getOsmTemplateComponent().inject(this);
         addPreferencesFromResource(R.xml.preferences);
         setHasOptionsMenu(true);
