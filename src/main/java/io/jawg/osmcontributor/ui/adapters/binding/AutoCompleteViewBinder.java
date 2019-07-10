@@ -12,6 +12,7 @@ import io.jawg.osmcontributor.OsmTemplateApplication;
 import io.jawg.osmcontributor.R;
 import io.jawg.osmcontributor.ui.adapters.item.shelter.TagItem;
 import io.jawg.osmcontributor.ui.adapters.parser.ParserManager;
+import io.jawg.osmcontributor.ui.utils.EditTextWithClear;
 import io.jawg.osmcontributor.ui.utils.views.holders.TagItemAutoCompleteViewHolder;
 
 public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoCompleteViewHolder, TagItem> {
@@ -27,18 +28,20 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
     }
 
     @Override
-    public void onBindViewHolder(final TagItemAutoCompleteViewHolder holder, final TagItem tagItem) {
+    public void onBindViewHolder(final TagItemAutoCompleteViewHolder holder, TagItem tagItem) {
         // Save holder
         this.content = holder.getContent();
+        EditTextWithClear textView = holder.getTextViewValue();
+        textView.clearTextChangedListeners();
 
         // Set values input
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), activity.get()));
-        holder.getTextViewValue().setText(tagItem.getValue());
+        textView.setText(tagItem.getValue());
         holder.getTextInputLayout().setHint(tagItem.getKey());
 
         // If phone type if phone, set input type to number
         if (tagItem.getTagType() == TagItem.Type.NUMBER) {
-            holder.getTextViewValue().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            textView.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         }
 
         // if Tag is show=false, hide it
@@ -46,7 +49,7 @@ public class AutoCompleteViewBinder extends CheckedTagViewBinder<TagItemAutoComp
             holder.getContent().setVisibility(View.GONE);
         }
 
-        holder.getTextViewValue().addTextChangedListener(new TextWatcher() {
+        textView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }

@@ -18,7 +18,6 @@
  */
 package io.jawg.osmcontributor.ui.utils.views.holders;
 
-import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -28,6 +27,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.jawg.osmcontributor.R;
+import io.jawg.osmcontributor.ui.utils.EditTextWithClear;
 
 public class TagItemAutoCompleteViewHolder extends RecyclerView.ViewHolder {
     public View poiTagLayout;
@@ -36,7 +36,7 @@ public class TagItemAutoCompleteViewHolder extends RecyclerView.ViewHolder {
     TextView textViewKey;
 
     @BindView(R.id.complete_value)
-    TextInputEditText textViewValue;
+    EditTextWithClear textViewValue;
 
     @BindView(R.id.input_wrapper)
     TextInputLayout textInputLayout;
@@ -62,16 +62,8 @@ public class TagItemAutoCompleteViewHolder extends RecyclerView.ViewHolder {
         return textViewKey;
     }
 
-    public void setTextViewKey(TextView textViewKey) {
-        this.textViewKey = textViewKey;
-    }
-
-    public TextInputEditText getTextViewValue() {
+    public EditTextWithClear getTextViewValue() {
         return textViewValue;
-    }
-
-    public void setTextViewValue(TextInputEditText textViewValue) {
-        this.textViewValue = textViewValue;
     }
 
     public TextInputLayout getTextInputLayout() {
