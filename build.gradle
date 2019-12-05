@@ -1,5 +1,5 @@
 ext {
-    appVersion = "3.0.23"
+    appVersion = "3.0.24"
     androidSupportVersion = '27.1.1'
     playServicesVersion = '7.8.0'
     daggerVersion = '2.0'
@@ -13,7 +13,7 @@ ext {
     stethoVersion = '1.5.0'
     jodatimeVersion = '2.9.4'
     flickr4javaVersion = '2.16'
-    mapboxVersion = '4.2.0'
+    mapboxVersion = '4.2.2'
     mapboxServicesVersion = '1.2.1'
     retrofitVersion = '2.3.0'
     okhttpVersion = '3.9.1'
@@ -29,8 +29,8 @@ ext {
     sqliteJdbcVersion = '3.8.10.1'
     mockitoVersion = '1.10.19'
     robolectricVersion = '3.5.1'
-    rxAndroidVersion = '1.0.1'
-    rxJavaVersion = '1.0.14'
+    rxAndroidVersion = '1.2.1'
+    rxJavaVersion = '1.3.8'
     horizontalLoaderVersion = '1.1.0'
     firebaseJobDispatcherVersion = '0.8.5'
 }

@@ -73,7 +73,6 @@ public class OsmTemplateApplication extends Application {
             // Init Stetho for debug purpose (database)
             Stetho.initializeWithDefaults(this);
         }
-        // Fabric.with(this, new Crashlytics());
         configureCrashReporting();
 
         // Init Dagger
