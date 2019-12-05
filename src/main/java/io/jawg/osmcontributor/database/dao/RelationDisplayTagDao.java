@@ -51,7 +51,8 @@ public class RelationDisplayTagDao extends RuntimeExceptionDao<RelationDisplayTa
         return DatabaseHelper.wrapException(() -> {
             final String COLUMN_REF = "ref";
             final String COLUMN_TO = "to";
-            final String SEARCH_VALUE = "%" + search + "%";
+            final String searchEscape = search.replace("'", "''");
+            final String SEARCH_VALUE = "%" + searchEscape + "%";
 
             QueryBuilder<RelationDisplayTag, Long> queryBuilder = queryBuilder().limit(10L);
             Where<RelationDisplayTag, Long> where = queryBuilder().where();
