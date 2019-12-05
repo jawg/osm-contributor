@@ -126,7 +126,7 @@ public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewH
                     List<RelationDisplay> filteredBusLinesNearby = new ArrayList<>();
 
                     for (RelationDisplay busLineNearby : busLinesNearby) {
-                        if (!RelationDisplayUtils.isBusLineOrTagEqual(busLines, busLineNearby, TAG_REF)) {
+                        if (!RelationDisplayUtils.isBusLineAlreadyStored(busLines, busLineNearby, TAG_REF)) {
                             filteredBusLinesNearby.add(busLineNearby);
                         }
                     }

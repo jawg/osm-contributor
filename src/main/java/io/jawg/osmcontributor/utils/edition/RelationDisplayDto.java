@@ -19,7 +19,7 @@ public class RelationDisplayDto {
         this.tags = tagsMapper(relationDisplay.getTags());
     }
 
-    private HashMap<String,String> tagsMapper(Collection<RelationDisplayTag> tagsList) {
+    private HashMap<String, String> tagsMapper(Collection<RelationDisplayTag> tagsList) {
         HashMap<String, String> tagsMap = new HashMap<>(tagsList.size());
         for (RelationDisplayTag tag : tagsList) {
             tagsMap.put(tag.getKey(), tag.getValue());
