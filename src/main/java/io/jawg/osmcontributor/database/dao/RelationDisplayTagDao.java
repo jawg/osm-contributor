@@ -49,24 +49,13 @@ public class RelationDisplayTagDao extends RuntimeExceptionDao<RelationDisplayTa
      */
     public List<Long> queryForRelationIDsByTag(String search) {
         return DatabaseHelper.wrapException(() -> {
-            final String COLUMN_REF = "ref";
-            final String COLUMN_TO = "to";
             final String searchEscape = search.replace("'", "''");
-            final String SEARCH_VALUE = "%" + searchEscape + "%";
-
-            QueryBuilder<RelationDisplayTag, Long> queryBuilder = queryBuilder().limit(10L);
-            Where<RelationDisplayTag, Long> where = queryBuilder().where();
-
-            where.or(
-                    where.and(
-                            where.eq(RelationDisplayTag.KEY, COLUMN_REF),
-                            where.like(RelationDisplayTag.VALUE, SEARCH_VALUE)),
-                    where.and(
-                            where.eq(RelationDisplayTag.KEY, COLUMN_TO),
-                            where.like(RelationDisplayTag.VALUE, SEARCH_VALUE)));
-
-            queryBuilder.setWhere(where);
-            String statement = queryBuilder.prepare().getStatement();
+            String statement = queryBuilder().limit(10L)
+                .where()
+                .like(RelationDisplayTag.VALUE, "%" + searchEscape + "%")
+                .and()
+                .eq(RelationDisplayTag.KEY, "name")
+                .prepare().getStatement();
             return queryRaw(statement, (columnNames, resultColumns) -> Long.valueOf(resultColumns[2])).getResults();
         });
     }

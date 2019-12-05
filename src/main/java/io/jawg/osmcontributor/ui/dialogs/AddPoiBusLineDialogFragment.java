@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 
+import io.jawg.osmcontributor.utils.edition.RelationDisplayDto;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -161,8 +162,9 @@ public class AddPoiBusLineDialogFragment extends DialogFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBusLinesSuggestionForPoiLoadedEvent(BusLinesSuggestionForPoiLoadedEvent event) {
+        suggestionList.clear();
         for (RelationDisplay relationDisplay : event.getRelationDisplays()) {
-            if (!RelationDisplayUtils.isBusLineOrTagEqual(currentBusLines, relationDisplay, TAG_REF)) {
+            if (!RelationDisplayUtils.isBusLineAlreadyStored(currentBusLines, relationDisplay, TAG_REF)) {
                 suggestionList.add(relationDisplay);
             }
         }
