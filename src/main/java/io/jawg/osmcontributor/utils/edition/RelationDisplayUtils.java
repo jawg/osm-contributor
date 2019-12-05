@@ -29,18 +29,18 @@ public class RelationDisplayUtils {
      * Check if the list of bus lines already contains the bus line "busLine"
      * or a bus line whose tag value corresponding to tag key "tagKey" is equal
      *
-     * @param busLines  List of bus lines
-     * @param busLine   Bus line to be checked
+     * @param busLinesAlreadyStored  List of bus lines
+     * @param busLineToList   Bus line to be checked
      * @param tagKey    Tag key whose value to be checked
      * @return True if busLine is already in busLines or if busLines contains a bus line whose tag value is equal, otherwise false
      */
-    public static boolean isBusLineOrTagEqual(List<RelationDisplay> busLines, RelationDisplay busLine, String tagKey) {
-        final String tagVal = new RelationDisplayDto(busLine).getTagValue(tagKey);
+    public static boolean isBusLineAlreadyStored(List<RelationDisplay> busLinesAlreadyStored, RelationDisplay busLineToList, String tagKey) {
+        final String tagVal = new RelationDisplayDto(busLineToList).getTagValue(tagKey);
 
-        for (RelationDisplay line : busLines) {
+        for (RelationDisplay line : busLinesAlreadyStored) {
             final String tagRefValCurrent = new RelationDisplayDto(line).getTagValue(tagKey);
 
-            if (line.equals(busLine) || tagRefValCurrent.equals(tagVal)) {
+            if (line.equals(busLineToList) || tagRefValCurrent.equals(tagVal)) {
                 return true;
             }
         }
