@@ -56,6 +56,17 @@
             android:orientation="horizontal">
 
             <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
+                android:id="@+id/tv_bus_line_ref"
+                android:hint="@string/adding_poi_bus_line_hint"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:textColor="#424242"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                app:typeface="Roboto-Light.ttf" />
+
+            <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
                 android:id="@+id/tv_bus_line_network"
                 android:hint="@string/adding_poi_network_hint"
                 android:layout_width="0dp"
@@ -63,17 +74,6 @@
                 android:layout_height="wrap_content"
                 android:textColor="#424242"
                 android:textSize="17sp"
-                app:typeface="Roboto-Light.ttf" />
-
-            <io.jawg.osmcontributor.ui.utils.views.customs.TypeFaceTextView
-                android:id="@+id/tv_bus_line_ref"
-                android:hint="@string/adding_poi_bus_line_hint"
-                android:layout_width="0dp"
-                android:layout_weight="3"
-                android:layout_height="wrap_content"
-                android:textColor="#424242"
-                android:textSize="17sp"
-                android:textStyle="bold"
                 app:typeface="Roboto-Light.ttf" />
 
         </LinearLayout>
@@ -100,7 +100,7 @@
         android:id="@+id/item_bus_line_delete_button"
         layout="@layout/card_delete_button"
         android:layout_width="wrap_content"
-        android:layout_height="25dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"/>
 
 </LinearLayout>
