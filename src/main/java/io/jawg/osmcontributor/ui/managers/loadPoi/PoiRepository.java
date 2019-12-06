@@ -79,7 +79,7 @@ public class PoiRepository {
     }
 
     public Observable<PoiLoadingProgress> verifyCount(final Box box) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             Long count = poiDao.countForAllInRect(box);
             if (count > BuildConfig.MAX_POIS_ON_MAP) {
                 TooManyPois tooManyPois = new TooManyPois();
@@ -92,7 +92,7 @@ public class PoiRepository {
     }
 
     public Observable<PoiLoadingProgress> getPoisFromDB(final Box box) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             PoiLoadingProgress poiLoadingProgress = new PoiLoadingProgress(POI_LOADING);
             poiLoadingProgress.setPois(poiDao.queryForAllInRect(box));
             subscriber.onNext(poiLoadingProgress);

@@ -94,32 +94,41 @@ public class EditPoiManager {
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onPleaseApplyPoiChanges(PleaseApplyPoiChanges event) {
         Timber.d("please apply poi changes");
+        Poi initialPoi = null;
+        boolean isBackToInitialState = false;
         Poi editPoi = poiManager.queryForId(event.getPoiChanges().getId());
+        Long oldId = editPoi.getOldPoiId();
 
         // if the poi has some changes on its tags or if some changes should be applied to its relations
         boolean poiHasChanges = editPoi.hasChanges(event.getPoiChanges().getTagsMap());
-        if (poiHasChanges || !event.getRelationEditions().isEmpty()) {
 
-            editPoi.setOldPoiId(saveOldVersionOfPoi(editPoi));
-
-            if (poiHasChanges) {
-                //this is the edition of a new poi or we already edited this poi
-                editPoi.applyChanges(event.getPoiChanges().getTagsMap());
-                editPoi.applyChanges(applyConstraints(editPoi));
-                editPoi.setDetailsUpdated(true);
-            }
-
-            if (!event.getRelationEditions().isEmpty()) {
-                editPoi.applyChangesOnRelationList(event.getRelationEditions());
-                editPoi.setRelationsUpdated(true);
-            }
-
-            poiManager.savePoi(editPoi);
-            poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
-            relationManager.saveRelationEditions(event.getRelationEditions(), editPoi);
-            schedulePushJob();
+        if (oldId != null) {
+            initialPoi = poiManager.queryForId(oldId);
+            isBackToInitialState = !initialPoi.hasChanges(event.getPoiChanges().getTagsMap());
         }
 
+        if (isBackToInitialState) {
+            editPoi.setDetailsUpdated(false);
+            editPoi.setOldPoiId(null);
+            editPoi.setTags(initialPoi.getTags());
+            poiManager.deletePoi(initialPoi);
+        } else if (poiHasChanges) {
+            editPoi.setOldPoiId(saveOldVersionOfPoi(editPoi));
+            editPoi.applyChanges(event.getPoiChanges().getTagsMap());
+            editPoi.applyChanges(applyConstraints(editPoi));
+            editPoi.setDetailsUpdated(true);
+        }
+
+        if (!event.getRelationEditions().isEmpty()) {
+            editPoi.applyChangesOnRelationList(event.getRelationEditions());
+            editPoi.setRelationsUpdated(true);
+        }
+
+        poiManager.savePoi(editPoi);
+        poiManager.updatePoiTypeLastUse(editPoi.getType().getId());
+        relationManager.saveRelationEditions(event.getRelationEditions(), editPoi);
+
+        schedulePushJob();
         checkIfLoggedIn();
     }
 

@@ -7,7 +7,7 @@ import java.util.Map;
 import io.jawg.osmcontributor.model.entities.PoiTag;
 
 public enum ShelterType {
-    POLE("", "platform", "no"), SHELTER("", "platform", "yes"), NONE("unofficial", "", ""), UNDEFINED("", "", "");
+    POLE("", "platform", "no"), SHELTER("", "platform", "yes"), NONE("unofficial", "", ""), UNDEFINED("", "platform", "");
 
     String officialStatus;
     String publicTransport;

@@ -121,7 +121,6 @@ import io.jawg.osmcontributor.rest.events.error.SyncNewNodeErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncUnauthorizedEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncUploadNoteRetrofitErrorEvent;
 import io.jawg.osmcontributor.rest.events.error.SyncUploadRetrofitErrorEvent;
-import io.jawg.osmcontributor.rest.events.error.TooManyRequestsEvent;
 import io.jawg.osmcontributor.ui.activities.EditPoiActivity;
 import io.jawg.osmcontributor.ui.adapters.PoiTypePickerAdapter;
 import io.jawg.osmcontributor.ui.dialogs.LoginDialogFragment;
@@ -295,7 +294,6 @@ public class MapFragment extends Fragment {
             selectedMarkerType = LocationMarkerView.MarkerType.values()[savedInstanceState.getInt(MARKER_TYPE)];
         }
 
-//        instantiateProgressBar();
         instantiateMapView(savedInstanceState);
         instantiateLevelBar();
         instantiatePoiTypePicker();
@@ -308,13 +306,6 @@ public class MapFragment extends Fragment {
 
     private void instantiateCopyrightBar() {
         osmCopyrightTextView.setText(Html.fromHtml(getString(R.string.osm_copyright)));
-    }
-
-    private void instantiateProgressBar() {
-//        progressBar = new ButteryProgressBar(getActivity());
-//        progressBar.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 6));
-//        progressBar.setVisibility(View.GONE);
-//        progressbarWrapper.addView(progressBar, 0);
     }
 
     private void instantiateLevelBar() {
@@ -1684,11 +1675,6 @@ public class MapFragment extends Fragment {
             mapboxMap.removeMarker(m);
         }
         defaultMap();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onTooManyRequestsEvent(TooManyRequestsEvent event) {
-//        progressBar.setVisibility(View.GONE);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

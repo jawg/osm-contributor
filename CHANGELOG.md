@@ -1,10 +1,20 @@
-## Changelog
-[3.0.2]
+# Changelog
+
+##[3.0.24] - 
+  ###Fixed
+  - Fix autocompletion not displaying what user where looking for
+  - Fix the autocompletion search crash when quotes are added
+  - Fix faulty poi update not detecting changes lead back to initial state
+  
+  ###Changed
+  - UX evolution for bus listing view, ref & line change order
+
+##[3.0.2]
 
   - Empty value are not saved on OSM Server
   - All changeset are now marked as created by OSM Contributor
 
-[3.0.0-beta.1]
+##[3.0.0-beta.1]
 
  - OAuth support / Sign-in with Google
  - Vector tiles & switched to Mapbox-gl
@@ -15,17 +25,17 @@
  - Offline mode
  - POI Duplicator
 
-[2.2.0]
+##[2.2.0]
 
  - Added an expert mode allowing the user to manage it's Poi Types and edit the pois without restraints
  - Added an augmented reality display of the map and the pois and notes
  - Update of poi types and icons
 
-[2.1.1]
+##[2.1.1]
 
  - Fixed an issue during authentication
 
-[2.1.0]
+##[2.1.0]
 
  - Improving autocompletion on tags
  - In the save interface, you can now see and revert the changes you made to a Poi
@@ -33,13 +43,13 @@
  - Spanish translation
  - Portuguese (Brazil) translation
 
-[2.0.1]
+##[2.0.1]
 
  - Download of Pois allowed at zoom level greater than 18
  - It is now impossible to add or comment a note without being connected to OpenStreetMap
  - Bugfixes
 
-[2.0.0]
+##[2.0.0]
 
  - PoiTypes loaded from H2geo json file
  - New UI to select PoiTypes
@@ -48,7 +58,7 @@
  - Translation of Poitypes
  - Bugfixes
 
-[1.4.0]
+##[1.4.0]
 
  - Removed manual management of PoiTypes
  - Removed automatic save of Pois modifications
@@ -60,19 +70,19 @@
  - Disabled vector map.
  - In template flavor, include the map tiles in the app as mbtiles files
 
-[1.3.1]
+##[1.3.1]
 
  - Display current zoom in the top-left corner of the map
  - Minor Bugfixes
 
-[1.3.0]:
+##[1.3.0]:
 
  - OSM suggestionsDto while adding a new PoiType
  - Performance enhancements
  - Refactor, code cleaning
  - Bugfixes
 
-[1.2.0]:
+##[1.2.0]:
 
  - Three flavours: store, template, poi_storage
  - Support on/off POI tag type
@@ -85,12 +95,12 @@
  - Bugfixes
  - **OpenSource RELEASE**
 
-[1.1.1]:
+##[1.1.1]:
 
  - Fixed POI Deletion Bug
  - Minor Bugfixes
 
-[1.1.0]:
+##[1.1.0]:
 
  - Floating menu if only few POI Types are present
  - Implemented Ways edit support
@@ -98,7 +108,7 @@
  - Manual Sync is more detailed
  - Bugfixes
 
-[1.0.0]:
+##[1.0.0]:
 
  - Changesets can now be pushed together manually
  - Notes and comments are now supported
@@ -109,20 +119,20 @@
  - About page
  - Bugfixes
 
-[0.2.0]:
+##[0.2.0]:
 
  - Bugfixes
  - Now supporting POI deletion
  - Implemented POI Type filters
  - Implemented level differentiators
 
-[0.1.0]:
+##[0.1.0]:
 
  - Bugfixes
  - Now supporting unlimited amount of amenities
  - New amenities icons
 
-[0.0.0]:
+##[0.0.0]:
 
  - MapView
  - Lightweight Vector Render engine for zoom level > 19

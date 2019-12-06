@@ -8,7 +8,7 @@ public class CancelableObservable<T> {
 
     public CancelableObservable(CancelableSubscriber<T> f) {
         cancelableSubscriber = f;
-        observable = Observable.create(f);
+        observable = Observable.unsafeCreate(f);
     }
 
     public Observable<T> getObservable() {

@@ -153,7 +153,7 @@ public class SyncManager {
     // ********************************
 
     public Observable<Boolean> sync() {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             subscriber.onNext(remoteAddOrUpdateOrDeletePoisInTransaction(
                     BuildConfig.AUTO_COMMIT_CHANGESET,
                     poiDao.queryForAllUpdatedPois(),
@@ -241,17 +241,6 @@ public class SyncManager {
      * @return Whether everything was correctly sent to the remote or not.
      */
     private boolean remoteAddOrUpdateOrDeletePoisInTransaction(String comment, List<Long> poisId, List<Long> poiNodeRefsId) {
-        //  final List<Poi> pois = poiDao.queryForIds(poisId);
-
-/*
-        final List<Poi> updatedPois = new ArrayList<>(syncWayManager.downloadPoiForWayEdition(poiNodeRefsId));
-
-        for (Poi p : pois) {
-            if (p.getBackendId() != null && !p.getToDelete()) {
-                updatedPois.add(p);
-            }
-        }
-*/
         return remoteAddOrUpdateOrDeletePoisInTransaction(comment, poiDao.queryForAllUpdatedPois(), poiDao.queryForAllNew(), poiDao.queryToDelete());
     }
 
@@ -282,8 +271,8 @@ public class SyncManager {
 
         String changeSetId = null;
 
-        if (updatedPois.size() == 0 && newPois.size() == 0 && toDeletePois.size() == 0) {
-            Timber.i("No new or updatable or to delete POIs to send to osm");
+        if (updatedPois.isEmpty() && newPois.isEmpty() && toDeletePois.isEmpty()) {
+            Timber.i("No new or to update or to delete POIs to send to osm");
         } else {
             Timber.i("Found %d new, %d updated and %d to delete POIs to send to osm", newPois.size(), updatedPois.size(), toDeletePois.size());
 
@@ -313,7 +302,7 @@ public class SyncManager {
         boolean success = true;
         int successfullyUpdatedRelationsCount = 0;
 
-        if (filteredRelationEditions.size() == 0) {
+        if (filteredRelationEditions.isEmpty()) {
             Timber.i("No updatable relations to send to osm");
         } else {
             Timber.i("Found  %d update to apply to relations to send to osm", filteredRelationEditions.size());

@@ -22,7 +22,7 @@ public class UpdateCredentialsIfValid extends UseCase<Boolean> {
 
     @Override
     protected Observable<Boolean> buildUseCaseObservable() {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             subscriber.onNext(loginManager.updateCredentialsIfValid(login, password));
             subscriber.onCompleted();
         });

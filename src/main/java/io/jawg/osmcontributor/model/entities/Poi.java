@@ -249,7 +249,7 @@ public class Poi implements Cloneable, MapElement {
     }
 
     public void setTags(Collection<PoiTag> tags) {
-        this.tags = tags;
+        this.tags.addAll(tags);
     }
 
     public Collection<PoiNodeRef> getNodeRefs() {
@@ -492,10 +492,6 @@ public class Poi implements Cloneable, MapElement {
                     break;
             }
         }
-    }
-
-    private void revertRelationChanges(Collection<RelationId> relationIds) {
-
     }
 
     private boolean isIdInRelationList(String relationId) {
