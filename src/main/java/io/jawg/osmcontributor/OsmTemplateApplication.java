@@ -29,7 +29,6 @@ import android.preference.PreferenceManager;
 import android.support.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
 import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.cache.MemoryCacheParams;
@@ -37,13 +36,16 @@ import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.stetho.Stetho;
 import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.REST;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 
+import io.fabric.sdk.android.Fabric;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
-import io.fabric.sdk.android.Fabric;
 import io.jawg.osmcontributor.modules.DaggerOsmTemplateComponent;
 import io.jawg.osmcontributor.modules.OsmTemplateComponent;
 import io.jawg.osmcontributor.modules.OsmTemplateModule;
@@ -126,10 +128,10 @@ public class OsmTemplateApplication extends Application {
     }
 
     private void configureCrashReporting() {
-        CrashlyticsCore crashlyticsCore = new CrashlyticsCore.Builder()
-                .disabled(BuildConfig.DEBUG)
-                .build();
-        Fabric.with(this, new Crashlytics.Builder().core(crashlyticsCore).build());
+        Fabric.with(this, new Crashlytics());
+        GoogleAnalytics.getInstance(this).setLocalDispatchPeriod(5);
+        FirebaseApp.initializeApp(this);
+        Timber.i("Firebase token: %s", FirebaseInstanceId.getInstance().getToken());
     }
 
     @Override
