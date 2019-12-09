@@ -28,6 +28,12 @@ apps. Go crazy and let us know!
 
 http://osm.jawg.io
 
+### Firebase
+
+THe app is now using firebase to report crash and other analytics.
+In order to run gradle tasks, you have to place the google-services.json, which can be found on the firebase project website, at the root of the 
+project folder.
+
 ### How to compile the application
 
 The flavour you will most probably want to build yourself is the store flavour which is the one on the Google Playstore.  
