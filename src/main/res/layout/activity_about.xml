@@ -76,24 +76,35 @@
             android:gravity="center"
             android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/edited_by"
+        <LinearLayout
+            android:id="@+id/layout_edited_by"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/contribute_to"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
-            android:drawableEnd="@drawable/logo_ebusiness"
-            android:drawablePadding="5dp"
-            android:drawableRight="@drawable/logo_ebusiness"
-            android:gravity="center"
-            android:textSize="14sp" />
+            android:gravity="center">
+            <TextView
+                android:id="@+id/edited_by"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:textSize="14sp" />
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/logo_takima"/>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/powered_by"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/edited_by"
+            android:layout_below="@+id/layout_edited_by"
             android:layout_centerHorizontal="true"
             android:drawableEnd="@drawable/logo_dma"
             android:drawablePadding="5dp"

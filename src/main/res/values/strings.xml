@@ -121,7 +121,8 @@
     <string name="prompt_login">Login</string>
     <string name="prompt_password">Password</string>
     <string name="splash_screen_message">Initialization in progress&#8230;</string>
-    <string name="splash_screen_edited_by" translatable="false"><![CDATA[<font color=\"#ffffff\">Edited by </font><font color=\"#2196f3\">eBusiness Information</font>]]></string>
+    <string name="splash_screen_edited_by"
+        translatable="false"><![CDATA[<font color=\"#ffffff\">Edited by </font><font color=\"#2196f3\">Takima</font>]]></string>
     <string name="splash_screen_powered_by" translatable="false"><![CDATA[<font color=\"#ffffff\">Powered by </font><font color=\"#2196f3\">Jawg</font>]]></string>
     <string name="mapsquare" translatable="false"><![CDATA[By jawg<font color=\"#2196f3\">maps</font>]]></string>
 
