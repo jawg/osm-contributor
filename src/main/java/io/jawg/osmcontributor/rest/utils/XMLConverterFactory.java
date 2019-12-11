@@ -30,7 +30,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import io.jawg.osmcontributor.utils.CloseableUtils;
-import io.jawg.osmcontributor.utils.FlavorUtils;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -71,7 +70,7 @@ public class XMLConverterFactory extends Converter.Factory {
                 isr = new InputStreamReader(str, charset);
                 return serializer.read((Class<?>) type, isr);
             } catch (Exception e) {
-                throw new ConversionException(e);
+                throw new ConversionException(e.getMessage());
             } finally {
                 CloseableUtils.closeQuietly(isr);
             }

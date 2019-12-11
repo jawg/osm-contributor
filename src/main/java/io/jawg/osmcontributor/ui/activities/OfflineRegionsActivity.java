@@ -188,6 +188,7 @@ public class OfflineRegionsActivity extends AppCompatActivity {
 
     private void initMapView(Bundle savedInstanceState) {
         mapView.onCreate(savedInstanceState);
+
         mapView.setStyleUrl(BuildConfig.MAP_STYLE);
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -441,6 +442,18 @@ public class OfflineRegionsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mapView.onStop();
     }
 
     @Override

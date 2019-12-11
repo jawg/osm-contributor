@@ -13,7 +13,7 @@ ext {
     stethoVersion = '1.5.0'
     jodatimeVersion = '2.9.4'
     flickr4javaVersion = '2.16'
-    mapboxVersion = '4.2.2'
+    mapboxVersion = '5.5.3'
     mapboxServicesVersion = '1.2.1'
     retrofitVersion = '2.3.0'
     okhttpVersion = '3.9.1'
@@ -225,9 +225,9 @@ dependencies {
     implementation "com.github.scribejava:scribejava-apis:$scribeJavaVersion"
     implementation 'info.guardianproject.netcipher:netcipher:1.2'
 
-    implementation("com.mapbox.mapboxsdk:mapbox-android-sdk:$mapboxVersion@aar") {
+    implementation('com.mapbox.mapboxsdk:mapbox-android-sdk:5.0.0@aar') {
         transitive = true
-        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'com.mapbox.mapboxsdk', module: 'mapbox-java-geojson'
     }
     implementation("com.mapbox.mapboxsdk:mapbox-android-services:$mapboxServicesVersion@aar") {
         transitive = true

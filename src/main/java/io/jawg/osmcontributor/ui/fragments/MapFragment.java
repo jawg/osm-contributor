@@ -306,6 +306,18 @@ public class MapFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+
     private void instantiateCopyrightBar() {
         osmCopyrightTextView.setText(Html.fromHtml(getString(R.string.osm_copyright)));
     }
