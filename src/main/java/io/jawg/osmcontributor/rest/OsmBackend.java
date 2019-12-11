@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 eBusiness Information
+ * Copyright (C) 2019 Takima
  * <p>
  * This file is part of OSM Contributor.
  * <p>
@@ -471,8 +471,9 @@ public class OsmBackend implements Backend {
                 OsmDto osmDto = response.body();
                 if (osmDto != null && osmDto.getRelationDtoList() != null) {
                     List<FullOSMRelation> fullOSMRelations = relationMapper.convertDTOstoRelations(osmDto.getRelationDtoList());
-                    if (fullOSMRelations.size() > 0)
+                    if (!fullOSMRelations.isEmpty()) {
                         return fullOSMRelations;
+                    }
                 }
             }
         } catch (IOException e) {

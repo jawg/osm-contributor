@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 eBusiness Information
+ * Copyright (C) 2019 Takima
  * <p>
  * This file is part of OSM Contributor.
  * <p>
