@@ -1,7 +1,7 @@
 package io.jawg.osmcontributor.flickr.ui;
 
 /**
- * Copyright (C) 2016 eBusiness Information
+ * Copyright (C) 2019 Takima
  *
  * This file is part of OSM Contributor.
  *
