@@ -108,8 +108,6 @@ public interface Backend {
      */
     List<Poi> getPoisInBox(final Box box) throws NetworkException;
 
-    List<PoiLoadWrapper> getPoisDtosInBox(final Box box) throws NetworkException;
-
     /**
      * Get all pois in the current box
      */

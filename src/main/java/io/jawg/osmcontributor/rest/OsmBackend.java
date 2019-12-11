@@ -28,7 +28,6 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +59,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import timber.log.Timber;
 
+import static com.google.android.gms.common.util.CollectionUtils.mutableListOf;
 import static java.util.Collections.singletonList;
 
 /**
@@ -78,7 +78,6 @@ public class OsmBackend implements Backend {
     private RelationMapper relationMapper;
     private EventBus bus;
     private LoginPreferences loginPreferences;
-    private Map<Long, PoiType> poiTypes = null;
 
     public OsmBackend(LoginPreferences loginPreferences, EventBus bus, OSMProxy osmProxy, OverpassRestClient overpassRestClient,
                       OsmRestClient osmRestClient, PoiMapper poiMapper, RelationMapper relationMapper, PoiManager poiManager, PoiAssetLoader poiAssetLoader) {
@@ -134,16 +133,7 @@ public class OsmBackend implements Backend {
     @Override
     @NonNull
     public List<Poi> getPoisInBox(final Box box) throws NetworkException {
-        return poiMapper.convertPois(getPoisDtosInBox(box));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @NonNull
-    public List<PoiLoadWrapper> getPoisDtosInBox(final Box box) throws NetworkException {
-        return requestPoisDtosInBox(box);
+        return poiMapper.convertPois(requestPoisDtosInBox(box));
     }
 
     /**
@@ -154,25 +144,19 @@ public class OsmBackend implements Backend {
     public List<PoiLoadWrapper> requestPoisDtosInBox(final Box box) throws NetworkException {
         Timber.d("Requesting overpass for download");
 
-        poiTypes = poiManager.loadPoiTypes();
-
-        final Map<Long, PoiType> poiTypeDtoCopy = new HashMap<>(poiTypes);
-        final Map<Long, PoiType> poiTypeDtoList = new HashMap<>();
+        Map<Long, PoiType> poiTypes = poiManager.loadPoiTypes();
         final List<PoiLoadWrapper> poiLoad = new ArrayList<>();
-        final Long idx = 0L;
 
-        for (Map.Entry<Long, PoiType> entry : poiTypeDtoCopy.entrySet()) {
+        for (Map.Entry<Long, PoiType> entry : poiTypes.entrySet()) {
             final PoiType poiTypeDto = entry.getValue();
-            poiTypeDtoList.clear();
-            poiTypeDtoList.put(idx, poiTypeDto);
 
             StringBuilder sbRequest = new StringBuilder();
             if (poiTypeDto.getQuery() != null) {
                 sbRequest.append(poiTypeDto.getQuery().contains(BBOX) ?
                         poiTypeDto.getQuery().replace(BBOX, box.osmFormat()) :
                         poiTypeDto.getQuery());
-            } else if (poiTypeDto.getQuery() == null && FlavorUtils.isBus(poiTypeDto)) {
-                sbRequest.append(generateOverpassRequest(box, poiTypeDtoList));
+            } else if (FlavorUtils.isBus(poiTypeDto)) {
+                sbRequest.append(generateOverpassRequest(box, mutableListOf(poiTypeDto)));
             }
 
             if (!TextUtils.isEmpty(sbRequest.toString())) {
@@ -192,8 +176,6 @@ public class OsmBackend implements Backend {
                     OsmDtoInterface osmDto = result.getResult();
                     if (osmDto != null) {
                         poiLoad.add(new PoiLoadWrapper(osmDto, poiTypeDto));
-                    } else {
-                        throw new NetworkException();
                     }
                     poiTypes.remove(entry.getKey());
                 } else {
@@ -204,7 +186,8 @@ public class OsmBackend implements Backend {
 
         if (!poiTypes.isEmpty()) {
             OSMProxy.Result<OsmDtoInterface> result = osmProxy.proceed(() -> {
-                final String request = generateOverpassRequest(box, poiTypes);
+                List<PoiType> poiTypeList = new ArrayList<>(poiTypes.values());
+                final String request = generateOverpassRequest(box, poiTypeList);
                 try {
                     return overpassRestClient.sendRequest(request).execute().body();
                 } catch (IOException e) {
@@ -262,7 +245,7 @@ public class OsmBackend implements Backend {
      * @param poiTypes Map of poiTypes depending the preset loaded
      * @return A String of the request.
      */
-    private String generateOverpassRequest(Box box, Map<Long, PoiType> poiTypes) {
+    private String generateOverpassRequest(Box box, List<PoiType> poiTypes) {
         StringBuilder cmplReq = new StringBuilder("(");
 
         if (poiTypes.size() > 15) {
@@ -277,7 +260,7 @@ public class OsmBackend implements Backend {
             // Download all the pois in the box who are of one of the PoiType contained in the database
             for (String type : OBJECT_TYPES) {
                 // For each poiTypes, add the corresponding part to the request
-                for (PoiType poiTypeDto : poiTypes.values()) {
+                for (PoiType poiTypeDto : poiTypes) {
                     // Check for tags who have a value and add a ["key"~"value"] string to the request
                     boolean valid = false;
                     for (PoiTypeTag poiTypeTag : poiTypeDto.getTags()) {
@@ -486,7 +469,7 @@ public class OsmBackend implements Backend {
         final OsmDto osmDto = new OsmDto();
         osmDto.setRelationDtoList(singletonList(relationMapper.convertRelationToDTO(fullOSMRelation, transactionId)));
 
-        Call<ResponseBody> versionCall= osmRestClient.updateRelation(fullOSMRelation.getBackendId(), osmDto);
+        Call<ResponseBody> versionCall = osmRestClient.updateRelation(fullOSMRelation.getBackendId(), osmDto);
 
         try {
             Response<ResponseBody> response = versionCall.execute();

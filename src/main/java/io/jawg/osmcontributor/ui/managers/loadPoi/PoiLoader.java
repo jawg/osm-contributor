@@ -198,7 +198,7 @@ public class PoiLoader {
         nodeDtos.clear();
         blockDtos.clear();
 
-        final List<PoiLoadWrapper> poiLoadWrapper = backend.getPoisDtosInBox(toLoadArea.getBox());
+        final List<PoiLoadWrapper> poiLoadWrapper = backend.requestPoisDtosInBox(toLoadArea.getBox());
         for (PoiLoadWrapper poiLoad : poiLoadWrapper) {
             killIfNeeded();
             osmDto = poiLoad.getOsmDto();
@@ -261,10 +261,10 @@ public class PoiLoader {
         for (PoiDto dto : nodeDtos) {
             killIfNeeded();
             Poi poi = poiMapper.convertDtoToPoi(false, availableTypes, dto, null);
-            if(!backendIds.contains(poi.getBackendId())) {
+            if (!backendIds.contains(poi.getBackendId())) {
                 savePoi(poi);
-            }else{
-                Log.i("POI Type ","POI Type "+ poi.getType());
+            } else {
+                Log.i("POI Type ", "POI Type " + poi.getType());
             }
             manageProgress();
             counter++;
