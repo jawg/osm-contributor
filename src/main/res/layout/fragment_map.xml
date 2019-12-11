@@ -43,11 +43,6 @@
                 android:text="@string/load_poi_network_error"
                 android:textColor="@color/colorCreationDark" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/refresh" />
-
         </RelativeLayout>
 
         <RelativeLayout
@@ -140,11 +135,7 @@
             <com.mapbox.mapboxsdk.maps.MapView
                 android:id="@+id/mapview"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:attribution_enabled="false"
-                app:logo_enabled="false"
-                app:rotate_enabled="true"
-                app:zoom_enabled="true" />
+                android:layout_height="wrap_content" />
         </RelativeLayout>
 
 

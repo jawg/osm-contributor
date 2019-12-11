@@ -427,6 +427,7 @@ public class MapFragmentPresenter {
         public void onError(Throwable e) {
             mapFragment.showProgressBar(false);
             if ((e instanceof NetworkException)) {
+                Timber.e(e);
                 hasEncounterNetworkError = true;
                 onCompleted();
             } else if (e instanceof TooManyPois) {

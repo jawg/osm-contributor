@@ -39,7 +39,7 @@ import com.flickr4java.flickr.REST;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.Mapbox;
 
 import io.fabric.sdk.android.Fabric;
 import org.greenrobot.eventbus.EventBus;
@@ -122,7 +122,7 @@ public class OsmTemplateApplication extends Application {
         }
         editor.apply();
 
-        MapboxAccountManager.start(this, BuildConfig.MAPBOX_TOKEN);
+        Mapbox.getInstance(this, BuildConfig.MAPBOX_TOKEN);
 
         conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     }
