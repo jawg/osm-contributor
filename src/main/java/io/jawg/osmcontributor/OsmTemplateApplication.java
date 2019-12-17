@@ -38,9 +38,8 @@ import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.REST;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.mapbox.mapboxsdk.Mapbox;
-
+import com.mapbox.services.android.telemetry.MapboxTelemetry;
 import io.fabric.sdk.android.Fabric;
 import org.greenrobot.eventbus.EventBus;
 
@@ -123,15 +122,15 @@ public class OsmTemplateApplication extends Application {
         editor.apply();
 
         Mapbox.getInstance(this, BuildConfig.MAPBOX_TOKEN);
+        MapboxTelemetry.getInstance().setTelemetryEnabled(false);
 
         conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
     private void configureCrashReporting() {
         Fabric.with(this, new Crashlytics());
-        GoogleAnalytics.getInstance(this).setLocalDispatchPeriod(5);
         FirebaseApp.initializeApp(this);
-        Timber.i("Firebase token: %s", FirebaseInstanceId.getInstance().getToken());
+        GoogleAnalytics.getInstance(this);
     }
 
     @Override
