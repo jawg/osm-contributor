@@ -21,9 +21,8 @@ ext {
     simplexmlVersion = '2.7.1'
     licensesdialogVersion = '1.8.1'
     lovelyDialogVersion = '1.0.4'
-    playServicesVersion = '9.2.0'
+    playServicesVersion = '15.0.2'
     multidexSupportVersion = '1.0.3'
-    crashlitycsVersion = '2.9.4'
     materialIntroViewVersion = '1.5.2'
     frescoVersion = '0.12.0'
     sqliteJdbcVersion = '3.8.10.1'
@@ -33,6 +32,7 @@ ext {
     rxJavaVersion = '1.3.8'
     horizontalLoaderVersion = '1.1.0'
     firebaseJobDispatcherVersion = '0.8.5'
+    firebaseCoreVersion = '15.0.2'
 }
 
 buildscript {
@@ -46,7 +46,8 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.3'
-        classpath "io.fabric.tools:gradle:1.+"
+        classpath 'com.google.gms:google-services:3.3.1'
+        classpath "io.fabric.tools:gradle:1.31.2"
     }
 }
 
@@ -54,7 +55,6 @@ repositories {
     mavenCentral()
     jcenter()
     maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-    maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
     flatDir {
         dirs 'lib'
@@ -115,7 +115,6 @@ android {
         store {
             applicationId "io.mapsquare.osmcontributor"
             buildConfigField "String", "APP_NAME", '"OSM Contributor"'
-            buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
             buildConfigField "int", "MAX_POIS_ON_MAP", "200"
             buildConfigField "int", "MAP_AREA_FACTOR", "200"
             buildConfigField "int", "DEFAULT_ZOOM", "16"
@@ -140,7 +139,6 @@ android {
             applicationId "io.jawg.osmcontributor.bus"
 
             buildConfigField "String", "APP_NAME", '"Jungle Bus"'
-            buildConfigField "String", "CRASHLYTICS_PACKAGE_NAME", '"io.jawg.osmcontributor.store"'
             buildConfigField "int", "MAX_POIS_ON_MAP", "300"
             buildConfigField "int", "MAP_AREA_FACTOR", "200"
             buildConfigField "int", "DEFAULT_ZOOM", "16"
@@ -240,7 +238,9 @@ dependencies {
 
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
 
+    implementation "com.google.firebase:firebase-core:$firebaseCoreVersion"
     implementation "com.firebase:firebase-jobdispatcher:$firebaseJobDispatcherVersion"
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
     testImplementation 'junit:junit:4.12'
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
@@ -251,12 +251,6 @@ dependencies {
     }
     testImplementation "org.xerial:sqlite-jdbc:$sqliteJdbcVersion"
     testImplementation 'commons-io:commons-io:1.3.2'
-    implementation("com.crashlytics.sdk.android:crashlytics:$crashlitycsVersion@aar") {
-        transitive = true
-    }
-    implementation('com.crashlytics.sdk.android:answers:+@aar') {
-        transitive = true
-    }
 }
 
 // Load the properties from the given file
@@ -285,3 +279,5 @@ task checkstyle(type: Checkstyle) {
 }
 
 preBuild.dependsOn('checkstyle')
+
+apply plugin: 'com.google.gms.google-services'
