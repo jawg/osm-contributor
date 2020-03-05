@@ -193,8 +193,6 @@ public class OsmBackend implements Backend {
                     OsmDtoInterface osmDto = result.getResult();
                     if (osmDto != null) {
                         poiLoad.add(new PoiLoadWrapper(osmDto, poiTypeDto));
-                    } else {
-                        throw new NetworkException();
                     }
                     poiTypes.remove(entry.getKey());
                 } else {
