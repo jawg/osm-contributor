@@ -53,6 +53,7 @@ public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewH
     public BusLinesViewBinder(FragmentActivity activity, TagItemChangeListener tagItemChangeListener) {
         super(activity, tagItemChangeListener);
         ((OsmTemplateApplication) activity.getApplication()).getOsmTemplateComponent().inject(this);
+        adapter = new BusLineAdapter(activity.getBaseContext(), busLineRelationDisplayParser);
     }
 
     @Override
@@ -74,7 +75,6 @@ public class BusLinesViewBinder extends CheckedTagViewBinder<TagItemBusLineViewH
 
         holder.getTextViewKey().setText(ParserManager.parseTagName(tagItem.getKey(), holder.getContent().getContext()));
 
-        adapter = new BusLineAdapter(activity.get().getBaseContext(), busLineRelationDisplayParser);
         adapter.setRemoveBusListener((busLine, position) -> {
             removeBusLine(adapter, busLine, position);
             cancelBusLinesUpdate(
