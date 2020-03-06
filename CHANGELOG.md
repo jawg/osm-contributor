@@ -1,4 +1,13 @@
 ## Changelog
+[3.0.24]
+
+ - Fix bus lines concurrency display error
+ - Fix no network error exception thrown when data not fully loaded
+ - Fix bus line search not looking for 'network' result
+ 
+ - Add firebase
+ - Update takima logo
+
 [3.0.2]
 
   - Empty value are not saved on OSM Server
