@@ -81,12 +81,12 @@ public class TagsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             notifyDataSetChanged();
         }
 
+        busLinesViewBinder = new BusLinesViewBinder(activity, this);
         viewBinders.add(new ShelterChoiceViewBinder(activity, this));
         viewBinders.add(new AutoCompleteViewBinder(activity, this));
         viewBinders.add(new ConstantViewBinder(activity));
         viewBinders.add(new OpeningHoursViewBinder(activity, this));
         viewBinders.add(new RadioChoiceViewBinder(activity, this));
-        busLinesViewBinder = new BusLinesViewBinder(activity, this);
         viewBinders.add(busLinesViewBinder);
 
         eventBus.register(this);
