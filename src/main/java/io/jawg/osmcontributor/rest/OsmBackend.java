@@ -171,7 +171,7 @@ public class OsmBackend implements Backend {
                 sbRequest.append(poiTypeDto.getQuery().contains(BBOX) ?
                         poiTypeDto.getQuery().replace(BBOX, box.osmFormat()) :
                         poiTypeDto.getQuery());
-            } else if (poiTypeDto.getQuery() == null && FlavorUtils.isBus(poiTypeDto)) {
+            } else if (FlavorUtils.isBus(poiTypeDto)) {
                 sbRequest.append(generateOverpassRequest(box, poiTypeDtoList));
             }
 
@@ -184,6 +184,7 @@ public class OsmBackend implements Backend {
                                 overpassRestClient.sendRequestBlock(request).execute().body() :
                                 overpassRestClient.sendRequest(request).execute().body();
                     } catch (IOException e) {
+                        Timber.e(e);
                         return null;
                     }
                 });

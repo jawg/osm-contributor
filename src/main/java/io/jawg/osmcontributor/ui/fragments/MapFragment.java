@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -1595,7 +1596,8 @@ public class MapFragment extends Fragment {
     }
 
     public void hideMarker(Marker marker) {
-        marker.setIcon(IconFactory.getInstance(getActivity()).fromResource(R.drawable.hidden_marker));
+        Bitmap hiddenMarker = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.hidden_marker);
+        marker.setIcon(IconFactory.getInstance(getActivity()).fromBitmap(hiddenMarker));
     }
 
     private void addMarkerView(LocationMarkerViewOptions markerOptions) {
