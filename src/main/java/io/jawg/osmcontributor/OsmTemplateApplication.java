@@ -38,9 +38,9 @@ import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.REST;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.mapbox.mapboxsdk.Mapbox;
 
+import com.mapbox.services.android.telemetry.MapboxTelemetry;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
@@ -123,6 +123,7 @@ public class OsmTemplateApplication extends Application {
         editor.apply();
 
         Mapbox.getInstance(this, BuildConfig.MAPBOX_TOKEN);
+        MapboxTelemetry.getInstance().setTelemetryEnabled(false);
 
         conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     }

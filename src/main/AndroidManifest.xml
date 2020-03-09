@@ -33,6 +33,7 @@
         android:name=".OsmTemplateApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/icon"
         android:label="@string/name"
         android:theme="@style/AppTheme"

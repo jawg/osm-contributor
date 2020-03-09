@@ -7,6 +7,7 @@
  
  - Add firebase
  - Update takima logo
+ - Update mapbox lib
 
 [3.0.2]
 
