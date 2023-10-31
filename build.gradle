@@ -98,12 +98,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            buildConfigField "String", "BASE_OSM_URL", '"https://www.openstreetmap.org/api/0.6/"'
+            buildConfigField "String", "BASE_OSM_URL", '"https://api.openstreetmap.org/api/0.6/"'
         }
 
         debug {
             versionNameSuffix ".debug-3"
-            buildConfigField "String", "BASE_OSM_URL", '"https://www.openstreetmap.org/api/0.6/"'
+            buildConfigField "String", "BASE_OSM_URL", '"https://api.openstreetmap.org/api/0.6/"'
         }
     }
 
@@ -121,7 +121,7 @@ android {
             buildConfigField "boolean", "WITH_FILTER", "true"
             buildConfigField "float", "ZOOM_MARKER_MIN", "17f"
             buildConfigField "float", "ZOOM_MAX", "21.99f"
-            buildConfigField "String", "MAP_URL", '"http://tile.openstreetmap.org/{z}/{x}/{y}.png"'
+            buildConfigField "String", "MAP_URL", '"https://tile.openstreetmap.org/{z}/{x}/{y}.png"'
             buildConfigField "String", "MAP_STYLE_URL", '"https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json"'
             buildConfigField "String", "MAP_STYLE", '"asset://mapnik.json"'
             buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass-api.de/api/interpreter/"'
@@ -145,7 +145,7 @@ android {
             buildConfigField "float", "ZOOM_MARKER_MIN", "14f"
             buildConfigField "float", "ZOOM_MAX", "21.99f"
             buildConfigField "boolean", "WITH_FILTER", "false"
-            buildConfigField "String", "MAP_URL", '"http://tile.openstreetmap.org/{z}/{x}/{y}.png"'
+            buildConfigField "String", "MAP_URL", '"https://tile.openstreetmap.org/{z}/{x}/{y}.png"'
             buildConfigField "String", "MAP_STYLE_URL", '"https://gist.githubusercontent.com/anonymous/c1fdbffff5c4e25eb267696e8247dec1/raw/1590b94bfc01433b706d51cf117506a760d14199/57a357f3e4b0dc55a4ea6ffa.json"'
             buildConfigField "String", "MAP_STYLE", '"asset://mapnik.json"'
             buildConfigField "String", "BASE_OVERPASS_URL", '"http://overpass-api.de/api/interpreter/"'
